@@ -3,7 +3,7 @@ var ManageAuthTokens = require('../shared/manageAuthTokens.js');
 var AccountHelper = require('../shared/accountHelper.js');
 var MyAccountPage = require('../pages/myAccount.page.js');
 var UIHelpers = require('../shared/uiHelpers.js');
-//var RegistrationPage = require('../pages/registration.page.js');
+var RegistrationPage = require('../pages/registration.page.js');
 
 describe('Google Authorization pathway test', function () {
     var plansPage = new PlansPage();
@@ -21,12 +21,12 @@ describe('Google Authorization pathway test', function () {
         });
     });
 
-    //it('should control and remove tokens', function () {
-    //    return browser.driver.get(browser.baseUrl + '/dashboard/manageAuthTokens').then(function () {
-    //        expect(element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div/div[1]/div[1]/div/div/div/div[1]/div[2]/table/thead/tr/th[1]')));
-    //        return manageAuthTokens.revokeAuthTokens();
-    //    });
-    //});
+    it('should control and remove tokens', function () {
+        return browser.driver.get(browser.baseUrl + '/dashboard/manageAuthTokens').then(function () {
+            expect(element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div/div[1]/div[1]/div/div/div/div[1]/div[2]/table/thead/tr/th[1]')));
+            return manageAuthTokens.revokeAuthTokens();
+        });
+    });
 
     it('should go to myAccount page', function () {
         return myAccountPage.get();
@@ -53,20 +53,20 @@ describe('Google Authorization pathway test', function () {
     //    //    });
     //    //});
 
-    //    return googlePage.addAccount().then(function () {
-    //        return googlePage.getAllow();
+    //    return plansPage.addAccount().then(function () {
+    //        return plansPage.getAllow();
     //    });
     //});
 
-    //describe('should logout', function () {
+    describe('should logout', function () {
 
-    //    var registrationPage = new RegistrationPage();
+        var registrationPage = new RegistrationPage();
 
-    //    it('should logout', function () {
-    //        return accountHelper.logout().then(function () {
-    //               expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
-    //        });
-    //    });
-    // });
+        it('should logout', function () {
+            return accountHelper.logout().then(function () {
+                   expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+            });
+        });
+     });
 
 });

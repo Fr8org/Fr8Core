@@ -14,13 +14,14 @@ var PlansPage = function () {
     var uiHelpers = new UIHelpers();
     var addPlanButton = element(by.xpath('//*[@id="Myfr8lines"]/h3/a'));
     var addActivityButton = element(by.className('action-add-button-link'));
+    //var addAccountButton = element(by.className('.auth-link-account'));
 
     /* Add Google Activity Properties */
-    var googleActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[13]/div[1]/img'));
+    var googleActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[11]/div[1]/img'));
     var googleSheetActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/ul/li[1]/a/span'));
 
     /* SalesForce Activity Properties */
-    var salesForceActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[22]/div[1]/img'));
+    var salesForceActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[15]/div[1]/img'));
     var salesForceGetDataActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/ul/li[1]/a/span'));
 
     /*DocuSign Activity Properties */
@@ -28,7 +29,7 @@ var PlansPage = function () {
     var docuSignMonitorActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/ul/li[1]/a/span'));
 
     /* Slack Activity Properties */
-    var slackActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[24]/div[1]/img'));
+    var slackActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[17]/div[1]/img'));
     var slackMonitorActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/ul/li[1]/a/span'));
 
 
@@ -77,6 +78,18 @@ var PlansPage = function () {
         });
     };
 
+    //this.addAccount = function () {
+    //    //return browser.wait(EC.visibilityOf((googlePage.addAccountButton)), 5000).then(function () {
+    //    //});
+    //    //return browser.wait(element(by.cssContainingText('.auth-link-account'))).then(function () {
+    //    //    return addAccountButton.click();
+    //    //});
+
+    //    return uiHelpers.waitReady(addAccountButton).then(function () {
+    //        return addAccountButton.click();
+    //    });
+    //};
+
     this.addSalesForceActivity = function () {
         return uiHelpers.waitReady(salesForceActivityButton).then(function () {
             return salesForceActivityButton.click();
@@ -102,13 +115,13 @@ var PlansPage = function () {
     };
 
     this.addSlackActivity = function () {
-        return uiHelpers.waitready(slackActivityButton).then(function () {
+        return uiHelpers.waitReady(slackActivityButton).then(function () {
             return slackActivityButton.click();
         });
     };
 
     this.getSlackMonitorActivity = function () {
-        return uiHelpers.waitready(slackMonitorActivityButton).then(function () {
+        return uiHelpers.waitReady(slackMonitorActivityButton).then(function () {
             return slackMonitorActivityButton.click();
         });
     };

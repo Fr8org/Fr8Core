@@ -3,9 +3,9 @@ var ManageAuthTokens = require('../shared/manageAuthTokens.js');
 var AccountHelper = require('../shared/accountHelper.js');
 var MyAccountPage = require('../pages/myAccount.page.js');
 var UIHelpers = require('../shared/uiHelpers.js');
-//var RegistrationPage = require('../pages/registration.page.js');
+var RegistrationPage = require('../pages/registration.page.js');
 
-describe('SalesForce Authorization pathway test', function () {
+describe('Slack Authorization pathway test', function () {
     var plansPage = new PlansPage();
     var manageAuthTokens = new ManageAuthTokens();
     var accountHelper = new AccountHelper();
@@ -45,14 +45,14 @@ describe('SalesForce Authorization pathway test', function () {
         });
     });
 
-    //describe('should logout', function () {
+    describe('should logout', function () {
 
-    //    var registrationPage = new RegistrationPage();
+        var registrationPage = new RegistrationPage();
 
-    //    it('should logout', function () {
-    //        return accountHelper.logout().then(function () {
-    //               expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
-    //        });
-    //    });
-    // });
+        it('should logout', function () {
+            return accountHelper.logout().then(function () {
+                   expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+            });
+        });
+     });
 });
