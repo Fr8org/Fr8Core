@@ -27,10 +27,8 @@ namespace terminalSalesforce.Actions
             Name = "Mail_Merge_From_Salesforce",
             Label = "Mail Merge from Salesforce",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Solution,
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };

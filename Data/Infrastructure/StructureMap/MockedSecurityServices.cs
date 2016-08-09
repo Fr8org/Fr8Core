@@ -79,7 +79,7 @@ namespace Data.Infrastructure.StructureMap
             throw new NotImplementedException();
         }
 
-        public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
+        public bool AuthorizeActivity(PermissionType permissionName, Guid curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
@@ -95,7 +95,7 @@ namespace Data.Infrastructure.StructureMap
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, Guid.Empty);
 
-            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
+            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.EditAllObjects);
             var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
 
             if (viewAllData != 0 && permissionName == PermissionType.ReadObject) return true;
@@ -112,10 +112,10 @@ namespace Data.Infrastructure.StructureMap
             return true;
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null )
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null )
         {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId.ToString(), dataObjectType, Guid.Empty, null, null);
+            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId, dataObjectType, Guid.Empty, null, null);
         }
 
         public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
@@ -123,7 +123,7 @@ namespace Data.Infrastructure.StructureMap
             return terminals;
         }
 
-        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
         {
             throw new NotImplementedException();
         }

@@ -11,8 +11,10 @@ using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using System.Text.RegularExpressions;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
 {
@@ -21,7 +23,7 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
 
             CommandTimeout = 60 * 15;
 
@@ -66,7 +68,7 @@ namespace Data.Migrations
 
                 uow.SaveChanges();
 
-                AddWebServices(uow);
+                AddPredefinedActivityCategories(uow);
                 AddTestUser(uow);
                 RenameActivity(uow);
                 RegisterTerminals(uow);
@@ -76,32 +78,32 @@ namespace Data.Migrations
         private void RegisterTerminals(UnitOfWork uow)
         {
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
-            RegisterTerminal(uow, "localhost:10109");
-            RegisterTerminal(uow, "localhost:56785");
-            RegisterTerminal(uow, "localhost:46281");
-            RegisterTerminal(uow, "localhost:61121");
-            RegisterTerminal(uow, "localhost:54642");
-            RegisterTerminal(uow, "localhost:39504");
-            RegisterTerminal(uow, "localhost:53234");
-            RegisterTerminal(uow, "localhost:30700");
-            RegisterTerminal(uow, "localhost:51234");
-            RegisterTerminal(uow, "localhost:50705");
-            RegisterTerminal(uow, "localhost:10601");
-            RegisterTerminal(uow, "localhost:30699");
-            RegisterTerminal(uow, "localhost:25923");
-            RegisterTerminal(uow, "localhost:47011");
-            RegisterTerminal(uow, "localhost:19760");
-            RegisterTerminal(uow, "localhost:30701");
-            RegisterTerminal(uow, "localhost:39768");
-            RegisterTerminal(uow, "localhost:48317");
-            RegisterTerminal(uow, "localhost:39555");
-            RegisterTerminal(uow, "localhost:64879");
-            RegisterTerminal(uow, "localhost:50479");
-            RegisterTerminal(uow, "localhost:22555");
-            RegisterTerminal(uow, "localhost:48675");
-            RegisterTerminal(uow, "localhost:22666");
-            RegisterTerminal(uow, "localhost:59022");
-            RegisterTerminal(uow, "localhost:38080");
+            RegisterFr8OwnTerminal(uow, "localhost:10109");
+            RegisterFr8OwnTerminal(uow, "localhost:56785");
+            RegisterFr8OwnTerminal(uow, "localhost:46281");
+            RegisterFr8OwnTerminal(uow, "localhost:61121");
+            RegisterFr8OwnTerminal(uow, "localhost:54642");
+            RegisterFr8OwnTerminal(uow, "localhost:39504");
+            RegisterFr8OwnTerminal(uow, "localhost:53234");
+            RegisterFr8OwnTerminal(uow, "localhost:30700");
+            RegisterFr8OwnTerminal(uow, "localhost:51234");
+            RegisterFr8OwnTerminal(uow, "localhost:50705");
+            RegisterFr8OwnTerminal(uow, "localhost:10601");
+            RegisterFr8OwnTerminal(uow, "localhost:30699");
+            RegisterFr8OwnTerminal(uow, "localhost:25923");
+            RegisterFr8OwnTerminal(uow, "localhost:47011");
+            RegisterFr8OwnTerminal(uow, "localhost:19760");
+            RegisterFr8OwnTerminal(uow, "localhost:30701");
+            RegisterFr8OwnTerminal(uow, "localhost:39768");
+            RegisterFr8OwnTerminal(uow, "localhost:48317");
+            RegisterFr8OwnTerminal(uow, "localhost:39555");
+            RegisterFr8OwnTerminal(uow, "localhost:64879");
+            RegisterFr8OwnTerminal(uow, "localhost:50479");
+            RegisterFr8OwnTerminal(uow, "localhost:22555");
+            RegisterFr8OwnTerminal(uow, "localhost:48675");
+            RegisterFr8OwnTerminal(uow, "localhost:22666");
+            RegisterFr8OwnTerminal(uow, "localhost:59022");
+            RegisterFr8OwnTerminal(uow, "localhost:38080");
         }
 
         private string ExtractPort(string url)
@@ -121,30 +123,43 @@ namespace Data.Migrations
         }
 
         // ReSharper disable once UnusedMember.Local
-        private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
+        private void RegisterFr8OwnTerminal(UnitOfWork uow, string terminalEndpoint)
         {
-            var terminalRegistration = new TerminalRegistrationDO();
+            var terminalRegistration = new TerminalDO();
             string terminalPort = ExtractPort(terminalEndpoint);
 
-            terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
+            terminalEndpoint = NormalizeUrl(terminalEndpoint);
+            var existingTerminal = uow.TerminalRepository.GetAll().FirstOrDefault(
+                x => x.DevUrl != null &&
+                     (string.Equals(NormalizeUrl(x.DevUrl), terminalEndpoint, StringComparison.OrdinalIgnoreCase) 
+                     ||
+                     (ExtractPort(x.DevUrl) != null && ExtractPort(terminalEndpoint) != null &&
+                         string.Equals(ExtractPort(x.DevUrl), terminalPort, StringComparison.OrdinalIgnoreCase)
+            )));
 
-            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x =>
-                    string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase) ||
-                    (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) != null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
-                ) != null)
+            if (existingTerminal != null)
             {
                 return;
             }
 
+            terminalRegistration.Id = Guid.NewGuid();
             terminalRegistration.Endpoint = terminalEndpoint;
+            terminalRegistration.DevUrl = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
+            terminalRegistration.TerminalStatus = TerminalStatus.Undiscovered;
+            terminalRegistration.ParticipationState = ParticipationState.Approved;
 
-            uow.TerminalRegistrationRepository.Add(terminalRegistration);
+            uow.TerminalRepository.Add(terminalRegistration);
             uow.SaveChanges();
         }
 
-        private static string ExtractTerminalAuthority(string terminalUrl)
+        private static string NormalizeUrl(string terminalUrl)
         {
+            if (string.IsNullOrEmpty(terminalUrl))
+            {
+                return string.Empty;
+            }
+
             var terminalAuthority = terminalUrl;
 
             if (!terminalUrl.Contains("http:") & !terminalUrl.Contains("https:"))
@@ -351,7 +366,6 @@ namespace Data.Migrations
         private static void AddAdmins(IUnitOfWork unitOfWork)
         {
             CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
-            CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
@@ -363,7 +377,6 @@ namespace Data.Migrations
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
             CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("farrukh.normuradov@gmail.com", "123qwe", unitOfWork);
         }
 
         /// <summary>
@@ -373,11 +386,11 @@ namespace Data.Migrations
         /// <returns>True if created successfully otherwise false</returns>
         private static void AddDockyardAccounts(IUnitOfWork unitOfWork)
         {
-            CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
-            CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
-            CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
-            CreateDockyardAccount("sacre", "printf", unitOfWork);
-            CreateDockyardAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+            CreateFr8Account("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
+            CreateFr8Account("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
+            CreateFr8Account("fileupload@dockyard.company", "test123", unitOfWork);
+            CreateFr8Account("sacre", "printf", unitOfWork);
+            CreateFr8Account("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
         }
         /// <summary>
         /// Add test user with 'Admin' role
@@ -425,7 +438,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        public static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        public static Fr8AccountDO CreateFr8Account(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -434,52 +447,80 @@ namespace Data.Migrations
             return user;
         }
 
-        private void AddWebServices(IUnitOfWork uow)
+        private void AddPredefinedActivityCategories(IUnitOfWork uow)
         {
-            var terminalToWs = new Dictionary<string, string>
+            var predefinedCategories = new List<Tuple<Guid, string, string>>()
             {
-                {"terminalSalesforce", "Salesforce"},
-                {"terminalFr8Core", "fr8 Core"},
-                {"terminalDocuSign", "DocuSign"},
-                {"terminalSlack", "Slack"},
-                {"terminalTwilio", "Twilio"},
-                {"terminalAzure", "Microsoft Azure"},
-                {"terminalExcel", "Excel"},
-                {"terminalGoogle", "Google"},
-                {"terminalPapertrail", "Papertrail"}
+                new Tuple<Guid, string, string>(ActivityCategories.MonitorId, ActivityCategories.MonitorName, "/Content/icons/monitor-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.ReceiveId, ActivityCategories.ReceiveName, "/Content/icons/get-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.ProcessId, ActivityCategories.ProcessName, "/Content/icons/process-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.ForwardId, ActivityCategories.ForwardName, "/Content/icons/forward-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.SolutionId, ActivityCategories.SolutionName, null)
             };
 
-            var wsToId = new Dictionary<string, int>();
-
-            AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
-            AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
-            AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
-            AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
-            AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-            AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
-            AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
-            AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
-            AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
-            AddWebService(uow, "Atlassian", "/Content/icons/web_services/jira-icon-64x64.png");
-            AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
-
-            foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
+            foreach (var category in predefinedCategories)
             {
-                if (webServiceDo.Name != null)
+                AddOrUpdateActivityCategory(uow, category.Item1, category.Item2, category.Item3);
+            }
+        }
+
+        private void AddOrUpdateActivityCategory(IUnitOfWork uow, Guid id, string name, string iconPath)
+        {
+            var activityTemplateAssignments = new List<ActivityTemplateDO>();
+
+            var existingActivityCategoryByName = uow.ActivityCategoryRepository
+                .GetQuery()
+                .FirstOrDefault(x => x.Name == name && x.Id != id);
+
+            if (existingActivityCategoryByName != null)
+            {
+                var existingAssignments = uow.ActivityCategorySetRepository.GetQuery()
+                    .Where(x => x.ActivityCategoryId == existingActivityCategoryByName.Id)
+                    .ToList();
+
+                foreach (var assignment in existingAssignments)
                 {
-                    wsToId[webServiceDo.Name] = webServiceDo.Id;
+                    activityTemplateAssignments.Add(assignment.ActivityTemplate);
+                    uow.ActivityCategorySetRepository.Remove(assignment);
                 }
+                uow.SaveChanges();
+
+                uow.ActivityCategoryRepository.Remove(existingActivityCategoryByName);
+                uow.SaveChanges();
             }
 
-            foreach (var activity in uow.ActivityTemplateRepository.GetQuery().Include(x => x.Terminal))
-            {
-                string wsName;
-                int wsId;
+            var activityCategory = uow.ActivityCategoryRepository
+                .GetQuery()
+                .FirstOrDefault(x => x.Id == id);
 
-                if (terminalToWs.TryGetValue(activity.Terminal.Name, out wsName) && wsToId.TryGetValue(wsName, out wsId))
+            if (activityCategory == null)
+            {
+                activityCategory = new ActivityCategoryDO()
                 {
-                    activity.WebServiceId = wsId;
-                }
+                    Id = id,
+                    Name = name,
+                    IconPath = iconPath
+                };
+
+                uow.ActivityCategoryRepository.Add(activityCategory);
+            }
+            else
+            {
+                activityCategory.IconPath = iconPath;
+            }
+
+            foreach (var assignedActivityTemplate in activityTemplateAssignments)
+            {
+                uow.ActivityCategorySetRepository.Add(
+                    new ActivityCategorySetDO()
+                    {
+                        Id = Guid.NewGuid(),
+                        ActivityCategoryId = activityCategory.Id,
+                        ActivityCategory = activityCategory,
+                        ActivityTemplateId = assignedActivityTemplate.Id,
+                        ActivityTemplate = assignedActivityTemplate
+                    }
+                );
             }
 
             uow.SaveChanges();
@@ -510,23 +551,6 @@ namespace Data.Migrations
             var userDO = uow.UserRepository.GetOrCreateUser(userName, roleId);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleId, userDO.Id);
-        }
-
-        private void AddWebService(IUnitOfWork uow, string name, string iconPath)
-        {
-            var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
-
-            if (isWsExists)
-            {
-                return;
-            }
-            var webServiceDO = new WebServiceDO
-            {
-                Name = name,
-                IconPath = iconPath
-            };
-
-            uow.WebServiceRepository.Add(webServiceDO);
         }
 
         private void UpdateRootPlanNodeId(IUnitOfWork uow)
@@ -716,8 +740,8 @@ namespace Data.Migrations
                 Name = name,
                 ProfileId = profileId,
                 ObjectType = objectType,
-                CreateDate = DateTimeOffset.Now,
-                LastUpdated = DateTimeOffset.Now,
+                CreateDate = DateTimeOffset.UtcNow,
+                LastUpdated = DateTimeOffset.UtcNow,
                 HasFullAccess = isFullSet
             };
 
@@ -732,7 +756,7 @@ namespace Data.Migrations
             if (isFullSet)
             {
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ViewAllObjects));
-                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ModifyAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditPageDefinitions));
             }
 

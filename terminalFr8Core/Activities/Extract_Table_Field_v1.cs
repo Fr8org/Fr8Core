@@ -22,14 +22,12 @@ namespace terminalFr8Core.Activities
             Label = "Extract Table Field",
             Version = "1",
             MinPaneWidth = 330,
-            Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

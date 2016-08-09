@@ -1,6 +1,7 @@
 ﻿using System;
 using Data.Entities;
 using Fr8.Infrastructure.Data.States;
+using Data.States;
 
 namespace Fr8.Testing.Unit.Fixtures
 {
@@ -15,7 +16,8 @@ namespace Fr8.Testing.Unit.Fixtures
                 Endpoint = "terminalAzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
 
@@ -28,7 +30,8 @@ namespace Fr8.Testing.Unit.Fixtures
                 Endpoint = "AzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
 
@@ -41,7 +44,8 @@ namespace Fr8.Testing.Unit.Fixtures
                 Endpoint = "http://localhost:46281/",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
 
@@ -54,7 +58,8 @@ namespace Fr8.Testing.Unit.Fixtures
                 Endpoint = "AzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
 
@@ -67,7 +72,8 @@ namespace Fr8.Testing.Unit.Fixtures
                 Endpoint = "localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
 
@@ -75,27 +81,29 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             return new TerminalDO
             {
-                Id = 1,
+                Id = FixtureData.GetTestGuidById(1),
                 Name = "DocuSign",
                 Label = "DocuSign",
                 Endpoint = "http://localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 AuthenticationType = AuthenticationType.External,
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
         public static TerminalDO TerminalSeven()
         {
             return new TerminalDO
             {
-                Id = 1,
+                Id = FixtureData.GetTestGuidById(1),
                 Name = "terminalDocuSign",
                 Label = "DocuSign",
                 Endpoint = "localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Secret = Guid.NewGuid().ToString()
+                Secret = Guid.NewGuid().ToString(),
+                ParticipationState = ParticipationState.Approved
             };
         }
     }

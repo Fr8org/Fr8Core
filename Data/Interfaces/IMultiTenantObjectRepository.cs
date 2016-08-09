@@ -39,7 +39,7 @@ namespace Data.Interfaces
         int Count<T>(string fr8AccountId, Expression<Func<T, bool>> where)
             where T : Manifest;
 
-        int? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+        Guid? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
             where T : Manifest;
     }
 }

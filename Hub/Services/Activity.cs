@@ -739,10 +739,12 @@ namespace Hub.Services
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var solutionId = ActivityCategories.SolutionId;
+
                 var curActivities = uow.ActivityTemplateRepository
                     .GetQuery()
                     .Where(x => x.Terminal.Name == terminalName
-                        && x.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution)
+                        && x.Categories.Any(y => y.ActivityCategoryId == solutionId))
                     .GroupBy(x => x.Name)
                     .AsEnumerable()
                     .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
