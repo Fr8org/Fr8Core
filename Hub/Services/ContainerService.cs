@@ -255,20 +255,9 @@ namespace Hub.Services
         private void ReportAuthError(IUnitOfWork uow, Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
             var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
-            string webServiceName = null;
-            if (activityTemplate != null)
-            {
-                var webService = uow.ActivityTemplateRepository.GetQuery()
-                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
-                    .Select(x => x.WebService)
-                    .FirstOrDefault();
-                webServiceName = webService?.Name;
-            }
-            
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{webServiceName}. ";
 
-            errorMessage += $"Please re-authorize Fr8 to connect to {webServiceName} " +
+            var errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with remote web-service.";
+            errorMessage += $"Please re-authorize {ex?.FailedActivityDTO.Label} activity " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 

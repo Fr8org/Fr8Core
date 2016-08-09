@@ -83,19 +83,11 @@ namespace Data.Entities
         public virtual TerminalDO Terminal { get; set; }
 
         [Required]
-        public ActivityCategory Category { get; set; }
-
-        [Required]
         public ActivityType Type { get; set; }
 
         [InverseProperty("ActivityTemplate")]
         public virtual IList<ActivityCategorySetDO> Categories { get; set; }
 
         public int MinPaneWidth { get; set; }
-
-        [ForeignKey("WebService")]
-		public int? WebServiceId { get; set; }
-
-		public virtual WebServiceDO WebService { get; set; }
     }
 }

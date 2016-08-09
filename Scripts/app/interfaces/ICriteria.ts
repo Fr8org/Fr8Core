@@ -28,6 +28,7 @@ module dockyard.interfaces {
     }
 
     export interface IActivityCategoryDTO {
+        id: string;
         name: string;
         activities: Array<IActivityTemplateVM>;
     }

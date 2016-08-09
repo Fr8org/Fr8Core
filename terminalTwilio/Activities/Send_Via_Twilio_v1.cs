@@ -25,15 +25,13 @@ namespace terminalTwilio.Activities
             Name = "Send_Via_Twilio",
             Label = "Send SMS Using Twilio Account",
             Tags = "Twillio,Notifier",
-            Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

@@ -124,7 +124,7 @@ DELETE derived FROM AspNetUserRoles derived INNER JOIN #TempUsers tu ON tu.UserI
 
 DELETE derived FROM Users derived INNER JOIN #TempUsers tu ON tu.UserId = derived.Id;
 
-DELETE FROM EmailAddresses WHERE EmailAddresses.Address LIKE 'testuser_%@fr8.co';
+DELETE FROM EmailAddresses WHERE EmailAddresses.Address LIKE 'testuser_registration@fr8.co';
 
 DELETE derived FROM AspNetUsers derived INNER JOIN #TempUsers tu ON tu.UserId = derived.Id;
 

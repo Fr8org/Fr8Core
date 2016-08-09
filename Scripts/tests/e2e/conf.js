@@ -15,14 +15,16 @@
         'phantomjs.ghostdriver.cli.args': ['--loglevel=DEBUG']
     },
     framework: 'jasmine',
-    specs: ['**/google.spec.js'],
+    specs: ['**/*.spec.js'],
     jasmineNodeOpts: {
         defaultTimeoutInterval: 50000
     },
     baseUrl: 'http://dev.fr8.co',
     params: {
         username: '', 
-        password: ''
+        password: '',
+        registerUsername: '',
+        registerPassword: '',
     }
 }; 
 
