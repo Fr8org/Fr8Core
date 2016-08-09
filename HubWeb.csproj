@@ -524,6 +524,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
+    <Compile Include="ViewModels\InternalDemoAccountVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\NavLinks.cs" />
