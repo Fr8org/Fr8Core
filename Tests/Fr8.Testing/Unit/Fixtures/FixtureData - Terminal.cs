@@ -17,6 +17,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
@@ -31,6 +32,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
@@ -45,6 +47,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
@@ -59,6 +62,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
@@ -73,6 +77,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
@@ -89,6 +94,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Version = "1",
                 AuthenticationType = AuthenticationType.External,
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
@@ -103,6 +109,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Secret = Guid.NewGuid().ToString(),
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }
