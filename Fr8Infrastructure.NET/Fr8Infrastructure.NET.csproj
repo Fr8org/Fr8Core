@@ -199,6 +199,7 @@
     <Compile Include="Data\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
     <Compile Include="Data\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\IncomingCratesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\InternalDemoAccountDTO.cs" />
     <Compile Include="Data\DataTransferObjects\KeyValueDTO.cs" />
     <Compile Include="Data\DataTransferObjects\LoggingDataCM.cs" />
     <Compile Include="Data\DataTransferObjects\LogItemDTO.cs" />
