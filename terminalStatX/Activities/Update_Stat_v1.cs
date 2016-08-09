@@ -224,9 +224,6 @@ namespace terminalStatX.Activities
                 }
 
                 #region Refresh Stat Items to Track for Changes in app
-                SelectedStat = ActivityUI.ExistingGroupStats.Value;
-                ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
-                ActivityUI.ExistingGroupStats.Value = SelectedStat;
 
                 //check for changes in statValue Array
                 var statToCheck = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
@@ -243,15 +240,15 @@ namespace terminalStatX.Activities
                             newStatNames = statDTO.Items.Select(x => x.Name).ToList();
                             
                             //recreate new items 
-                            var newItems = newStatNames.Where(x => !oldStatNames.Contains(x));
-                            var oldItemsToDelete = oldStatNames.Where(x => !newStatNames.Contains(x));
+                            var newItems = newStatNames.Where(x => !oldStatNames.Contains(x)).ToList();
+                            var oldItemsToDelete = oldStatNames.Where(x => !newStatNames.Contains(x)).ToList();
 
                             foreach (var item in newItems)
                             {
                                 ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item, item, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
 
-                            foreach (var item in oldItemsToDelete)
+                            foreach (var item in oldItemsToDelete.ToList())
                             {
                                 var itemToDelete = ActivityUI.StatValues.FirstOrDefault(x => x.Name == item);
                                 if (itemToDelete != null)
@@ -271,6 +268,11 @@ namespace terminalStatX.Activities
                        }
                     }
                 }
+
+                SelectedStat = ActivityUI.ExistingGroupStats.Value;
+                ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                ActivityUI.ExistingGroupStats.Value = SelectedStat;
+
                 #endregion
             }
             else
