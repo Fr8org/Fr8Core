@@ -341,9 +341,12 @@ namespace Hub.Services
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivityGroups()
         {
+            var availableTerminalIds = _terminal.GetAll().Select(x=>x.Id).ToList();
+
             var curActivityTemplates = _activityTemplate
                 .GetQuery()
-                .Where(at => at.ActivityTemplateState == ActivityTemplateState.Active).AsEnumerable().ToArray()
+                .Where(at => at.ActivityTemplateState == ActivityTemplateState.Active 
+                    && availableTerminalIds.Contains(at.TerminalId)).AsEnumerable().ToArray()
                 .GroupBy(t => t.Category)
                 .OrderBy(c => c.Key)
                 .Select(c => new ActivityTemplateCategoryDTO
