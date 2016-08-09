@@ -16,7 +16,7 @@ namespace Data.Entities
             this.NeedsAuthentication = false;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, string description, int terminalId, ActivityType type = ActivityType.Standard) : this()
+        public ActivityTemplateDO(string name, string label, string version, string description, Guid terminalId, ActivityType type = ActivityType.Standard) : this()
         {
             this.Name = name;
             this.Label = label;
@@ -78,12 +78,9 @@ namespace Data.Entities
         public _ActivityTemplateStateTemplate ActivityTemplateStateTemplate { get; set; }
 
         [ForeignKey("Terminal")]
-        public int TerminalId { get; set; }
+        public Guid TerminalId { get; set; }
 
         public virtual TerminalDO Terminal { get; set; }
-
-        [Required]
-        public ActivityCategory Category { get; set; }
 
         [Required]
         public ActivityType Type { get; set; }
@@ -92,10 +89,5 @@ namespace Data.Entities
         public virtual IList<ActivityCategorySetDO> Categories { get; set; }
 
         public int MinPaneWidth { get; set; }
-
-        [ForeignKey("WebService")]
-		public int? WebServiceId { get; set; }
-
-		public virtual WebServiceDO WebService { get; set; }
     }
 }

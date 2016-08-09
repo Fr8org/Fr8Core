@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Fr8.Infrastructure.Documentation.Swagger;
 using HubWeb.Controllers;
 
 namespace HubWeb.Documentation.Swagger

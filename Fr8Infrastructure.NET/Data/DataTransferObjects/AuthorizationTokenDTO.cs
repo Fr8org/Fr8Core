@@ -44,6 +44,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         //TODO remove this
         [JsonProperty("terminalId")]
-        public int TerminalID { get; set; }
+        public Guid TerminalID { get; set; }
     }
 }

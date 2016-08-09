@@ -82,7 +82,7 @@
                 return false;
             }
             var at = this.ActivityTemplateHelperService.getActivityTemplate(activity);
-            if (at.category === 'Solution'
+            if (at.categories.some((value, index, arr) => { return value.name && value.name.toLowerCase() === 'Solution'; })
                 // Second clause to force new algorithm work only for specific activities.
                 && at.tags === 'UsesReconfigureList') {
 

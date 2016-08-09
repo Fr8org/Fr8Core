@@ -304,7 +304,6 @@
 
                 // Save previously selected auth tokens.
                 if ($scope.terminals) {
-                    console.log($scope.terminals);
                     angular.forEach($scope.terminals, function (term) {
                         if (term.authTokens.length !== 0) {
                             selectedAuthTokens.push({

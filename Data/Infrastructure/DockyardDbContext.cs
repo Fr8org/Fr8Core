@@ -20,7 +20,7 @@ namespace Data.Infrastructure
     [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
-        public static string DefaultConnectionStringName => "DockyardDB";
+        public static string DefaultConnectionStringName => "Fr8LocalDB";
 
         //This is to ensure compile will break if the reference to sql server is removed
         private static Type m_SqlProvider = typeof(SqlProviderServices);
@@ -266,7 +266,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<ActivityCategoryDO>().ToTable("ActivityCategory");
             modelBuilder.Entity<ActivityCategorySetDO>().ToTable("ActivityCategorySet");
-            modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
             modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
             modelBuilder.Entity<TagDO>().ToTable("Tags");
@@ -346,12 +345,6 @@ namespace Data.Infrastructure
 
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<ActivityTemplateDO>()
-                .HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
-                .WithMany()
-                .HasForeignKey(x => x.WebServiceId)
-                .WillCascadeOnDelete(false);
-
             modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
                 .HasMany(x => x.Fr8Accounts)
                 .WithOptional(x => x.Organization)
@@ -359,7 +352,6 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PageDefinitionDO>().ToTable("PageDefinitions");
-            modelBuilder.Entity<TerminalRegistrationDO>().ToTable("TerminalRegistration");
 
             base.OnModelCreating(modelBuilder);
         }

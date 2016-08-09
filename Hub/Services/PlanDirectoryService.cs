@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Helper;
 using Hub.Interfaces;
 using Newtonsoft.Json.Linq;
@@ -28,6 +29,10 @@ namespace Hub.Services
         private readonly IPlan _planService;
         private readonly IActivityTemplate _activityTemplate;
 
+        private readonly IPlanTemplate _planTemplate;
+        private readonly ISearchProvider _searchProvider;
+        private readonly IWebservicesPageGenerator _webservicesPageGenerator;
+
 
 
         public PlanDirectoryService(IHMACService hmac, 
@@ -35,7 +40,10 @@ namespace Hub.Services
                                     IPusherNotifier pusherNotifier,
                                     IUnitOfWorkFactory unitOfWorkFactory, 
                                     IPlan planService, 
-                                    IActivityTemplate activityTemplate)
+                                    IActivityTemplate activityTemplate,
+                                    IPlanTemplate planTemplate,
+                                    ISearchProvider searchProvider,
+                                    IWebservicesPageGenerator webservicesPageGenerator)
         {
             _hmacService = hmac;
             _client = client;
@@ -43,43 +51,23 @@ namespace Hub.Services
             _unitOfWorkFactory = unitOfWorkFactory;
             _planService = planService;
             _activityTemplate = activityTemplate;
+
+            _planTemplate = planTemplate;
+            _searchProvider = searchProvider;
+            _webservicesPageGenerator = webservicesPageGenerator;
         }
 
-        public async Task<string> GetToken(string UserId)
-        {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/authentication/token");
-            var headers =
-                await
-                    _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
-                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), UserId);
-
-            var json = await _client.PostAsync<JObject>(uri, headers: headers);
-            var token = json.Value<string>("token");
-
-            return token;
-        }
-
-        public string LogOutUrl()
-        {
-            return CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/Home/LogoutByToken";
-        }
-
+      
         public async Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId)
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates?id=" + id);
-            var headers = await _hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                userId
-            );
-
             try
             {
-                return await _client.GetAsync<PublishPlanTemplateDTO>(uri, headers: headers);
+                var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(userId, id);
+                return planTemplateDTO;
             }
-            catch (Fr8.Infrastructure.Communication.RestfulServiceException)
+            catch(Exception exp)
             {
+                Logger.GetLogger().Error($"Error retriving plan template: {exp.Message}");
                 return null;
             }
         }
@@ -96,27 +84,12 @@ namespace Hub.Services
                 PlanContents = planDto
             };
 
-
-            //var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
-            //await _searchProvider.CreateOrUpdate(planTemplateCM);
-            //await _webservicesPageGenerator.Generate(planTemplateCM, userId);
-
-
-            // @tony.yakovets: for now i left this request to itself because classes above to tight coupled to PlanDirectory project
-            // even if it is a hub
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates/");
-            var headers = await _hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                userId,
-                dto
-            );
-
-            await _client.PostAsync(uri, dto, headers: headers);
+            var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
+            await _searchProvider.CreateOrUpdate(planTemplateCM);
+            await _webservicesPageGenerator.Generate(planTemplateCM, userId);
 
             // Notify user with directing him to PlanDirectory with related search query
-            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/PlanDirectory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
@@ -126,17 +99,35 @@ namespace Hub.Services
             }, userId);
         }
 
-        public async Task Unpublish(Guid planId, string userId)
+        public async Task Unpublish(Guid planId, string userId, bool privileged)
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates/?id=" + planId);
-            var headers = await _hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                userId
-            );
+            //TODO: add security check with new security model
+            //var identity = User.Identity as ClaimsIdentity;
+            //var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+            //var fr8AccountId = identity.GetUserId();
 
-            await _client.DeleteAsync(uri, headers: headers);
+            var planTemplateCM = await _planTemplate.Get(userId, planId);
+
+            if (planTemplateCM != null)
+            {
+                if (planTemplateCM.OwnerId != userId && !privileged)
+                {
+                    throw new UnauthorizedAccessException(); // Unauthorized();
+                }
+                await _planTemplate.Remove(userId, planId);
+                await _searchProvider.Remove(planId);
+            }
+
+
+            //var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates/?id=" + planId);
+            //var headers = await _hmacService.GenerateHMACHeader(
+            //    uri,
+            //    "PlanDirectory",
+            //    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+            //    userId
+            //);
+
+            //await _client.DeleteAsync(uri, headers: headers);
 
             // Notify user that plan successfully deleted
             _pusherNotifier.NotifyUser(new NotificationMessageDTO

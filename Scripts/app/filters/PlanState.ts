@@ -6,7 +6,7 @@
 module dockyard {
     'use strict';
     app.filter('PlanState', () =>
-        (input : number): string => {
+        (input : string): string => {
             switch (input)
             {
                 case model.PlanState.Executing:

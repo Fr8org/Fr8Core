@@ -6,7 +6,7 @@ namespace terminalExcel
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Excel",
             IconPath = "/Content/icons/web_services/ms-excel-icon-64x64.png"

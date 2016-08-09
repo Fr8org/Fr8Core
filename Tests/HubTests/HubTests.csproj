@@ -303,6 +303,7 @@
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Integration\ActivityControllerTests.cs" />
     <Compile Include="Fixtures\WebServicesControllerFixtureData.cs" />
+    <Compile Include="Integration\SwaggerTests.cs" />
     <Compile Include="Integration\WebServicesControllerTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
