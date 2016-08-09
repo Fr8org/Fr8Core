@@ -5,7 +5,7 @@ var MyAccountPage = require('../pages/myAccount.page.js');
 var UIHelpers = require('../shared/uiHelpers.js');
 var RegistrationPage = require('../pages/registration.page.js');
 
-describe('Google Authorization pathway test', function () {
+describe('SalesForce Authorization pathway test', function () {
     var plansPage = new PlansPage();
     var manageAuthTokens = new ManageAuthTokens();
     var accountHelper = new AccountHelper();
@@ -21,16 +21,16 @@ describe('Google Authorization pathway test', function () {
         });
     });
 
-    it('should control and remove tokens', function () {
-        return browser.driver.get(browser.baseUrl + '/dashboard/manageAuthTokens').then(function () {
-            expect(element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div/div[1]/div[1]/div/div/div/div[1]/div[2]/table/thead/tr/th[1]')));
-            return manageAuthTokens.revokeAuthTokens();
-        });
-    });
+    //it('should control and remove tokens', function () {
+    //    return browser.driver.get(browser.baseUrl + '/dashboard/manageAuthTokens').then(function () {
+    //        expect(element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div/div[1]/div[1]/div/div/div/div[1]/div[2]/table/thead/tr/th[1]')));
+    //        return manageAuthTokens.revokeAuthTokens();
+    //    });
+    //});
 
     it('should go to myAccount page', function () {
         return myAccountPage.get();
-            expect(browser.getCurrentUrl()).toEqual('http://dev.fr8.co/dashboard/myaccount');
+        expect(browser.getCurrentUrl()).toEqual('http://dev.fr8.co/dashboard/myaccount');
     });
 
     it('should add plan', function () {
@@ -39,24 +39,11 @@ describe('Google Authorization pathway test', function () {
         });
     });
 
-    it('should add google activity', function () {
-        return plansPage.addGoogleActivity().then(function () {
-            return plansPage.getGoogleSheetActivity();
+    it('should add salesForce get data activity', function () {
+        return plansPage.addSalesForceActivity().then(function () {
+            return plansPage.getSalesForceGetDataActivity();
         });
     });
-
-    //it('should add account', function () {
-    //    //var elm = element(by.className('.auth-link-account'));
-    //    //return uiHelpers.waitReady(elm).then(function () {
-    //    //    googlePage.addAccount().then(function () {
-    //    //        return googlePage.getAllow();
-    //    //    });
-    //    //});
-
-    //    return plansPage.addAccount().then(function () {
-    //        return plansPage.getAllow();
-    //    });
-    //});
 
     describe('should logout', function () {
 
