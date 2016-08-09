@@ -15,10 +15,12 @@ using Hub.Services;
 using HubWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
+using HubWeb.Filters;
 
 namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
+    [RedirecLogedUser]
     public class DockyardAccountController : Controller
     {
         private readonly Fr8Account _account;
