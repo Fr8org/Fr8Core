@@ -238,7 +238,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);
+            this.processState($state);            
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -534,6 +534,8 @@ module dockyard.controllers {
                 var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
+
+            this.$scope.$emit('onKioskModalLoad');
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
@@ -541,7 +543,7 @@ module dockyard.controllers {
             if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);
-            }
+            }            
         }
 
         // If action updated, notify interested parties and update $scope.current.action

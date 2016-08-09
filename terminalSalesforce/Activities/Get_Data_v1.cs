@@ -26,15 +26,13 @@ namespace terminalSalesforce.Actions
             Name = "Get_Data",
             Label = "Get Data from Salesforce",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Receivers,
             MinPaneWidth = 550,
             Tags = Tags.TableDataGenerator,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

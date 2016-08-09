@@ -17,14 +17,12 @@ namespace terminalBox.Actions
             Id = new Guid("CADEAC51-3E10-4FC8-AF5D-5265D9A8EA71"),
             Name = "Generate_Table_Activity",
             Label = "Generate Table Activity",
-            Category = ActivityCategory.Receivers,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

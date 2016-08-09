@@ -61,7 +61,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }

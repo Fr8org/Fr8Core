@@ -46,9 +46,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("version")]
         public string Version { get; set; }
 
-        [JsonProperty("webService")]
-        public WebServiceDTO WebService { get; set; }
-
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
 
@@ -57,10 +54,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("categories")]
         public ActivityCategoryDTO[] Categories { get; set; }
-
-        [JsonProperty("category")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ActivityCategory Category { get; set; }
 
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -74,5 +67,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("showDocumentation")]
         public ActivityResponseDTO ShowDocumentation { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
     }
 }

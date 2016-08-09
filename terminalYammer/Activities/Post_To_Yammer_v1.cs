@@ -24,16 +24,14 @@ namespace terminalYammer.Actions
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
