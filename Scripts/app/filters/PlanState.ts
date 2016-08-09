@@ -6,13 +6,15 @@
 module dockyard {
     'use strict';
     app.filter('PlanState', () =>
-        (input : number): string => {
+        (input : string): string => {
             switch (input)
             {
-                case model.PlanState.Running:
-                    return "Running";
+                case model.PlanState.Executing:
+                    return "Executing";
                 case model.PlanState.Inactive:
                     return "Inactive";
+                case model.PlanState.Active:
+                    return "Active";
                 default:
                     return "Inactive";
             }

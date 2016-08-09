@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -448,7 +449,10 @@ namespace HubWeb.Controllers
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Unpublish(Guid planId)
         {
-            await _planDirectoryService.Unpublish(planId, User.Identity.GetUserId());
+            var identity = User.Identity as ClaimsIdentity;
+            var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+
+            await _planDirectoryService.Unpublish(planId, User.Identity.GetUserId(), privileged);
             return Ok();
         }
         /// <summary>

@@ -23,16 +23,14 @@ namespace terminalGoogle.Activities
             Name = "Get_Google_Sheet_Data",
             Label = "Get Google Sheet Data",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.GooogleWebServiceDTO,
             Tags = "Table Data Generator",
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

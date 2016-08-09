@@ -16,6 +16,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using HubTests.Services.Container;
 using Fr8.Testing.Unit.Fixtures;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Controllers
 {
@@ -66,7 +67,7 @@ namespace HubTests.Controllers
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                plan.PlanState = PlanState.Running;
+                plan.PlanState = PlanState.Executing;
                 plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);

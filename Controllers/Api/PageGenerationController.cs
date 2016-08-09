@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Enums;
+using Hub.Interfaces;
 using StructureMap;
 
 namespace HubWeb.Controllers.Api

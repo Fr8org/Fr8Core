@@ -61,9 +61,10 @@ namespace HubTests.Controllers
                         Name = activityTemplate.TerminalName,
                         Version = activityTemplate.TerminalVersion,
                         TerminalStatus = TerminalStatus.Active,
-                        Label = "dummy"
+                        Label = "dummy",
+                        ParticipationState = ParticipationState.Approved,
+                        Endpoint = "http://localhost:11111"
                     }
-
                 };
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 plan.ChildNodes.Add(subPlan);
@@ -115,7 +116,9 @@ namespace HubTests.Controllers
                         Name = activityTemplate.TerminalName,
                         Version = activityTemplate.TerminalVersion,
                         TerminalStatus = TerminalStatus.Active,
-                        Label = "dummy"
+                        Label = "dummy",
+                        ParticipationState = ParticipationState.Approved,
+                        Endpoint = "http://localhost:11111"
                     }
                     
                 };
@@ -159,15 +162,13 @@ namespace HubTests.Controllers
 
             var plan = new PlanDO
             {
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Name = "name",
                 ChildNodes = { activity }
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }

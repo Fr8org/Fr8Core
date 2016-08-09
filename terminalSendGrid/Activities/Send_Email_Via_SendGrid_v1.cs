@@ -29,13 +29,11 @@ namespace terminalSendGrid.Activities
             Version = "1",
             Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
             Terminal = TerminalData.TerminalDTO,
-            Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

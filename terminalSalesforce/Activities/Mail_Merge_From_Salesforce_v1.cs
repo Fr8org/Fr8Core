@@ -27,10 +27,8 @@ namespace terminalSalesforce.Actions
             Name = "Mail_Merge_From_Salesforce",
             Label = "Mail Merge from Salesforce",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Solution,
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };
@@ -41,6 +39,7 @@ namespace terminalSalesforce.Actions
         private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
                                             Google Sheets, and databases, and merge the data into your Salesforce template. 
                                             You can link specific fields from your source data to Salesforce fields</p>";
+        private const string TerminalDisplayName = "Salesforce";
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SalesforceObjectSelector { get; set; }
@@ -315,7 +314,7 @@ namespace terminalSalesforce.Actions
         {
             if (documentationType.Contains("MainPage"))
             {
-                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalDisplayName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
 
             }

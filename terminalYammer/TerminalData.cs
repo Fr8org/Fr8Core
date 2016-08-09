@@ -6,7 +6,7 @@ namespace terminalYammer
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Yammer",
             IconPath = "/Content/icons/web_services/yammer-64x64.png"
