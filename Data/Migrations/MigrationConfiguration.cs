@@ -515,10 +515,10 @@ namespace Data.Migrations
             {
                 activityCategory.IconPath = iconPath;
             }
-
+             
             foreach (var assignedActivityTemplate in activityTemplateAssignments)
             {
-                if (!string.IsNullOrEmpty(activity.Terminal.Name))
+                if (!string.IsNullOrEmpty(assignedActivityTemplate.Terminal.Name))
                 {
                     uow.ActivityCategorySetRepository.Add(
                     new ActivityCategorySetDO()
@@ -528,8 +528,7 @@ namespace Data.Migrations
                         ActivityCategory = activityCategory,
                         ActivityTemplateId = assignedActivityTemplate.Id,
                         ActivityTemplate = assignedActivityTemplate
-                    }
-                );
+                    });
                 }
             }
 
