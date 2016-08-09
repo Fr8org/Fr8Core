@@ -136,7 +136,6 @@ namespace Hub.Services
             {
                 curEndpoint = string.Empty;
             }
-
 #if DEBUG
             // Use local URL for Fr8 own terminals when in the local environment or during FBB tests.
             if (terminal.IsFr8OwnTerminal)
@@ -190,6 +189,7 @@ namespace Hub.Services
                 {
                     // Set properties which can only be set by Administrator
                     terminalDo.ParticipationState = terminal.ParticipationState;
+                    terminalDo.IsFr8OwnTerminal = terminal.IsFr8OwnTerminal;
                     terminalDo.ProdUrl = terminal.ProdUrl;
                 }
                 else
@@ -329,8 +329,11 @@ namespace Hub.Services
 
                 if (terminalRegistrationInfo == null)
                 {
-                    Logger.Error($"Terminal at '{terminalUrl}'  didn't return a valid reply to the discovery request.");
-                    throw new Exception($"Terminal at '{terminalUrl}' didn't return a valid reply to the discovery request.");
+                    Logger.Error($"Terminal at '{terminalUrl}'  didn't return a valid response to the discovery request.");
+
+                    // Set terminal status inactive 
+
+                    return false;
                 }
 
                 var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
