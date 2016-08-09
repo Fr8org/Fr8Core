@@ -483,7 +483,6 @@
     <Compile Include="Documentation\Swagger\SampleData\ValidationErrorsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ValidationResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\WebServiceActivitySetSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\WebServiceSampleFactory.cs" />
     <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
@@ -4522,7 +4521,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.221.4\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.221.4\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4609,5 +4608,5 @@
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
   <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.221.4\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.221.4\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

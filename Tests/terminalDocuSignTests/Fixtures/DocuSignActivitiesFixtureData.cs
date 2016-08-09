@@ -18,7 +18,6 @@ namespace terminalDocuSignTests.Fixtures
             Label = "BaseDocusignActivityMock",
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

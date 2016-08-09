@@ -11,25 +11,29 @@
             private $http: ng.IHttpService) {
 
             var _loading = false;
-
             $scope.authError = false;
             $scope.authErrorText = null;
-            $scope.mode = $scope.mode;
+            $scope.showDomain = $scope.mode == 4 ? 1 : 0;   // 4 - AuthenticationMode.InternalModeWithDomain
 
-            // 4 - AuthenticationMode.InternalModeWithDomain
-            $scope.showDomain = $scope.mode == 4 ? 1 : 0;
 
-            $scope.formData = {
-                username: 'docusign_developer@dockyard.company',
-                password: 'grolier34',
-                domain: "dockyard.company",
-                isDemoAccount: false
-            };
+            $scope.formData = {};
+            // Checking for pre-defined account information
+            $http.get('/api/authentication/demoAccountInfo', { params: { terminal: $scope.terminal.name } })
+                .then(function (res: any) {
+                    if (res.data && res.data.hasDemoAccount) {
+                        $scope.formData = {
+                            username: res.data.username,
+                            password: res.data.password,
+                            domain: res.data.domain
+                        };
+                    }
+                });
 
             $scope.isLoading = function () {
                 return _loading;
             };
 
+            // At the moment, only Docusign provides demo service
             $scope.hasDemoService = function () {
                 return $scope.terminalName == "terminalDocuSign";
             }
@@ -38,6 +42,9 @@
                 if (!$scope.form.$valid) {
                     return;
                 }
+
+                _loading = true;
+
                 var data = {
                     Terminal: $scope.terminal,
                     Username: $scope.formData.username,
@@ -46,11 +53,8 @@
                     IsDemoAccount: $scope.formData.isDemoAccount
                 };
 
-                _loading = true;
-
                 $http.post('/api/authentication/token', data)
                     .then(function (res: any) {
-
                         if (res.data.error) {
                             $scope.authErrorText = res.data.error;
                         }

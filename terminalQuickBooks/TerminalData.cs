@@ -6,7 +6,7 @@ namespace terminalQuickBooks
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "QuickBooks",
             IconPath = "/Content/icons/web_services/quickbooks-icon-64x64.png"
