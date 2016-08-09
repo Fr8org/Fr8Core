@@ -35,30 +35,6 @@ namespace terminalAsanaTests.Fixtures
         public static string SampleAsanaOauthTokenResponse()
         {
             return CloudConfigurationManager.GetSetting("AsanaTokenResponse");
-                
-                //@"{
-                //      ""access_token"": ""eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpemF0aW9uIjoxNjQ4NDI4MjI2NDcxNTYsInNjb3BlIjoiIiwiaWF0IjoxNDcwNjU4OTg1LCJleHAiOjE0NzA2NjI1ODV9.BLjKOL45cEaj1o1_uxOdx9h-qf9RjqSSRQJIS0FixXE"",
-                //      ""token_type"": ""bearer"",
-                //      ""expires_in"": 3600,
-                //      ""data"": {
-                //        ""id"": 156458193571829,
-                //        ""name"": ""Emre Varisli"",
-                //        ""email"": ""emre@fr8.co""
-                //      },
-                //      ""refresh_token"": ""0/9d469c84e9c8b56d8cb19d1527aaf52e""
-                //    }";
-
-            //return @"{
-            //          ""access_token"": ""eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpemF0aW9uIjoxNDgyOTk3Njk4NDQ3MzQsInNjb3BlIjoiIiwiaWF0IjoxNDY2ODY0NTA5LCJleHAiOjE0NjY4NjgxMDl9.txkQ5SbfascnSfIOK9lq3ifKxgt_iexEGUIVF_4H--U"",
-            //          ""token_type"": ""bearer"",
-            //          ""expires_in"": 3600,
-            //          ""data"": {
-            //            ""id"": 145598938536201,
-            //            ""name"": ""Asana Fr8 Dev"",
-            //            ""email"": ""asana-dev@fr8.co""
-            //          },
-            //          ""refresh_token"": ""0/269f8ed894731bcd111e7e337d2d2453""
-            //        }";
         }
 
         public static AuthorizationToken SampleAuthorizationToken()
