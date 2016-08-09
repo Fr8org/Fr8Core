@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -21,7 +22,9 @@ namespace Fr8.Testing.Unit.Fixtures
                     Label = "test",
                     Version = "v1",
                     Secret = "test",
-                    TerminalStatus = 1
+                    TerminalStatus = 1,
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint="http://localhost:11111"
                 });
                 uow.SaveChanges();
                 uow.ActivityTemplateRepository.Add(GetTestActivityTemplateDO());
@@ -33,7 +36,8 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             return new ActivityTemplateDO("Test", "test", "v1", "test", 1)
             {
-                Id = FixtureData.GetTestGuidById(1)
+                Id = FixtureData.GetTestGuidById(1),
+                Categories = new List<ActivityCategorySetDO>()
             };
         }
 

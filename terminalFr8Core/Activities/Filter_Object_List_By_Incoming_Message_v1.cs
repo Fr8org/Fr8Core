@@ -26,15 +26,13 @@ namespace terminalFr8Core.Activities
             Name = "Filter_Object_List_By_Incoming_Message",
             Label = "Filter Object List by Incoming Message",
             Version = "1",
-            Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

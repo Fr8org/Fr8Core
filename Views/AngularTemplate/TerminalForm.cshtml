@@ -12,7 +12,7 @@
             </div>
           
             <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
-                <label class="control-label">Url<span class="required"></span></label>
+                <label class="control-label">Development Endpoint<span class="required"></span></label>
                 <div class="input-icon right">
                     <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
                     <input type="url" name="name" placeholder="" class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
@@ -21,7 +21,7 @@
            
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="submit">Ok</button>
+            <button class="btn btn-primary" type="submit">Save</button>
             <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
         </div>
     </form>

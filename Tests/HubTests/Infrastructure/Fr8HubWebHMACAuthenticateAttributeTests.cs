@@ -55,7 +55,7 @@ namespace HubWeb.Infrastructure
             ObjectFactory.Configure(o => o.For<ITerminal>().Use(terminalService.Object));
 
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
-            Assert.AreEqual(true, _authenticationContext.Principal is Fr8Principle);
+            Assert.AreEqual(true, _authenticationContext.Principal is Fr8Principal);
             Assert.AreEqual(true, _authenticationContext.Principal.Identity is Fr8Identity);
         }
 

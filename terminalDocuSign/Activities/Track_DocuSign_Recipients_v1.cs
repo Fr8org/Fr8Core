@@ -30,10 +30,8 @@ namespace terminalDocuSign.Activities
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "1",
-            Category = ActivityCategory.Solution,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };

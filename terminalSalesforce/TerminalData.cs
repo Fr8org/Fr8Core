@@ -6,7 +6,7 @@ namespace terminalSalesforce
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Salesforce",
             IconPath = "/Content/icons/web_services/salesforce-icon-64x64.png"
