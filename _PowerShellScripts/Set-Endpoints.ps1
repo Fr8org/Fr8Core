@@ -17,7 +17,10 @@ param(
 	[string]$newHostname,
 
 	[Parameter(Mandatory = $false)]
-	[string]$overrideDbName
+	[string]$overrideDbName,
+
+	[Parameter(Mandatory = $false)]
+	[string]$serviceName
 )
 
 $ErrorActionPreference = 'Stop'
@@ -38,6 +41,9 @@ switch ($environment) {
 	}
 	sta {}
 	staging {
+		if ($serviceName -eq $null) {
+			throw "-serviceName is not specified. This argument is required for the staging environment."
+		}
 		$deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 		if ($newHostname -ne $null) {
 			Write-Warning "-newHostname parameter is ignored when -environment is set to 'staging'"
