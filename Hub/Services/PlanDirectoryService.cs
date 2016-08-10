@@ -10,6 +10,7 @@ using Data.Repositories.Plan;
 using Data.States;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
@@ -32,7 +33,8 @@ namespace Hub.Services
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
-
+        private readonly IActivity _activityService;
+        private readonly ICrateManager _crateManager;
 
 
         public PlanDirectoryService(IHMACService hmac, 
@@ -43,7 +45,9 @@ namespace Hub.Services
                                     IActivityTemplate activityTemplate,
                                     IPlanTemplate planTemplate,
                                     ISearchProvider searchProvider,
-                                    IWebservicesPageGenerator webservicesPageGenerator)
+                                    IWebservicesPageGenerator webservicesPageGenerator,
+                                    IActivity activityService,
+                                    ICrateManager crateManager)
         {
             _hmacService = hmac;
             _client = client;
@@ -55,6 +59,8 @@ namespace Hub.Services
             _planTemplate = planTemplate;
             _searchProvider = searchProvider;
             _webservicesPageGenerator = webservicesPageGenerator;
+            _activityService = activityService;
+            _crateManager = crateManager;
         }
 
       
@@ -176,7 +182,7 @@ namespace Hub.Services
 
             foreach (var activity in planTree.OfType<ActivityDO>())
             {
-                activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);
+                activity.CrateStorage = _crateManager.EmptyStorageAsStr();// UpdateCrateStorage(activity.CrateStorage, idsMap);
             }
             
             return PlanMappingHelper.MapPlanToDto(clonedPlan);
@@ -200,7 +206,7 @@ namespace Hub.Services
         }
 
 
-        public PlanNoChildrenDTO CreateFromTemplate(PlanDTO plan, string userId)
+        public async Task<PlanNoChildrenDTO> CreateFromTemplate(PlanDTO plan, string userId)
         {
             var planDo = new PlanDO()
             {
@@ -263,7 +269,7 @@ namespace Hub.Services
                         throw new KeyNotFoundException($"Activity '{activity.Id}' use activity template '{activity.ActivityTemplate?.Name}' with id = '{activity.ActivityTemplateId}' that is unknown to this Hub");
                     }
 
-                    activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);
+                    activity.CrateStorage = _crateManager.EmptyStorageAsStr();//  UpdateCrateStorage(activity.CrateStorage, idsMap);
                 }
             }
 
@@ -271,10 +277,22 @@ namespace Hub.Services
             {
                 uow.PlanRepository.Add(planDo);
                 uow.SaveChanges();
-
-
-                return AutoMapper.Mapper.Map<PlanNoChildrenDTO>(planDo);
             }
-        }
+
+            var tasks = planDo.GetDescendantsOrdered().OfType<ActivityDO>().Select(async x =>
+            {
+                using (var uow = _unitOfWorkFactory.Create())
+                {
+                    await _activityService.Configure(uow, userId, x);
+                }
+            });
+                
+            await Task.WhenAll(tasks);
+            
+            using (var uow = _unitOfWorkFactory.Create())
+            {
+                return AutoMapper.Mapper.Map<PlanNoChildrenDTO>(uow.PlanRepository.GetById<PlanDO>(planDo.Id));
+            }
+       }
     }
 }

@@ -349,6 +349,7 @@ namespace Hub.Services
                 }
                 else
                 {
+                    terminalDo.Secret = secret;
                     terminalDo.OperationalState = OperationalState.Active;
                     terminalDo.AuthenticationType = terminalRegistrationInfo.Definition.AuthenticationType;
                     terminalDo.Description = terminalRegistrationInfo.Definition.Description;

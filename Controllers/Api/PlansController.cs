@@ -349,7 +349,7 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Upload(string planName)
         {
             IHttpActionResult result = InternalServerError();
-            await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
+            await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith( async (tsk) =>
             {
                 MultipartMemoryStreamProvider prvdr = tsk.Result;
 
@@ -362,7 +362,7 @@ namespace HubWeb.Controllers
                     var planTemplateDTO = JsonConvert.DeserializeObject<PlanDTO>(content);
                     planTemplateDTO.Name = planName;
 
-                    result = Load(planTemplateDTO);
+                    result = await Load(planTemplateDTO);
                 }
             });
 
@@ -469,9 +469,9 @@ namespace HubWeb.Controllers
         [Fr8PlanDirectoryAuthentication]
         [HttpPost]
         [ResponseType(typeof(PlanNoChildrenDTO))]
-        public IHttpActionResult Load(PlanDTO plan)
+        public async Task<IHttpActionResult> Load(PlanDTO plan)
         {
-            return Ok(_planDirectoryService.CreateFromTemplate(plan, User.Identity.GetUserId()));
+            return Ok(await _planDirectoryService.CreateFromTemplate(plan, User.Identity.GetUserId()));
         }
     }
 }
