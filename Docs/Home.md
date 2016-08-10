@@ -1,6 +1,6 @@
 #Fr8 for Developers
 
-[Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   
+[Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   ([video](https://vimeo.com/178394308))
 
 [Part 2 - Understanding the Fr8 Architectural Model](/Docs/ForDevelopers/ArchitecturalModel.md)  
 
