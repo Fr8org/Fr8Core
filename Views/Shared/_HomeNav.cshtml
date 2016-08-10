@@ -45,11 +45,11 @@
             <li><a href="@NavLinks.BaseUrl/dashboard/#myaccount">My Account</a> </li>
             @if (User.IsInRole("Guest"))
             {
-                <li class="visible-xs">@Html.ActionLink("Have An Account? Login", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new {id = "logoffLink"})</li>
+                <li class="visible-xs">@Html.ActionLink("Have An Account? Login", "LogOff", "Account", routeValues: null, htmlAttributes: new {id = "logoffLink"})</li>
             }
             else
             {
-                <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new {id = "logoffLink"})</li>
+                <li>@Html.ActionLink("Sign Out", "LogOff", "Account", routeValues: null, htmlAttributes: new {id = "logoffLink"})</li>
             }
         </ul>
     }
@@ -95,7 +95,7 @@
     </ul>
     if (String.IsNullOrWhiteSpace((String)ViewBag.GuestUserEmail)) {
         <ul class="nav navbar-nav navbar-right">
-            <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "ProcessGuestUserMode", "DockyardAccount")</li>
+            <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "ProcessGuestUserMode", "Account")</li>
         </ul>
     }
 }

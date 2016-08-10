@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Table_ObjectRolePrivileges : DbMigration
+    public partial class Table_ObjectRolePrivileges : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

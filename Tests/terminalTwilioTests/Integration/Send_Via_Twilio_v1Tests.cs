@@ -11,6 +11,7 @@ using Fr8.Testing.Integration;
 
 using terminalTwilioTests.Fixture;
 using NUnit.Framework;
+using System.Configuration;
 
 namespace terminalTwilioTests.Integration
 {
@@ -98,7 +99,7 @@ namespace terminalTwilioTests.Integration
                     (TextSource)
                         updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
                 curNumberTextSource.ValueSource = "specific";
-                curNumberTextSource.TextValue = "+15005550006";
+                curNumberTextSource.TextValue = ConfigurationManager.AppSettings["TestPhoneNumber"];
 
                 var curBodyTextSource =
                    (TextSource)

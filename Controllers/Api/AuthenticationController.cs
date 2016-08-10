@@ -17,6 +17,7 @@ using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using HubWeb.ViewModels;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Utilities.Logging;
@@ -123,13 +124,13 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8ApiAuthorize]
         [ActionName("demoAccountInfo")]
-        [ResponseType(typeof(InternalDemoAccountDTO))]
+        [ResponseType(typeof(InternalDemoAccountVM))]
         public async Task<IHttpActionResult> GetDemoCredentials([FromUri(Name = "terminal")] string terminalName)
         {
 #if DEBUG
             var demoUsername = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountUsername");
             var demoPassword = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountPassword");
-            var docuSignAuthTokenDTO = new InternalDemoAccountDTO()
+            var docuSignAuthTokenDTO = new InternalDemoAccountVM()
             {
                 Username = demoUsername,
                 Password = demoPassword,
@@ -137,7 +138,7 @@ namespace HubWeb.Controllers
                 HasDemoAccount = (!String.IsNullOrEmpty(demoUsername) && !String.IsNullOrEmpty(demoPassword))
             };
 #else
-            var docuSignAuthTokenDTO = new InternalDemoAccountDTO()
+            var docuSignAuthTokenDTO = new InternalDemoAccountVM()
             {
                 HasDemoAccount = false
             };

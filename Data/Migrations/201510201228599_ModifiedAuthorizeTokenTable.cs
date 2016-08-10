@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class ModifiedAuthorizeTokenTable : DbMigration
+    public partial class ModifiedAuthorizeTokenTable : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

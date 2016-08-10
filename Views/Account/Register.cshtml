@@ -51,14 +51,14 @@
     <link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico"/>
 </head>
 <body>
-    @Html.Partial("~/Views/DockyardAccount/_HeaderPartial.cshtml")
+    @Html.Partial("~/Views/Account/_HeaderPartial.cshtml")
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="modal-dialog">
                 <div class="register-container">
                     <h1 style="text-align: center">Register an Account</h1><br>
 
-                    @using (Html.BeginForm("ProcessRegistration", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    @using (Html.BeginForm("ProcessRegistration", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary()
