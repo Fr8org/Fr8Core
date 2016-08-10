@@ -434,6 +434,7 @@
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddHubDefaultValuesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\AddTitleAndDescriptionDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\SampleData\FileDOSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TokenWrapperSampleFactory.cs" />
@@ -4372,6 +4373,7 @@
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="Exceptions\" />
     <Folder Include="ManifestPages\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
