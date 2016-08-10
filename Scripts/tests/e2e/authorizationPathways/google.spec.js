@@ -64,7 +64,7 @@ describe('Google Authorization pathway test', function () {
 
         it('should logout', function () {
             return accountHelper.logout().then(function () {
-                   expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+                   expect(browser.getCurrentUrl()).toContain('/Account');
             });
         });
      });
