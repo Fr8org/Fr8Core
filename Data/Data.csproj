@@ -781,10 +781,6 @@
     <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.Designer.cs">
       <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201608082028534_Update_RolePermissions_To_StandardUserRole.cs" />
-    <Compile Include="Migrations\201608082028534_Update_RolePermissions_To_StandardUserRole.Designer.cs">
-      <DependentUpon>201608082028534_Update_RolePermissions_To_StandardUserRole.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs" />
     <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.Designer.cs">
       <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
@@ -808,6 +804,10 @@
     <Compile Include="Migrations\201608092230355_OperationalState1.cs" />
     <Compile Include="Migrations\201608092230355_OperationalState1.Designer.cs">
       <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.cs" />
+    <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
+      <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1469,9 +1469,6 @@
     <EmbeddedResource Include="Migrations\201608071558594_DiscoveryRefactoring.resx">
       <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608082028534_Update_RolePermissions_To_StandardUserRole.resx">
-      <DependentUpon>201608082028534_Update_RolePermissions_To_StandardUserRole.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.resx">
       <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
     </EmbeddedResource>
@@ -1489,6 +1486,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608092230355_OperationalState1.resx">
       <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
+      <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

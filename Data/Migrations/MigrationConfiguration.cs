@@ -691,19 +691,19 @@ namespace Data.Migrations
 
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
-            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Terminals
-            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Users
-            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, true, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for PageDefinitions
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //add standard user to all users without profile 
             var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();

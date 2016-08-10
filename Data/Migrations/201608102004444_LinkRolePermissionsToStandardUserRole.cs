@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Update_RolePermissions_To_StandardUserRole : DbMigration
+    public partial class LinkRolePermissionsToStandardUserRole : DbMigration
     {
         public override void Up()
         {

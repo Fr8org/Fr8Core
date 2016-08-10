@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class Update_RolePermissions_To_StandardUserRole : IMigrationMetadata
+    public sealed partial class LinkRolePermissionsToStandardUserRole : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Update_RolePermissions_To_StandardUserRole));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(LinkRolePermissionsToStandardUserRole));
         
         string IMigrationMetadata.Id
         {
-            get { return "201608082028534_Update_RolePermissions_To_StandardUserRole"; }
+            get { return "201608102004444_LinkRolePermissionsToStandardUserRole"; }
         }
         
         string IMigrationMetadata.Source
