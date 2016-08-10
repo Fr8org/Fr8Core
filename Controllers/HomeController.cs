@@ -2,6 +2,7 @@ using System;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Routing;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -9,7 +10,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
+using Hub.Interfaces;
 using Hub.Services;
+using HubWeb.App_Start;
 using HubWeb.ViewModels;
 
 namespace HubWeb.Controllers
@@ -30,6 +33,13 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+#if DEBUG
+                var fr8Account = ObjectFactory.GetInstance<IFr8Account>();
+                if (!fr8Account.CheckForExistingAdminUsers())
+                {
+                    return RedirectToAction("SetupWizard", "DockyardAccount");
+                }
+#endif
                 Fr8AccountDO dockyardAccountDO;
                 if (!String.IsNullOrEmpty(emailAddress))
                 {

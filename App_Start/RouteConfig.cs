@@ -43,19 +43,5 @@ namespace HubWeb.App_Start
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional}
             );
         }
-
-        public static void RegisterSetupWizardAsDefaultRoute(RouteCollection routes)
-        {
-            //first remove the old default route 
-            var defaultRoute = routes["Default"];
-            routes.Remove(defaultRoute);
-
-            //add new Default Route on beginning
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "DockyardAccount", action = "SetupWizard", id = UrlParameter.Optional }
-            );
-        }
     }
 }

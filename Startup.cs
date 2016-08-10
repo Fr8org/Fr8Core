@@ -91,14 +91,6 @@ namespace HubWeb
 
             ConfigureHangfire(app, "Fr8LocalDB");
 
-#if DEBUG
-            var fr8Account = ObjectFactory.GetInstance<IFr8Account>();
-            if (!fr8Account.CheckForExistingAdminUsers())
-            {
-                RouteConfig.RegisterSetupWizardAsDefaultRoute(RouteTable.Routes);
-            }
-#endif
-
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
 #pragma warning restore 4014
