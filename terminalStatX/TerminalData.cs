@@ -1,4 +1,5 @@
-﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 

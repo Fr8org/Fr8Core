@@ -320,6 +320,7 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Exceptions\ActivityExecutionException.cs" />
     <Compile Include="Exceptions\InvalidTokenException.cs" />
+    <Compile Include="Exceptions\WrongAuthenticationTypeException.cs" />
     <Compile Include="Exceptions\ManifestGenerationException.cs" />
     <Compile Include="Exceptions\ManifestNotFoundException.cs" />
     <Compile Include="Exceptions\ManifestPageNotFoundException.cs" />

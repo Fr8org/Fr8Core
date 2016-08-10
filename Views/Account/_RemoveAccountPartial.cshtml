@@ -13,7 +13,7 @@
                     <td>
                         @if (ViewBag.ShowRemoveButton)
                         {
-                            using (Html.BeginForm("Disassociate", "DockyardAccount"))
+                            using (Html.BeginForm("Disassociate", "Account"))
                             {
                             @Html.AntiForgeryToken()
                             <div>

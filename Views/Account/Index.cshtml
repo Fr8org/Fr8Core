@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    @Html.Partial("~/Views/DockyardAccount/_HeaderPartial.cshtml")
+    @Html.Partial("~/Views/Account/_HeaderPartial.cshtml")
 
     <div class="container-fluid login-container">
         <div class="row-fluid">
@@ -32,7 +32,7 @@
                         <div class="row-fluid">
                             <!-- BEGIN FORM-->
                             <section id="loginform">
-                                @using (Html.BeginForm("login", "dockyardaccount", new { returnUrl = ViewBag.returnUrl }, FormMethod.Post, new { @class = "form-horizontal form-bordered ", role = "form" }))
+                                @using (Html.BeginForm("login", "Account", new { returnUrl = ViewBag.returnUrl }, FormMethod.Post, new { @class = "form-horizontal form-bordered ", role = "form" }))
                                 {
                                     @Html.AntiForgeryToken()
                                     @Html.ValidationSummary(true)
@@ -61,7 +61,7 @@
                                             <div class="col-md-offset-3 col-sm-9">
                                                 <button type="submit" class="btn purple">Log in</button>
                                                 <span class="help-block">
-                                                    @Html.ActionLink("Forgot Password?", "ForgotPassword", "DockyardAccount")
+                                                    @Html.ActionLink("Forgot Password?", "ForgotPassword", "Account")
                                                 </span>
                                             </div>
                                         </div>
@@ -76,7 +76,7 @@
                             <h1 class="col-sm-offset-2">Register</h1><br>
                         </div>
                         <div class="row-fluid">
-                            <a href="/DockyardAccount/Register" class="btn green col-sm-offset-2">Create Account</a>
+                            <a href="/Account/Register" class="btn green col-sm-offset-2">Create Account</a>
                         </div>
                     </div>
                 </div>

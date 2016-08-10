@@ -70,6 +70,10 @@
                                 <label class="control-label">Current URL<sup ng-show="canEditAllTerminals">*</sup></label>
                                 <input type="text" disabled="disabled" class="form-control" ng-model="terminal.endpoint" />
                             </div>
+                            <div ng-show="!canEditAllTerminals" class="margin-bottom-10">
+                                <span ng-show="approved" class="font-green-jungle"><strong>You terminal is approved and available for all Fr8 users.</strong></span>
+                                <span ng-show="!approved">Your terminal is <strong>not yet approved</strong> and is available to you only.</span>
+                            </div>
                             <div class="margin-top-10">
                                 <button type="submit" class="btn green-haze">Save</button>
                                 <a ui-sref="terminals" class="btn default">Return</a>

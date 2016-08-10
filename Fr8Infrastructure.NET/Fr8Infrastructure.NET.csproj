@@ -194,6 +194,7 @@
     <Compile Include="Data\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Data\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\CredentialsDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\DetailedMessageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\DocumentationResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\DocuSignEnvelopeDTO.cs" />
     <Compile Include="Data\DataTransferObjects\EmailAddressDTO.cs" />
@@ -216,7 +217,6 @@
     <Compile Include="Data\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
     <Compile Include="Data\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\IncomingCratesDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\InternalDemoAccountDTO.cs" />
     <Compile Include="Data\DataTransferObjects\KeyValueDTO.cs" />
     <Compile Include="Data\DataTransferObjects\LoggingDataCM.cs" />
     <Compile Include="Data\DataTransferObjects\LogItemDTO.cs" />
@@ -328,6 +328,9 @@
     <Compile Include="Data\States\PlanTemplateStatus.cs" />
     <Compile Include="Data\States\PlanVisibility.cs" />
     <Compile Include="Data\States\TerminalStatus.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\DetailedMessageSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ErrorSampleFactory.cs" />
+    <Compile Include="Exceptions\MissingObjectException.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />

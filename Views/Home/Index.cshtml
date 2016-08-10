@@ -1,4 +1,5 @@
-﻿@model HubWeb.ViewModels.HomeVM
+﻿@using Org.BouncyCastle.Asn1.Ocsp
+@model HubWeb.ViewModels.HomeVM
 
 
 <!DOCTYPE html>
@@ -51,18 +52,18 @@
         <div class="hero-content text-center">
             <div id="slidecaption" class="slide-caption">
                 <div class="hero-text">
-                    <h2 class="hero-heading">Connect Your Cloud Services</h2>
-                    <p>The most powerful Integration-as-a-Service solution.</p>
+                    <h2 class="hero-heading">The Open Cloud Integration Service</h2>
+                    <p>Distributed. Extensible. Powerful. Open-Source.</p>
                 </div>
             </div>
             <div class="hero-buttons">
-                <a href="/Services/HowItWorks" id="btn-about" class="btn btn-danger btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
+                <a href="#about" id="btn-about" class="btn btn-danger btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
                 @if (Request.IsAuthenticated)
                 {
                     <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
                 }
                 else {
-                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                    <a href="/Account/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
                 }
             </div>
 
@@ -106,7 +107,7 @@
             <div class="container">
                 <div class="section-heading">
                     <h2>HOW IT WORKS</h2>
-                    <p>Automate Your Work with Cloud Service Workflows </p>
+                    <p>Automate Your Work with Cloud Workflows and Apps </p>
                     <hr />
                 </div>
                 <div class="row">
@@ -161,7 +162,7 @@
                     <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
                 }
                 else {
-                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                    <a href="/Account/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
                 }
                 <p style="color: #F2F4F5; padding-top: 10px;">`</p>
             </div>
