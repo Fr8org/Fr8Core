@@ -4,7 +4,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
     
-    public partial class Standard_Configuration_Controls_To_Standard_UI_Controls : DbMigration
+    public partial class Standard_Configuration_Controls_To_Standard_UI_Controls : System.Data.Entity.Migrations.DbMigration
     {
         private string oldValue = "Standard Configuration Controls";
         private string newValue = "Standard UI Controls";

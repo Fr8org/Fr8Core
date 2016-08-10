@@ -50,6 +50,7 @@ namespace HubTests.Security
                     Endpoint = "localhost:39504",
                     AuthenticationType = authType,
                     Secret = Guid.NewGuid().ToString(),
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved
                 };
 
@@ -111,7 +112,7 @@ namespace HubTests.Security
         [Test]
         public void GetTokenByUserIdAndTerminalIdIsNull()
         {
-            var token = _authorization.GetToken("null", 0);
+            var token = _authorization.GetToken("null", Guid.Empty);
             Assert.IsNull(token);
         }
 

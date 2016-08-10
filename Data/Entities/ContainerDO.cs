@@ -60,7 +60,7 @@ namespace Data.Entities
             base.AfterCreate();
 
             var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id.ToString(), GetType().Name);
+            securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id, GetType().Name);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
@@ -12,7 +13,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         }
         
         [JsonProperty("InternalId")]
-        public int InternalId { get; set; }
+        public Guid InternalId { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("label")]
