@@ -369,12 +369,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/TerminalDetail",
             data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
         })
-        .state('manifestregistry',
-        {
-            url: "/manifest_registry",
-            templateUrl: "/AngularTemplate/ManifestRegistryList",
-            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
-        })
         .state('manageAuthTokens',
         {
             url: '/manageAuthTokens',
