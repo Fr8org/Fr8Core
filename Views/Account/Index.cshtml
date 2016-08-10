@@ -32,7 +32,7 @@
                         <div class="row-fluid">
                             <!-- BEGIN FORM-->
                             <section id="loginform">
-                                @using (Html.BeginForm("login", "dockyardaccount", new { returnUrl = ViewBag.returnUrl }, FormMethod.Post, new { @class = "form-horizontal form-bordered ", role = "form" }))
+                                @using (Html.BeginForm("login", "Account", new { returnUrl = ViewBag.returnUrl }, FormMethod.Post, new { @class = "form-horizontal form-bordered ", role = "form" }))
                                 {
                                     @Html.AntiForgeryToken()
                                     @Html.ValidationSummary(true)
