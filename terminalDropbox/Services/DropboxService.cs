@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fr8.TerminalBase.Models;
 using terminalDropbox.Interfaces;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalDropbox.Services
 {
@@ -28,6 +29,24 @@ namespace terminalDropbox.Services
             var result = await client.Files.ListFolderAsync(Path);
 
             return result.Entries.Select(x => x.PathLower).ToList();
+        }
+
+        public async Task<StandardFileDescriptionCM> GetFile(AuthorizationToken authorizationToken,string path)
+        {
+            var client = new DropboxClient(authorizationToken.Token, CreateDropboxClientConfig(UserAgent));
+
+            var result = await client.Files.DownloadAsync(path);
+
+            var s = result.Response.AsFile;
+            var sd = await result.GetContentAsByteArrayAsync();
+
+            var fileDescription = new StandardFileDescriptionCM
+            {
+                TextRepresentation = Convert.ToBase64String(sd),
+                Filetype = result.Response.AsFile.MediaInfo.AsMetadata.Value.ToString(),
+                Filename = result.Response.Name
+            };
+            return fileDescription;
         }
 
         /// <summary>
