@@ -385,7 +385,7 @@ Please register first.");
             return RedirectToAction("Index", "Welcome");
         }
 
-
+#if DEBUG
         /// <summary>
         /// Page shown to users when they first start the solution locally. Used to create a master administrator account for the developer local db
         /// </summary>
@@ -423,6 +423,7 @@ Please register first.");
                 RememberMe = false
             }, string.Empty).Result;
         }
+#endif
     }
 
 }

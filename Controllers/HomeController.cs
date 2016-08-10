@@ -37,7 +37,7 @@ namespace HubWeb.Controllers
                 var fr8Account = ObjectFactory.GetInstance<IFr8Account>();
                 if (!fr8Account.CheckForExistingAdminUsers())
                 {
-                    return RedirectToAction("SetupWizard", "DockyardAccount");
+                    return RedirectToAction("SetupWizard", "Account");
                 }
 #endif
                 Fr8AccountDO dockyardAccountDO;

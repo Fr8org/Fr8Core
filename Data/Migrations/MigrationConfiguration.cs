@@ -363,8 +363,14 @@ namespace Data.Migrations
             }
         }
 
+        public static void AddAdmins(IUnitOfWork uow)
+        {
+            //TODO: add your own admin accounts here
+            //CreateAdmin("test_foo@mail.com", "foobar",uow);
+        }
+
         ///<summary>
-        /// Add test user with 'Admin' role
+        /// Add test users
         /// </summary>
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)

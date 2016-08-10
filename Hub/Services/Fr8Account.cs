@@ -590,8 +590,12 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string userEmail = configRepository.Get("SystemUserEmail");
+                var systemUser = uow.UserRepository.GetOrCreateUser(userEmail);
+
                 var adminRoleId = uow.AspNetUserRolesRepository.GetRoleID(Roles.Admin);
-                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.RoleId == adminRoleId);
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.RoleId == adminRoleId && x.UserId != systemUser.Id);
             }
         }
 

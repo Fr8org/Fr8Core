@@ -57,7 +57,7 @@
                     <h1 style="text-align: center">Welcome to the Fr8 Hub. Create your master administrative account:
                     </h1><br>
 
-                    @using (Html.BeginForm("CreateMasterAdmin", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    @using (Html.BeginForm("CreateMasterAdmin", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary()
