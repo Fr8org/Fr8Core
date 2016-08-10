@@ -21,5 +21,6 @@ namespace Hub.Interfaces
         ActivityTemplateDO GetByNameAndVersion(string name, string version);
         // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
         void RemoveInactiveActivities(TerminalDO terminal, List<ActivityTemplateDO> activityTemplateDO);
+        bool Exists(Guid activityTemplateId);
     }
 }
