@@ -99,6 +99,7 @@ namespace HubTests.Repositories
                     Label = "Test",
                     Secret = Guid.NewGuid().ToString(),
                     Endpoint="http://localhost",
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved
                 });
 

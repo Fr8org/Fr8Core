@@ -11,7 +11,7 @@ var LoginPage = function () {
     
     this.get = function () {
         browser.ignoreSynchronization = true;
-        return browser.get(browser.baseUrl + '/DockyardAccount');
+        return browser.get(browser.baseUrl + '/Account');
     };
 
     this.setEmail = function (email) {

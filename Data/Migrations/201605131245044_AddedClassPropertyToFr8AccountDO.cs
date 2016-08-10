@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedClassPropertyToFr8AccountDO : DbMigration
+    public partial class AddedClassPropertyToFr8AccountDO : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

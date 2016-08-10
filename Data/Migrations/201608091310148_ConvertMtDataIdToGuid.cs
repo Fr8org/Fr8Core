@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
 
-    public partial class ConvertMtDataIdToGuid : DbMigration
+    public partial class ConvertMtDataIdToGuid : System.Data.Entity.Migrations.DbMigration
     {
         private const string CreateMTDataTableQuery = @"CREATE TABLE [dbo].[MtData](
 	[Id] [uniqueidentifier] NOT NULL DEFAULT(newid()),

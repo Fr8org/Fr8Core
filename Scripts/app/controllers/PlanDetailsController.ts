@@ -53,7 +53,6 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
-                debugger;
                 if (!$scope.current.plan.visibility.public) {
                     PlanService.share($stateParams.id)
                         .then(() => {
@@ -77,7 +76,6 @@ module dockyard.controllers {
 
 
             $scope.unpublishPlan = () => {
-                debugger;
                 //tony.yakovets: temporary crutch
                 if (!$scope.current.plan.visibility.hidden) {
                     PlanService.unpublish($stateParams.id)
