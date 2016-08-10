@@ -6,7 +6,7 @@ namespace terminalTwilio
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Twilio",
             IconPath = "/Content/icons/web_services/twilio-icon-64x64.png"

@@ -33,7 +33,7 @@ namespace terminalGoogle.Services
                 if (!string.IsNullOrEmpty(curFr8UserId))
                 {
                     var hub = container.GetInstance<IHubCommunicator>();
-                    var plan = new GoogleMTSFPlan(curFr8UserId,hub, "alexed","dev");
+                    var plan = new GoogleMTSFPlan(curFr8UserId,hub, "alexed","general");
                     await plan.CreateAndActivateNewMTSFPlan();
                 }
             }

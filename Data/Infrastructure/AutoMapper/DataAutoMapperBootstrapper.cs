@@ -32,10 +32,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
 
-            Mapper.CreateMap<WebServiceDO, WebServiceDTO>();
-            Mapper.CreateMap<WebServiceDTO, WebServiceDO>()
-                .ForMember(x => x.LastUpdated, opts => opts.Ignore())
-                .ForMember(x => x.CreateDate, opts => opts.Ignore());
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
@@ -43,7 +39,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
                 .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
-                .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActivities, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
@@ -64,7 +59,6 @@ namespace Data.Infrastructure.AutoMapper
                     }
                 }))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
-                .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActivities(ad.ChildrenActivities)))
                 .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?) null));
 
@@ -74,12 +68,16 @@ namespace Data.Infrastructure.AutoMapper
                .ForMember(x => x.TerminalName, opts => opts.ResolveUsing(x => x.Terminal.Name))
                .ForMember(x => x.TerminalVersion, opts => opts.ResolveUsing(x => x.Terminal.Version));
 
+            Mapper.CreateMap<ActivityCategoryDO, ActivityCategoryDTO>();
+            Mapper.CreateMap<ActivityCategoryDTO, ActivityCategoryDO>();
+
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
                 .ForMember(x => x.ShowDocumentation, opts => opts.Ignore())
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
                 .ForMember(
                     x => x.Categories,
                     opts => opts.ResolveUsing((ActivityTemplateDO x) =>
@@ -88,6 +86,7 @@ namespace Data.Infrastructure.AutoMapper
                             .Where(y => y.ActivityCategory != null)
                             .Select(y => new ActivityCategoryDTO()
                             {
+                                Id = y.ActivityCategory.Id,
                                 Name = y.ActivityCategory.Name,
                                 IconPath = y.ActivityCategory.IconPath
                             })
@@ -101,13 +100,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.Terminal, opts => opts.ResolveUsing(x => x.Terminal))
-                // .ForMember(x => x.AuthenticationType, opts => opts.ResolveUsing(x => x.AuthenticationType))
-                .ForMember(x => x.WebService, opts => opts.ResolveUsing(x => Mapper.Map<WebServiceDO>(x.WebService)))
+                // .ForMember(x => x.AuthenticationType, opts => opts.ResolveUsing(x => x.AuthenticationType))                
                 // .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.ActivityTemplateState, opts => opts.Ignore())
                 .ForMember(x => x.TerminalId, opts => opts.Ignore())
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
@@ -121,6 +118,7 @@ namespace Data.Infrastructure.AutoMapper
                             {
                                 ActivityCategory = new ActivityCategoryDO()
                                 {
+                                    Id = y.Id,
                                     Name = y.Name,
                                     IconPath = y.IconPath
                                 }
@@ -163,10 +161,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ParentId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
-
-
-            Mapper.CreateMap<TerminalRegistrationDO, TerminalRegistrationDTO>();
-            Mapper.CreateMap<TerminalRegistrationDTO, TerminalRegistrationDO>();
 
             Mapper.CreateMap<PlanDO, PlanDTO>().ConvertUsing<PlanDOFullConverter>();
 

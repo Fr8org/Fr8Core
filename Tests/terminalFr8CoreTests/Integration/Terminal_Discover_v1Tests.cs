@@ -9,13 +9,13 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 22;
+        private const int Fr8CoreActivityCount = 21;
         private const string TestIncomingDataName = "Test_Incoming_Data";
         private const string AddPayloadManuallyName = "Add_Payload_Manually";
         private const string SaveToFr8WarehouseName = "Save_To_Fr8_Warehouse";
         private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
         private const string ConnectToSqlName = "Connect_To_Sql";
-        private const string BuildQueryName = "Build_Query";
+        //private const string BuildQueryName = "Build_Query";
         private const string ExecuteSqlName = "Execute_Sql";
         private const string LoopName = "Loop";
         private const string SetDelayName = "Set_Delay";
@@ -54,7 +54,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SaveToFr8WarehouseName), "SaveToFr8WarehouseName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName), "Select_Fr8_ObjectName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName), "ConnectToSqlName wasn`t found");
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName), "BuildQueryName wasn`t found");
+           // Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName), "BuildQueryName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName), "ExecuteSqlName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName), "LoopName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName), "SetDelayName wasn`t found");

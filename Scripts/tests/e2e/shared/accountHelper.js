@@ -1,13 +1,14 @@
 ﻿var LoginPage = require('../pages/login.page.js');
 //var ContactPage = require('../pages/contact.page.js');
-//var GoogleAuthorizationPage = require('../pages/googleAuthorization.page.js');
-//var RegistrationPage = require('../pages/registration.page.js');
+var PlansPage = require('../pages/plans.page.js');
+var RegistrationPage = require('../pages/registration.page.js');
 var UIHelpers = require('../shared/uiHelpers.js');
 
 var AccountHelper = function () {
 
     var loginPage = new LoginPage();
-    //var registrationPage = new RegistrationPage();
+    var plansPage = new PlansPage();
+    var registrationPage = new RegistrationPage();
     var uiHelpers = new UIHelpers();
     //var contactPage = new ContactPage();
 
@@ -23,15 +24,9 @@ var AccountHelper = function () {
         return registrationPage.get();
     };
 
-    //this.register = function () {
-    //    return registrationPage.get().then(function () {
-    //        registrationPage.setEmail("testuser_00074@fr8.co");
-    //        registrationPage.setPassword("123qwe");
-    //        registrationPage.setConfirmPassword("123qwe");
-    //        registrationPage.setOrganization();
-    //        return registrationPage.register();
-    //    });
-    //};
+    this.google = function () {
+        return plansPage.get();
+    };
 
     //this.sendContact = function () {
     //    contactPage.setName("Fr8 Company");

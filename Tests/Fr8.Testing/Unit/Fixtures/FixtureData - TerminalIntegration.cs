@@ -32,7 +32,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1000),
                 Name = "Test Plan Name",
                 Description = "Test Plan Description",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
         }
 
@@ -150,7 +150,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Record_DocuSign_Events",
                 Label = "Record DocuSign Events",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
                 Terminal = TestTerminal_DocuSign(),
                 NeedsAuthentication = true,
                 MinPaneWidth = 330
@@ -164,7 +163,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = Guid.NewGuid(),
                 Name = "Save_To_Fr8_Warehouse",
                 Label = "Save To Fr8 Warehouse",
-                Category = ActivityCategory.Processors,
                 Terminal = TestTerminal_Core(),
                 Version = "1"
             };
@@ -226,7 +224,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Monitor_Fr8_Events",
                 Label = "Monitor Fr8 Events",
                 Version = "1",
-                Category = ActivityCategory.Monitors,
                 NeedsAuthentication = false,
                 Terminal = TestTerminal_Core(),
                 MinPaneWidth = 380

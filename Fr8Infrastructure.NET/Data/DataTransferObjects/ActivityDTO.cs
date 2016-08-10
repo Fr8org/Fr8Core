@@ -9,9 +9,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("label")]
         public string Label { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
         [JsonProperty("activityTemplate")]
         public ActivityTemplateSummaryDTO ActivityTemplate { get; set; }
 
@@ -20,9 +17,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("parentPlanNodeId")]
         public Guid? ParentPlanNodeId { get; set; }
-
-        [JsonProperty("currentView")]
-        public string CurrentView { get; set; }
 
         [JsonProperty("ordering")]
         public int Ordering { get; set; }

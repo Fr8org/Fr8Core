@@ -2,6 +2,7 @@
 using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 
@@ -38,10 +39,10 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_To_Google_Sheet"), true, "Action Save_To_Google_Sheet was not loaded");
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Monitor_Gmail_Inbox"), true, "Action Monitor_Gmail_Inbox was not loaded");
             //Check Activities Categories
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Get_Google_Sheet_Data").Category, ActivityCategory.Receivers, "Activity Get_Google_Sheet_Data is not of Category Receivers");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Monitor_Form_Responses").Category, ActivityCategory.Monitors, "Activity Monitor_Form_Responses is not of Category Monitors");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Save_To_Google_Sheet").Category, ActivityCategory.Forwarders, "Activity Save_To_Google_Sheet is not of Category Forwarders");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Monitor_Gmail_Inbox").Category, ActivityCategory.Monitors, "Activity Monitor_Gmail_Inbox is not of Category Monitors");
+            Assert.True(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Get_Google_Sheet_Data").Categories.Any(x => x.Id == ActivityCategories.ReceiveId), "Activity Get_Google_Sheet_Data is not of Category Receivers");
+            Assert.True(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Monitor_Form_Responses").Categories.Any(x => x.Id == ActivityCategories.MonitorId), "Activity Monitor_Form_Responses is not of Category Monitors");
+            Assert.True(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Save_To_Google_Sheet").Categories.Any(x => x.Id == ActivityCategories.ForwardId), "Activity Save_To_Google_Sheet is not of Category Forwarders");
+            Assert.True(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Monitor_Gmail_Inbox").Categories.Any(x => x.Id == ActivityCategories.MonitorId), "Activity Monitor_Gmail_Inbox is not of Category Monitors");
         }
     }
 }

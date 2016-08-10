@@ -222,7 +222,7 @@ namespace Fr8.TerminalBase.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to add hub '{hubUrl}' to the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.PublicIdentifier})", ex);
+                Logger.Error($"Failed to add hub '{hubUrl}' to the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.Version})", ex);
             }
         }
 
@@ -247,7 +247,7 @@ namespace Fr8.TerminalBase.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to remove hub '{hubUrl}' from the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.PublicIdentifier})", ex);
+                Logger.Error($"Failed to remove hub '{hubUrl}' from the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.Version})", ex);
             }
         }
         
@@ -261,7 +261,7 @@ namespace Fr8.TerminalBase.Services
             {
                 Logger.Info($"Terminal {_activityStore.Terminal.Name} is requesting discovery for endpoint '{_activityStore.Terminal.Endpoint}' from Hub at '{hubUrl}' ");
 
-                var response = await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync<string, ResponseMessageDTO>(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null));
+                var response = await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync<TerminalDTO, ResponseMessageDTO>(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal, (string) null));
                 
                 if (!string.IsNullOrWhiteSpace(response?.ErrorCode))
                 {
@@ -281,7 +281,7 @@ namespace Fr8.TerminalBase.Services
 
                     if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
                     {
-                        Logger.Error($"Hub at '{hubUrl}' refused to call terminal discovery endpoint: {lastException.Message}");
+                        Logger.Error($"Terminal {_activityStore.Terminal.Name}({_activityStore.Terminal.Version}): Hub at '{hubUrl}' refused to call terminal discovery endpoint: {lastException.Message}");
                         setSecretTask.TrySetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", lastException));
                     }
                 }
@@ -303,13 +303,13 @@ namespace Fr8.TerminalBase.Services
 
                         if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
                         {
-                            shouldUnubscribe = setSecretTask.TrySetException(new Exception($"Hub '{hubUrl}' failed to respond with discovery request within a given period of time."));
+                            shouldUnubscribe = setSecretTask.TrySetException(new Exception($"Terminal { _activityStore.Terminal.Name }({ _activityStore.Terminal.Version}): Hub '{hubUrl}' failed to respond with discovery request within a given period of time."));
                         }
                     }
 
                     if (shouldUnubscribe)
                     {
-                        Logger.Error($"Hub at '{hubUrl}'failed to respond with discovery request within a given period of time");
+                        Logger.Error($"Terminal { _activityStore.Terminal.Name }({ _activityStore.Terminal.Version}): Hub at '{hubUrl}'failed to respond with discovery request within a given period of time");
                         UnsubscribeFromHub(hubUrl);
                     }
                 });

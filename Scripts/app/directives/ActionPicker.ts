@@ -4,6 +4,8 @@ module dockyard.directives {
     'use strict';
 
     import psa = dockyard.directives.paneSelectAction;
+    import m = dockyard.model;
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
 
     export interface IActionPickerScope extends ng.IScope {
         designerHeaderEl: any,
@@ -12,6 +14,7 @@ module dockyard.directives {
             reload?: () => void
         },
         visible: boolean,
+        planIsRunning: boolean,
         onAddActivity: () => void;
         close: () => void;
     }
@@ -23,10 +26,12 @@ module dockyard.directives {
             link: (scope: IActionPickerScope, element: any, attr: any) => {
                 var containerEl = $('<div class="action-picker-container action-picker-container-hidden"><action-picker-panel on-close="close()" callback="panelCallback" action-group="group" /></div>');
                 containerEl.insertAfter($('designer-header')); 
-
                 scope.designerHeaderEl = $('designer-header');
                 scope.containerEl = containerEl;
-
+                var planState = attr.planState;
+                if (planState === model.PlanState.Active || planState === model.PlanState.Executing) {
+                    scope.planIsRunning = true;
+                }
                 var childScope = scope.$new(false, scope);
                 $compile(containerEl.contents())(childScope);
 
@@ -50,6 +55,16 @@ module dockyard.directives {
                     $scope.$on('$destroy', () => {
                         $scope.containerEl.remove();
                     });
+
+                    $scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STARTED,
+                        (event: ng.IAngularEvent) => {
+                            $scope.planIsRunning = true;
+                        });
+
+                    $scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED,
+                        (event: ng.IAngularEvent) => {
+                            $scope.planIsRunning = false;
+                        });
 
                     $scope.onAddActivity = () => {
                         if ($scope.visible) {
@@ -97,8 +112,8 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPickerPanel',
-            controller: ['$scope', '$http', '$timeout',
-                ($scope: IActionPickerPanelScope, $http: ng.IHttpService, $timeout: ng.ITimeoutService) => {
+            controller: ['$scope', 'ActivityTemplateHelperService', '$timeout',
+                ($scope: IActionPickerPanelScope, ActivityTemplateHelperService: services.IActivityTemplateHelperService, $timeout: ng.ITimeoutService) => {
                     $scope.form = { searchText: '' };
 
                     $scope.selectCategory = (category: model.ActivityCategoryDTO) => {
@@ -125,9 +140,9 @@ module dockyard.directives {
                     };
 
                     var _reload = () => {
-                        $http.get('/api/activity_templates/by_categories')
-                            .then((res: ng.IHttpPromiseCallbackArg<Array<interfaces.IActivityCategoryDTO>>) => {
-                                $scope.categories = res.data.filter((x) => { return x.name !== 'Solution'; });
+                        ActivityTemplateHelperService.getAvailableActivityTemplatesByCategory()
+                            .then((res: Array<interfaces.IActivityCategoryDTO>) => {
+                                $scope.categories = res;
                             });
                     };
 

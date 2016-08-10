@@ -1,7 +1,14 @@
-#Control Objects
-Some terminal activities require interaction with users at both design-time and runtime. In order to facilitate this interaction, several "control" classes are defined. These classes are serialized to JSON then sent over HTTP as payload data in a [Crate](https://github.com/Fr8org/Fr8Core/tree/master/Docs/ForDevelopers/OperatingConceptsk/Crates.md). In the Plan Builder interface the JSON data is translated by the Hub in to typical HTML elements such as select drop down lists, text fields, and radio buttons.
+#UI Controls
 
-This document outlines the available controls. it is important to note that all controls extend the [ControlDefinitionDTO](../DataTransfer/ControlDefinitinDTO.md) and have access to the properties defined by the parent class, including events.
+Fr8's UI philosophy is that Activity designers should be able to tap a rich set of UI controls for purpose of passing information to users and collecting configuration information from users, but should never have to think about layout or FE issues. So we emulated the basic idea of HTML (declare the UI you want in more-or-less English) and created a mechanism for the settings input by the user to be passed back to the Activity when it needs them. 
+
+Like the rest of Fr8 UI structures are defined in JSON and passed around in [Crates](/Docs/ForDevelopers/OperatingConceptsk/Crates.md). UI Controls Crates are added to the Crate Storage of Activities. The Client parses the data and renders the appropriate structures on screen, and when users type in or select values, those are saved into the same Crates.
+
+In practice, Activity designers aren't expected to want to engage in actual JSON manipulation, so one of the core services provided by the growing set of [Fr8 Platform SDK's](/Docs/ForDevelopers/SDKHome.md) is a set of UI classes that can be used in native code and handle the JSON quietly in the background. 
+
+As a result, the JSON docs here are a useful reference, but you'll want to look at your SDK and at examples of existing Activity code to see the best practices for your particular platform.
+
+Note that all controls extend the [ControlDefinitionDTO](../DataTransfer/ControlDefinitinDTO.md) base set.
 
 ##Controls
 *[BuildMessageAppender](Controls/BuildMessageAppender.md)*

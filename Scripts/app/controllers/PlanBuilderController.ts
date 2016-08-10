@@ -238,7 +238,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);
+            this.processState($state);            
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -423,8 +423,9 @@ module dockyard.controllers {
 
         private reloadFirstActions() {
             this.$timeout(() => {
-                if (this.$scope.current.plan.planState != dockyard.model.PlanState.Running) {
-                    this.$scope.current.plan.subPlans.forEach(
+                var currentPlan = this.$scope.current.plan;
+                if (currentPlan.planState !== dockyard.model.PlanState.Executing || currentPlan.planState !== dockyard.model.PlanState.Active) {
+                    currentPlan.subPlans.forEach(
                         plan => {
                             if (plan.activities.length > 0) {
                                 this.$scope.reConfigureAction(plan.activities[0])
@@ -485,7 +486,10 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
-            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => this.reloadFirstActions());
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => {
+                this.$scope.current.plan.planState = model.PlanState.Inactive;
+                this.reloadFirstActions();
+            });
 
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
@@ -530,6 +534,8 @@ module dockyard.controllers {
                 var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
+
+            this.$scope.$emit('onKioskModalLoad');
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
@@ -537,7 +543,7 @@ module dockyard.controllers {
             if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);
-            }
+            }            
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -632,8 +638,6 @@ module dockyard.controllers {
             var id = this.LocalIdentityGenerator.getNextId();
             var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
-
-            action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = this.ActivityTemplateHelperService.toSummary(activityTemplate);
@@ -680,7 +684,7 @@ module dockyard.controllers {
         private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
             //this performs a call to Segment service for analytics
             if ($window['analytics'] != null) {
-                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.name });
+                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.activityTemplate.name });
             }
             console.log("Activity selected: " + action.id);
             var originalId,
@@ -756,7 +760,6 @@ module dockyard.controllers {
         */
         private PaneConfigureAction_ActionUpdated(updatedAction: model.ActivityDTO) {
             var action = this.findActionById(updatedAction.id);
-            action.name = updatedAction.name;
             action.label = updatedAction.label;
         }
 

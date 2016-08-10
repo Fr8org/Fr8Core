@@ -24,10 +24,10 @@
         <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-xs="column" layout-align="end center" layout-align-xs="center" flex  >
             <span>View:</span>
             <a ui-sref="plan({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan">Activities</md-radio-button>
+                <md-radio-button value="plan" class="black-radio">Activities</md-radio-button>
             </a>
             <a ui-sref="plan.details({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan.details">Settings</md-radio-button>
+                <md-radio-button value="plan.details" class="black-radio">Settings</md-radio-button>
             </a>
         </md-radio-group>
     </div>
@@ -35,18 +35,22 @@
         <div class="designer-header-status" ng-if="!kioskMode" flex="noshrink">
             <span class="h4">
                 <strong>
-                    <span ng-if="plan.planState === 3">Saving Changes...</span>
+                    <span ng-if="plan.planState === 'Saving_Changes'">Saving Changes...</span>
                 </strong>
-                <span ng-if="plan.planState === 1">
+                <span ng-if="plan.planState === 'Inactive'">
                     <strong>Ready</strong>
-                    <md-button ng-disabled="plan.planState === 3" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
+                    <md-button ng-disabled="plan.planState === 'Saving_Changes'" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 'Inactive'" event-run>
                         <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
                     </md-button>
                 </span>
-                <span ng-click="deactivatePlan()" ng-if="plan.planState === 2">
+                <span ng-if="plan.planState === 'Executing'">
+                    <strong><span class="plan-state-text" style="display:block">{{plan.planState | PlanState}}</span></strong>
+                </span>
+                <span ng-click="deactivatePlan()" ng-if="plan.planState === 'Active'">
                     <strong><span class="plan-state-text">{{plan.planState | PlanState}}</span></strong>
-                    <md-button class="md-icon-button" ng-show="plan.planState === 2">
-                        <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
+                    <md-button class="md-icon-button">
+                      <md-icon md-font-icon="fa fa-stop" class="fa fa-2x" style="color:black;margin-top:-3px"></md-icon>
+                      <span style="font-size:10px; margin-top:-12.5px; display:block;">stop</span>
                     </md-button>
                 </span>
             </span>

@@ -4,7 +4,9 @@
 	[string]$targetDbName,
 	[string]$serverName,
 	[Parameter(Mandatory = $false)]
-	[string]$serviceObjective
+	[string]$edition = "standard",
+	[Parameter(Mandatory = $false)]
+	[string]$serviceObjective = "S1"
 )
 
 Write-Host "Deletes old target database if exists and creates a new one from the specified database."
@@ -29,12 +31,7 @@ Write-Host "Successfully deleted old target database. 120 sec delay to let the d
 
 Start-Sleep -Seconds 120
 
-if ([System.String]::IsNullOrEmpty($serviceObjective) -eq $true) 
-{
-	$serviceObjective = "S1";
-}
-
-$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION='standard', SERVICE_OBJECTIVE = '$serviceObjective');"
+$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION='$edition', SERVICE_OBJECTIVE = '$serviceObjective');"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)

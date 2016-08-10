@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using System.Web.Http.Description;
 using Swashbuckle.Swagger.Annotations;
+using WebApi.OutputCache.V2;
 
 namespace HubWeb.Controllers
 {
@@ -162,6 +163,7 @@ namespace HubWeb.Controllers
             }
             return Ok();
         }
+
         /// <summary>
         /// Updates user info
         /// </summary>
@@ -199,6 +201,32 @@ namespace HubWeb.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Checks if User has the specified permission for the specified object. 
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in
+        /// </remarks>
+        /// <param name="objectType">Class name to check permissions against (e.g. TerminalDO, PlanNodeDO, etc).</param>
+        /// <param name="permissionType">The permission to check.</param>
+        /// <param name="userId">Current user Id.</param>
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "true if the current user has the specified permission, and false if not.")]
+        [SwaggerResponseRemoveDefaults]
+        [CacheOutput(ServerTimeSpan = 300, ClientTimeSpan = 300, ExcludeQueryStringFromCacheKey = false)]
+        public IHttpActionResult CheckPermission(string userId, PermissionType permissionType, string objectType)
+        {
+            // Check that the correct userid is supplied. 
+            // We need User to provide User Id in order to return the correct cached value. 
+            // Otherwise all users would receive the same cached value. 
+            if (userId != _securityServices.GetCurrentUser())
+            {
+                return BadRequest("User Id does not correspond to the current user identity.");
+            }
+
+            return Ok(_securityServices.UserHasPermission(permissionType, objectType));
         }
 
         #endregion
