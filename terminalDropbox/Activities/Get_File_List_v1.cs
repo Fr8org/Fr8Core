@@ -96,17 +96,21 @@ namespace terminalDropbox.Actions
         {
             IList<string> fileNames;
             StandardFileDescriptionCM file;
+            var selectedFileName = ActivityUI.Controls.Where(s => s.Label == "Select a file").FirstOrDefault().Value;
             try
             {
                 fileNames = await _dropboxService.GetFileList(AuthorizationToken);
-                file = await _dropboxService.GetFile(AuthorizationToken, "/" + ActivityUI.Controls.Where(s => s.Label == "Select a file").FirstOrDefault().Value);
+                if (!string.IsNullOrEmpty(selectedFileName))
+                {
+                    file = await _dropboxService.GetFile(AuthorizationToken, "/" + selectedFileName);
+                    Payload.Add(Crate<StandardFileDescriptionCM>.FromContent("Dropbox selected file", file));
+                }
             }
             catch (Dropbox.Api.AuthException)
             {
                 throw new AuthorizationTokenExpiredOrInvalidException();
             }
             var dropboxFileList = PackDropboxFileListCrate(fileNames);
-            Payload.Add(Crate<StandardFileDescriptionCM>.FromContent("Dropbox selected file", file));
             Payload.Add(dropboxFileList);
         }
 
