@@ -22,6 +22,7 @@ using System.Web.Http.Description;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -225,6 +226,7 @@ namespace HubWeb.Controllers
             var groupedTerminals = terminals
                 .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
                 .OrderBy(x => x.Name)
+                .AsEnumerable()
                 .Select(x => new AuthenticationTokenTerminalDTO
                 {
                     Id = x.Id,
@@ -347,6 +349,7 @@ namespace HubWeb.Controllers
                 ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
                 PhoneNumber = response.PhoneNumber,
                 Error = response.Error, 
+                Title = response.Title,
                 Message = response.Message
             });
         }
