@@ -142,7 +142,7 @@ module dockyard.directives {
                     var _reload = () => {
                         ActivityTemplateHelperService.getAvailableActivityTemplatesByCategory()
                             .then((res: Array<interfaces.IActivityCategoryDTO>) => {
-                                $scope.categories = res.filter((x) => { return !m.ActivityCategories.isPredefinedCategory(x.id); });
+                                $scope.categories = res;
                             });
                     };
 

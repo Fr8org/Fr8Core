@@ -421,7 +421,7 @@ namespace Hub.Services
                 var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
                 code = HttpUtility.HtmlEncode(code);
 
-                var callbackUrl = string.Format("{0}DockyardAccount/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
+                var callbackUrl = string.Format("{0}Account/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
                     user.Id, code);
 
                 var emailDO = new EmailDO();

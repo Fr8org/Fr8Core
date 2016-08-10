@@ -2,7 +2,7 @@ using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
 {
-    public partial class ActivityTemplate_AuthType_Migration : DockyardDbMigration
+    public partial class ActivityTemplate_AuthType_Migration : DbMigration
     {
         public override void Up()
         {

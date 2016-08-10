@@ -7,7 +7,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     public class AuthenticationTokenTerminalDTO
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }

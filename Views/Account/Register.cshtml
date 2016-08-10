@@ -1,0 +1,116 @@
+﻿@using Fr8.Infrastructure.Utilities
+@model HubWeb.ViewModels.RegistrationVM
+@{
+    ViewBag.Title = "Register an Account";
+}
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en" class="no-js"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>fr8 | @ViewBag.Title</title>
+
+    <script type="text/javascript">
+        window.analytics = window.analytics || [], window.analytics
+            .methods = [
+                "identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink",
+                "trackForm", "trackClick", "trackSubmit"
+            ], window.analytics.factory = function(t) {
+            return function() {
+                var a = Array.prototype.slice.call(arguments);
+                return a.unshift(t), window.analytics.push(a), window.analytics
+            }
+        };
+        for (var i = 0; i < window.analytics.methods.length; i++) {
+            var key = window.analytics.methods[i];
+            window.analytics[key] = window.analytics.factory(key)
+        }
+        window.analytics.load = function(t) {
+                if (!document.getElementById("analytics-js")) {
+                    var a = document.createElement("script");
+                    a.type = "text/javascript", a
+                        .id = "analytics-js", a
+                        .async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") +
+                        "cdn.segment.io/analytics.js/v1/" +
+                        t +
+                        "/analytics.min.js";
+                    var n = document.getElementsByTagName("script")[0];
+                    n.parentNode.insertBefore(a, n)
+                }
+            }, window.analytics.SNIPPET_VERSION = "2.0.9",
+            window.analytics
+                .load("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
+    </script>
+    <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css"/>
+    <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css"/>
+    <link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico"/>
+</head>
+<body>
+    @Html.Partial("~/Views/Account/_HeaderPartial.cshtml")
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="modal-dialog">
+                <div class="register-container">
+                    <h1 style="text-align: center">Register an Account</h1><br>
+
+                    @using (Html.BeginForm("ProcessRegistration", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary()
+                        @Html.Hidden("GuestUserTempEmail", (String)ViewBag.GuestUserEmail)
+                        <div class="form-body">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Password, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4">
+                                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.HasOrganization, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4" style="padding-top: 20px">
+                                    @Html.CheckBoxFor(x => x.HasOrganization)
+                                </div>
+                            </div>
+                            <div id="register-organization-name" class="form-group" style="display: none;">
+                                @Html.LabelFor(m => m.OrganizationName, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4" style="padding-top: 12px">
+                                    @Html.TextBoxFor(m => m.OrganizationName, new { @class = "form-control" })
+                                    @* This is the required field to pass AnonimousId to the backend *@
+                                    @Html.HiddenFor(m => m.AnonimousId)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button type="submit" class="btn green">Register</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/js/jqueryvalidate")
+    }
+</body>
+</html>

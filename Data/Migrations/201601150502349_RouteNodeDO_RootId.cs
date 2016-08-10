@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class RouteNodeDO_RootId : DbMigration
+    public partial class RouteNodeDO_RootId : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

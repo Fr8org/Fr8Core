@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Rename_Process_To_Container_Migration : DbMigration
+    public partial class Rename_Process_To_Container_Migration : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

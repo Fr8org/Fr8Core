@@ -323,7 +323,7 @@ module dockyard.controllers {
                     })
                     .catch((failResponse) => {
                         if (failResponse.data.details === "GuestFail") {
-                            location.href = "DockyardAccount/RegisterGuestUser";
+                            location.href = "Account/RegisterGuestUser";
                         } else {
                             if (isInactive) {
                                 // mark plan as Inactive as it is Run Once and then rearrange
