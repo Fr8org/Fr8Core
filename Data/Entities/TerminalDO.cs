@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
 using Data.States.Templates;
@@ -13,7 +14,7 @@ namespace Data.Entities
         }
 
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Secret { get; set; }
         
@@ -64,5 +65,11 @@ namespace Data.Entities
         [ForeignKey("ParticipationStateTemplate")]
         public int ParticipationState { get; set; }
         public virtual _ParticipationStateTemplate ParticipationStateTemplate { get; set; }
+
+        [Required]
+        [ForeignKey("OperationalStateTemplate")]
+        public int OperationalState { get; set; }
+        public virtual _OperationalStateTemplate OperationalStateTemplate { get; set; }
+
     }
 }

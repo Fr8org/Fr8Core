@@ -170,18 +170,33 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(ActivityCategoryDTO))]
         public IHttpActionResult Post(ActivityCategoryDTO category)
         {
-            ActivityCategoryDO entity = Mapper.Map<ActivityCategoryDO>(category);
-            entity.Id = Guid.NewGuid();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityCategoryRepository.Add(entity);
+                var existingCategory = uow.ActivityCategoryRepository
+                    .GetQuery()
+                    .Where(x => x.Name == category.Name)
+                    .FirstOrDefault();
+
+                ActivityCategoryDTO model;
+
+                if (existingCategory != null)
+                {
+                    existingCategory.IconPath = category.IconPath;
+                    model = Mapper.Map<ActivityCategoryDTO>(existingCategory);
+                }
+                else
+                {
+                    var entity = Mapper.Map<ActivityCategoryDO>(category);
+                    entity.Id = Guid.NewGuid();
+
+                    uow.ActivityCategoryRepository.Add(entity);
+                    model = Mapper.Map<ActivityCategoryDTO>(entity);
+                }
+
                 uow.SaveChanges();
+
+                return Ok(model);
             }
-
-            var model = Mapper.Map<ActivityCategoryDTO>(entity);
-
-            return Ok(model);
         }
     }
 }

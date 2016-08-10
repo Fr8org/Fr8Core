@@ -3,7 +3,7 @@ namespace Data.Migrations
 	using System;
 	using System.Data.Entity.Migrations;
 	
-	public partial class RenameMonitorDocuSignAction : DbMigration
+	public partial class RenameMonitorDocuSignAction : System.Data.Entity.Migrations.DbMigration
 	{
 		public override void Up()
 		{
