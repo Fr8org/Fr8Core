@@ -47,10 +47,6 @@ The DropDownList control generates a select form element.
 
 The Duration control generates a form element which allows a user to select days, hours, and minutes. This element can be used to specify a period of time that can act as a delay.
 
-*[ExternalObjectChooser](Controls/ExternalObjectChooser.md)*
-
-The ExternalObjectChooser control generates a form element which will allow a user to select data from a data structure that is developed and maintained outside the Fr8 ecosystem.
-
 *[FieldList](Controls/FieldList.md)*
 
 The FieldList control generates a form element which displays fields generated from external data.
@@ -117,10 +113,8 @@ CheckBox | "CheckBox"
 DropDownList | "DropDownList"
 RadioButtonGroup | "RadioButtonGroup"
 FilterPane | "FilterPane"
-MappingPane | "MappingPane"
 TextBlock | "TextBlock"
 FilePicker | "FilePicker"
-Routing | "Routing"
 FieldList | "FieldList"
 Button | "Button"
 TextSource | "TextSource"
@@ -137,5 +131,4 @@ ContainerTransition | "ContainerTransition"
 MetaControlContainer | "MetaControlContainer"
 ControlList | "ControlList"
 SelectData | "SelectData"
-ExternalObjectChooser | "ExternalObjectChooser"
 BuildMessageAppender | "BuildMessageAppender"
