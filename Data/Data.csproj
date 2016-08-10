@@ -785,6 +785,22 @@
     <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.Designer.cs">
       <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608091020235_FixUp_Migration_2.cs" />
+    <Compile Include="Migrations\201608091020235_FixUp_Migration_2.Designer.cs">
+      <DependentUpon>201608091020235_FixUp_Migration_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.cs" />
+    <Compile Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.Designer.cs">
+      <DependentUpon>201608091306036_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091310148_ConvertMtDataIdToGuid.cs" />
+    <Compile Include="Migrations\201608091310148_ConvertMtDataIdToGuid.Designer.cs">
+      <DependentUpon>201608091310148_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs" />
+    <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
+      <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1445,6 +1461,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.resx">
       <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091020235_FixUp_Migration_2.resx">
+      <DependentUpon>201608091020235_FixUp_Migration_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.resx">
+      <DependentUpon>201608091306036_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091310148_ConvertMtDataIdToGuid.resx">
+      <DependentUpon>201608091310148_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
+      <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
