@@ -5,6 +5,7 @@ module dockyard.services {
     export interface IActivityService {
         save: (activity: interfaces.IActivityDTO) => ng.IPromise<interfaces.IActivityDTO>;
         configure: (activity: interfaces.IActivityDTO) => ng.IPromise<interfaces.IActivityDTO>;
+        getAllActivities: (activityContainer: any) => Array<model.ActivityDTO>;
     }
 
     interface IActivityFunction {
@@ -79,6 +80,33 @@ module dockyard.services {
 
         public configure(activityDTO: model.ActivityDTO): ng.IPromise<interfaces.IActivityDTO> {
             return this.queueRequest(this.configureInternal, activityDTO);
+        }
+
+        getAllActivities(activityContainer): dockyard.model.ActivityDTO[] {
+             if (activityContainer === null || activityContainer === undefined) {
+                 return [];
+            }
+             var result = [];
+            //This is activity - return itself and its children
+            if (activityContainer.childrenActivities !== undefined && activityContainer.childrenActivities !== null) {
+                result.push(activityContainer);
+                activityContainer.childrenActivities.forEach(childActivity => {
+                    this.getAllActivities(childActivity).forEach(x => { result.push(x); });
+                });
+             }
+            //This is subplan - return its child activities
+            else if (activityContainer.activities !== undefined && activityContainer.activities != null) {
+                activityContainer.activities.forEach(activity => {
+                    this.getAllActivities(activity).forEach(x => { result.push(x); });
+                });
+            }
+            //This is plan - return activities of its subpans
+            else if (activityContainer.subPlans !== undefined && activityContainer.subPlans != null) {
+                activityContainer.subPlans.forEach(subplan => {
+                    this.getAllActivities(subplan).forEach(x => { result.push(x); });
+                });
+             }
+            return result;
         }
     }
 

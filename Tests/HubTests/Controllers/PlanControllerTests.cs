@@ -324,6 +324,7 @@ namespace HubTests.Controllers
                     Name = "terminal",
                     Label = "term",
                     Version = "1",
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved,
                     Endpoint = "http://localhost:11111"
                 });

@@ -87,7 +87,8 @@ module dockyard.controllers {
             'ConfigureTrackerService',
             'SubPlanService',
             '$stateParams',
-            'ActivityTemplateHelperService'
+            'ActivityTemplateHelperService',
+            'ActivityService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -116,7 +117,8 @@ module dockyard.controllers {
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
             private $stateParams: ng.ui.IStateParamsService,
-            private ActivityTemplateHelperService: services.IActivityTemplateHelperService
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService,
+            private ActivityService: services.IActivityService
         ) {
 
             this.LayoutService.resetLayout();
@@ -294,7 +296,7 @@ module dockyard.controllers {
         private reConfigure(actions: interfaces.IActivityDTO[]) {
             for (var i = 0; i < actions.length; i++) {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
-                if (actions[i].childrenActivities.length > 0) {
+                if (actions[i].childrenActivities && actions[i].childrenActivities.length > 0) {
                     this.reConfigure(<model.ActivityDTO[]>actions[i].childrenActivities);
                 }
             }
@@ -419,6 +421,23 @@ module dockyard.controllers {
         private loadPlan(mode = 'plan') {
             var planPromise = this.PlanService.getFull({ id: this.$scope.planId });
             planPromise.$promise.then(this.onPlanLoad.bind(this, mode));
+        }
+
+        private reloadAllActions() {
+            this.$timeout(() => {
+                var result = [];
+                var currentPlan = this.$scope.current.plan;
+                if (currentPlan.planState == model.PlanState.Executing ||
+                    currentPlan.planState == model.PlanState.Active) {
+                    return;
+                }
+                currentPlan.subPlans.forEach(subplan => {
+                    if (subplan.activities.length > 0) {
+                        result.push(subplan.activities);
+                    }
+                });
+                this.reConfigure(result);
+            }, 1500);
         }
 
         private reloadFirstActions() {
@@ -590,9 +609,33 @@ module dockyard.controllers {
 
         private chooseAuthToken(action: model.ActivityDTO) {
             var self = this;
-
+            var planActivityByTerminal = {};
+            var activities = [action];
+            //Trying to find other activities of the same terminal belong to current plan
+            this.ActivityService.getAllActivities(this.$scope.current.plan).forEach(activity => {
+                var terminalName = activity.activityTemplate.terminalName;
+                if (!planActivityByTerminal.hasOwnProperty(terminalName)) {
+                    planActivityByTerminal[terminalName] = [];
+                }
+                (<any>activity).authorizeIsRequested = false;
+                planActivityByTerminal[terminalName].push(activity);
+            });
+            var resultActivities = [];
+            activities.forEach(activity => {
+                var terminalName = activity.activityTemplate.terminalName;
+                if (planActivityByTerminal.hasOwnProperty(terminalName) &&
+                    planActivityByTerminal[terminalName] !== undefined) {
+                    planActivityByTerminal[terminalName].forEach(x => { resultActivities.push(x); });
+                    delete planActivityByTerminal[terminalName];
+                }
+            });
+            activities.forEach(activity => {
+                var foundActivity = resultActivities.filter(x => x.id === activity.id)[0];
+                foundActivity.authorizeIsRequested = true;
+            });
+            activities = resultActivities;
             var modalScope = <IAuthenticationDialogScope>self.$scope.$new(true);
-            modalScope.activities = [action];
+            modalScope.activities = activities;
 
             self.$modal.open({
                 animation: true,
