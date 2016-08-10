@@ -60,6 +60,7 @@ namespace Data.Migrations
 
                 SeedIntoMockDb(uow);
 
+                AddAdmins(uow);
                 AddRoles(uow);
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
