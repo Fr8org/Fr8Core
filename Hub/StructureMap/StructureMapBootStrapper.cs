@@ -218,6 +218,7 @@ namespace Hub.StructureMap
 
                 var webservicesPageGeneratorMock = new Mock<IWebservicesPageGenerator>().Object;
                 var manifestPageGeneratorMock = new Mock<IManifestPageGenerator>().Object;
+                var planTemplateDetailsMock = new Mock<IPlanTemplateDetailsGenerator>().Object;
 
                 For<ITagGenerator>().Use<TagGenerator>().Singleton();
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
@@ -227,7 +228,8 @@ namespace Hub.StructureMap
 
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton()
                     .Ctor<IWebservicesPageGenerator>().Is(webservicesPageGeneratorMock)
-                    .Ctor<IManifestPageGenerator>().Is(manifestPageGeneratorMock);
+                    .Ctor<IManifestPageGenerator>().Is(manifestPageGeneratorMock)
+                    .Ctor<IPlanTemplateDetailsGenerator>().Is(planTemplateDetailsMock);
             }
         }
 
