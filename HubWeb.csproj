@@ -413,6 +413,7 @@
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\Api\WarehousesController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
+    <Compile Include="Controllers\ManifestRegistryController.cs" />
     <Compile Include="Controllers\PlanDirectoryController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
@@ -478,6 +479,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
+    <Compile Include="ViewModels\InternalDemoAccountVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\NavLinks.cs" />
@@ -867,6 +869,7 @@
     <Content Include="Views\AngularTemplate\TerminalPublishForm.cshtml" />
     <Content Include="Views\PlanDirectory\Index.cshtml" />
     <Content Include="_PowerShellScripts\Set-Endpoints.ps1" />
+    <Content Include="Views\ManifestRegistry\Index.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
