@@ -29,7 +29,6 @@ $commandText = "
 	('$newHostname' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
 	WHERE CHARINDEX (':', REVERSE ([DevUrl])) <= 6 AND IsFr8OwnTerminal = 1"
 
-Write-Host "Update terminal URLs to $newHostname"
 
 switch ($environment) {
 	dev {}
@@ -62,6 +61,8 @@ switch ($environment) {
 		break;
 	}
 }
+
+Write-Host "Updating terminal URLs to $newHostname"
 
 Write-Host $commandText 
 
