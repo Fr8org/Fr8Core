@@ -37,17 +37,17 @@ namespace Hub.Services
         private readonly ICrateManager _crateManager;
 
 
-        public PlanDirectoryService(IHMACService hmac, 
-                                    IRestfulServiceClient client, 
-                                    IPusherNotifier pusherNotifier,
-                                    IUnitOfWorkFactory unitOfWorkFactory, 
-                                    IPlan planService, 
-                                    IActivityTemplate activityTemplate,
-                                    IPlanTemplate planTemplate,
-                                    ISearchProvider searchProvider,
-                                    IWebservicesPageGenerator webservicesPageGenerator,
-                                    IActivity activityService,
-                                    ICrateManager crateManager)
+        public PlanDirectoryService(IHMACService hmac,
+            IRestfulServiceClient client,
+            IPusherNotifier pusherNotifier,
+            IUnitOfWorkFactory unitOfWorkFactory,
+            IPlan planService,
+            IActivityTemplate activityTemplate,
+            IPlanTemplate planTemplate,
+            ISearchProvider searchProvider,
+            IWebservicesPageGenerator webservicesPageGenerator,
+            IActivity activityService,
+            ICrateManager crateManager)
         {
             _hmacService = hmac;
             _client = client;
@@ -63,7 +63,7 @@ namespace Hub.Services
             _crateManager = crateManager;
         }
 
-      
+
         public async Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId)
         {
             try
@@ -71,7 +71,7 @@ namespace Hub.Services
                 var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(userId, id);
                 return planTemplateDTO;
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 Logger.GetLogger().Error($"Error retriving plan template: {exp.Message}");
                 return null;
@@ -81,7 +81,7 @@ namespace Hub.Services
         public async Task Share(Guid planId, string userId)
         {
             var planDto = CrateTemplate(planId, userId);
-            
+
             var dto = new PublishPlanTemplateDTO
             {
                 Name = planDto.Name,
@@ -139,7 +139,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                Subject = "Success", 
+                Subject = "Success",
                 Message = $"Plan Unpublished.",
                 Collapsed = false
             }, userId);
@@ -182,9 +182,9 @@ namespace Hub.Services
 
             foreach (var activity in planTree.OfType<ActivityDO>())
             {
-                activity.CrateStorage = _crateManager.EmptyStorageAsStr();// UpdateCrateStorage(activity.CrateStorage, idsMap);
+                activity.CrateStorage = _crateManager.EmptyStorageAsStr(); // UpdateCrateStorage(activity.CrateStorage, idsMap);
             }
-            
+
             return PlanMappingHelper.MapPlanToDto(clonedPlan);
         }
 
@@ -269,7 +269,7 @@ namespace Hub.Services
                         throw new KeyNotFoundException($"Activity '{activity.Id}' use activity template '{activity.ActivityTemplate?.Name}' with id = '{activity.ActivityTemplateId}' that is unknown to this Hub");
                     }
 
-                    activity.CrateStorage = _crateManager.EmptyStorageAsStr();//  UpdateCrateStorage(activity.CrateStorage, idsMap);
+                    activity.CrateStorage = _crateManager.EmptyStorageAsStr(); //  UpdateCrateStorage(activity.CrateStorage, idsMap);
                 }
             }
 
@@ -278,21 +278,57 @@ namespace Hub.Services
                 uow.PlanRepository.Add(planDo);
                 uow.SaveChanges();
             }
-
-            var tasks = planDo.GetDescendantsOrdered().OfType<ActivityDO>().Select(async x =>
-            {
-                using (var uow = _unitOfWorkFactory.Create())
-                {
-                    await _activityService.Configure(uow, userId, x);
-                }
-            });
-                
-            await Task.WhenAll(tasks);
             
+            var levels = new List<List<ActivityDO>>();
+
+            CollectActivitiesByLevels(planDo, levels, 0);
+
+            foreach (var level in levels)
+            {
+                await Task.WhenAll(level.Select(async x =>
+                {
+                    using (var uow = _unitOfWorkFactory.Create())
+                    {
+                        if (uow.PlanRepository.GetById<PlanNodeDO>(x.Id) == null)
+                        {
+                            return;
+                        }
+
+                        await _activityService.Configure(uow, userId, x);
+                    }
+                }));
+            }
+
             using (var uow = _unitOfWorkFactory.Create())
             {
                 return AutoMapper.Mapper.Map<PlanNoChildrenDTO>(uow.PlanRepository.GetById<PlanDO>(planDo.Id));
             }
-       }
+        }
+
+        private void CollectActivitiesByLevels(PlanNodeDO root, List<List<ActivityDO>> levels, int level)
+        {
+            List<ActivityDO> activities;
+
+            if (levels.Count == level)
+            {
+                activities = new List<ActivityDO>();
+                levels.Add(activities);    
+            }
+            else
+            {
+                activities = levels[level];
+            }
+
+            if (root is ActivityDO)
+            {
+                activities.Add((ActivityDO)root);
+            }
+
+            foreach (var child in root.ChildNodes.OfType<ActivityDO>().OrderBy(x => x.Ordering))
+            {
+                CollectActivitiesByLevels(child, levels, level + 1);
+            }
+        }
+
     }
 }
