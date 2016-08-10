@@ -12,6 +12,7 @@ General Resources
 -------------------
 [Fr8 User Guide](/Docs/ForUsers/Fr8ForUsers.md)  
 [Video Gallery](/Docs/ForDevelopers/VideoGallery.md)
+
 Fr8 Slack Team - [Visit](fr8org.slack.com) or [Join](slack.fr8.co)
     
 [Operating Concepts](/Docs/ForDevelopers/OperatingConceptsHome.md)
