@@ -213,7 +213,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 //Andrei Chaplygin: not applicable as this is a valid response from methods signalling that user is authorized but doesn't have sufficient priviligies
                 //All unauthorized requests are handled (and redirected to login page) by built-in functionality (authorize attributes)
                 if (config.status === 403) {
-                    $window.location.href = $window.location.origin + '/DockyardAccount/InterceptLogin'
+                    $window.location.href = $window.location.origin + '/Account/InterceptLogin'
                         + '?returnUrl=' + encodeURIComponent($window.location.pathname + $window.location.search);
                 }
                 Metronic.stopPageLoading();
@@ -365,12 +365,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             url: "/terminals/{id}",
             templateUrl: "/AngularTemplate/TerminalDetail",
             data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
-        })
-        .state('manifestregistry',
-        {
-            url: "/manifest_registry",
-            templateUrl: "/AngularTemplate/ManifestRegistryList",
-            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
         .state('manageAuthTokens',
         {

@@ -20,13 +20,13 @@ using HubWeb.Filters;
 namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
-    public class DockyardAccountController : Controller
+    public class AccountController : Controller
     {
         private readonly Fr8Account _account;
         private readonly IOrganization _organization;
         private readonly PlanDirectoryService _planDirectory;
 
-        public DockyardAccountController()
+        public AccountController()
         {
             _account = ObjectFactory.GetInstance<Fr8Account>();
             _organization = ObjectFactory.GetInstance<IOrganization>();

@@ -14,7 +14,6 @@
         var vm = this;
         $scope.items = [];
         $log.info('hjgjhgjhg');
-        debugger;
         $http({
             url: "/api/UserEmailsApi",
             method: "GET",
@@ -34,14 +33,12 @@
         });
     }
     //$(document).ready(function () {
-    //    debugger;
     //    $.ajax({
     //        url: '/api/UserEmailsApi',
     //        type: 'GET',
     //        dataType: 'json',
     //        crossDomain: true,
     //        success: function (data) {
-    //            debugger;
     //            for (var i = 0; i < data.length; i++) {
     //                $("#MyTbl").append("<tr> <td>" + data[i].Id + "</td>  <td>" + data[i].Address + "</td>  <td>" + data[i].Address + "</td>  </tr>");
     //           // alert(JSON.stringify(data));

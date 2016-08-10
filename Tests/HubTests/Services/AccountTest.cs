@@ -16,8 +16,8 @@ using Microsoft.Owin.Security.DataProtection;
 namespace HubTests.Services
 {
     [TestFixture]
-    [Category("DockyardAccountService")]
-    public class DockyardAccountTest : BaseTest
+    [Category("AccountService")]
+    public class AccountTest : BaseTest
     {
         private Fr8Account _fr8Account;
         Fr8AccountDO _dockyardAccountDO;
