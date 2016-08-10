@@ -51,7 +51,8 @@ module dockyard.services {
                     url: '/api/users/checkpermission',
                     params: {
                         permissionType: '@permissionType',
-                        objectType: '@objectType'
+                        objectType: '@objectType',
+                        username: '@userId'
                     }
                 },
                 updateUserProfile: {

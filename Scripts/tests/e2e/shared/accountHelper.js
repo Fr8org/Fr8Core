@@ -17,7 +17,7 @@ var AccountHelper = function () {
     };
 
     this.logout = function () {
-        return browser.get(browser.baseUrl + '/DockyardAccount/Logoff');
+        return browser.get(browser.baseUrl + '/Account/Logoff');
     };
 
     this.register = function () {

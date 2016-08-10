@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
     
-    public partial class Renamed_Plugin_To_Terminal_Final : DbMigration
+    public partial class Renamed_Plugin_To_Terminal_Final : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

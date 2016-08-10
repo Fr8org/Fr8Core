@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Organizations_Table_Check : DbMigration
+    public partial class Organizations_Table_Check : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
