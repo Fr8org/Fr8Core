@@ -357,6 +357,7 @@ namespace Hub.Services
                     terminalDo.Version = terminalRegistrationInfo.Definition.Version;
                     terminalDo.TerminalStatus = terminalRegistrationInfo.Definition.TerminalStatus;
 
+                    terminalDo.Secret = secret;
                     if (string.IsNullOrWhiteSpace(terminalDo.Label))
                     {
                         terminalDo.Label = terminalDo.Name;
