@@ -31,7 +31,7 @@ Write-Host "Successfully deleted old target database. 120 sec delay to let the d
 
 Start-Sleep -Seconds 120
 
-$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION="$edition", SERVICE_OBJECTIVE = '$serviceObjective');"
+$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION='$edition', SERVICE_OBJECTIVE = '$serviceObjective');"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)
