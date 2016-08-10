@@ -294,6 +294,10 @@ namespace Hub.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planNode = uow.PlanRepository.GetById<PlanNodeDO>(curObjectId);
+                if (planNode == null)
+                {
+                    return false;
+                }
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
