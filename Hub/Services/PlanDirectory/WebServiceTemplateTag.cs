@@ -13,7 +13,7 @@ namespace Hub.Services.PlanDirectory
 
         public Dictionary<string, string> TagsWithIcons
         {
-            get { return _values.ToDictionary(x => x.Item3, x => x.Item2); }
+            get { return _values.Where(a => a.Item2 != null).ToDictionary(x => x.Item3, x => x.Item2); }
         }
 
         [JsonIgnore]
