@@ -12,9 +12,9 @@ describe('registration page tests', function () {
 
     it('should register', function () {
         return accountHelper.register().then(function () {
-            registrationPage.setEmail(browser.params.registerUsername);
-            registrationPage.setPassword(browser.params.registerPassword);
-            registrationPage.setConfirmPassword(browser.params.registerPassword);
+            registrationPage.setEmail(browser.params.username);
+            registrationPage.setPassword(browser.params.password);
+            registrationPage.setConfirmPassword(browser.params.password);
             registrationPage.setOrganization();
             return registrationPage.register().click().then(function () {
                 expect(browser.getCurrentUrl()).toContain('/Welcome');
@@ -28,7 +28,7 @@ describe('registration page tests', function () {
 
         it('should logout', function () {
             return accountHelper.logout().then(function () {
-                expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+                expect(browser.getCurrentUrl()).toContain('/Account');
             });
         });
     });

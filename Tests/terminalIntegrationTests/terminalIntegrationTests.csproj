@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -389,13 +389,17 @@
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y 
-	</PostBuildEvent>
+    <SourceFile>$(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalAzure\bin\terminalAzure.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalExcel\bin\terminalExcel.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config</SourceFile>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(SourceFile)" DestinationFolder="$(TargetDir)"/>
+  </Target>
+  <PropertyGroup>
   </PropertyGroup>
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

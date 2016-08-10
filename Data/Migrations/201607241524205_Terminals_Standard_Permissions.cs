@@ -5,7 +5,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Terminals_Standard_Permissions : DbMigration
+    public partial class Terminals_Standard_Permissions : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

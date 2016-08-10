@@ -82,7 +82,7 @@ namespace HubWeb
 
             SetServerUrl();
 
-            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
+            OwinInitializer.ConfigureAuth(app, "/Account/Index");
 
             if (!selfHostMode)
             {

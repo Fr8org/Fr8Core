@@ -16,6 +16,6 @@ namespace Fr8.TerminalBase.Models
         public string Error { get; set; }
         public bool AuthCompletedNotificationRequired { get; set; }
         public DateTime? ExpiresAt { get; set; }
-        public int TerminalID { get; set; }
+        public Guid TerminalID { get; set; }
     }
 }

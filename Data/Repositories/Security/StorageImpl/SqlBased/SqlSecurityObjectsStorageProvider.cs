@@ -80,7 +80,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -157,7 +157,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(Guid dataObjectId, string dataObjectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -219,7 +219,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null, List<PermissionType> customPermissionTypes = null)
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, Guid dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null, List<PermissionType> customPermissionTypes = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -250,7 +250,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
+        public int InsertObjectRolePermission(string currentUserId, Guid dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -281,12 +281,12 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null)
+        public int RemoveObjectRolePermission(Guid dataObjectId, Guid rolePermissionId, string propertyName = null)
         {
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
+        public List<int> GetObjectBasedPermissionSetForObject(Guid dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
         }
@@ -320,7 +320,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
         {
             var obj = ReadRolePermissionFromSql(reader);
 
-            objectRolePermissionsWrapper.ObjectId = reader["ObjectId"] != DBNull.Value ? (string) reader["ObjectId"] : string.Empty;
+            objectRolePermissionsWrapper.ObjectId = reader["ObjectId"] != DBNull.Value ? (Guid) reader["ObjectId"] : Guid.Empty;
             objectRolePermissionsWrapper.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
             objectRolePermissionsWrapper.Fr8AccountId = reader["Fr8AccountId"] != DBNull.Value ? (string)reader["Fr8AccountId"] : string.Empty;
             objectRolePermissionsWrapper.OrganizationId = reader["OrganizationId"] != DBNull.Value ? (int?)reader["OrganizationId"] : null;

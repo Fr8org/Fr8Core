@@ -63,6 +63,7 @@ namespace HubTests.Controllers
                         TerminalStatus = TerminalStatus.Active,
                         Label = "dummy",
                         ParticipationState = ParticipationState.Approved,
+                        OperationalState = OperationalState.Active,
                         Endpoint = "http://localhost:11111"
                     }
                 };
@@ -118,6 +119,7 @@ namespace HubTests.Controllers
                         TerminalStatus = TerminalStatus.Active,
                         Label = "dummy",
                         ParticipationState = ParticipationState.Approved,
+                        OperationalState = OperationalState.Active,
                         Endpoint = "http://localhost:11111"
                     }
                     

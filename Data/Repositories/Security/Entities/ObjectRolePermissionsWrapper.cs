@@ -19,7 +19,7 @@ namespace Data.Repositories.Security.Entities
         /// <summary>
         /// Identifier of Secured Object. In general Primary Key(GUID) of Data Object. 
         /// </summary>
-        public string ObjectId { get; set; }
+        public Guid ObjectId { get; set; }
 
         /// <summary>
         /// Type of the object
