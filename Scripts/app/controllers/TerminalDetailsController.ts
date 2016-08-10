@@ -74,12 +74,17 @@ module dockyard.controllers {
                 }
 
                 if (!$scope.terminal.isFr8OwnTerminal && $scope.terminal.devUrl.indexOf('localhost') >= 0) {
-                    $scope.errorMessage = 'Development URL' + this.StringService.terminal["localhost"];
+                    let msg: string = "";
+                    if ($scope.canEditAllTerminals) {
+                        msg += "For non-Fr8 own terminals ";
+                    }
+                    msg += 'Development URL' + this.StringService.terminal["localhost_dev"];
+                    $scope.errorMessage = msg;
                     return;
                 }
 
                 if ($scope.terminal.prodUrl.indexOf('localhost') >= 0) {
-                    $scope.errorMessage = 'Production URL' + this.StringService.terminal["localhost"];
+                    $scope.errorMessage = 'Production URL' + this.StringService.terminal["localhost_prod"];
                     return;
                 }
                 //if (!$scope.canEditAllTerminals) {
@@ -149,7 +154,6 @@ module dockyard.controllers {
                 this.$state.go('terminals');
             })
                 .catch((e) => {
-                    debugger;
                     switch (e.status) {
                         case 400:
                             that.$scope.errorMessage = that.StringService.terminal["error400"];

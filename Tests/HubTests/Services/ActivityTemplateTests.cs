@@ -145,6 +145,7 @@ namespace HubTests.Services
                 Label = prefix + "Label" + id,
                 Version = prefix + "Ver" + id,
                 TerminalStatus = 1,
+                OperationalState = OperationalState.Active,
                 ParticipationState = ParticipationState.Approved
             };
         }

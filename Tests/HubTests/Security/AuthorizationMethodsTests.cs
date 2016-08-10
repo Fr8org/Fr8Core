@@ -50,6 +50,7 @@ namespace HubTests.Security
                     Endpoint = "localhost:39504",
                     AuthenticationType = authType,
                     Secret = Guid.NewGuid().ToString(),
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved
                 };
 
