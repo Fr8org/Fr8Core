@@ -107,6 +107,10 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetByToken(terminalToken);
+                if (terminalDO == null)
+                {
+                    throw new Exception("No terminal was found with token: "+terminalToken);
+                }
                 var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(pollingData.ExternalAccountId, terminalDO.Id, pollingData.Fr8AccountId);
                 if (token != null)
                 {

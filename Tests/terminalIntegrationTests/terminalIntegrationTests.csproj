@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -285,7 +285,6 @@
     <Compile Include="EndToEnd\GoogleIntoGoogleTests.cs" />
     <Compile Include="EndToEnd\MailMergeFromSalesforceTests.cs" />
     <Compile Include="EndToEnd\Monitor_Gmail_Inbox_Tests.cs" />
-    <Compile Include="EndToEnd\Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="EndToEnd\WarehouseSearch_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
@@ -316,10 +315,6 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Services\PlanDirectory\PlanDirectory.csproj">
-      <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
-      <Name>PlanDirectory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
@@ -394,13 +389,17 @@
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y 
-	</PostBuildEvent>
+    <SourceFile>$(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalAzure\bin\terminalAzure.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalExcel\bin\terminalExcel.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config</SourceFile>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(SourceFile)" DestinationFolder="$(TargetDir)"/>
+  </Target>
+  <PropertyGroup>
   </PropertyGroup>
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

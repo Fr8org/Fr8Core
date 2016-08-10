@@ -393,11 +393,6 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
-      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
@@ -418,6 +413,7 @@
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\Api\WarehousesController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
+    <Compile Include="Controllers\ManifestRegistryController.cs" />
     <Compile Include="Controllers\PlanDirectoryController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
@@ -437,62 +433,13 @@
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
-    <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\AddHubDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddTitleAndDescriptionDocumentFilter.cs" />
-    <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
-    <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenTerminalSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\AuthorizationTokenSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ContainerSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\CrateDescriptionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\CrateSampeFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\CrateStorageSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\CredentialsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\DetailedMessageSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\DocumentationResponseSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ErrorSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\FactSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\FieldSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\FileDOSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\FileSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\FilterConditionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\FullSubplanSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\HistoryResultSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\IncidentSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\IncomingCratesSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ISwaggerSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ManifestDescriptionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\OrganizationSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PageDefinitionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PayloadSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PhoneNumberCredentialsSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanFullSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ResponseMessageSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\SubplanSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\TerminalNotificationSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\TerminalRegistrationSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\TerminalSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\TokenResponseSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TokenWrapperSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\UrlResponseSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\UserSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ValidationErrorsSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ValidationResultSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\WebServiceActivitySetSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\WebServiceSampleFactory.cs" />
     <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
@@ -500,7 +447,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\DockyardAccountController.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
@@ -509,49 +456,20 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Api\ReportsController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
+    <Compile Include="Filters\RedirecLogedUserAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8PlanDirectoryAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
-    <Compile Include="Infrastructure_PD\Exceptions\ManifestGenerationException.cs" />
-    <Compile Include="Infrastructure_PD\Exceptions\ManifestNotFoundException.cs" />
-    <Compile Include="Infrastructure_PD\Exceptions\ManifestPageNotFoundException.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\ManifestPageGenerator.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryBootstrapper.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\PlanTemplate.Impl.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\SearchProvider.Impl.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TagGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TemplateGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TemplateTag.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TemplateTagStorage.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\WebservicesPageGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\WebServiceTemplateTag.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\CreatePlanDTO.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\GenerateMode.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\IManifestPageGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\IPlanTemplate.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\ISearchProvider.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\ITagGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\ITemplateGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\IWebservicesPageGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\SearchItemDTO.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\SearchRequestDTO.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\SearchResultDTO.cs" />
-    <Compile Include="ManifestPages\ManifestDescriptionTemplate.cs">
-      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -564,6 +482,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
+    <Compile Include="ViewModels\InternalDemoAccountVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\NavLinks.cs" />
@@ -576,14 +495,6 @@
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CategoryPages\basecamp2.html" />
-    <Content Include="CategoryPages\built-in services-slack.html" />
-    <Content Include="CategoryPages\built-in services.html" />
-    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
-    </Content>
-    <Content Include="CategoryPages\slack.html" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
@@ -783,10 +694,6 @@
     <Content Include="Content\videos\motion_1920.jpg" />
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Content\img\Management\Rob_Bailey.png" />
-    <Content Include="ManifestPages\ManifestDescriptionTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
-    </Content>
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="Scripts\homejs\bootstrap.min.js" />
@@ -818,7 +725,10 @@
     <Content Include="Scripts\PlanDirectoryApp.js" />
     <Content Include="Scripts\PlanDirectoryMain.js" />
     <Content Include="Scripts\templateCache.js" />
+    <Content Include="Scripts\tests\e2e\authorizationPathways\docusign.spec.js" />
     <Content Include="Scripts\tests\e2e\authorizationPathways\google.spec.js" />
+    <Content Include="Scripts\tests\e2e\authorizationPathways\salesforce.spec.js" />
+    <Content Include="Scripts\tests\e2e\authorizationPathways\slack.spec.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
     <Content Include="Scripts\tests\e2e\pages\myAccount.page.js" />
@@ -961,6 +871,8 @@
     <Content Include="Views\AngularTemplate\TerminalDetail.cshtml" />
     <Content Include="Views\AngularTemplate\TerminalPublishForm.cshtml" />
     <Content Include="Views\PlanDirectory\Index.cshtml" />
+    <Content Include="_PowerShellScripts\Set-Endpoints.ps1" />
+    <Content Include="Views\ManifestRegistry\Index.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
@@ -1001,6 +913,8 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\ParticipationState.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\PermissionType.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\NotificationType.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\UINotificationMessageStatus.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
@@ -1093,7 +1007,7 @@
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
     <Content Include="Views\AuthenticationCallback\ProcessSuccessfulOAuthResponse.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
-    <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
+    <Content Include="Views\Account\_HeaderPartial.cshtml" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
@@ -4392,25 +4306,25 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\index_docusign.cshtml" />
-    <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
-    <Content Include="Views\DockyardAccount\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\DockyardAccount\_RemoveAccountPartial.cshtml" />
-    <Content Include="Views\DockyardAccount\_SetPasswordPartial.cshtml" />
-    <Content Include="Views\DockyardAccount\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\DockyardAccount\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\DockyardAccount\Index.cshtml" />
-    <Content Include="Views\DockyardAccount\Manage.cshtml" />
-    <Content Include="Views\DockyardAccount\Register.cshtml" />
+    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
+    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\DockyardAccount\Confirm.cshtml" />
+    <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
-    <Content Include="Views\DockyardAccount\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
-    <Content Include="Views\DockyardAccount\ForgotPassword.cshtml" />
-    <Content Include="Views\DockyardAccount\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\DockyardAccount\ResetPassword.cshtml" />
-    <Content Include="Views\DockyardAccount\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Shared\_HomeNav.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
@@ -4425,6 +4339,7 @@
     <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angular-material\angular-material.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
@@ -4453,11 +4368,13 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="CategoryPages\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="ManifestPages\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />
@@ -4568,8 +4485,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.217.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.217.1\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4656,5 +4572,5 @@
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
   <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.217.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.217.1\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddLabelToTerminals : DbMigration
+    public partial class AddLabelToTerminals : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

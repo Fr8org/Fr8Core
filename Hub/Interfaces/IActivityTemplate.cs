@@ -20,7 +20,7 @@ namespace Hub.Interfaces
         ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
         ActivityTemplateDO GetByNameAndVersion(string name, string version);
         // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
-        void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplateDO);
+        void RemoveInactiveActivities(TerminalDO terminal, List<ActivityTemplateDO> activityTemplateDO);
         bool Exists(Guid activityTemplateId);
     }
 }

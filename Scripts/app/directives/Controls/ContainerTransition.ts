@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives.containerTransition {
     import ContainerTransitions = dockyard.model.ContainerTransitions;
+    import pca = dockyard.directives.paneConfigureAction;
     import planEvents = dockyard.Fr8Events.Plan;
     'use strict';
 
@@ -16,7 +17,8 @@ module dockyard.directives.containerTransition {
         currentAction: model.ActivityDTO;
         removeTransition: (index: number) => void;
         PCA: directives.paneConfigureAction.IPaneConfigureActionController;
-        isDisabled:boolean;
+        isDisabled: boolean;
+        reconfigure: () => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -37,6 +39,10 @@ module dockyard.directives.containerTransition {
         var controller = ['$scope', '$timeout', 'PlanService', '$modal', 'ActivityTemplateHelperService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any, ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
 
             var planOptions = new Array<model.DropDownListItem>();
+
+            $scope.reconfigure = () => {
+                $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs($scope.currentAction));
+            };
 
             //let's load and keep all plans in cache
             //TODO think about this - maybe we need to request data from PCA or PB
@@ -297,7 +303,6 @@ module dockyard.directives.containerTransition {
                         template: warningMessageTemplate
                     });
                 }
-
                 return angular.noop;
             };
 
@@ -311,6 +316,7 @@ module dockyard.directives.containerTransition {
                 transition.errorMessage = "";
                 processTransition(transition);
                 triggerChange();
+                $scope.reconfigure();
                 return angular.noop;
             };
 
@@ -373,7 +379,8 @@ module dockyard.directives.containerTransition {
                 subPlan: '=',
                 field: '=',
                 currentAction: '=',
-                isDisabled: '='
+                isDisabled: '=',
+                change: '&'
             }
         };
     }

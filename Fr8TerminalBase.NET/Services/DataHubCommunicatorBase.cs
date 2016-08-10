@@ -157,11 +157,11 @@ namespace Fr8.TerminalBase.Services
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false)
         {
             var allTemplates = await GetActivityTemplates();
             var activityTemplates = allTemplates
-                .Where(x => x.Category == category)
+                .Where(x => x.Categories.Any(y => y.Id == category))
                 .ToList();
 
             return activityTemplates;

@@ -37,7 +37,7 @@ namespace Hub.Services
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
-        public string GetToken(string userId, int terminalId)
+        public string GetToken(string userId, Guid terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -466,7 +466,7 @@ namespace Hub.Services
         /// terminal will be done. If the main token is found, it will be assigned to the supplied ActivityDO.
         /// </summary>
         /// <returns>true if token is found. false, if not.</returns>
-        public bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO, out AuthorizationTokenDO curAuthToken)
+        public bool TryAssignAuthToken(IUnitOfWork uow, string userId, Guid terminalId, ActivityDO activityDO, out AuthorizationTokenDO curAuthToken)
         {
             curAuthToken = uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
 

@@ -62,15 +62,13 @@ namespace terminalGoogle.Actions
             Name = "Monitor_Form_Responses",
             Label = "Monitor Form Responses",
             Version = "1",
-            Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.GooogleWebServiceDTO,
             MinPaneWidth = 300,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

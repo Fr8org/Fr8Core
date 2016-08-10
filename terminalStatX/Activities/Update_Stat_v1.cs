@@ -26,15 +26,13 @@ namespace terminalStatX.Activities
             Name = "Update_Stat",
             Label = "Update Stat",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
@@ -201,8 +199,6 @@ namespace terminalStatX.Activities
                     if (currentStat != null)
                     {
                         ActivityUI.ClearDynamicFields();
-                        ActivityUI.StatTitle.TextValue = currentStat.Title;
-                        ActivityUI.StatNotes.TextValue = currentStat.Notes;
                         var statDTO = currentStat as GeneralStatWithItemsDTO;
                         if (statDTO != null && statDTO.Items.Any())
                         {
@@ -224,9 +220,59 @@ namespace terminalStatX.Activities
                         }
                     }
                 }
+
+                #region Refresh Stat Items to Track for Changes in app
                 SelectedStat = ActivityUI.ExistingGroupStats.Value;
                 ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
                 ActivityUI.ExistingGroupStats.Value = SelectedStat;
+                var statToCheck = stats.FirstOrDefault(x => x.Id == SelectedStat);
+
+
+                //check for changes in statValue Array
+                if (statToCheck != null)
+                {
+                    ActivityUI.ExistingGroupStats.selectedKey = string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title;
+                    var statDTO = statToCheck as GeneralStatWithItemsDTO;
+                    if (statDTO != null && statDTO.Items.Any())
+                    {
+                        var oldStatNames = ActivityUI.StatValues.Select(x => x.Name).ToList();
+                        var newStatNames = new List<string>();
+
+                        if (statDTO.VisualType != StatTypes.PickList)
+                        {
+                            newStatNames = statDTO.Items.Select(x => x.Name).ToList();
+
+                            //recreate new items 
+                            var newItems = newStatNames.Where(x => !oldStatNames.Contains(x)).ToList();
+                            var oldItemsToDelete = oldStatNames.Where(x => !newStatNames.Contains(x)).ToList();
+
+                            foreach (var item in oldItemsToDelete.ToList())
+                            {
+                                var itemToDelete = ActivityUI.StatValues.FirstOrDefault(x => x.Name == item);
+                                if (itemToDelete != null)
+                                {
+                                    ActivityUI.StatValues.Remove(itemToDelete);
+                                }
+                            }
+
+                            foreach (var item in newItems)
+                            {
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item, item, requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var currentTextSource = ActivityUI.StatValues.FirstOrDefault()?.Name;
+                        if (currentTextSource != (string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title))
+                        {
+                            ActivityUI.StatValues?.Clear();
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title, string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title, requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                        }
+                    }
+                }
+
+                #endregion
             }
             else
             {

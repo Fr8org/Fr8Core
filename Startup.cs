@@ -81,14 +81,14 @@ namespace HubWeb
 
             SetServerUrl();
 
-            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
+            OwinInitializer.ConfigureAuth(app, "/Account/Index");
 
             if (!selfHostMode)
             {
                 System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
             }
 
-            ConfigureHangfire(app, "DockyardDB");
+            ConfigureHangfire(app, "Fr8LocalDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
@@ -119,7 +119,7 @@ namespace HubWeb
         {
             var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
 
-            await terminalDiscovery.Discover();
+            await terminalDiscovery.DiscoverAll();
 
             if (!selfHostMode)
             {

@@ -1,7 +1,7 @@
 ﻿<div class="action-add" ng-class="{'action-add--active': activeCategory != null}">
     <div>
-        <a href ng-click="onAddActivity()" class="action-add-button-link">
-            <i class="fa fa-plus action-add-button"></i>
+        <a href ng-click="planIsRunning || onAddActivity()" class="action-add-button-link">
+            <i class="fa fa-plus action-add-button" ng-class="{'action-add-button-disabled': planIsRunning}"></i>
         </a>
     </div>
 </div>

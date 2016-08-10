@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class IsFr8OwnTerminal_Property : DbMigration
+    public partial class IsFr8OwnTerminal_Property : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
