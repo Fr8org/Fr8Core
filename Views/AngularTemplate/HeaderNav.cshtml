@@ -131,7 +131,7 @@
                 @if (User.IsInRole("Guest"))
             {
                     <li class="visible-xs">
-                        <a href="/DockyardAccount/Logoff"> Have an Account? Login </a>
+                        <a href="/Account/Logoff"> Have an Account? Login </a>
                     </li>
                 }
             </ul>
@@ -139,7 +139,7 @@
         @if (User.IsInRole("Guest"))
         {
             <ul class="nav navbar-nav navbar-right pull-right">
-                <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
+                <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "Account")</li>
             </ul>
         }
         <!-- END MEGA MENU -->
