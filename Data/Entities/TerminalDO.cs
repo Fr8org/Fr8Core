@@ -50,8 +50,6 @@ namespace Data.Entities
 
         public virtual _AuthenticationTypeTemplate AuthenticationTypeTemplate { get; set; }
 
-        public string AuthenticationAdditionalInfo { get; set; }
-
         public bool IsFr8OwnTerminal { get; set; }
 
         /// <summary>

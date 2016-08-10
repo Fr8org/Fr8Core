@@ -20,13 +20,7 @@ namespace terminalStatX
             Name = "terminalStatX",
             Label = "StatX",
             Version = "1",
-            AuthenticationType = AuthenticationType.PhoneNumberWithCode,
-            AuthenticationAdditionalInfo = JsonConvert.SerializeObject(
-                new PhoneNumberAuthenticationAdditionalInfoDTO()
-                {
-                    Title = "Enter the verification code from your StatX App"
-                }
-            )
+            AuthenticationType = AuthenticationType.PhoneNumberWithCode
         };
     }
 }

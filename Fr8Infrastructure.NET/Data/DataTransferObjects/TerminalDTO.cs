@@ -31,8 +31,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string Description { get; set; }
         [JsonProperty("authenticationType")]
         public int AuthenticationType { get; set; }
-        [JsonProperty("authenticationAdditionalInfo")]
-        public JToken AuthenticationAdditionalInfo { get; set; }
         [JsonProperty("devUrl")]
         public string DevUrl { get; set; }
         [JsonProperty("prodUrl")]

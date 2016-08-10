@@ -10,7 +10,6 @@
             private $scope,
             private $http: ng.IHttpService) {
 
-            debugger;
             var _loading = false;
 
             $scope.authError = false;
@@ -53,6 +52,7 @@
                             $scope.authErrorText = null;
                             $scope.formData.clientId = res.data.clientId;
                             $scope.formData.clientName = res.data.clientName;
+                            $scope.formData.title = res.data.title;
                             $scope.formData.message = res.data.message;
                             $scope.inVerifyMode = true;
                         }

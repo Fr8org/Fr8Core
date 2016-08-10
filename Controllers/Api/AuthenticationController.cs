@@ -242,7 +242,6 @@ namespace HubWeb.Controllers
                         .OrderBy(y => y.ExternalAccountName)
                         .ToList(),
                     AuthenticationType = x.AuthenticationType,
-                    AuthenticationAdditionalInfo = JsonConvert.DeserializeObject<JToken>(x.AuthenticationAdditionalInfo),
                     Version = x.Version
                 })
                 .ToList();
@@ -349,6 +348,7 @@ namespace HubWeb.Controllers
                 ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
                 PhoneNumber = response.PhoneNumber,
                 Error = response.Error, 
+                Title = response.Title,
                 Message = response.Message
             });
         }

@@ -227,7 +227,6 @@
     <Compile Include="Data\DataTransferObjects\PageDefinitionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PermissionDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\PhoneNumberAuthenticationAdditionalInfoDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PhoneNumberCredentialsDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanDirectory\CreatePlanDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanDirectory\SearchItemDTO.cs" />
