@@ -192,22 +192,22 @@ namespace Data.Migrations
             Sql(CreateMTDataTableQuery);
             Sql(CopyDataFromOldMtDataQuery);
 
-            CreateIndex("ObjectRolePermissions", "ObjectId");
-            CreateIndex("MtData", "OldId");
-
-            //Copy ids of PlanTemplates to ObjectRolePermissions
-            Sql(@"UPDATE o SET o.ObjectId = t.Id
-                    FROM ObjectRolePermissions o
-                    INNER JOIN MtData t ON
-                    o.ObjectId = t.OldId
-		            WHERE LEN(ObjectId) != 36 AND o.Type = 'Plan Template'");
-
-            DropIndex("ObjectRolePermissions", "ObjectId");
-            DropIndex("MtData", "OldId");
-
-            //Remove leftovers
-            DropColumn("dbo.MtData", "OldId");
-            DropTable("dbo.OldMTData");
+            // CreateIndex("ObjectRolePermissions", "ObjectId");
+            // CreateIndex("MtData", "OldId");
+            // 
+            // //Copy ids of PlanTemplates to ObjectRolePermissions
+            // Sql(@"UPDATE o SET o.ObjectId = t.Id
+            //         FROM ObjectRolePermissions o
+            //         INNER JOIN MtData t ON
+            //         o.ObjectId = t.OldId
+		    //         WHERE LEN(ObjectId) != 36 AND o.Type = 'Plan Template'");
+            // 
+            // DropIndex("ObjectRolePermissions", "ObjectId");
+            // DropIndex("MtData", "OldId");
+            // 
+            // //Remove leftovers
+            // DropColumn("dbo.MtData", "OldId");
+            // DropTable("dbo.OldMTData");
         }
 
         public override void Down()
