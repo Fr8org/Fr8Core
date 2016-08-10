@@ -341,7 +341,7 @@
     <Compile Include="Services\Container\Mocks\SubplanJumperActivityMock.cs" />
     <Compile Include="Services\Container\Mocks\SuspenderActivityMock.cs" />
     <Compile Include="Services\DisableCacheSettings.cs" />
-    <Compile Include="Services\DockyardAccountTest.cs" />
+    <Compile Include="Services\AccountTest.cs" />
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\HMACAuthenticatorTests.cs" />

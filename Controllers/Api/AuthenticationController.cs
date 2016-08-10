@@ -17,10 +17,12 @@ using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using HubWeb.ViewModels;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -123,13 +125,13 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8ApiAuthorize]
         [ActionName("demoAccountInfo")]
-        [ResponseType(typeof(InternalDemoAccountDTO))]
+        [ResponseType(typeof(InternalDemoAccountVM))]
         public async Task<IHttpActionResult> GetDemoCredentials([FromUri(Name = "terminal")] string terminalName)
         {
 #if DEBUG
             var demoUsername = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountUsername");
             var demoPassword = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountPassword");
-            var docuSignAuthTokenDTO = new InternalDemoAccountDTO()
+            var docuSignAuthTokenDTO = new InternalDemoAccountVM()
             {
                 Username = demoUsername,
                 Password = demoPassword,
@@ -137,7 +139,7 @@ namespace HubWeb.Controllers
                 HasDemoAccount = (!String.IsNullOrEmpty(demoUsername) && !String.IsNullOrEmpty(demoPassword))
             };
 #else
-            var docuSignAuthTokenDTO = new InternalDemoAccountDTO()
+            var docuSignAuthTokenDTO = new InternalDemoAccountVM()
             {
                 HasDemoAccount = false
             };
@@ -224,6 +226,7 @@ namespace HubWeb.Controllers
             var groupedTerminals = terminals
                 .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
                 .OrderBy(x => x.Name)
+                .AsEnumerable()
                 .Select(x => new AuthenticationTokenTerminalDTO
                 {
                     Id = x.Id,
@@ -346,6 +349,7 @@ namespace HubWeb.Controllers
                 ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
                 PhoneNumber = response.PhoneNumber,
                 Error = response.Error, 
+                Title = response.Title,
                 Message = response.Message
             });
         }

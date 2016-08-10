@@ -24,6 +24,9 @@ namespace Fr8.Infrastructure
         [JsonProperty("error")]
         public string Error { get; set; }
 
+        [JsonProperty("title")]
+        public string Title { get; set; }
+
         [JsonProperty("message")]
         public string Message { get; set; }
     }

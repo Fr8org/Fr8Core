@@ -13,7 +13,7 @@ var RegistrationPage = function () {
 
     this.get = function () {
         browser.ignoreSynchronization = true;
-        return browser.get(browser.baseUrl + '/DockyardAccount/Register');
+        return browser.get(browser.baseUrl + '/Account/Register');
     };
 
     this.setEmail = function (email) {

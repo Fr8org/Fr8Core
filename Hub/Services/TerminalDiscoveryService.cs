@@ -14,6 +14,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using log4net;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using Data.States;
 using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.States;
@@ -358,6 +359,7 @@ namespace Hub.Services
                     terminalDo.Version = terminalRegistrationInfo.Definition.Version;
                     terminalDo.TerminalStatus = terminalRegistrationInfo.Definition.TerminalStatus;
 
+                    terminalDo.Secret = secret;
                     if (string.IsNullOrWhiteSpace(terminalDo.Label))
                     {
                         terminalDo.Label = terminalDo.Name;
