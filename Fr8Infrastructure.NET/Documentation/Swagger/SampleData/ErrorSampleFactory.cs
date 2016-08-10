@@ -1,6 +1,6 @@
 ﻿using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace HubWeb.Documentation.Swagger
+namespace Fr8.Infrastructure.Documentation.Swagger
 {
     public class ErrorSampleFactory : ISwaggerSampleFactory<ErrorDTO>
     {

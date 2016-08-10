@@ -7,9 +7,10 @@ namespace HubWeb.Documentation.Swagger.DocumentFilters
     {
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            swaggerDoc.info.title = "Fr8 Swagger";
-            swaggerDoc.info.description = "This is the place where you can find all you need to know about REST API for [Fr8 services](http://fr8.co). In order to test the authorization filters you may"
-                                          + " first perform cookie-based authentication using <strong>Authentication/Login</strong> method";
+            swaggerDoc.info.title = "Fr8 Hub Endpoints";
+            swaggerDoc.info.description =
+"This is the place where you can find all you need to know about REST API for [Fr8 services](http://fr8.co) including endpoints description, parameters used, sample values for any"
++ " complex type used both as input parameter and return values, response codes etc. Learn more on how to try endpoints that require authentication [here](https://github.com/Fr8org/Fr8Core/tree/master/Docs/ForDevelopers/Specifications/TryingOutHubApi.md)";
         }
     }
 }

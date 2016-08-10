@@ -435,8 +435,6 @@
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddHubDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddTitleAndDescriptionDocumentFilter.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\DetailedMessageSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ErrorSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\FileDOSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TokenWrapperSampleFactory.cs" />
