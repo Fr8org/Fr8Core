@@ -36,7 +36,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         private readonly static ActivityCategoryDTO _solution = new ActivityCategoryDTO()
         {
             Id = SolutionId,
-            Name = SolutionName
+            Name = SolutionName,
+            IconPath = "/Content/icons/solution-icon-64x64.png"
         };
 
         private readonly static List<Guid> _categoryIds = new List<Guid>()

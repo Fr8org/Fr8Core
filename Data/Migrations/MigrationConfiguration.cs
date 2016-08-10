@@ -462,7 +462,7 @@ namespace Data.Migrations
                 new Tuple<Guid, string, string>(ActivityCategories.ReceiveId, ActivityCategories.ReceiveName, "/Content/icons/get-icon-64x64.png"),
                 new Tuple<Guid, string, string>(ActivityCategories.ProcessId, ActivityCategories.ProcessName, "/Content/icons/process-icon-64x64.png"),
                 new Tuple<Guid, string, string>(ActivityCategories.ForwardId, ActivityCategories.ForwardName, "/Content/icons/forward-icon-64x64.png"),
-                new Tuple<Guid, string, string>(ActivityCategories.SolutionId, ActivityCategories.SolutionName, null)
+                new Tuple<Guid, string, string>(ActivityCategories.SolutionId, ActivityCategories.SolutionName, "/Content/icons/solution-icon-64x64.png")
             };
 
             foreach (var category in predefinedCategories)
