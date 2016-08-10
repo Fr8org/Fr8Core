@@ -35,11 +35,11 @@ namespace Hub.Services
 
 
 
-        public PlanDirectoryService(IHMACService hmac, 
-                                    IRestfulServiceClient client, 
+        public PlanDirectoryService(IHMACService hmac,
+                                    IRestfulServiceClient client,
                                     IPusherNotifier pusherNotifier,
-                                    IUnitOfWorkFactory unitOfWorkFactory, 
-                                    IPlan planService, 
+                                    IUnitOfWorkFactory unitOfWorkFactory,
+                                    IPlan planService,
                                     IActivityTemplate activityTemplate,
                                     IPlanTemplate planTemplate,
                                     ISearchProvider searchProvider,
@@ -57,7 +57,7 @@ namespace Hub.Services
             _webservicesPageGenerator = webservicesPageGenerator;
         }
 
-      
+
         public async Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId)
         {
             try
@@ -65,7 +65,7 @@ namespace Hub.Services
                 var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(userId, id);
                 return planTemplateDTO;
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 Logger.GetLogger().Error($"Error retriving plan template: {exp.Message}");
                 return null;
@@ -74,29 +74,44 @@ namespace Hub.Services
 
         public async Task Share(Guid planId, string userId)
         {
-            var planDto = CrateTemplate(planId, userId);
-            
-            var dto = new PublishPlanTemplateDTO
-            {
-                Name = planDto.Name,
-                Description = planDto.Description,
-                ParentPlanId = planId,
-                PlanContents = planDto
-            };
 
-            var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
-            await _searchProvider.CreateOrUpdate(planTemplateCM);
-            await _webservicesPageGenerator.Generate(planTemplateCM, userId);
-
-            // Notify user with directing him to PlanDirectory with related search query
-            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
-            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            try
             {
-                NotificationType = NotificationType.GenericSuccess,
-                Subject = "Success",
-                Message = $"Plan Shared. To view, click on " + url,
-                Collapsed = false
-            }, userId);
+                var planDto = CrateTemplate(planId, userId);
+
+                var dto = new PublishPlanTemplateDTO
+                {
+                    Name = planDto.Name,
+                    Description = planDto.Description,
+                    ParentPlanId = planId,
+                    PlanContents = planDto
+                };
+
+                var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
+                await _searchProvider.CreateOrUpdate(planTemplateCM);
+                await _webservicesPageGenerator.Generate(planTemplateCM, userId);
+                // Notify user with directing him to PlanDirectory with related search query
+                var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericSuccess,
+                    Subject = "Success",
+                    Message = $"Plan Shared. To view, click on " + url,
+                    Collapsed = false
+                }, userId);
+            }
+            catch
+            {
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericSuccess,
+                    Subject = "Success",
+                    Message = $"Plan sharing failed",
+                    Collapsed = false
+                }, userId);
+            }
+
         }
 
         public async Task Unpublish(Guid planId, string userId, bool privileged)
@@ -133,7 +148,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                Subject = "Success", 
+                Subject = "Success",
                 Message = $"Plan Unpublished.",
                 Collapsed = false
             }, userId);
@@ -147,7 +162,7 @@ namespace Hub.Services
             {
                 var plan = _planService.GetPlanByActivityId(uow, planId);
 
-                clonedPlan = (PlanDO) PlanTreeHelper.CloneWithStructure(plan);
+                clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(plan);
             }
 
             clonedPlan.PlanState = PlanState.Inactive;
@@ -178,7 +193,7 @@ namespace Hub.Services
             {
                 activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);
             }
-            
+
             return PlanMappingHelper.MapPlanToDto(clonedPlan);
         }
 
