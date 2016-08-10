@@ -10,6 +10,7 @@
             private $scope,
             private $http: ng.IHttpService) {
 
+            debugger;
             var _loading = false;
 
             $scope.authError = false;

@@ -805,6 +805,10 @@
     <Compile Include="Migrations\201608092230355_OperationalState1.Designer.cs">
       <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608100348258_Terminal_AuthenticationAdditionalInfo.cs" />
+    <Compile Include="Migrations\201608100348258_Terminal_AuthenticationAdditionalInfo.Designer.cs">
+      <DependentUpon>201608100348258_Terminal_AuthenticationAdditionalInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1482,6 +1486,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608092230355_OperationalState1.resx">
       <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608100348258_Terminal_AuthenticationAdditionalInfo.resx">
+      <DependentUpon>201608100348258_Terminal_AuthenticationAdditionalInfo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
