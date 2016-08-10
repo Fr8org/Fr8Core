@@ -8,22 +8,21 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
-using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using HubWeb.ViewModels;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Utilities.Logging;
-using Hub.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -81,6 +80,7 @@ namespace HubWeb.Controllers
                 Error = response.Error
             });
         }
+
         /// <summary>
         /// Retrieves URL used as auhtorization url in OAuth authorization scenario
         /// </summary>
@@ -115,6 +115,38 @@ namespace HubWeb.Controllers
             var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
             return Ok(new UrlResponseDTO { Url = externalAuthUrlDTO.Url });
         }
+
+        /// <summary>
+        /// Returns demo account information for given terminal if system is in Debug or Dev. Otherwise returns null
+        /// </summary>
+        /// <param name="terminal">Terminal name</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Receieved demo account information request</response>
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [ActionName("demoAccountInfo")]
+        [ResponseType(typeof(InternalDemoAccountVM))]
+        public async Task<IHttpActionResult> GetDemoCredentials([FromUri(Name = "terminal")] string terminalName)
+        {
+#if DEBUG
+            var demoUsername = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountUsername");
+            var demoPassword = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountPassword");
+            var docuSignAuthTokenDTO = new InternalDemoAccountVM()
+            {
+                Username = demoUsername,
+                Password = demoPassword,
+                Domain = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountDomain"),
+                HasDemoAccount = (!String.IsNullOrEmpty(demoUsername) && !String.IsNullOrEmpty(demoPassword))
+            };
+#else
+            var docuSignAuthTokenDTO = new InternalDemoAccountVM()
+            {
+                HasDemoAccount = false
+            };
+#endif
+            return Ok(docuSignAuthTokenDTO);
+        }
+
         /// <summary>
         /// Perform cookie-based authentication on Fr8 Hub. HTTP response will contain authentication cookies
         /// </summary>
@@ -194,6 +226,7 @@ namespace HubWeb.Controllers
             var groupedTerminals = terminals
                 .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
                 .OrderBy(x => x.Name)
+                .AsEnumerable()
                 .Select(x => new AuthenticationTokenTerminalDTO
                 {
                     Id = x.Id,
@@ -316,6 +349,7 @@ namespace HubWeb.Controllers
                 ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
                 PhoneNumber = response.PhoneNumber,
                 Error = response.Error, 
+                Title = response.Title,
                 Message = response.Message
             });
         }

@@ -6,7 +6,7 @@ namespace terminalDropbox
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Dropbox",
             IconPath = "/Content/icons/web_services/dropbox-icon-64x64.png"

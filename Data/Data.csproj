@@ -263,7 +263,6 @@
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
-    <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
@@ -786,6 +785,30 @@
     <Compile Include="Migrations\201608082028534_Update_RolePermissions_To_StandardUserRole.Designer.cs">
       <DependentUpon>201608082028534_Update_RolePermissions_To_StandardUserRole.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs" />
+    <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.Designer.cs">
+      <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091020235_FixUp_Migration_2.cs" />
+    <Compile Include="Migrations\201608091020235_FixUp_Migration_2.Designer.cs">
+      <DependentUpon>201608091020235_FixUp_Migration_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.cs" />
+    <Compile Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.Designer.cs">
+      <DependentUpon>201608091306036_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091310148_ConvertMtDataIdToGuid.cs" />
+    <Compile Include="Migrations\201608091310148_ConvertMtDataIdToGuid.Designer.cs">
+      <DependentUpon>201608091310148_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs" />
+    <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
+      <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608092230355_OperationalState1.cs" />
+    <Compile Include="Migrations\201608092230355_OperationalState1.Designer.cs">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -895,7 +918,7 @@
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
-    <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\OperationalState.cs" />
     <Compile Include="States\ParticipationState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
@@ -923,7 +946,7 @@
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\ITerminalDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
-    <Compile Include="Migrations\DockyardDbMigration.cs" />
+    <Compile Include="Migrations\DbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
@@ -941,6 +964,7 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_OperationalStateTemplate.cs" />
     <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
@@ -1447,6 +1471,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608082028534_Update_RolePermissions_To_StandardUserRole.resx">
       <DependentUpon>201608082028534_Update_RolePermissions_To_StandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.resx">
+      <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091020235_FixUp_Migration_2.resx">
+      <DependentUpon>201608091020235_FixUp_Migration_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.resx">
+      <DependentUpon>201608091306036_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091310148_ConvertMtDataIdToGuid.resx">
+      <DependentUpon>201608091310148_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
+      <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608092230355_OperationalState1.resx">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

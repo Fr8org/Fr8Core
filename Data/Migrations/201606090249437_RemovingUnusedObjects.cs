@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class RemovingUnusedObjects : DbMigration
+    public partial class RemovingUnusedObjects : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

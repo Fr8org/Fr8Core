@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
 
-    public partial class MoveFr8TerminalsTxtToDB : DbMigration
+    public partial class MoveFr8TerminalsTxtToDB : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

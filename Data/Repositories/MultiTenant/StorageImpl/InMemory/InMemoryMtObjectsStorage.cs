@@ -113,7 +113,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             return count;
         }
 
-        public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
+        public Guid? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
         {
             return null;
         }

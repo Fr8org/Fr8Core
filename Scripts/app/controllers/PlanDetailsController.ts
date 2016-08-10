@@ -53,15 +53,12 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
-                debugger;
                 if (!$scope.current.plan.visibility.public) {
                     PlanService.share($stateParams.id)
                         .then(() => {
-                            console.log('sharePlan: Success');
                             PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " shared");
                         })
                         .catch((exp) => {
-                            console.log('sharePlan: Failure');
                             exp.data = exp.data ? exp.data : "";
                             PusherNotifierService.frontendFailure("Plan sharing faliure: " + exp.data);
                         });
@@ -77,16 +74,13 @@ module dockyard.controllers {
 
 
             $scope.unpublishPlan = () => {
-                debugger;
                 //tony.yakovets: temporary crutch
                 if (!$scope.current.plan.visibility.hidden) {
                     PlanService.unpublish($stateParams.id)
                         .then(() => {
-                            console.log('unpublishPlan: Success');
                             PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " unpublished");
                         })
                         .catch((exp) => {
-                            console.log('unpublishPlan: Failure');
                             exp.data = exp.data ? exp.data : "";
                             PusherNotifierService.frontendFailure("Plan unpublished faliure: " + exp.data);
                         });
