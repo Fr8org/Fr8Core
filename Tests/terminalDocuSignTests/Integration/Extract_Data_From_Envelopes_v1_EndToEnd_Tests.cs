@@ -72,32 +72,31 @@ namespace terminalDocuSignTests.Integration
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity" && a.Ordering == 1),
                 "Failed to detect Monitor DocuSign Envelope Activity as the first child activity");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Send DocuSign Envelope" && a.Ordering == 2),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Send_DocuSign_Envelope" && a.Ordering == 2),
                 "Failed to detect Send DocuSign Envelope as the second child activity");
 
 
             var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
-                .Single(x => x.Name == "Monitor DocuSign Envelope Activity");
+                .Single(x => x.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity");
 
             //
             // Apply auth-token to child MonitorDocuSignEvnelope activity.
             //
-            if (monitorDocuSignEnvelopeActivity.ActivityTemplate.NeedsAuthentication)
+            
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
-                var applyToken = new AuthenticationTokenGrantDTO()
-                {
-                    ActivityId = monitorDocuSignEnvelopeActivity.Id,
-                    AuthTokenId = authTokenId,
-                    IsMain = false
-                };
+                ActivityId = monitorDocuSignEnvelopeActivity.Id,
+                AuthTokenId = authTokenId,
+                IsMain = false
+            };
 
-                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
-                    _baseUrl + "authentication/tokens/grant",
-                    new AuthenticationTokenGrantDTO[] { applyToken }
-                );
-            }
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                _baseUrl + "authentication/tokens/grant",
+                new AuthenticationTokenGrantDTO[] { applyToken }
+            );
+            
 
             monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
                 _baseUrl + "activities/configure?id=" + monitorDocuSignEnvelopeActivity.Id,
@@ -160,22 +159,19 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
+            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.ActivityTemplate.Name == "Send_DocuSign_Envelope");
 
-            if (sendEnvelopeAction.ActivityTemplate.NeedsAuthentication)
+            var sendEnvelopeApplyToken = new AuthenticationTokenGrantDTO()
             {
-                var applyToken = new AuthenticationTokenGrantDTO()
-                {
-                    ActivityId = sendEnvelopeAction.Id,
-                    AuthTokenId = authTokenId,
-                    IsMain = false
-                };
+                ActivityId = sendEnvelopeAction.Id,
+                AuthTokenId = authTokenId,
+                IsMain = false
+            };
 
-                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
-                    _baseUrl + "authentication/tokens/grant",
-                    new AuthenticationTokenGrantDTO[] { applyToken }
-                );
-            }
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                _baseUrl + "authentication/tokens/grant",
+                new AuthenticationTokenGrantDTO[] { sendEnvelopeApplyToken }
+            );
 
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(
                 _baseUrl + "activities/configure?id=" + sendEnvelopeAction.Id,
@@ -236,14 +232,21 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + _solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam =(int)ActivityCategory.Processors;
-            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Add_Payload_Manually");
-
+            var activityCategoryParam = ActivityCategories.ProcessId.ToString();
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id=" + activityCategoryParam);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Single(a => a.Name == "Add_Payload_Manually");
+            var activityTemplateSummary = new ActivityTemplateSummaryDTO
+                                        {
+                                            Name = apmActivityTemplate.Name,
+                                            Version = apmActivityTemplate.Version,
+                                            TerminalName = apmActivityTemplate.Terminal.Name,
+                                            TerminalVersion = apmActivityTemplate.Terminal.Version
+                                        };
             var apmAction = new ActivityDTO()
             {
-                ActivityTemplate = apmActivityTemplate,
-                Name = apmActivityTemplate.Label,
+                ActivityTemplate = activityTemplateSummary,
                 ParentPlanNodeId = _solution.Id,
                 RootPlanNodeId = plan.Id
             };
@@ -319,7 +322,11 @@ namespace terminalDocuSignTests.Integration
                 if (!tokenGuid.HasValue)
                 {
                     var creds = GetDocuSignCredentials();
-                    creds.Terminal = solution.ActivityTemplate.Terminal;
+                    creds.Terminal = new TerminalSummaryDTO
+                    {
+                        Name = solution.ActivityTemplate.TerminalName,
+                        Version = solution.ActivityTemplate.TerminalVersion
+                    };
 
                     var token = await HttpPostAsync<CredentialsDTO, JObject>(
                         _baseUrl + "authentication/token",
@@ -336,20 +343,17 @@ namespace terminalDocuSignTests.Integration
                 }
             }
 
-            if (solution.ActivityTemplate.NeedsAuthentication)
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
-                var applyToken = new AuthenticationTokenGrantDTO()
-                {
-                    ActivityId = solution.Id,
-                    AuthTokenId = tokenGuid.Value,
-                    IsMain = false
-                };
+                ActivityId = solution.Id,
+                AuthTokenId = tokenGuid.Value,
+                IsMain = false
+            };
 
-                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
-                    _baseUrl + "authentication/tokens/grant",
-                    new AuthenticationTokenGrantDTO[] { applyToken }
-                );
-            }
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                _baseUrl + "authentication/tokens/grant",
+                new AuthenticationTokenGrantDTO[] { applyToken }
+            );
 
             return tokenGuid.Value;
         }

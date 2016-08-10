@@ -27,15 +27,13 @@ namespace terminalGoogle.Activities
             Name = "Save_To_Google_Sheet",
             Label = "Save To Google Sheet",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.GooogleWebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

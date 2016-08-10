@@ -50,7 +50,6 @@ module dockyard.directives {
                                 .createSubplanAndConfigureActivity(
                                 $scope,
                                 $scope.field.name,
-                                false,
                                 $scope.plan,
                                 $scope.currentAction,
                                 $scope.field.subPlanId,

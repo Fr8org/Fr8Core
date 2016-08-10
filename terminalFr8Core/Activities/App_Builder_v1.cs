@@ -31,15 +31,13 @@ namespace terminalFr8Core.Activities
             Name = "App_Builder",
             Label = "App Builder",
             Version = "1",
-            Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 320,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -63,7 +61,7 @@ namespace terminalFr8Core.Activities
         {
             var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "App Builder URL Generated", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -327,10 +325,10 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "App Builder Submit Button", "Your information has been submitted."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
                         Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
                         Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "-", "Your information has been processed."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
                     });
 
                     //we need to start the process - run current plan - that we belong to

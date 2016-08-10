@@ -15,6 +15,7 @@ using Fr8.Testing.Unit.Fixtures;
 
 using HubWeb.ViewModels.RequestParameters;
 using System.Text.RegularExpressions;
+using Data.States;
 
 namespace HubTests.Controllers
 {
@@ -310,8 +311,7 @@ namespace HubTests.Controllers
                 curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    TerminalId = 1,
-
+                    TerminalId = FixtureData.GetTestGuidById(1),
                     Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
                 });
@@ -319,12 +319,14 @@ namespace HubTests.Controllers
 
                 uow.TerminalRepository.Add(new TerminalDO()
                 {
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",
-                    Version = "1"
-
+                    Version = "1",
+                    OperationalState = OperationalState.Active,
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint = "http://localhost:11111"
                 });
                 uow.UserRepository.Add(curPlanDO.Fr8Account);
                 uow.PlanRepository.Add(curPlanDO);

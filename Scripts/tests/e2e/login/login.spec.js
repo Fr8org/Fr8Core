@@ -11,8 +11,8 @@ describe('login page tests', function () {
 
     it('should login', function () {
         return accountHelper.login().then(function () {
-            loginPage.setEmail("integration_test_runner@fr8.company");
-            loginPage.setPassword("fr8#s@lt!");
+            loginPage.setEmail(browser.params.username);
+            loginPage.setPassword(browser.params.password);
             return loginPage.login().click().then(function () {
                 expect(browser.getCurrentUrl()).toContain('/Welcome');
             });
@@ -25,7 +25,7 @@ describe('login page tests', function () {
 
         it('should logout', function () {
             return accountHelper.logout().then(function () {
-                expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+                expect(browser.getCurrentUrl()).toContain('/Account');
             });
         });
     });

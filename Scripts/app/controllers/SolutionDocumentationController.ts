@@ -33,12 +33,12 @@ module dockyard.controllers {
 
                 $scope.solutionNameList.forEach( (solutionName: string) => {
 
-                    var activityTemplate = new model.ActivityTemplate("", solutionName, "", "", "");
+                    var activityTemplate = new model.ActivityTemplate("", solutionName, "", "");
 
                     var activityDTO = new model.ActivityDTO("", "", "");
                     activityDTO.toActionVM();
                     activityDTO.documentation = "MainPage";
-                    activityDTO.activityTemplate = activityTemplate;
+                    activityDTO.activityTemplate = this.ActivityTemplateHelperService.toSummary(activityTemplate);
 
                     SolutionDocumentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data=> {
                         var activityName = activityDTO.activityTemplate.name;

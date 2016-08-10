@@ -36,7 +36,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Alarm was successfully scheduled")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
@@ -107,6 +107,10 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetByToken(terminalToken);
+                if (terminalDO == null)
+                {
+                    throw new Exception("No terminal was found with token: "+terminalToken);
+                }
                 var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(pollingData.ExternalAccountId, terminalDO.Id, pollingData.Fr8AccountId);
                 if (token != null)
                 {

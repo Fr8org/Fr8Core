@@ -63,7 +63,6 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var query = uow.ActivityTemplateRepository.GetQuery()
-                    .Include(x => x.WebService)
                     .Include(x => x.Categories)
                     .Include("Categories.ActivityCategory");
                 foreach (var activityTemplate in query)
@@ -166,7 +165,9 @@ namespace Hub.Services
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.ToArray();
+                var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
+
+                return _activityTemplates.Values.Where(x => availableTerminalIds.Contains(x.TerminalId));
             }
         }
 
@@ -176,13 +177,6 @@ namespace Hub.Services
             CopyPropertiesHelper.CopyProperties(source, newTemplate, false);
             newTemplate.Terminal = _terminal.GetByKey(source.TerminalId);
           
-            if (source.WebService != null)
-            {
-                var webService = new WebServiceDO();
-                CopyPropertiesHelper.CopyProperties(source.WebService, webService, false);
-                newTemplate.WebService = webService;
-            }
-
             if (source.Categories != null)
             {
                 newTemplate.Categories = new List<ActivityCategorySetDO>();
@@ -205,45 +199,33 @@ namespace Hub.Services
             return newTemplate;
         }
 
-        public void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplates)
+        public void RemoveInactiveActivities(TerminalDO terminal, List<ActivityTemplateDO> activityTemplates)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //let's first get webservice of those activities
-                var webService = activityTemplates.FirstOrDefault(a => a.WebService != null)?.WebService;
-                if (webService == null)
+                var terminalActivitiesToBeRemoved = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(x => x.TerminalId == terminal.Id)
+                    .AsEnumerable()
+                    .Where(x => !activityTemplates.Any(y => y.Name == x.Name && y.Version == x.Version))
+                    .ToList();
+
+                foreach (var activityToRemove in terminalActivitiesToBeRemoved)
                 {
-                    //try to load webservice from db
-                    var dummyActivity = activityTemplates.First();
-                    webService = uow.ActivityTemplateRepository.GetQuery()
-                            .FirstOrDefault(t => t.Name == dummyActivity.Name)?
-                            .WebService;
-                }
-                else
-                {
-                    webService = uow.WebServiceRepository.GetQuery().FirstOrDefault(t => t.Name == webService.Name);
+                    activityToRemove.ActivityTemplateState = ActivityTemplateState.Inactive;
+                    _activityTemplates.Remove(activityToRemove.Id);
                 }
 
-                //we can't operate without a common webservice for those activities
-                if (webService == null)
-                {
-                    //wow we can't do anything about this
-                    return;
-                }
-
-                var currentActivityNames = activityTemplates.Select(x => x.Name);
-                //get activities which we didn't receive as parameter
-                var inactiveActivities = uow.ActivityTemplateRepository.GetQuery().Where(t => !currentActivityNames.Contains(t.Name) && t.WebServiceId == webService.Id).ToList();
-
-                //we need to remove those inactiveActivities both from db and cache
-                foreach (var activityTemplateDO in inactiveActivities)
-                {
-                    activityTemplateDO.ActivityTemplateState = ActivityTemplateState.Inactive;
-                    _activityTemplates.Remove(activityTemplateDO.Id);
-                }
                 uow.SaveChanges();
+            }          
+        }
+
+        public bool Exists(Guid activityTemplateId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActivityTemplateRepository.GetQuery().Any(x => x.Id == activityTemplateId);
             }
-          
         }
 
         private List<ActivityCategorySetDO> ApplyActivityCategories(
@@ -314,16 +296,6 @@ namespace Hub.Services
                 throw new ArgumentOutOfRangeException($"ActivityTemplate.Version is not a valid integer value: {activityTemplateDo.Version}");
             }
 
-            if (activityTemplateDo.WebService == null)
-            {
-                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService is not set");
-            }
-
-            if (string.IsNullOrWhiteSpace(activityTemplateDo.WebService.Name))
-            {
-                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService.Name can't be empty");
-            }
-
             // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
             // make a copy
             var clone = new ActivityTemplateDO();
@@ -331,14 +303,6 @@ namespace Hub.Services
             CopyPropertiesHelper.CopyProperties(activityTemplateDo, clone, true);
             
             clone.Terminal = activityTemplateDo.Terminal;
-
-            // Make copy of web-service reference and add it to 
-            if (activityTemplateDo.WebService != null)
-            {
-                var wsClone = new WebServiceDO();
-                CopyPropertiesHelper.CopyProperties(activityTemplateDo.WebService, wsClone, true);
-                clone.WebService = wsClone;
-            }
 
             // Create list of activity categories for current ActivityTemplate.
             var activityCategories = new List<ActivityCategoryDO>();
@@ -361,28 +325,10 @@ namespace Hub.Services
             lock (_activityTemplates)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    if (activityTemplateDo.WebService != null)
-                    {
-                        var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
-
-                        // Update existing WebService entity.
-                        if (existingWebService != null)
-                        {
-                            existingWebService.IconPath = activityTemplateDo.WebService.IconPath;
-                            activityTemplateDo.WebServiceId = existingWebService.Id;
-                            activityTemplateDo.WebService = existingWebService;
-                        }
-                        else
-                        {
-                            activityTemplateDo.WebService.Id = 0;
-                            activityTemplateDo.WebServiceId = 0;
-                        }
-                    }
-                    
+                {                    
                     // Try to extract existing ActivityTemplate.
                     var activity = uow.ActivityTemplateRepository.GetQuery()
-                        .Include(x => x.WebService)
+                        // .Include(x => x.WebService)
                         .FirstOrDefault(t => t.Name == activityTemplateDo.Name
                             && t.TerminalId == activityTemplateDo.TerminalId
                             && t.Version == activityTemplateDo.Version);
@@ -406,15 +352,17 @@ namespace Hub.Services
                     // We're updating existing ActivityTemplate.
                     else
                     {
-                        if (activity.Id != activityTemplateDo.Id)
-                        {
-                            throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
-                            + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
-                        }
+                        // TODO: FR-4943, this breaks DEV's activity registration, commented out for now.
+                        // if (activity.Id != activityTemplateDo.Id)
+                        // {
+                        //     throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
+                        //     + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
+                        // }
+
                         // This is for updating activity template
                         CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
-                        activity.WebService = activityTemplateDo.WebService;
+
                         uow.SaveChanges();
 
                         activity.Categories = ApplyActivityCategories(uow, activity, activityCategories);

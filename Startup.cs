@@ -30,6 +30,11 @@ using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
 using System.Globalization;
 using System.Threading;
+using System.Web.Routing;
+using Fr8.Infrastructure.Data.Manifests;
+using Hub.Enums;
+using Hub.Services;
+using PlanDirectory.Infrastructure;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -59,6 +64,11 @@ namespace HubWeb
         {
             ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            
+            //For PlanDirectory merge
+            ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
+
+
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
@@ -71,22 +81,39 @@ namespace HubWeb
             incidentReporter.SubscribeToAlerts();
             
             StartupMigration.CreateSystemUser();
-            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+            StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();
 
-            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
+            OwinInitializer.ConfigureAuth(app, "/Account/Index");
 
             if (!selfHostMode)
             {
                 System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
             }
 
-            ConfigureHangfire(app, "DockyardDB");
+            ConfigureHangfire(app, "Fr8LocalDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
 #pragma warning restore 4014
+
+            await GenerateManifestPages();
+        }
+
+        private async Task GenerateManifestPages()
+        {
+            var systemUser = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser()?.EmailAddress?.Address;
+            var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
+            {
+                var generateTasks = new List<Task>();
+                foreach (var manifestName in uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(systemUser, x => true).Select(x => x.Name).Distinct())
+                {
+                    generateTasks.Add(generator.Generate(manifestName, GenerateMode.GenerateAlways));
+                }
+                await Task.WhenAll(generateTasks);
+            }
         }
 
         public void ConfigureControllerActivator(HttpConfiguration configuration)
@@ -113,7 +140,7 @@ namespace HubWeb
         {
             var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
 
-            await terminalDiscovery.Discover();
+            await terminalDiscovery.DiscoverAll();
 
             if (!selfHostMode)
             {

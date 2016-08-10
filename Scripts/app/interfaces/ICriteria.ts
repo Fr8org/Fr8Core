@@ -18,14 +18,19 @@ module dockyard.interfaces {
         name?: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
-        activityTemplate: model.ActivityTemplate;
+        activityTemplate: model.ActivityTemplateSummary;
         childrenActivities: Array<IActivityDTO>;
         ordering: number;
+        height: number;
+        documentation: string;
+        showAdvisoryPopup: boolean;
+        advisoryMessages: model.AdvisoryMessages;
     }
 
     export interface IActivityCategoryDTO {
+        id: string;
         name: string;
-        activities: Array<IActivityTemplateVM>
+        activities: Array<IActivityTemplateVM>;
     }
 
     export interface ICondition {

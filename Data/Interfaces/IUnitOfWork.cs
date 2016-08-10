@@ -59,7 +59,6 @@ namespace Data.Interfaces
         ITerminalSubscriptionRepository TerminalSubscriptionRepository { get; }
 
         ISubscriptionRepository SubscriptionRepository { get; }
-		IWebServiceRepository WebServiceRepository { get; }
 
         ITagRepository TagRepository { get; }
         IFileTagsRepository FileTagsRepository { get; }
@@ -67,8 +66,6 @@ namespace Data.Interfaces
         IOrganizationRepository OrganizationRepository { get; }
 
         IPageDefinitionRepository PageDefinitionRepository { get; }
-
-        TerminalRegistrationRepository TerminalRegistrationRepository { get; }
 
         IActivityCategoryRepository ActivityCategoryRepository { get; }
         IActivityCategorySetRepository ActivityCategorySetRepository { get; }

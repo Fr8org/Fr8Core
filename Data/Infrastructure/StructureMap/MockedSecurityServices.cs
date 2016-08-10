@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
@@ -72,18 +74,12 @@ namespace Data.Infrastructure.StructureMap
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        public Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
-            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+            throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
-        {
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
-        }
-
-        public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
+        public bool AuthorizeActivity(PermissionType permissionName, Guid curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
@@ -99,7 +95,7 @@ namespace Data.Infrastructure.StructureMap
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, Guid.Empty);
 
-            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
+            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.EditAllObjects);
             var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
 
             if (viewAllData != 0 && permissionName == PermissionType.ReadObject) return true;
@@ -114,6 +110,22 @@ namespace Data.Infrastructure.StructureMap
         public bool UserHasPermission(PermissionType permissionType, string objectType)
         {
             return true;
+        }
+
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null )
+        {
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId, dataObjectType, Guid.Empty, null, null);
+        }
+
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        {
+            return terminals;
+        }
+
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
+        {
+            throw new NotImplementedException();
         }
     }
 }

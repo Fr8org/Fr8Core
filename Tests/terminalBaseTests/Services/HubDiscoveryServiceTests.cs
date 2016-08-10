@@ -39,7 +39,7 @@ namespace terminaBaselTests.Services
             {
             }
 
-            public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)
+            public IActivityFactory GetFactory(string name, string version)
             {
                 return null;
             }
@@ -164,7 +164,6 @@ namespace terminaBaselTests.Services
         {
             var activityStore = new ActivityStoreStub(new TerminalDTO
             {
-                PublicIdentifier = "test",
                 Endpoint = "http://test",
                 Name = "test"
             });

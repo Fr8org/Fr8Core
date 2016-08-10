@@ -1,0 +1,136 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en" class="no-js"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Fr8 | Manifest Registry</title>
+    <link rel='shortcut icon' type='image/x-icon' href='~/Content/img/favicon.ico' />
+    <link href="~/bower_components/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/bower_components/datatables/media/css/dataTables.material.min.css" rel="stylesheet" />
+    <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
+    <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    @Html.Partial("~/Views/Account/_HeaderPartial.cshtml")
+    <div class="portlet light ">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <i class="icon-bar-chart font-green-haze hide"></i>
+                <span class="caption-subject font-green-haze bold uppercase">Manifest Registry</span>
+            </div>
+            <div class="actions">
+                <a class="btn green">Add Manifest Description</a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div style="padding-bottom:10px">
+                <span class="text-block">
+                    These are defined Manifests that are shared by Fr8 Activities. You can submit additional Manifests to this registry. Use of these is optional, but when you save your activity's crate data in a json format specified by a defined Manifest, you increase the ability of other downstream activities to work with the data structures you've created.
+                </span>
+            </div>
+            <div class="container-fluid">
+                    <table id="manifestRegistryTable" class="display"  width="100%">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Version</th>
+                                <th>Description</th>
+                                <th>RegisteredBy</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+            </div>
+        </div>
+
+    </div>
+    
+       
+
+    <script src="~/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn.green').on('click', function (e) {
+                $.get('/api/v1/manifestregistry/submit', function (data) {
+                    window.open(data);
+                });
+            });
+            var goToManifestDescriptionPage = function (name) {
+                $.get('/api/v1/manifestregistry/get_manifest_page_url?manifestName=' + name, function (data) {
+                    window.open(data);
+                });
+            };
+
+            var table = $('#manifestRegistryTable').DataTable({
+                "ajax": {
+                    "url": "/api/v1/manifest_registry",
+                    "dataSrc": ""
+                },
+                "columns": [
+                           { "data": "id" },
+                           { "data": "name" },
+                           { "data": "version" },
+                           { "data": "description" },
+                           { "data": "registeredBy" }
+                ]
+            });
+
+            $('#manifestRegistryTable tbody').on('click', 'tr', function () {
+                var data = table.row(this).data();
+                goToManifestDescriptionPage(data.name);
+               // alert('You clicked on ' + data + '\'s row');
+            });
+        });
+        $(function () {
+            var segmentKey =
+                '@Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey")';
+            if (segmentKey !== "") {
+                window.analytics = window.analytics || [], window.analytics
+                    .methods = [
+                        "identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off",
+                        "trackLink", "trackForm", "trackClick", "trackSubmit"
+                    ], window.analytics.factory = function (t) {
+                        return function () {
+                            var a = Array.prototype.slice.call(arguments);
+                            return a.unshift(t), window.analytics.push(a), window.analytics
+                        }
+                    };
+                for (var i = 0; i < window.analytics.methods.length; i++) {
+                    var key = window.analytics.methods[i];
+                    window.analytics[key] = window.analytics.factory(key)
+                }
+                window.analytics.load = function (t) {
+                    if (!document.getElementById("analytics-js")) {
+                        var a = document.createElement("script");
+                        a.type = "text/javascript", a
+                            .id = "analytics-js", a
+                            .async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") +
+                            "cdn.segment.io/analytics.js/v1/" +
+                            t +
+                            "/analytics.min.js";
+                        var n = document.getElementsByTagName("script")[0];
+                        n.parentNode.insertBefore(a, n)
+                    }
+                }, window.analytics.SNIPPET_VERSION = "2.0.9",
+                    window.analytics.load(segmentKey);
+                window.analytics.page('Visited Page - Manifest Registry');
+            }
+        });
+    </script>
+</body>
+</html>
+

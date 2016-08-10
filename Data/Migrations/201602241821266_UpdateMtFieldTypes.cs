@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class UpdateMtFieldTypes : DbMigration
+    public partial class UpdateMtFieldTypes : System.Data.Entity.Migrations.DbMigration
     {
         const string SqlToRun = @"
             declare @typeId int 

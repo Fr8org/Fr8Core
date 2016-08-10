@@ -9,7 +9,9 @@ using Data.Entities;
 using Data.Interfaces;
 using HubTests.Controllers.Api;
 using Data.States;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using Fr8.Testing.Unit.Fixtures;
@@ -50,8 +52,23 @@ namespace HubTests.Controllers
                 var plan = FixtureData.TestPlan1();
 
                 uow.PlanRepository.Add(plan);
-
-
+                var activityTemplate = FixtureData.TestActivityTemplateDTOV2();
+                var activityTemplateDO = new ActivityTemplateDO
+                {
+                    Name = activityTemplate.Name,
+                    Version = activityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = activityTemplate.TerminalName,
+                        Version = activityTemplate.TerminalVersion,
+                        TerminalStatus = TerminalStatus.Active,
+                        Label = "dummy",
+                        ParticipationState = ParticipationState.Approved,
+                        OperationalState = OperationalState.Active,
+                        Endpoint = "http://localhost:11111"
+                    }
+                };
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 plan.ChildNodes.Add(subPlan);
                 uow.SaveChanges();
             }
@@ -91,6 +108,26 @@ namespace HubTests.Controllers
                 subplan = FixtureData.TestSubPlanDO1();
                 plan.ChildNodes.Add(subplan);
 
+                var activityTemplate = FixtureData.TestActivityTemplateDTOV2();
+                var activityTemplateDO = new ActivityTemplateDO
+                {
+                    Name = activityTemplate.Name,
+                    Version = activityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = activityTemplate.TerminalName,
+                        Version = activityTemplate.TerminalVersion,
+                        TerminalStatus = TerminalStatus.Active,
+                        Label = "dummy",
+                        ParticipationState = ParticipationState.Approved,
+                        OperationalState = OperationalState.Active,
+                        Endpoint = "http://localhost:11111"
+                    }
+                    
+                };
+
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
+
                 //Arrange
                 //Add one test action
                 var activity = FixtureData.TestActivity1();
@@ -128,15 +165,13 @@ namespace HubTests.Controllers
 
             var plan = new PlanDO
             {
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Name = "name",
                 ChildNodes = { activity }
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
@@ -171,7 +206,7 @@ namespace HubTests.Controllers
                 activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(activityMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
+                var controller = new ActivitiesController(activityMock.Object, ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 await controller.Delete(activityDO.Id);
                 activityMock.Verify(a => a.Delete(activityDO.Id));
             }
@@ -188,7 +223,7 @@ namespace HubTests.Controllers
                 actionMock.Setup(x => x.Exists(It.IsAny<Guid>())).Returns(true);
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
+                var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 controller.Get(activityDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
             }
@@ -252,7 +287,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException))]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         { 
             var controller = ObjectFactory.GetInstance<ActivitiesController>();
@@ -270,7 +305,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentException))]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = ObjectFactory.GetInstance<ActivitiesController>();

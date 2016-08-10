@@ -25,13 +25,11 @@ namespace terminalAtlassian.Actions
             Name = "Save_Jira_Issue",
             Label = "Save Jira Issue",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -397,7 +395,7 @@ namespace terminalAtlassian.Actions
 
             Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new KeyValueDTO() { Key = "jira issue key", Value = issueInfo.Key })));
             Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new KeyValueDTO() { Key = "jira domain", Value = credentialsDTO.Domain })));
-            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "Jira Issue Created", $"Created new jira issue: {jiraUrl}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Jira Issue Created", $"Created new jira issue: {jiraUrl}");
             Payload.Add(Crate<KeyValueListCM>.FromContent(RuntimeCrateLabel, new KeyValueListCM(
                                                                                       new KeyValueDTO(JiraIdField, issueInfo.Key),
                                                                                       new KeyValueDTO(JiraUrlField, jiraUrl))));

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Microsoft.AspNet.Identity;
@@ -17,6 +18,7 @@ using Data.Interfaces;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
+using Data.States.Templates;
 using Fr8.Infrastructure.Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
@@ -119,19 +121,37 @@ namespace Hub.Security
             return identity;
         }
 
-
-        /// <summary>
-        /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
-        /// and Role OwnerOfCurrentObject
-        /// </summary>
-        /// <param name="dataObjectId"></param>
-        /// <param name="dataObjectType"></param>
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        public async Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
-            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+            var um = new DockyardIdentityManager(uow);
+            var identity = await um.CreateIdentityAsync(fr8AccountDO, DefaultAuthenticationTypes.ApplicationCookie);
+            foreach (var roleId in fr8AccountDO.Roles.Select(r => r.RoleId))
+            {
+                var role = uow.AspNetRolesRepository.GetByKey(roleId);
+                identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+            }
+            if (fr8AccountDO.OrganizationId.HasValue)
+            {
+                identity.AddClaim(new Claim("Organization", fr8AccountDO.OrganizationId.Value.ToString()));
+            }
+
+            //save profileId from current logged user for future usage inside authorization activities logic
+            identity.AddClaim(new Claim(ProfileClaim, fr8AccountDO.ProfileId.ToString()));
+
+            return identity;
         }
 
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        #region Permissions Related Methods
+
+        /// <summary>
+        /// For every new created object sets up default security with permissions for Read Object, Edit Object, Delete Object 
+        /// and Role. For set up the ownership to a record use Role OwnerOfCurrentObject
+        /// </summary>
+        /// <param name="roleName">User role</param>
+        /// <param name="dataObjectId"></param>
+        /// <param name="dataObjectType"></param>
+        /// <param name="customPermissionTypes">You can define your own permission types for a object, or use default permission set for Standard Users</param>
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null)
         {
             if (!IsAuthenticated()) return;
 
@@ -152,7 +172,55 @@ namespace Hub.Security
                 if (orgId != 0) organizationId = orgId;
             }
 
-            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
+            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId, dataObjectType, Guid.Empty, organizationId, customPermissionTypes);
+        }
+
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        {
+            if (!IsAuthenticated())
+                return terminals;
+
+            if (Thread.CurrentPrincipal is Fr8Principal)
+                return terminals;
+
+            var roles = GetRoleNames().ToList();
+
+            var allowedTerminals = new List<TerminalDO>();
+            foreach (var terminal in terminals)
+            {
+                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id, nameof(TerminalDO));
+                if (!objRolePermissionWrapper.RolePermissions.Any()) continue;
+
+                // first check if this user is the owner of the record
+                var ownerRolePermission = objRolePermissionWrapper.RolePermissions.FirstOrDefault(x=>x.Role.RoleName == Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m => m.Id == (int)PermissionType.UseTerminal));
+                if (ownerRolePermission != null && objRolePermissionWrapper.Fr8AccountId == GetCurrentUser())
+                {
+                    allowedTerminals.Add(terminal);
+                    continue;
+                }
+
+                //check other user roles
+                var rolePermissions = objRolePermissionWrapper.RolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m=> m.Id == (int) PermissionType.UseTerminal))
+                    .Where(l=> roles.Contains(l.Role.RoleName));
+
+                if (rolePermissions.Any())
+                {
+                    allowedTerminals.Add(terminal);
+                }
+            }
+
+            return allowedTerminals;
+        }
+
+        /// <summary>
+        /// Get Allowed User Roles from the ObjectRolePermissions. Determines what user groups based on their roles can interact with an secured object 
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
+        {
+            return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
         }
 
         /// <summary>
@@ -164,14 +232,14 @@ namespace Hub.Security
         /// <param name="curObjectType"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null)
+        public bool AuthorizeActivity(PermissionType permissionType, Guid curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
                 return true;
 
             //check if request came from terminal 
-            if (Thread.CurrentPrincipal is Fr8Principle)
+            if (Thread.CurrentPrincipal is Fr8Principal)
                 return true;
 
             //get all current roles for current user
@@ -191,7 +259,7 @@ namespace Hub.Security
 
             //first check Record Based Permission.
             bool? evaluator = null;
-            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
+            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId, curObjectType);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
@@ -217,7 +285,7 @@ namespace Hub.Security
             return EvaluateProfilesPermissionSet(permissionType, permissionSets, fr8AccountId);
         }
 
-        private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId, out string fr8AccountId)
+        private bool CheckForAppBuilderPlanAndBypassSecurity(Guid curObjectId, out string fr8AccountId)
         {
             //TODO: @makigjuro temp fix until FR-3008 is implemented 
             //bypass security on AppBuilder plan, because that one is visible for every user that has this url
@@ -225,10 +293,11 @@ namespace Hub.Security
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Guid id;
-                if (!Guid.TryParse(curObjectId, out id)) return false;
-
-                var planNode = uow.PlanRepository.GetById<PlanNodeDO>(id);
+                var planNode = uow.PlanRepository.GetById<PlanNodeDO>(curObjectId);
+                if (planNode == null)
+                {
+                    return false;
+                }
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
@@ -311,7 +380,7 @@ namespace Hub.Security
                         {
                             var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
 
-                            var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                            var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
                             var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
                             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
                             if (modifyAllData != 0) return true;
@@ -330,7 +399,7 @@ namespace Hub.Security
                         return currentPermission != 0;
                     }
 
-                    var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                    var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
                     var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
                     if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
                     if (modifyAllData != 0) return true;
@@ -379,7 +448,7 @@ namespace Hub.Security
                 return currentPermission != 0;
             }
 
-            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
             var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
@@ -389,5 +458,7 @@ namespace Hub.Security
 
             return false;
         }
+
+        #endregion
     }
 }

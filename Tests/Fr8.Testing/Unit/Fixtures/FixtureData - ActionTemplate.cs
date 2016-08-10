@@ -55,13 +55,14 @@ namespace Fr8.Testing.Unit.Fixtures
             return curActionTemplate;
         }
 
-        public static ActivityTemplateDTO TestActivityTemplateDTOV2()
+        public static ActivityTemplateSummaryDTO TestActivityTemplateDTOV2()
         {
-            var curActionTemplate = new ActivityTemplateDTO
+            var curActionTemplate = new ActivityTemplateSummaryDTO
             {
-                Id = GetTestGuidById(1),
                 Name = "terminal_azure_sql_server",
-                Version = "1"
+                Version = "1",
+                TerminalName = "test",
+                TerminalVersion = "1"
             };
 
             return curActionTemplate;
@@ -106,7 +107,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
                 Terminal = TerminalSeven(),
-                Category = ActivityCategory.Solution,
                 Version = "1"
             };
             return curActivityDO;
@@ -118,7 +118,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Extract_Data_From_Envelopes",
                 Label = "Extract Data From Envelopes",
                 Terminal = TerminalSeven(),
-                Category = ActivityCategory.Solution,
                 Version = "1"
             };
             return curActivityDO;

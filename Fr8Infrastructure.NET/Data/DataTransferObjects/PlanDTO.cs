@@ -15,7 +15,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         /// </summary>
         public IEnumerable<FullSubplanDto> SubPlans { get; set; }
 
-        [JsonProperty("fr8UserId")]
+        [JsonProperty("ownerId")]
         public string Fr8UserId { get; set; }
     }
 
@@ -50,7 +50,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         /// Status to filter plans by
         /// </summary>
         [JsonProperty("status")]
-        public int? Status { get; set; }
+        public string Status { get; set; }
         /// <summary>
         /// Category to filter plans by
         /// </summary>
