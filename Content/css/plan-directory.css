@@ -179,6 +179,16 @@ header#site-header:after {
 }
 
 .result-container .item .create-plan-btn.privileged {
+    right: 170px;
+}
+
+.result-container .item .plan-details-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.result-container .item .plan-details-btn.privileged {
     right: 90px;
 }
 
