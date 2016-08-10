@@ -119,7 +119,7 @@ namespace HubWeb
         {
             var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
 
-            await terminalDiscovery.Discover();
+            await terminalDiscovery.DiscoverAll();
 
             if (!selfHostMode)
             {

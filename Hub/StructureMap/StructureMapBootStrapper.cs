@@ -273,12 +273,12 @@ namespace Hub.StructureMap
                 return _terminal.GetByNameAndVersion(name, version);
             }
 
-            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isUserInitiated)
             {
-                return _terminal.RegisterOrUpdate(terminalDo);
+                return _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
             }
 
-            public TerminalDO GetByKey(int terminalId)
+            public TerminalDO GetByKey(Guid terminalId)
             {
                 return _terminal.GetByKey(terminalId);
             }

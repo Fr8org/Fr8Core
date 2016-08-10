@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class TokenResponseDTO
     {
         [JsonProperty("terminalId")]
-        public int? TerminalId { get; set; }
+        public Guid? TerminalId { get; set; }
 
         [JsonProperty("terminalName")]
         public string TerminalName { get; set; }

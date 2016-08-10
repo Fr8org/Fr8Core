@@ -30,10 +30,8 @@ namespace terminalDocuSign.Actions
             Label = "Mail Merge Into DocuSign",
             Version = "1",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Solution,
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };

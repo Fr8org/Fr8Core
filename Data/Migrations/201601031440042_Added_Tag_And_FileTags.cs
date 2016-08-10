@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Added_Tag_And_FileTags : DbMigration
+    public partial class Added_Tag_And_FileTags : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

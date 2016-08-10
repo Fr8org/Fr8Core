@@ -4,7 +4,7 @@ This scripts collects Hub and terminal settings from respective exterminal confi
 (Config/Settings.config) and adds settings from them to the HM external configuration file.
 This script is added as a post-build task to HealthMonitor project in the following way: 
 
-powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "& { $(ProjectDir)BuildSettings.ps1 }"
+powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "& { $(ProjectDir)Build-Settings.ps1 }"
 #>
 
 $ErrorActionPreference = 'Stop'

@@ -6,7 +6,7 @@ namespace terminalStatX
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "StatX",
             IconPath = "/Content/icons/web_services/statx-icon-64x64.png"

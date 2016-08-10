@@ -29,7 +29,6 @@ namespace terminalDocuSign.Controllers
             try
             {
                 var authToken = await ObtainAuthToken(curCredentials);
-
                 if (authToken == null)
                 {
                     return new AuthorizationTokenDTO()
@@ -39,11 +38,11 @@ namespace terminalDocuSign.Controllers
                 }
 
                 var authorizationTokenDTO = new AuthorizationTokenDTO()
-                    {
+                {
                     Token = JsonConvert.SerializeObject(authToken),
-                        ExternalAccountId = curCredentials.Username,
-                        AuthCompletedNotificationRequired = true
-                    };
+                            ExternalAccountId = curCredentials.Username,
+                            AuthCompletedNotificationRequired = true
+                };
 
                 string demoAccountStr = string.Empty;
                 if (curCredentials.IsDemoAccount)
@@ -59,9 +58,7 @@ namespace terminalDocuSign.Controllers
                 {
                     authorizationTokenDTO.AdditionalAttributes += demoAccountStr;
                 }
-
                 return authorizationTokenDTO;
-
             }
             catch (Exception ex)
             {
@@ -74,12 +71,9 @@ namespace terminalDocuSign.Controllers
             }
         }
 
-
-
         private async Task<DocuSignAuthTokenDTO> ObtainAuthToken(CredentialsDTO curCredentials)
         {
-            //TODO:
-            // choose configuration either for demo or prod service 
+            //TODO: choose configuration either for demo or prod service 
             string endpoint = string.Empty;
             if (curCredentials.IsDemoAccount)
             {
@@ -90,7 +84,7 @@ namespace terminalDocuSign.Controllers
                 endpoint = CloudConfigurationManager.GetSetting("environment") + "/restapi";
             }
 
-            //Here we make a call to API with X-DocuSign-Authentication to retrieve both oAuth token and AccountID
+            // Here we make a call to API with X-DocuSign-Authentication to retrieve both oAuth token and AccountID
             string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey" + (curCredentials.IsDemoAccount ? "_DEMO" : ""));
             ApiClient apiClient = new ApiClient(endpoint);
             string authHeader = "{\"Username\":\"" + curCredentials.Username + "\", \"Password\":\"" + curCredentials.Password + "\", \"IntegratorKey\":\"" + integratorKey + "\"}";

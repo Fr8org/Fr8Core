@@ -82,16 +82,14 @@ namespace terminalSlack.Actions
             Id = new Guid("246DF538-3B7E-4D1B-B045-72021BAA0D2D"),
             Name = "Monitor_Channel",
             Label = "Monitor Channel",
-            Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

@@ -138,9 +138,12 @@ namespace Hub.Services
 
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
         {
+            var solutionId = ActivityCategories.SolutionId;
+            var monitorId = ActivityCategories.MonitorId;
+
             var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
                 .OfType<ActivityDO>()
-                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != Fr8.Infrastructure.Data.States.ActivityCategory.Solution);
+                .FirstOrDefault(x => !uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Categories.Any(y => y.ActivityCategoryId == solutionId));
 
             if (initialActivity == null)
             {
@@ -149,7 +152,7 @@ namespace Hub.Services
 
             var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
 
-            if (activityTemplate.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Monitors)
+            if (activityTemplate.Categories.Any(y => y.ActivityCategoryId == monitorId))
             {
                 return true;
             }
@@ -951,20 +954,9 @@ namespace Hub.Services
         private void ReportAuthError(IUnitOfWork uow, Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
             var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
-            string webServiceName = null;
-            if (activityTemplate != null)
-            {
-                var webService = uow.ActivityTemplateRepository.GetQuery()
-                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
-                    .Select(x => x.WebService)
-                    .FirstOrDefault();
-                webServiceName = webService?.Name;
-            }
 
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{webServiceName}. ";
-
-            errorMessage += $"Please re-authorize Fr8 to connect to {webServiceName} " +
+            var errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with remote web-service.";
+            errorMessage += $"Please re-authorize {ex?.FailedActivityDTO.Label} activity " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 
@@ -987,19 +979,8 @@ namespace Hub.Services
         private async Task ReportAuthDeactivation(IUnitOfWork uow, PlanDO plan, InvalidTokenRuntimeException ex)
         {
             var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
-            string webServiceName = null;
-            if (activityTemplate != null)
-            {
-                var webService = uow.ActivityTemplateRepository.GetQuery()
-                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
-                    .Select(x => x.WebService)
-                    .FirstOrDefault();
-                webServiceName = webService?.Name;
-            }
 
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{webServiceName}. ";
-
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with remote web-service.";
             errorMessage += $"Plan \"{plan.Name}\" which contains failed activity was deactivated.";
 
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
