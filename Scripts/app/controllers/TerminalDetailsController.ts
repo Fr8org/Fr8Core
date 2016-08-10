@@ -48,9 +48,9 @@ module dockyard.controllers {
                 $scope.approved = terminal.participationState === enums.ParticipationState.Approved;
                 $scope.participationStateText = dockyard.enums.ParticipationState[terminal.participationState];
             });
-
+            debugger;
             // Whether user has terminal administration priviledges, show additional UI elements
-            $http.get('/api/users/checkpermission', { params: { permissionType: dockyard.enums.PermissionType.EditAllObjects, objectType: 'TerminalDO' } })
+            $http.get('/api/users/checkpermission', { params: { userId: (<any>window).userId, permissionType: dockyard.enums.PermissionType.EditAllObjects, objectType: 'TerminalDO' } })
                 .then(function (resp) {
                     $scope.canEditAllTerminals = <boolean>resp.data;
                 });

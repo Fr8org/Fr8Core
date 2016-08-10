@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Dockyard</title>
+    <title>@ViewBag.Title - Fr8</title>
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
     @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/backendcss")
@@ -22,7 +22,6 @@
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <script src="Content/js/respond.min.js"></script>
     <![endif]-->
-
     <script>
         var segmentKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))";
         if (segmentKey !== "") {
