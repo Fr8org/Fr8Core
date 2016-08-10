@@ -84,6 +84,7 @@
   <ItemGroup>
     <Compile Include="Fixtures\FixtureData - Parameters.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
+    <Compile Include="Integration\Post_Comment_v1_Tests.cs" />
     <Compile Include="Integration\Get_Taks_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -76,5 +76,34 @@ namespace terminalAsanaTests.Fixtures
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
+
+        public static Fr8DataDTO Post_Comment_v1_InitialConfiguration_Fr8DataDTO()
+        {
+            var token = SampleAuthorizationToken();
+
+            var activityTemplate = new ActivityTemplateSummaryDTO()
+            {
+                TerminalName = "terminalAsana",
+                TerminalVersion = "1",
+                Name = "Post_Comment_TEST",
+                Version = "1"
+            };
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Post something",
+                ActivityTemplate = activityTemplate,
+                AuthToken = new AuthorizationTokenDTO()
+                {
+                    Token = token.Token,
+                    ExpiresAt = token.ExpiresAt,
+                    ExternalAccountId = token.ExternalAccountId,
+                    ExternalAccountName = "Asana Fr8 Dev"
+                }
+            };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace terminalAsanaTests.Integration
 {
     [Explicit]
     [Category("Integration.terminalAsana")]
-    class Get_Taks_v1_Tests: BaseTerminalIntegrationTest
+    class Post_Comment_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
 
@@ -28,7 +28,7 @@ namespace terminalAsanaTests.Integration
         {
             Assert.AreEqual(4, control.Controls.Count, "Control count is not 4");
             Assert.IsTrue(control.Controls.Where(x=> x is DropDownList).Count() == 3);
-            Assert.IsTrue(control.Controls.Where(x => x is TextBlock).Count() == 1);
+            Assert.IsTrue(control.Controls.Where(x => x is TextSource).Count() == 1);
         }
 
         private void AssertInitialConfigurationResponse(ActivityDTO responseDTO)
@@ -50,7 +50,7 @@ namespace terminalAsanaTests.Integration
         /// Validate correct crate-storage structure in initial configuration response. OAuth Token already should be present in ActivityDTO
         /// </summary>
         [Test]
-        public async Task Get_Taks_v1_initial_configuration_check()
+        public async Task Post_Comment_v1_initial_configuration_check()
         {
             var responseDTO = await CompleteInitialConfiguration();
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
@@ -85,7 +85,7 @@ namespace terminalAsanaTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// </summary>
         [Test]
-        public async Task Get_Taks_v1_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Post_Comment_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
             // it is integration test so it will be oooho loooong.
             var configureUrl = GetTerminalConfigureUrl();
@@ -119,11 +119,9 @@ namespace terminalAsanaTests.Integration
             AssertInitialConfigurationResponse(responseDTO);
         }
 
-
-        
         //[Test]
         //[Ignore] // because to Run Activity we need to deal with container 
-        //public async Task Get_Taks_v1_Run_Should_Return_List_Of_Tasks()
+        //public async Task Post_Comment_v1_Run_Should_Return_List_Of_Tasks()
         //{
         //    // it is integration test so it will be oooho loooong.
         //    var configureUrl = GetTerminalConfigureUrl();
@@ -166,25 +164,9 @@ namespace terminalAsanaTests.Integration
         //    });
         //    payload.CrateStorage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent("Operational state", operationalState));
         //    // ----------------------------------------
+      
 
-        //    responseDTO = Mapper.Map<ActivityDTO>(payload);
-        //    responseDTO.AuthToken = tokenDTO;
 
-        //    dataDTO = new Fr8DataDTO
-        //    {
-        //        ActivityDTO = responseDTO,
-        //    };
-
-        //    var runUrl = GetTerminalRunUrl();
-        //    responseDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
-
-        //    // we should get at least one project if test account not empty.
-        //    payload = Mapper.Map<ActivityPayload>(responseDTO);
-        //    crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            
-            
-
-        //    AssertInitialConfigurationResponse(responseDTO);
         //}
 
     }
