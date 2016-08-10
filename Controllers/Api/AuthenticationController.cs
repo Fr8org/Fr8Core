@@ -21,6 +21,7 @@ using System.Web.Http.Description;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -224,6 +225,7 @@ namespace HubWeb.Controllers
             var groupedTerminals = terminals
                 .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
                 .OrderBy(x => x.Name)
+                .AsEnumerable()
                 .Select(x => new AuthenticationTokenTerminalDTO
                 {
                     Id = x.Id,
@@ -240,6 +242,7 @@ namespace HubWeb.Controllers
                         .OrderBy(y => y.ExternalAccountName)
                         .ToList(),
                     AuthenticationType = x.AuthenticationType,
+                    AuthenticationAdditionalInfo = JsonConvert.DeserializeObject<JToken>(x.AuthenticationAdditionalInfo),
                     Version = x.Version
                 })
                 .ToList();

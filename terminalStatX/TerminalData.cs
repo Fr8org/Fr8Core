@@ -24,8 +24,7 @@ namespace terminalStatX
             AuthenticationAdditionalInfo = JsonConvert.SerializeObject(
                 new PhoneNumberAuthenticationAdditionalInfoDTO()
                 {
-                    Title = "Enter the verification code from your StatX App",
-                    Note = "Go to Settings, and then Additional Authorizations, and then tap \"Get code\""
+                    Title = "Enter the verification code from your StatX App"
                 }
             )
         };
