@@ -24,9 +24,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$commandText = "
+$commandTextTmpl = "
 	UPDATE Terminals SET [Endpoint] = 
-	('$newHostname' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
+	('{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
 	WHERE CHARINDEX (':', REVERSE ([DevUrl])) <= 6 AND IsFr8OwnTerminal = 1"
 
 
@@ -36,6 +36,7 @@ switch ($environment) {
 		if ($newHostname -eq $null) {
 			throw "-newHostname is not specified. This argument is required for the development environment."
 		}
+		$commandText = $commandTextTmpl -replace '{newHostname}', $newHostname
 		break;	
 	}
 	sta {}
@@ -49,6 +50,7 @@ switch ($environment) {
 		}
 		$newHostname = $deployment.Url.Host
 		Write-Host "Staging hostname is $newHostname"
+		$commandText = $commandTextTmpl -replace '{newHostname}', $newHostname
 		break;
 	}
 	prod {}
@@ -56,6 +58,7 @@ switch ($environment) {
 		if ($newHostname -ne $null) {
 			Write-Warning "-newHostname parameter is ignored when -environment is set to 'production'"
 		}
+
 		$commandText = "
 			UPDATE Terminals SET [Endpoint] = [ProdUrl] WHERE ProdUrl IS NOT NULL AND ParticipationState=1"
 		break;
