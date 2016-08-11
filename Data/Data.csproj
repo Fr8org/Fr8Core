@@ -809,6 +809,10 @@
     <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608111500592_Remove_Kwasant_StateTemplates.cs" />
+    <Compile Include="Migrations\201608111500592_Remove_Kwasant_StateTemplates.Designer.cs">
+      <DependentUpon>201608111500592_Remove_Kwasant_StateTemplates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1479,6 +1483,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608111500592_Remove_Kwasant_StateTemplates.resx">
+      <DependentUpon>201608111500592_Remove_Kwasant_StateTemplates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
