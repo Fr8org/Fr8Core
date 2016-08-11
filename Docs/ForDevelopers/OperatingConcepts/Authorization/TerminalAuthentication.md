@@ -6,7 +6,7 @@
 
 Terminals often needs to communicate with the Hub. Some examples include getting payload, running a plan or creating an activity. These communications requires a terminal to be authenticated by the Hub.
 
-## Authentication with Hub
+## Authentication your Terminal
 
 Each request from the Hub to your Terminal includes these 2 properties:
 
