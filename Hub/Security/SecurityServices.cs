@@ -175,7 +175,7 @@ namespace Hub.Security
             _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId, dataObjectType, Guid.Empty, organizationId, customPermissionTypes);
         }
 
-        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals, bool byOwnershipOnly)
         {
             if (!IsAuthenticated())
                 return terminals;
@@ -184,6 +184,10 @@ namespace Hub.Security
                 return terminals;
 
             var roles = GetRoleNames().ToList();
+            
+            //in case role is Admin, return all terminals
+            if (roles.Contains(Roles.Admin))
+                return terminals;
 
             var allowedTerminals = new List<TerminalDO>();
             foreach (var terminal in terminals)
@@ -199,13 +203,16 @@ namespace Hub.Security
                     continue;
                 }
 
-                //check other user roles
-                var rolePermissions = objRolePermissionWrapper.RolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m=> m.Id == (int) PermissionType.UseTerminal))
-                    .Where(l=> roles.Contains(l.Role.RoleName));
-
-                if (rolePermissions.Any())
+                if (!byOwnershipOnly)
                 {
-                    allowedTerminals.Add(terminal);
+                    //check other user roles
+                    var rolePermissions = objRolePermissionWrapper.RolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m=> m.Id == (int) PermissionType.UseTerminal))
+                        .Where(l=> roles.Contains(l.Role.RoleName));
+
+                    if (rolePermissions.Any())
+                    {
+                        allowedTerminals.Add(terminal);
+                    }
                 }
             }
 

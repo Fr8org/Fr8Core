@@ -258,6 +258,11 @@ namespace Hub.StructureMap
                 return _terminal.GetAll();
             }
 
+            public IEnumerable<TerminalDO> GetByCurrentUser()
+            {
+                return _terminal.GetByCurrentUser();
+            }
+                
             public Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
             {
                 return _terminal.GetAvailableActivities(uri);

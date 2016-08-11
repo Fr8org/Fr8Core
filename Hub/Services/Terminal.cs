@@ -218,6 +218,17 @@ namespace Hub.Services
             }
         }
 
+        public IEnumerable<TerminalDO> GetByCurrentUser()
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                //filter terminals and show only allowed for current logged user
+                return _securityServices.GetAllowedTerminalsByUser(_terminals.Values.ToArray(), true);
+            }
+        }
+
         public async Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
         {
             Initialize();
