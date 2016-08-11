@@ -114,8 +114,6 @@ namespace HubWeb.Controllers.Api
 
                 var plan = await _planDirectoryService.CreateFromTemplate(planTemplateDTO.PlanContents, User.Identity.GetUserId());
 
-                //var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
-
                 return Ok(
                     new
                     {
