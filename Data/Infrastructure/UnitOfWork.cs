@@ -129,15 +129,6 @@ namespace Data.Infrastructure
                 return _containerRepository ?? (_containerRepository = new ContainerRepository(this));
             }
         }
-        private EmailStatusRepository _emailStatusRepository;
-
-        public EmailStatusRepository EmailStatusRepository
-        {
-            get
-            {
-                return _emailStatusRepository ?? (_emailStatusRepository = new EmailStatusRepository(this));
-            }
-        }
 
         private InstructionRepository _instructionRepository;
 
@@ -147,19 +138,7 @@ namespace Data.Infrastructure
             {
                 return _instructionRepository ?? (_instructionRepository = new InstructionRepository(this));
             }
-        }
-
-        private InvitationRepository _invitationRepository;
-
-        public InvitationRepository InvitationRepository
-        {
-            get
-            {
-                return _invitationRepository ?? (_invitationRepository = new InvitationRepository(this));
-            }
-        }
-
-    
+        }    
 
         private StoredFileRepository _storedFileRepository;
 

@@ -16,9 +16,5 @@ namespace Data.Entities
         [ForeignKey("User")]
         public String UserID { get; set; }
         public Fr8AccountDO User { get; set; }
-
-        [ForeignKey("StatusTemplate")]
-        public int Status { get; set; }
-        public _ExpectedResponseStatusTemplate StatusTemplate { get; set; }
     }
 }

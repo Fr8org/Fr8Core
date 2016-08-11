@@ -809,6 +809,10 @@
     <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608111500592_Remove_Kwasant_StateTemplates.cs" />
+    <Compile Include="Migrations\201608111500592_Remove_Kwasant_StateTemplates.Designer.cs">
+      <DependentUpon>201608111500592_Remove_Kwasant_StateTemplates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -936,7 +940,6 @@
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
-    <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
@@ -950,7 +953,6 @@
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
-    <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -959,7 +961,6 @@
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\Authorization\Impl\SqlAuthorizationTokenRepository.cs" />
-    <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
@@ -972,11 +973,8 @@
     <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
-    <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventSyncState.cs" />
-    <Compile Include="States\ExpectedResponseStatus.cs" />
-    <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\PlanState.cs" />
     <Compile Include="States\Roles.cs" />
@@ -993,11 +991,7 @@
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\ConceptDO.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
-    <Compile Include="States\Templates\_ConfirmationStatusTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
-    <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
-    <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
-    <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_RouteStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
@@ -1489,6 +1483,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608111500592_Remove_Kwasant_StateTemplates.resx">
+      <DependentUpon>201608111500592_Remove_Kwasant_StateTemplates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

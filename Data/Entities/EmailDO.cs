@@ -54,9 +54,7 @@ namespace Data.Entities
         public string PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
 
-        [ForeignKey("EmailStatusTemplate")]
         public int? EmailStatus { get; set; }
-        public _EmailStatusTemplate EmailStatusTemplate { get; set; }
 
         [ForeignKey("From"), Required]
         public int? FromID { get; set; }
