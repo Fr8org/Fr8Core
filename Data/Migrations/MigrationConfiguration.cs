@@ -14,6 +14,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using System.Text.RegularExpressions;
+using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
@@ -156,7 +157,13 @@ namespace Data.Migrations
             terminalRegistration.ParticipationState = ParticipationState.Unapproved;
 
             uow.TerminalRepository.Add(terminalRegistration);
+            
             uow.SaveChanges();
+
+            //make the terminal visible for all users
+            var security = ObjectFactory.GetInstance<ISecurityServices>();
+            security.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+            security.SetDefaultRecordBasedSecurityForObject(Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
         }
 
         private static string NormalizeUrl(string terminalUrl)
