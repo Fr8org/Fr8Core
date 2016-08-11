@@ -1,4 +1,4 @@
-Deeper Configuration of the Fr8 Hub
+Configuration of the Fr8 Hub
 ========================
 
 If you simply fire a Fr8 Hub up locally, its core should work with no additional require configuration beyond the setting of your master administrator account.
