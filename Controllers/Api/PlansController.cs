@@ -407,7 +407,7 @@ namespace HubWeb.Controllers
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [ResponseType(typeof(PlanDTO))]
         [HttpPost]
