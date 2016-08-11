@@ -19,6 +19,7 @@ using log4net;
 using Microsoft.AspNet.Identity;
 using System.Threading;
 using Hub.Exceptions;
+using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -163,22 +164,37 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Performs terminal discovery process using endpoint specified
         /// </summary>
-        /// <param name="callbackUrl">Terminal endpoint</param>
+        /// <param name="discoveryRef">Terminal endpoint or TerminalDTO</param>
         /// <response code="200">Result of terminal discovery process</response>
         [HttpPost]
         [ResponseType(typeof(ResponseMessageDTO))]
-        public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
+        public async Task<ResponseMessageDTO> ForceDiscover([FromBody] JToken discoveryRef)
         {
-            if (string.IsNullOrEmpty(callbackUrl))
+            if (discoveryRef == null)
             {
-                Logger.Error($"A terminal has submitted the /forcediscovery request with an empty callbackUrl.");
-                return ErrorDTO.InternalError("Request failed: the callbackUrl parameter was expected but is null.");
+                Logger.Error($"A terminal has submitted the /forcediscovery request with an empty discoveryRef.");
+                return ErrorDTO.InternalError("A terminal has submitted the / forcediscovery request with an empty discoveryRef");
             }
 
-            if (!await _terminalDiscovery.Discover(callbackUrl, false))
+            TerminalDTO terminal;
+
+            if (discoveryRef.Type == JTokenType.String)
             {
-                return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");
+                terminal = new TerminalDTO
+                {
+                    Endpoint = discoveryRef.Value<string>()
+                };
             }
+            else
+            {
+                terminal = discoveryRef.Value<TerminalDTO>();
+            }
+
+            if (!await _terminalDiscovery.Discover(terminal, false))
+            {
+                return ErrorDTO.InternalError($"Failed to call /discover for endoint {terminal.Endpoint}");
+            }
+
             return new ResponseMessageDTO();
         }
     }
