@@ -6,7 +6,7 @@ If you simply fire a Fr8 Hub up locally, its core should work with no additional
 However, there are a number of subsystems that require additional accounts or configuration.
 Web.config looks for these settings in a file called settings.config. A sample of this file is available at settings.config.readme. 
 
-You need to add any settings you want to change or set, and save the file as settings.config (i.e. remove the ".readme".
+You need to add any settings you want to change or set, and save the file as settings.config (i.e. remove the ".readme".)
 
 Some Fr8 Subsystems will not work out of the box until these settings are configured. We've just created an Administration Settings
 Wizard to make this process easier but it's in an early stage.
