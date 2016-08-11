@@ -4,7 +4,7 @@
 
 ## Summary
 
-Terminals often needs to communicate with hub. Some examples include getting payload, running a plan or creating an activity. Terminals need to authenticate to communicate with hub.
+Terminals often needs to communicate with the Hub. Some examples include getting payload, running a plan or creating an activity. These communications requires a terminal to be authenticated by the Hub.
 
 ## Authentication with Hub
 
@@ -16,13 +16,13 @@ When the Hub makes a request to a terminal, it includes 3 headers which are requ
 
 ### Fr8HubCallbackSecret
 
-This header contains the secret key for your terminal. When you need to communicate back with hub you will need this secret as your terminal identifier.
+This header contains the secret key for your terminal. When you need to communicate back with the Hub you will need this secret as your terminal identifier.
 
 ### Fr8HubCallBackUrl
 
-This header contains the url of the hub which is making request to your terminal. All your communications should be made with this hub.
+This header contains the url of the Hub which is making request to your terminal. All your communications should be made with this Hub.
 
-Fr8 is a distributed environment. Your terminal might be in use by many hubs. Therefore this header contains url of the current hub which is making the request.
+Fr8 is a distributed environment. Your terminal might be in use by many Hubs. Therefore this header contains url of the current Hub which is making the request.
 
 ### Fr8UserId
 
@@ -30,7 +30,7 @@ This header contains the id of the user. Current request to your terminal is mad
 
 ### Authentication
 
-When your terminal needs to make a request to hub. It needs to add FR8-TOKEN Authorization header to it's request.
+When your terminal needs to make a request to the Hub, it needs to add FR8-TOKEN Authorization header to it's request.
 
 Header value is created using the following format (without quotes): "FR8-TOKEN key={Fr8HubCallbackSecret}, user={Fr8UserId}"
 
