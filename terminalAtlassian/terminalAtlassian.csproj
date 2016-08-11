@@ -226,12 +226,17 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="Interfaces\IAtlassianSubscriptionManager.cs" />
+    <Compile Include="Interfaces\IAtlassianEventManager.cs" />
     <Compile Include="Interfaces\IAtlassianService.cs" />
     <Compile Include="Interfaces\IssueInfo.cs" />
     <Compile Include="Interfaces\UserInfo.cs" />
+    <Compile Include="Models\JiraSubscriptionPost.cs" />
     <Compile Include="Models\JiraIssueEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Services\AtlassianSubscriptionManager.cs" />
+    <Compile Include="Services\AtlassianEventManager.cs" />
     <Compile Include="Services\AtlassianService.cs" />
     <Compile Include="Startup.cs">
       <SubType>

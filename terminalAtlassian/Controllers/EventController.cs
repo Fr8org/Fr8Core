@@ -15,19 +15,30 @@ namespace terminalAtlassian.Controllers
     {
         private readonly IHubEventReporter _eventReporter;
         private readonly IContainer _container;
+        private readonly IAtlassianEventManager _event;
 
-        public EventController(IHubEventReporter eventReporter, IContainer container)
+        public EventController(IHubEventReporter eventReporter, IContainer container, IAtlassianEventManager eventManager)
         {
             _eventReporter = eventReporter;
             _container = container;
+            _event = eventManager;
         }
 
         [HttpPost]
         [Route("subscribe")]
-        public async Task<IHttpActionResult> ProcessIncomingMedia()
+        public async Task<IHttpActionResult> ProcessIncomingIssue()
         {
-            var content = await Request.Content.ReadAsStringAsync();
-            var issue = JsonConvert.DeserializeObject<JiraIssueEvent>(content);
+            var eventPayLoadContent = await Request.Content.ReadAsStringAsync();
+            await _eventReporter.Broadcast(await _event.ProcessExternalEvents(eventPayLoadContent));
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("events")]
+        public async Task<IHttpActionResult> ProcessHubEvents()
+        {
+            var eventPayLoadContent = await Request.Content.ReadAsStringAsync();
+            await _eventReporter.Broadcast(await _event.ProcessInternalEvents(_container, eventPayLoadContent));
             return Ok();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Atlassian.Jira;
+using Newtonsoft.Json;
 using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Models
@@ -9,6 +10,7 @@ namespace terminalAtlassian.Models
 
         public string WebhookEvent { get; set; }
 
+        [JsonProperty("issue_event_type_name")]
         public string IssueEventTypeName { get; set; }
 
         public JiraUser User { get; set; }
@@ -28,14 +30,50 @@ namespace terminalAtlassian.Models
     }
     public class IssueFields
     {
-        public IssueType IssueType { get; set; }
+        public string Summary { get; set; }
 
-        public Project Project { get; set; }
+        public string Resolution { get; set; }
 
-        public IssueResolution Resolution { get; set; }
+        public IssueProject Project { get; set; }
 
         public IssuePriority Priority { get; set; }
 
-        public IssueLabels Labels { get; set; }
+        public IssueAssignee Assignee { get; set; }
+
+        public IssueStatus Status { get; set; }
+
+        public IssueType IssueType { get; set; }
+    }
+    public class IssueType
+    {
+        public string Name { get; set; }
+
+        public bool SubTask { get; set; }
+    }
+    public class IssueProject
+    {
+        public string Name { get; set; }
+
+        public string Key { get; set; }
+    }
+
+    public class IssuePriority
+    {
+        public string Name { get; set; }
+    }
+
+    public class IssueAssignee
+    {
+        public string Name { get; set; }
+        public string EmailAddress { get; set; }
+
+        public string DisplayName { get; set; }
+
+    }
+
+    public class IssueStatus
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

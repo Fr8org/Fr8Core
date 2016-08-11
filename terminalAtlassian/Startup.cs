@@ -55,7 +55,8 @@ namespace terminalAtlassian
             return new Type[] {
                 typeof(Controllers.ActivityController),
                 typeof(Controllers.TerminalController),
-                typeof(Controllers.AuthenticationController)
+                typeof(Controllers.AuthenticationController),
+                typeof(Controllers.EventController)
             };
         }
     }
