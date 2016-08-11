@@ -112,15 +112,13 @@ namespace HubWeb.Controllers.Api
                     throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
                 }
 
-                var plan = _planDirectoryService.CreateFromTemplate(planTemplateDTO.PlanContents, User.Identity.GetUserId());
-
-                //var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
+                var plan = await _planDirectoryService.CreateFromTemplate(planTemplateDTO.PlanContents, User.Identity.GetUserId());
 
                 return Ok(
                     new
                     {
                         RedirectUrl = CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                            + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
+                            + "/dashboard/plans/" + plan.Id + "/builder?viewMode=plan"
                     }
                 );
             }
