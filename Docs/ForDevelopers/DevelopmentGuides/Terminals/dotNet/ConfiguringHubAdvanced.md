@@ -74,8 +74,8 @@ In some non-OAuth scenarios, the Hub needs to store user passwords. Fr8.co does 
 <!-- Key Vault -->
 <add key="AuthorizationTokenStorageMode" value="KeyVault" />
 <add key="KeyVaultUrl" value="https://fr8Dev2KV.vault.azure.net:443" />
-<add key="KeyVaultClientId" value="472bbcb2-b99a-4ba9-812f-a9f90d1aa47f" />
-<add key="KeyVaultClientSecret" value="UaqUni5KaywTeOh8UEj8zpz+qAnlxIRTi50bTSKer6Y=" />
+<add key="KeyVaultClientId" value="[###]" />
+<add key="KeyVaultClientSecret" value="[###]" />
 ```
 
 This is turned off by default. For more information look in settings.config.readme.
