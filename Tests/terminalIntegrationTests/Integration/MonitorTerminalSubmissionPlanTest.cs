@@ -75,9 +75,7 @@ namespace terminalIntegrationTests.Integration
                 return ConfigurationManager.AppSettings["GoogleTestAccountId"];
             }
         }
-
-
-
+        
         [Test]
         public async Task MonitorTerminalSubmissionPlan()
         {
