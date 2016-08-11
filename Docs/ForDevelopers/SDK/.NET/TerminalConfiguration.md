@@ -13,10 +13,16 @@ the Terminal with the development server at dev.fr8.com. Once that's done, you c
 from your Terminal alongside those of the other Terminals the Hub knows about. A third option is to use the swagger interface to send some requests
 to your Terminal and study the responses.
 
-Terminal configuration settings are found in Settings.config.readme, which is in the Config folder of each project. Example: for terminalSlack project
+
+
+Terminal configuration settings are split between a "public" set in the standard Web.config of each Hub or Terminal project, and a private set stored in Settings.config.readme, which is in the Config folder of each project. Example: for terminalSlack project
 the settings are at Config/terminalSlack/Settings.config.readme.
 
 Make any appropriate changes and save the resulting file as Settings.config in the same location. Restart the Terminal and you'll be in business.
 
-
+####URL Endpoint
+Each Terminal has a setting in its Web.config file that specifies the address of the terminal. It looks like this:
+`  <add key="terminalName.TerminalEndpoint" value="http://localhost:8888" />`
+We don't store port settings in the repository, so once you open the solution for the first time Visual Studio will assign random port numbers for all web applications.
+If you are using IIS express you can either manually change the address in Web section of project properties for each terminal you are about to run. Or you can use Fr8Core\PortSetter utillity application, that will try to do it for you for all the terminals. 
 
