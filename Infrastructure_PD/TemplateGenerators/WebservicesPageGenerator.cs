@@ -7,9 +7,9 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using Hub.Resources;
+using HubWeb.Templates;
 
-namespace Hub.Services.PlanDirectory
+namespace HubWeb.Infrastructure_PD.TemplateGenerators
 {
     public class WebservicesPageGenerator : IWebservicesPageGenerator
     {
@@ -59,9 +59,9 @@ namespace Hub.Services.PlanDirectory
                 var curRelatedPlans = new List<PublishPlanTemplateDTO>();
                 foreach (var planTemplateId in curPageDefinition.PlanTemplatesIds)
                 {
-                    var relatedPlan = _planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result;
-                    if (relatedPlan != null)
-                        curRelatedPlans.Add(relatedPlan);
+                    var planDto = _planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result;
+                    if (planDto != null)
+                        curRelatedPlans.Add(planDto);
                 }
                 var relatedPlans = new List<Tuple<string, string, string>>();
                 foreach (var publishPlanTemplateDTO in curRelatedPlans)
@@ -71,7 +71,7 @@ namespace Hub.Services.PlanDirectory
                         publishPlanTemplateDTO.Name,
                         publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
                         CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                        + "dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+                        + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
                 }
                 await _templateGenerator.Generate(new PlanCategoryTemplate(), pageName, new Dictionary<string, object>
                 {
