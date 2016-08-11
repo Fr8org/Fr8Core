@@ -7,13 +7,13 @@ To do this one should create a control list and configure it’s template. Templ
 ```json
 {
 	 "controlGroups": [
-		[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}],
-		[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}]
+		[{"type":"TextBox","name":"key"},{"type":"TextBox","name":"value"}],
+		[{"type":"TextBox","name":"key"},{"type":"TextBox","name":"value"}]
 	 ],
 	 "templateContainer": {
 		 "template": [
-			 { "type": "TextBox", "name": "key" ... },
-			 { "type": "TextBox", "name": "value" ...}
+			 { "type": "TextBox", "name": "key"  },
+			 { "type": "TextBox", "name": "value"}
 		 ],
 		 "name": "key_value_pair"
 	 },

@@ -4,7 +4,7 @@ The BuildMessageAppender is a composite control which includes a rich text edito
 
 ##Fields
 
-The BuildMessageAppender extends the [TextArea](TextArea.md) class which includes the fields in the [ControlDefinitionDTO](/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) class.
+The BuildMessageAppender extends the [TextArea](TextArea.md) class which includes the fields in the [ControlDefinitionDTO](/Docs/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) class.
 
  In addition to the inherited fields, the BuildMessageAppender class includes the following fields:
 

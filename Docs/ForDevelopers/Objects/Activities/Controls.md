@@ -10,8 +10,6 @@ As a result, the JSON docs here are a useful reference, but you'll want to look 
 
 Note that all controls extend the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) base set.
 
-
-
 ##Controls
 *[BuildMessageAppender](Controls/BuildMessageAppender.md)*
 
