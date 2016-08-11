@@ -22,7 +22,11 @@ namespace Hub.Services.PlanDirectory
         private readonly ITemplateGenerator _templateGenerator;
         private readonly ITagGenerator _tagGenerator;
 
-        public WebservicesPageGenerator(IPageDefinition pageDefinitionService, IPlanTemplate planTemplateService, ITemplateGenerator templateGenerator, ITagGenerator tagGenerator)
+        public WebservicesPageGenerator(
+            IPageDefinition pageDefinitionService,
+            IPlanTemplate planTemplateService,
+            ITemplateGenerator templateGenerator,
+            ITagGenerator tagGenerator)
         {
             _pageDefinitionService = pageDefinitionService;
             _planTemplateService = planTemplateService;
@@ -55,7 +59,9 @@ namespace Hub.Services.PlanDirectory
                 var curRelatedPlans = new List<PublishPlanTemplateDTO>();
                 foreach (var planTemplateId in curPageDefinition.PlanTemplatesIds)
                 {
-                    curRelatedPlans.Add(_planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result);
+                    var relatedPlan = _planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result;
+                    if (relatedPlan != null)
+                        curRelatedPlans.Add(relatedPlan);
                 }
                 var relatedPlans = new List<Tuple<string, string, string>>();
                 foreach (var publishPlanTemplateDTO in curRelatedPlans)

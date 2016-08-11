@@ -8,7 +8,7 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace Hub.Resources
+namespace HubWeb.Templates
 {
     /// <summary>
     /// Class to produce the template output

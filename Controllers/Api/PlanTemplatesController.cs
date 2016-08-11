@@ -10,7 +10,6 @@ using Hub.Infrastructure;
 using Hub.Interfaces;
 using log4net;
 using Microsoft.AspNet.Identity;
-using PlanDirectory.Infrastructure;
 using StructureMap;
 
 namespace HubWeb.Controllers.Api
@@ -23,6 +22,7 @@ namespace HubWeb.Controllers.Api
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
         private readonly IPlanDirectoryService _planDirectoryService;
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
         private static readonly ILog Logger = LogManager.GetLogger("PlanDirectory");
 
         public PlanTemplatesController()
@@ -32,6 +32,7 @@ namespace HubWeb.Controllers.Api
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _webservicesPageGenerator = ObjectFactory.GetInstance<IWebservicesPageGenerator>();
+            _planTemplateDetailsGenerator = ObjectFactory.GetInstance<IPlanTemplateDetailsGenerator>();
             _planDirectoryService = ObjectFactory.GetInstance<IPlanDirectoryService>();
         }
 
@@ -43,6 +44,7 @@ namespace HubWeb.Controllers.Api
             var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
             await _searchProvider.CreateOrUpdate(planTemplateCM);
             await _webservicesPageGenerator.Generate(planTemplateCM, fr8AccountId);
+            await _planTemplateDetailsGenerator.Generate(dto);
             return Ok();
         }
 
@@ -63,8 +65,9 @@ namespace HubWeb.Controllers.Api
                     return Unauthorized();
                 }
                 await _planTemplate.Remove(fr8AccountId, id);
-                await _searchProvider.Remove(id);
             }
+            //if planTemplate is not in MT we should delete it from azure search
+            await _searchProvider.Remove(id);
 
             return Ok();
         }
@@ -142,19 +145,28 @@ namespace HubWeb.Controllers.Api
 
             var fr8AccountId = User.Identity.GetUserId();
             var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            int found_templates = 0;
+            int missed_templates = 0;
+
             foreach (var searchItemDto in searchResult.PlanTemplates)
             {
                 var planTemplateDto = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, searchItemDto.ParentPlanId);
                 if (planTemplateDto == null)
                 {
+                    // if plan doesn't exist in MT let's remove it from index
+                    await _searchProvider.Remove(searchItemDto.ParentPlanId);
+                    missed_templates++;
                     continue;
                 }
+                found_templates++;
                 var planTemplateCm = await _planTemplate.CreateOrUpdate(fr8AccountId, planTemplateDto);
                 await _searchProvider.CreateOrUpdate(planTemplateCm);
                 await _webservicesPageGenerator.Generate(planTemplateCm, fr8AccountId);
             }
             watch.Stop();
             var elapsed = watch.Elapsed;
+            Logger.Info($"Page generator: templates found: {found_templates}, templates missed: {missed_templates}");
             Logger.Info($"Page Generator elapsed time: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
 
             return Ok();

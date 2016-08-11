@@ -33,6 +33,7 @@ namespace Hub.Services
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
         private readonly IActivity _activityService;
         private readonly ICrateManager _crateManager;
 
@@ -47,7 +48,8 @@ namespace Hub.Services
             ISearchProvider searchProvider,
             IWebservicesPageGenerator webservicesPageGenerator,
             IActivity activityService,
-            ICrateManager crateManager)
+            ICrateManager crateManager,
+            IPlanTemplateDetailsGenerator planTemplateDetailsGenerator)
         {
             _hmacService = hmac;
             _client = client;
@@ -61,6 +63,7 @@ namespace Hub.Services
             _webservicesPageGenerator = webservicesPageGenerator;
             _activityService = activityService;
             _crateManager = crateManager;
+            _planTemplateDetailsGenerator = planTemplateDetailsGenerator;
         }
 
 
@@ -80,6 +83,9 @@ namespace Hub.Services
 
         public async Task Share(Guid planId, string userId)
         {
+
+            try
+            {
             var planDto = CrateTemplate(planId, userId);
 
             var dto = new PublishPlanTemplateDTO
@@ -93,9 +99,11 @@ namespace Hub.Services
             var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
             await _searchProvider.CreateOrUpdate(planTemplateCM);
             await _webservicesPageGenerator.Generate(planTemplateCM, userId);
+            await _planTemplateDetailsGenerator.Generate(dto);
 
             // Notify user with directing him to PlanDirectory with related search query
             var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
@@ -103,6 +111,18 @@ namespace Hub.Services
                 Message = $"Plan Shared. To view, click on " + url,
                 Collapsed = false
             }, userId);
+        }
+            catch
+            {
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericSuccess,
+                    Subject = "Success",
+                    Message = $"Plan sharing failed",
+                    Collapsed = false
+                }, userId);
+            }
+
         }
 
         public async Task Unpublish(Guid planId, string userId, bool privileged)
@@ -153,7 +173,7 @@ namespace Hub.Services
             {
                 var plan = _planService.GetPlanByActivityId(uow, planId);
 
-                clonedPlan = (PlanDO) PlanTreeHelper.CloneWithStructure(plan);
+                clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(plan);
             }
 
             clonedPlan.PlanState = PlanState.Inactive;

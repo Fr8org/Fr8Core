@@ -19,6 +19,7 @@ using log4net;
 using Microsoft.AspNet.Identity;
 using System.Threading;
 using Hub.Exceptions;
+using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -64,8 +65,7 @@ namespace HubWeb.Controllers
                 var terminals = uow.TerminalRepository.GetAll()
                     .Select(Mapper.Map<TerminalDTO>)
                     .ToList();
-
-
+                
                 return Ok(terminals);
             }
         }
@@ -77,6 +77,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(List<TerminalDTO>))]
         public IHttpActionResult All()
         {
             var terminals = _terminal.GetAll()
@@ -84,6 +85,25 @@ namespace HubWeb.Controllers
                 .ToList();
             return Ok(terminals);
         }
+
+        /// <summary>
+        /// Retrieves the collection of own terminals registered from current user.
+        /// In case of Admin user, returns a collection of all terminals   
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Collection of terminals</response>
+        /// <response code="403">Unauthorized request</response>
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [ResponseType(typeof(List<TerminalDTO>))]
+        public IHttpActionResult GetByCurrentUser()
+        {
+            var terminals = _terminal.GetByCurrentUser()
+                .Select(Mapper.Map<TerminalDTO>)
+                .ToList();
+            return Ok(terminals);
+        }
+
 
         /// <summary>
         /// Retrieves Terminal registered in the current hub by his identifier
@@ -144,22 +164,37 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Performs terminal discovery process using endpoint specified
         /// </summary>
-        /// <param name="callbackUrl">Terminal endpoint</param>
+        /// <param name="discoveryRef">Terminal endpoint or TerminalDTO</param>
         /// <response code="200">Result of terminal discovery process</response>
         [HttpPost]
         [ResponseType(typeof(ResponseMessageDTO))]
-        public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
+        public async Task<ResponseMessageDTO> ForceDiscover([FromBody] JToken discoveryRef)
         {
-            if (string.IsNullOrEmpty(callbackUrl))
+            if (discoveryRef == null)
             {
-                Logger.Error($"A terminal has submitted the /forcediscovery request with an empty callbackUrl.");
-                return ErrorDTO.InternalError("Request failed: the callbackUrl parameter was expected but is null.");
+                Logger.Error($"A terminal has submitted the /forcediscovery request with an empty discoveryRef.");
+                return ErrorDTO.InternalError("A terminal has submitted the / forcediscovery request with an empty discoveryRef");
             }
 
-            if (!await _terminalDiscovery.Discover(callbackUrl, false))
+            TerminalDTO terminal;
+
+            if (discoveryRef.Type == JTokenType.String)
             {
-                return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");
+                terminal = new TerminalDTO
+                {
+                    Endpoint = discoveryRef.Value<string>()
+                };
             }
+            else
+            {
+                terminal = discoveryRef.Value<TerminalDTO>();
+            }
+
+            if (!await _terminalDiscovery.Discover(terminal, false))
+            {
+                return ErrorDTO.InternalError($"Failed to call /discover for endoint {terminal.Endpoint}");
+            }
+
             return new ResponseMessageDTO();
         }
     }

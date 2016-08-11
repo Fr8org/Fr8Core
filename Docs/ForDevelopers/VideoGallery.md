@@ -3,6 +3,7 @@ Video Gallery
 
 Development Topics
 ------------------
+[Fr8 Open Source Intro](https://vimeo.com/178394308)
 
 [Fr8 Plans: The Heart of the System](https://vimeo.com/173975037)
 
