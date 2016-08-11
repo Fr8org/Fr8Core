@@ -41,6 +41,7 @@ Step 4: Build and Run Fr8
 [Build and Run](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/BuildRunFr8.md)
 
 
+Step 5: [Run the Configuration Wizard](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfigurationWizard.md)
 
 ------------------
 Next: Try building a [Terminal Project](./TerminalProjects.md)
