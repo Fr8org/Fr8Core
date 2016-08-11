@@ -112,7 +112,7 @@ namespace HubWeb.Controllers.Api
                     throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
                 }
 
-                var plan = _planDirectoryService.CreateFromTemplate(planTemplateDTO.PlanContents, User.Identity.GetUserId());
+                var plan = await _planDirectoryService.CreateFromTemplate(planTemplateDTO.PlanContents, User.Identity.GetUserId());
 
                 //var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
 
