@@ -17,16 +17,18 @@ param(
 	[string]$newHostname,
 
 	[Parameter(Mandatory = $false)]
-	[string]$overrideDbName
+	[string]$overrideDbName,
+
+	[Parameter(Mandatory = $false)]
+	[string]$serviceName
 )
 
 $ErrorActionPreference = 'Stop'
-$commandText = "
+$commandTextTmpl = "
 	UPDATE Terminals SET [Endpoint] = 
-	('$newHostname' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
+	('http://{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
 	WHERE CHARINDEX (':', REVERSE ([DevUrl])) <= 6 AND IsFr8OwnTerminal = 1"
 
-Write-Host "Update terminal URLs to $newHostname"
 
 switch ($environment) {
 	dev {}
@@ -34,16 +36,21 @@ switch ($environment) {
 		if ($newHostname -eq $null) {
 			throw "-newHostname is not specified. This argument is required for the development environment."
 		}
+		$commandText = $commandTextTmpl -replace '{newHostname}', $newHostname
 		break;	
 	}
 	sta {}
 	staging {
+		if ($serviceName -eq $null) {
+			throw "-serviceName is not specified. This argument is required for the staging environment."
+		}
 		$deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 		if ($newHostname -ne $null) {
 			Write-Warning "-newHostname parameter is ignored when -environment is set to 'staging'"
 		}
 		$newHostname = $deployment.Url.Host
 		Write-Host "Staging hostname is $newHostname"
+		$commandText = $commandTextTmpl -replace '{newHostname}', $newHostname
 		break;
 	}
 	prod {}
@@ -51,11 +58,14 @@ switch ($environment) {
 		if ($newHostname -ne $null) {
 			Write-Warning "-newHostname parameter is ignored when -environment is set to 'production'"
 		}
+
 		$commandText = "
 			UPDATE Terminals SET [Endpoint] = [ProdUrl] WHERE ProdUrl IS NOT NULL AND ParticipationState=1"
 		break;
 	}
 }
+
+Write-Host "Updating terminal URLs to $newHostname"
 
 Write-Host $commandText 
 
