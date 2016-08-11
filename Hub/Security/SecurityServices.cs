@@ -153,12 +153,10 @@ namespace Hub.Security
         /// <param name="customPermissionTypes">You can define your own permission types for a object, or use default permission set for Standard Users</param>
         public void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null)
         {
-            if (!IsAuthenticated()) return;
-
-            var currentUserId = GetCurrentUser();
-            if (string.IsNullOrEmpty(currentUserId))
+            string currentUserId = string.Empty;
+            if (IsAuthenticated())
             {
-                return;
+                currentUserId = GetCurrentUser();
             }
 
             //get organization id
