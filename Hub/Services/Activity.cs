@@ -424,6 +424,17 @@ namespace Hub.Services
                     throw new MissingObjectException($"Parent plan with Id {submittedActiviy.ParentPlanNodeId} doesn't exist");
                 }
                 originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
+                
+                //This might mean that this plan's parent was changed
+                if (originalAction == null)
+                {
+                    originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
+                    if (originalAction != null) {
+                        var originalActionsParent = uow.PlanRepository.Reload<PlanNodeDO>(originalAction.ParentPlanNodeId);
+                        originalActionsParent.ChildNodes.Remove(originalAction);
+                        originalAction.ParentPlanNodeId = plan.Id;
+                    }
+                }
             }
             else
             {
