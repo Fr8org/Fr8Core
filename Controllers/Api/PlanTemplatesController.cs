@@ -65,8 +65,9 @@ namespace HubWeb.Controllers.Api
                     return Unauthorized();
                 }
                 await _planTemplate.Remove(fr8AccountId, id);
-                await _searchProvider.Remove(id);
             }
+            //if planTemplate is not in MT we should delete it from azure search
+            await _searchProvider.Remove(id);
 
             return Ok();
         }
@@ -144,19 +145,28 @@ namespace HubWeb.Controllers.Api
 
             var fr8AccountId = User.Identity.GetUserId();
             var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            int found_templates = 0;
+            int missed_templates = 0;
+
             foreach (var searchItemDto in searchResult.PlanTemplates)
             {
                 var planTemplateDto = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, searchItemDto.ParentPlanId);
                 if (planTemplateDto == null)
                 {
+                    // if plan doesn't exist in MT let's remove it from index
+                    await _searchProvider.Remove(searchItemDto.ParentPlanId);
+                    missed_templates++;
                     continue;
                 }
+                found_templates++;
                 var planTemplateCm = await _planTemplate.CreateOrUpdate(fr8AccountId, planTemplateDto);
                 await _searchProvider.CreateOrUpdate(planTemplateCm);
                 await _webservicesPageGenerator.Generate(planTemplateCm, fr8AccountId);
             }
             watch.Stop();
             var elapsed = watch.Elapsed;
+            Logger.Info($"Page generator: templates found: {found_templates}, templates missed: {missed_templates}");
             Logger.Info($"Page Generator elapsed time: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
 
             return Ok();
