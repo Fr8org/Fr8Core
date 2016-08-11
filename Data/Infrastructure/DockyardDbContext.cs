@@ -246,7 +246,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
-            modelBuilder.Entity<InvitationDO>().ToTable("Invitations");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");

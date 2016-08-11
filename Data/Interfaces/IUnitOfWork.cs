@@ -16,11 +16,11 @@ namespace Data.Interfaces
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
         IContainerRepository ContainerRepository { get; }
-        EmailStatusRepository EmailStatusRepository { get; }
+        //EmailStatusRepository EmailStatusRepository { get; }
         //EnvelopeRepository EnvelopeRepository { get; }
         //EventRepository EventRepository { get; }
         InstructionRepository InstructionRepository { get; }
-        InvitationRepository InvitationRepository { get; }
+        //InvitationRepository InvitationRepository { get; }
         //InvitationResponseRepository InvitationResponseRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
