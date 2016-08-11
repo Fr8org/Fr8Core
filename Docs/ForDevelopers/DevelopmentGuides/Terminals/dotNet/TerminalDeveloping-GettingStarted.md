@@ -30,7 +30,7 @@ Step 2: Clone the Repositories
 Start by cloning [Fr8Core](https://github.com/Fr8org/Fr8Core). This will provide you with all Hub and Client code, and all of the Terminals that have been written in .NET.
 
 
-Step 3: Hub Configuration (IF YOU'RE NOT GOING TO RUN A LOCAL HUB, SKIP to STEP 4)
+Step 3: Hub Configuration (Skip to Step 4 unless you want to run a local Hub)
 ===================================================
 
 Do step 3 only if you want to run a local Hub. [You may want to simplify your life by developing against a public Hub](/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md).
@@ -52,7 +52,7 @@ Step 4: Build and Run Fr8
 ========================
 [Build and Run](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/BuildRunFr8.md)
 
-If you're running in Debug mode, the Administration Wizard should appear in a web page, allowing you to configure an admin account.  
+
 
 ------------------
 Next: Try building a [Terminal Project](./TerminalProjects.md)
