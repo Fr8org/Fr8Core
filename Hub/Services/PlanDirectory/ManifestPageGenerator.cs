@@ -78,7 +78,7 @@ namespace Hub.Services.PlanDirectory
                 }
                 pageDefinition.Title = $"Manifest description - {manifestName}";
                 pageDefinition.Description = $"Basic information and sample JSON of all registered version of '{manifestName}' manifest";
-                pageDefinition.Url = new Uri($"{_templateGenerator.BaseUrl}/{fileName}");
+                pageDefinition.Url = new Uri($"{_templateGenerator.BaseUrl}{fileName}");
                 await _templateGenerator.Generate(new ManifestDescriptionTemplate(), fileName, new Dictionary<string, object>
                 {
                     ["Manifests"] = manifests

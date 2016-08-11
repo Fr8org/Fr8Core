@@ -113,6 +113,30 @@
                     });
             };
 
+            $scope.planDetails = function (planTemplate) {
+                Metronic.blockUI({ animate: true });
+
+                checkAuthentication()
+                    .then(function (authenticated) {
+                        if (!authenticated) {
+                            $uibModal.open({
+                                templateUrl: '/AuthenticateDialog.html',
+                                controller: 'AuthenticateDialogController'
+                            });
+
+                            Metronic.unblockUI();
+                        }
+                        else {
+                            var url = urlPrefix + '/details/' + planTemplate.name + '-' + planTemplate.parentPlanId + '.html';
+                            window.open(url, '_blank');
+                            Metronic.unblockUI();
+                        }
+                    })
+                    .finally(function () {
+                        Metronic.unblockUI();
+                    });
+            };
+
             $scope.removePlan = function (planTemplate) {
                 Metronic.blockUI({ animate: true });
 
@@ -124,7 +148,7 @@
                     });
             };
 
-            $scope.generatePages = function() {
+            $scope.generatePages = function () {
                 var url = urlPrefix + '/api/v1/plan_templates/generatepages';
                 $http.post(url, null);
             }

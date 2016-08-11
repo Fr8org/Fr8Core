@@ -65,8 +65,7 @@ namespace HubWeb.Controllers
                 var terminals = uow.TerminalRepository.GetAll()
                     .Select(Mapper.Map<TerminalDTO>)
                     .ToList();
-
-
+                
                 return Ok(terminals);
             }
         }
@@ -78,6 +77,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(List<TerminalDTO>))]
         public IHttpActionResult All()
         {
             var terminals = _terminal.GetAll()
@@ -85,6 +85,25 @@ namespace HubWeb.Controllers
                 .ToList();
             return Ok(terminals);
         }
+
+        /// <summary>
+        /// Retrieves the collection of own terminals registered from current user.
+        /// In case of Admin user, returns a collection of all terminals   
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Collection of terminals</response>
+        /// <response code="403">Unauthorized request</response>
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [ResponseType(typeof(List<TerminalDTO>))]
+        public IHttpActionResult GetByCurrentUser()
+        {
+            var terminals = _terminal.GetByCurrentUser()
+                .Select(Mapper.Map<TerminalDTO>)
+                .ToList();
+            return Ok(terminals);
+        }
+
 
         /// <summary>
         /// Retrieves Terminal registered in the current hub by his identifier

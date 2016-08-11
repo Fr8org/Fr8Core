@@ -9,6 +9,7 @@ namespace Hub.Interfaces
     public interface ITerminal
     {
         IEnumerable<TerminalDO> GetAll();
+        IEnumerable<TerminalDO> GetByCurrentUser();
         Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
         TerminalDO GetByKey(Guid terminalId);
         TerminalDO GetByNameAndVersion(string name, string version);
