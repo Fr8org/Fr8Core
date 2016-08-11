@@ -1,3 +1,7 @@
+﻿<#@ template language="C#" #>
+<#@ parameter name="Name" type="System.String" #>
+<#@ parameter name="Tags" type="System.Collections.Generic.IDictionary<System.String, System.String>" #>
+<#@ parameter name="RelatedPlans" type="System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>" #>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,11 +24,19 @@
         </div>
     </div>
     <div class="container">        
-        <p style="font-size: 30px">Plan Directory - slack.html</p>
+        <p style="font-size: 30px">Plan Directory - <#=Name#></p>
         <div class="icons">
-						<img class="web-service-icon" src="../Content/icons/web_services/slack-icon-64x64.png"/>		
-				                        
-		        </div>
+			<# int i = 0;
+			foreach (var tag in Tags)
+			{ #>
+			<img class="web-service-icon" src="..<#=tag.Value #>"/>		
+				<# if (i < Tags.Count - 1)
+				{ #>
+				<img src="../Content/icons/plus.png"/>
+				<# i++;
+				} #>                        
+		<# } #>
+        </div>
         <br/>
         <p style="font-size: 15px">Plan Definition Description</p>
         <p style="font-size: 22px">Related Plans</p>
@@ -38,13 +50,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                                        <tr>
-                        <th scope="row">1</th>
-                        <td>Untitled Plan 5</td>
-                        <td>Untitled Plan 5</td>
-                        <td><a href="http://localhost:30643/dashboard/plans/794a08c2-8e1e-4e4c-ab0d-f6c840623ed8/builder?viewMode=plan">Create</a></td>
+                    <# int number = 1;
+                    foreach (var plan in RelatedPlans) 
+                    {#>
+                    <tr>
+                        <th scope="row"><#=number++#></th>
+                        <td><#=plan.Item1#></td>
+                        <td><#=plan.Item2#></td>
+                        <td><a href="<#=plan.Item3#>">Create</a></td>
                     </tr>                   
-                                        
+                    <# } #>
+                    
                 </tbody>
             </table>
 </div>

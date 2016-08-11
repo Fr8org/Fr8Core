@@ -3,15 +3,15 @@ using System.IO;
 using System.Reflection;
 using System.Web.Hosting;
 using Data.Repositories;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using Hub.Services;
 using Hub.Services.PlanDirectory;
+using HubWeb.Infrastructure_PD.TemplateGenerators;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-namespace PlanDirectory.Infrastructure
+namespace HubWeb.Infrastructure_PD
 {
     public class PlanDirectoryBootStrapper
     {
@@ -28,6 +28,7 @@ namespace PlanDirectory.Infrastructure
 
                 ConfigureManifestPageGenerator(planDirectoryUrl, serverPath);
                 ConfigurePlanPageGenerator(planDirectoryUrl, serverPath);
+                ConfigurePlanTemplateDetailsPageGenerator(planDirectoryUrl, serverPath);
             }
 
             private void ConfigurePlanPageGenerator(Uri planDirectoryUrl, string serverPath)
@@ -40,6 +41,12 @@ namespace PlanDirectory.Infrastructure
             {
                 var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}/manifestpages"), $"{serverPath}/manifestpages");
                 For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+            }
+
+            private void ConfigurePlanTemplateDetailsPageGenerator(Uri planDirectoryUrl, string serverPath)
+            {
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}details"), $"{serverPath}/details");
+                For<IPlanTemplateDetailsGenerator>().Use<PlanTemplateDetailsGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private static string GetServerPath()

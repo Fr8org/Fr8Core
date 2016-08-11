@@ -32,6 +32,7 @@ namespace Hub.Services
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
 
 
 
@@ -43,7 +44,8 @@ namespace Hub.Services
                                     IActivityTemplate activityTemplate,
                                     IPlanTemplate planTemplate,
                                     ISearchProvider searchProvider,
-                                    IWebservicesPageGenerator webservicesPageGenerator)
+                                    IWebservicesPageGenerator webservicesPageGenerator,
+                                    IPlanTemplateDetailsGenerator planTemplateDetailsGenerator)
         {
             _hmacService = hmac;
             _client = client;
@@ -55,6 +57,7 @@ namespace Hub.Services
             _planTemplate = planTemplate;
             _searchProvider = searchProvider;
             _webservicesPageGenerator = webservicesPageGenerator;
+            _planTemplateDetailsGenerator = planTemplateDetailsGenerator;
         }
 
 
@@ -77,30 +80,32 @@ namespace Hub.Services
 
             try
             {
-                var planDto = CrateTemplate(planId, userId);
+            var planDto = CrateTemplate(planId, userId);
 
-                var dto = new PublishPlanTemplateDTO
-                {
-                    Name = planDto.Name,
-                    Description = planDto.Description,
-                    ParentPlanId = planId,
-                    PlanContents = planDto
-                };
+            var dto = new PublishPlanTemplateDTO
+            {
+                Name = planDto.Name,
+                Description = planDto.Description,
+                ParentPlanId = planId,
+                PlanContents = planDto
+            };
 
-                var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
-                await _searchProvider.CreateOrUpdate(planTemplateCM);
-                await _webservicesPageGenerator.Generate(planTemplateCM, userId);
-                // Notify user with directing him to PlanDirectory with related search query
-                var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
+            await _searchProvider.CreateOrUpdate(planTemplateCM);
+            await _webservicesPageGenerator.Generate(planTemplateCM, userId);
+            await _planTemplateDetailsGenerator.Generate(dto);
 
-                _pusherNotifier.NotifyUser(new NotificationMessageDTO
-                {
-                    NotificationType = NotificationType.GenericSuccess,
-                    Subject = "Success",
-                    Message = $"Plan Shared. To view, click on " + url,
-                    Collapsed = false
-                }, userId);
-            }
+            // Notify user with directing him to PlanDirectory with related search query
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericSuccess,
+                Subject = "Success",
+                Message = $"Plan Shared. To view, click on " + url,
+                Collapsed = false
+            }, userId);
+        }
             catch
             {
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
