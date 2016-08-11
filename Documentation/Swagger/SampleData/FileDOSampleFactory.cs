@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Entities;
+using Fr8.Infrastructure.Documentation.Swagger;
 
 namespace HubWeb.Documentation.Swagger
 {

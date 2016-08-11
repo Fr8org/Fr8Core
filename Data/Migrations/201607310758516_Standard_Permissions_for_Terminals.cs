@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Standard_Permissions_for_Terminals : DbMigration
+    public partial class Standard_Permissions_for_Terminals : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
@@ -31,7 +31,7 @@ namespace Data.Migrations
                 insert into dbo.RolePermissions(Id, PermissionSetId, RoleId, LastUpdated, CreateDate) 
                     values ('{guestUserRolePermissionId}', '{permissionSetId}', (select top 1 Id from dbo.AspNetRoles where Name= 'Guest'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
                 insert into dbo.RolePermissions(Id, PermissionSetId, RoleId, LastUpdated, CreateDate) 
-                    values ('{standardUserRolePermissionId}', '{permissionSetId}', (select top 1 Id from dbo.AspNetRoles where Name= 'Customer'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
+                    values ('{standardUserRolePermissionId}', '{permissionSetId}', (select top 1 Id from dbo.AspNetRoles where Name= 'StandardUser'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
 
                 -- create ObjectRolePermissions for all terminals for above defined 2 RolePermissions
                 insert into dbo.ObjectRolePermissions(id, ObjectId, RolePermissionId, Type, LastUpdated, CreateDate, Fr8AccountId)

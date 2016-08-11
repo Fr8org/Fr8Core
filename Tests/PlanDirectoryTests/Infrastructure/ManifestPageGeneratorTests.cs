@@ -10,8 +10,8 @@ using Moq;
 using NUnit.Framework;
 using Hub.Exceptions;
 using Hub.Enums;
-using PlanDirectory.Infrastructure;
-
+using Hub.Services.PlanDirectory;
+using HubWeb.Infrastructure_PD.TemplateGenerators;
 
 namespace PlanDirectoryTests.Infrastructure
 {

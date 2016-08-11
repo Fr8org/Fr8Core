@@ -1,4 +1,6 @@
 ﻿@using HubWeb.Infrastructure_HubWeb
+@using Microsoft.AspNet.Identity;
+@using System.Threading;
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8 no-js" data-ng-app="app"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js" data-ng-app="app"> <![endif]-->
@@ -37,7 +39,7 @@
     </div>
     <!-- END HEADER -->
 
-    <div class="main-wrapper">
+    <div class="main-wrapper" activity-full-height>
 
         <!-- BEGIN PAGE SPINNER -->
         <div ng-spinner-bar class="page-spinner-bar">
@@ -88,6 +90,10 @@
 
 
     </script>
+    <script>
+        window.userId = '@(Thread.CurrentPrincipal.Identity.GetUserId())';
+    </script>
+
 <script type="text/javascript">
     var segmentKey = '@Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey")';
     if (segmentKey !== "") {

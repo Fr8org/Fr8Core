@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using HubTests.Controllers.Api;
 using Data.States;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
@@ -61,9 +62,11 @@ namespace HubTests.Controllers
                         Name = activityTemplate.TerminalName,
                         Version = activityTemplate.TerminalVersion,
                         TerminalStatus = TerminalStatus.Active,
-                        Label = "dummy"
+                        Label = "dummy",
+                        ParticipationState = ParticipationState.Approved,
+                        OperationalState = OperationalState.Active,
+                        Endpoint = "http://localhost:11111"
                     }
-
                 };
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 plan.ChildNodes.Add(subPlan);
@@ -115,7 +118,10 @@ namespace HubTests.Controllers
                         Name = activityTemplate.TerminalName,
                         Version = activityTemplate.TerminalVersion,
                         TerminalStatus = TerminalStatus.Active,
-                        Label = "dummy"
+                        Label = "dummy",
+                        ParticipationState = ParticipationState.Approved,
+                        OperationalState = OperationalState.Active,
+                        Endpoint = "http://localhost:11111"
                     }
                     
                 };
@@ -200,7 +206,7 @@ namespace HubTests.Controllers
                 activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(activityMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
+                var controller = new ActivitiesController(activityMock.Object, ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 await controller.Delete(activityDO.Id);
                 activityMock.Verify(a => a.Delete(activityDO.Id));
             }
@@ -217,7 +223,7 @@ namespace HubTests.Controllers
                 actionMock.Setup(x => x.Exists(It.IsAny<Guid>())).Returns(true);
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
+                var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 controller.Get(activityDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
             }
@@ -281,7 +287,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException))]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         { 
             var controller = ObjectFactory.GetInstance<ActivitiesController>();
@@ -299,7 +305,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentException))]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = ObjectFactory.GetInstance<ActivitiesController>();

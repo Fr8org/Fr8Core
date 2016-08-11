@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -12,7 +14,6 @@ using StructureMap;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
-using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -24,15 +25,13 @@ namespace terminalFr8Core.Activities
             Name = "Send_Email",
             Label = "Send Email",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

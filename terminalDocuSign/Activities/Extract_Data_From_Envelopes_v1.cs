@@ -23,10 +23,8 @@ namespace terminalDocuSign.Activities
             Name = "Extract_Data_From_Envelopes",
             Label = "Extract Data From Envelopes",
             Version = "1",
-            Category = ActivityCategory.Solution,
             MinPaneWidth = 380,
             NeedsAuthentication = true,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };
@@ -186,7 +184,7 @@ namespace terminalDocuSign.Activities
 
         private async Task<List<ListItem>> GetFinalActionListItems()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, true);
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategories.ForwardId, true);
             return templates.OrderBy(x => x.Label).Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }).ToList();
         }
         #endregion

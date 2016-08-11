@@ -9,6 +9,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Data.Utility;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
@@ -25,7 +26,7 @@ namespace Hub.Services
     public class Terminal : ITerminal
     {
         private readonly ISecurityServices _securityServices;
-        private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
+        private readonly Dictionary<Guid, TerminalDO> _terminals = new Dictionary<Guid, TerminalDO>();
         private bool _isInitialized;
         private string _serverUrl;
 
@@ -84,19 +85,17 @@ namespace Hub.Services
             }
         }
 
-        public TerminalDO GetByKey(int terminalId)
+        public TerminalDO GetByKey(Guid terminalId)
         {
             Initialize();
 
             lock (_terminals)
             {
                 TerminalDO terminal;
-
                 if (!_terminals.TryGetValue(terminalId, out terminal))
                 {
-                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminalId));
+                    throw new MissingObjectException($"Terminal with Id {terminalId} doesn't exist");
                 }
-
                 return terminal;
             }
         }
@@ -110,14 +109,14 @@ namespace Hub.Services
                 TerminalDO terminal =_terminals.FirstOrDefault(t => t.Value.Name == name && t.Value.Version == version).Value;
                 if (terminal == null)
                 {
-                    throw new KeyNotFoundException($"Unable to find terminal with name {name} and version {version}");
+                    throw new MissingObjectException($"Terminal with name '{name}' and version '{version}'");
                 }
 
                 return terminal;
             }
         }
 
-        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isUserInitiated)
         {
             if (terminalDo == null)
             {
@@ -139,20 +138,20 @@ namespace Hub.Services
 
             lock (_terminals)
             {
-                var isRegisterTerminal = false;
-                TerminalDO terminal;
+                var doRegisterTerminal = false;
+                TerminalDO terminal, existingTerminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
-
-                    if (existingTerminal == null)
+                    if (terminalDo.Id == Guid.Empty)
                     {
-                        terminalDo.Id = 0;
-                        uow.TerminalRepository.Add(existingTerminal = terminalDo);
-                        isRegisterTerminal = true;
+                        terminalDo.Id = Guid.NewGuid();
+                        uow.TerminalRepository.Add(terminalDo);
+                        doRegisterTerminal = true;
+                        existingTerminal = terminalDo;
                     }
                     else
                     {
+                        existingTerminal = uow.TerminalRepository.FindOne(x => x.Id == terminalDo.Id);
                         // this is for updating terminal
                         CopyPropertiesHelper.CopyProperties(terminalDo, existingTerminal, false, x => x.Name != "Id");
                     }
@@ -163,13 +162,16 @@ namespace Hub.Services
                     _terminals[existingTerminal.Id] = terminal;
                 }
 
-                if (isRegisterTerminal)
+                if (doRegisterTerminal)
                 {
-                    //add ownership for this new terminal to current user
-                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id.ToString(), nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    if (isUserInitiated)
+                    {
+                        //add ownership for this new terminal to current user
+                        _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    }
 
                     //make it visible for Fr8 Admins
-                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id.ToString(), nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
                 }
 
                 return terminal;
@@ -211,9 +213,19 @@ namespace Hub.Services
 
             lock (_terminals)
             {
-                return _terminals.Values.ToArray();
                 //filter terminals and show only allowed for current logged user
-//                return _securityServices.GetAllowedTerminalsByUser(terminals);
+                return _securityServices.GetAllowedTerminalsByUser(_terminals.Values.ToArray());
+            }
+        }
+
+        public IEnumerable<TerminalDO> GetByCurrentUser()
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                //filter terminals and show only allowed for current logged user
+                return _securityServices.GetAllowedTerminalsByUser(_terminals.Values.ToArray(), true);
             }
         }
 

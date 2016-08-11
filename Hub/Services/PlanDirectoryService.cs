@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Helper;
 using Hub.Interfaces;
 using Newtonsoft.Json.Linq;
@@ -31,18 +32,20 @@ namespace Hub.Services
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
 
 
 
-        public PlanDirectoryService(IHMACService hmac, 
-                                    IRestfulServiceClient client, 
+        public PlanDirectoryService(IHMACService hmac,
+                                    IRestfulServiceClient client,
                                     IPusherNotifier pusherNotifier,
-                                    IUnitOfWorkFactory unitOfWorkFactory, 
-                                    IPlan planService, 
+                                    IUnitOfWorkFactory unitOfWorkFactory,
+                                    IPlan planService,
                                     IActivityTemplate activityTemplate,
                                     IPlanTemplate planTemplate,
                                     ISearchProvider searchProvider,
-                                    IWebservicesPageGenerator webservicesPageGenerator)
+                                    IWebservicesPageGenerator webservicesPageGenerator,
+                                    IPlanTemplateDetailsGenerator planTemplateDetailsGenerator)
         {
             _hmacService = hmac;
             _client = client;
@@ -54,51 +57,31 @@ namespace Hub.Services
             _planTemplate = planTemplate;
             _searchProvider = searchProvider;
             _webservicesPageGenerator = webservicesPageGenerator;
+            _planTemplateDetailsGenerator = planTemplateDetailsGenerator;
         }
 
-        public async Task<string> GetToken(string UserId)
-        {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/authentication/token");
-            var headers =
-                await
-                    _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
-                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), UserId);
-
-            var json = await _client.PostAsync<JObject>(uri, headers: headers);
-            var token = json.Value<string>("token");
-
-            return token;
-        }
-
-        public string LogOutUrl()
-        {
-            return CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/Home/LogoutByToken";
-        }
 
         public async Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId)
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates?id=" + id);
-            var headers = await _hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                userId
-            );
-
             try
             {
-                return await _client.GetAsync<PublishPlanTemplateDTO>(uri, headers: headers);
+                var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(userId, id);
+                return planTemplateDTO;
             }
-            catch (Fr8.Infrastructure.Communication.RestfulServiceException)
+            catch (Exception exp)
             {
+                Logger.GetLogger().Error($"Error retriving plan template: {exp.Message}");
                 return null;
             }
         }
 
         public async Task Share(Guid planId, string userId)
         {
+
+            try
+            {
             var planDto = CrateTemplate(planId, userId);
-            
+
             var dto = new PublishPlanTemplateDTO
             {
                 Name = planDto.Name,
@@ -110,23 +93,11 @@ namespace Hub.Services
             var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
             await _searchProvider.CreateOrUpdate(planTemplateCM);
             await _webservicesPageGenerator.Generate(planTemplateCM, userId);
-
-
-            // @tony.yakovets: for now i left this request to itself because classes above to tight coupled to PlanDirectory project
-            // even if it is a hub
-            //var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates/");
-            //var headers = await _hmacService.GenerateHMACHeader(
-            //    uri,
-            //    "PlanDirectory",
-            //    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-            //    userId,
-            //    dto
-            //);
-
-            //await _client.PostAsync(uri, dto, headers: headers);
+            await _planTemplateDetailsGenerator.Generate(dto);
 
             // Notify user with directing him to PlanDirectory with related search query
             var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
@@ -134,6 +105,18 @@ namespace Hub.Services
                 Message = $"Plan Shared. To view, click on " + url,
                 Collapsed = false
             }, userId);
+        }
+            catch
+            {
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericSuccess,
+                    Subject = "Success",
+                    Message = $"Plan sharing failed",
+                    Collapsed = false
+                }, userId);
+            }
+
         }
 
         public async Task Unpublish(Guid planId, string userId, bool privileged)
@@ -170,7 +153,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                Subject = "Success", 
+                Subject = "Success",
                 Message = $"Plan Unpublished.",
                 Collapsed = false
             }, userId);
@@ -184,7 +167,7 @@ namespace Hub.Services
             {
                 var plan = _planService.GetPlanByActivityId(uow, planId);
 
-                clonedPlan = (PlanDO) PlanTreeHelper.CloneWithStructure(plan);
+                clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(plan);
             }
 
             clonedPlan.PlanState = PlanState.Inactive;
@@ -215,7 +198,7 @@ namespace Hub.Services
             {
                 activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);
             }
-            
+
             return PlanMappingHelper.MapPlanToDto(clonedPlan);
         }
 
