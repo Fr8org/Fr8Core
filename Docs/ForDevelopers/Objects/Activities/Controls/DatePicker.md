@@ -1,7 +1,7 @@
 #DatePicker Control
 
 ##Example Control Payload
-```javascript
+```json
 {
            "errorMessage": null,
            "events": [],

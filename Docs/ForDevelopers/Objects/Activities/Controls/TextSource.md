@@ -6,10 +6,10 @@ A complex control enabling user either to type specific text or to select a valu
 
 **specific** text or a value selected in the drop down list.
 
-![TextSource](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/TextSource.png)
+![Text Source](images/text_source.png)
 
 ##Example Control Payload
-```javascript
+```json
 {
     "initialLabel": "For the Email Address Use",
     "valueSource": null,

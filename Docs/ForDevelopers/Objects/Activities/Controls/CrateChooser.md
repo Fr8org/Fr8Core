@@ -1,7 +1,13 @@
 #CrateChooser Control
 
+![Crate Chooser](images/crate_chooser.png)
+
+After button click (fr8 hub implementation) it opens modal window 
+
+![Crate Chooser Modal](images/crate_chooser_window.png)
+
 ##Example Control Payload
-```javascript
+```json
 {
            "crateDescription": []
            "errorMessage": null,

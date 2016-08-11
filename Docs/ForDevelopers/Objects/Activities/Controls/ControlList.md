@@ -4,7 +4,7 @@ Let’s assume your activity needs two TextBoxes named “key” and “value”
 To do this one should create a control list and configure it’s template. Template accepts a list of ControlDefinitionDTO. every added control to template will be structured as a whole. when user click add controlGroup button ControlList will add one of each control in template.In our example we need to add two textboxes with key and value names to template.
 
 ##Example Control Payload
-```javascript
+```json
 {
 	 "controlGroups": [
 		[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}],
