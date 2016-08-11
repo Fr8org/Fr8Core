@@ -118,7 +118,7 @@ namespace Data.Infrastructure.StructureMap
             securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId, dataObjectType, Guid.Empty, null, null);
         }
 
-        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals, bool byOwnershipOnly)
         {
             return terminals;
         }
