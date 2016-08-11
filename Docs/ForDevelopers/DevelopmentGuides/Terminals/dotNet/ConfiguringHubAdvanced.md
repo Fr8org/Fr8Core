@@ -3,13 +3,15 @@ Configuration of the Fr8 Hub
 
 If you simply fire a Fr8 Hub up locally, its core should work with no additional require configuration beyond the setting of your master administrator account.
 
-However, there are a number of subsystems that require additional accounts or configuration.
-Web.config looks for these settings in a file called settings.config. A sample of this file is available at settings.config.readme. 
+However, there are a number of essentially optional subsystems that require additional accounts or configuration. There are also a case or two where the default settings point to a single free account that may get noisy with the output of other Fr8 Developers, in which case you may want to change the settings to "go private".
 
-You need to add any settings you want to change or set, and save the file as settings.config (i.e. remove the ".readme".)
+The Fr8 Hub project uses web.config, of course, but we've set it up to look for an external file called settings.config for some settings. A sample of this file is available in a file in the root called settings.config.readme, found in HubWeb/Config/HubWeb. 
 
-Some Fr8 Subsystems will not work out of the box until these settings are configured. We've just created an Administration Settings
-Wizard to make this process easier but it's in an early stage.
+If you want to use any of these settings, update their values and save the file as settings.config, in the same location.  (i.e. remove the ".readme".)
+
+Some Fr8 Subsystems will not work out of the box until these settings are configured. 
+
+Roadmap: We've just created an Administration Settings Wizard to make this process easier but it's in an early stage.
 
 
 The System User Account
