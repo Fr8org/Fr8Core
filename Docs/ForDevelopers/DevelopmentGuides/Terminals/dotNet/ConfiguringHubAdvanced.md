@@ -2,10 +2,13 @@ Deeper Configuration of the Fr8 Hub
 ========================
 
 If you simply fire a Fr8 Hub up locally, its core should work with no additional require configuration beyond the setting of your master administrator account.
+
 However, there are a number of subsystems that require additional accounts or configuration.
-These settings are stored (in the .NET version of the Hub) in web.config  When The Fr8 Company deploys 
-the Fr8 Hub to production or dev at fr8.co, it merges these settings in via an external file. If you're deploying your own Hub, you should be
-aware of these. Some Fr8 Subsystems will not work out of the box until these settings are configured. We've just created an Administration Settings
+Web.config looks for these settings in a file called settings.config. A sample of this file is available at settings.config.readme. 
+
+You need to add any settings you want to change or set, and save the file as settings.config (i.e. remove the ".readme".
+
+Some Fr8 Subsystems will not work out of the box until these settings are configured. We've just created an Administration Settings
 Wizard to make this process easier but it's in an early stage.
 
 
