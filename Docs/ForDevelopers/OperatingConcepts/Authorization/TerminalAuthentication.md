@@ -8,15 +8,16 @@ Terminals often needs to communicate with the Hub. Some examples include getting
 
 ## Authentication with Hub
 
-When the Hub makes a request to a terminal, it includes 3 headers which are required to authenticate with the Hub. Those headers are;
+Each request from the Hub to your Terminal  includes 3 properties that you'll need when you respond.  These are:
 
-* **Fr8HubCallbackSecret**: 4b54d12f7f834648be28aa247f523e21
+* **TerminalKey**: 4b54d12f7f834648be28aa247f523e21
 * **Fr8HubCallBackUrl**: http://dev.fr8.co/
 * **Fr8UserId**: d4991c09-77ee-42de-9ae7-15c1b6c2d3ca
 
 ### Fr8HubCallbackSecret
 
-This header contains the secret key for your terminal. When you need to communicate back with the Hub you will need this secret as your terminal identifier.
+This is your Terminal's secret. Think of it as your Terminal's ID value.  When you need to communicate back with the Hub you will need to provide this secret in your header:
+Authorization: FR8-TOKEN terminal_key=2db48191-cda3-4922-9cc2-a636e828063f, user=76de71f2-f346-4bc9-96e0-f7bd1c87a575
 
 ### Fr8HubCallBackUrl
 
