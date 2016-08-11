@@ -8,7 +8,7 @@ In practice, Activity designers aren't expected to want to engage in actual JSON
 
 As a result, the JSON docs here are a useful reference, but you'll want to look at your SDK and at examples of existing Activity code to see the best practices for your particular platform.
 
-Note that all controls extend the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) base set.
+Note that all controls extend the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitionDTO.md) base set.
 
 ##Controls
 *[BuildMessageAppender](Controls/BuildMessageAppender.md)*

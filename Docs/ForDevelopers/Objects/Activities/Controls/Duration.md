@@ -4,7 +4,7 @@ The Checkbox control is a basic control class which renders an HTML button eleme
 
 ##Fields
 
-The Duration class extends the [ControlDefinitionDTO](/Docs/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) class and includes the additional properties.
+The Duration class extends the [ControlDefinitionDTO](/Docs/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitionDTO.md) class and includes the additional properties.
 
 __value__: stores the value of the duration as an object that can be used by the code. The type of this value varies by programming language. Has a getter and a setter.
 

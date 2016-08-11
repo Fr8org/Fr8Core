@@ -6,7 +6,7 @@ Sample of its usage you can see in 'Make a decision' Fr8Core terminal activity.
 
 ##Fields
 
-The ContainerTransition class extends the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) class.
+The ContainerTransition class extends the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitionDTO.md) class.
 
 __transitions__: an array of [ContainerTransitionFields](/ContainerTransitionFields.md)
 
