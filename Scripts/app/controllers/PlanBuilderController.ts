@@ -3,11 +3,10 @@
 /*
     Detail (view/add/edit) controller
 */
-
 module dockyard.controllers {
     'use strict';
 
-    // This is a fix for incomplit ts defenition for angular-ui module
+    // This is a fix for incomplete TS definition for angular-ui module
     interface ngState extends ng.ui.IState {
         current: ng.ui.IState;
     }
@@ -26,7 +25,7 @@ module dockyard.controllers {
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
-        //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
+        // Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         actionGroups: model.ActionGroup[];
         processedSubPlans: any[];
@@ -53,7 +52,6 @@ module dockyard.controllers {
         scrollDrag: (event: MouseEvent) => void;
     }
 
-
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import pca = dockyard.directives.paneConfigureAction;
@@ -66,7 +64,6 @@ module dockyard.controllers {
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
         // See http://docs.angularjs.org/guide/di
-
 
         public static $inject = [
             '$scope',
@@ -98,7 +95,7 @@ module dockyard.controllers {
         private _paneLastClientY: number;
         private _scrollState = false;
 
-        constructor(
+        constructor (
             private $scope: IPlanBuilderScope,
             private $window: ng.IWindowService,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
@@ -120,6 +117,12 @@ module dockyard.controllers {
             private ActivityTemplateHelperService: services.IActivityTemplateHelperService,
             private ActivityService: services.IActivityService
         ) {
+            // For testing only.
+            // $window['analytics'] = {
+            //     track: function () {
+            //         console.log('analytics.track', arguments);
+            //     }
+            // };
 
             this.LayoutService.resetLayout();
 
@@ -128,7 +131,6 @@ module dockyard.controllers {
 
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
-
             this.$scope.curAggReloadingActions = [];
 
             this.setupMessageProcessing();
@@ -136,19 +138,18 @@ module dockyard.controllers {
             this.$scope.view = $stateParams['view'];
             this.$scope.viewMode = $stateParams['viewMode'];
 
-
             this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams, options) => {
                 this.handleBackButton(event, toState, toParams, fromState, fromParams, options);
             });
 
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
-            }
+            };
 
             this.$scope.hasAnyActivity = (pSubPlan) => {
                 var actionGroups = <Array<model.ActionGroup>>pSubPlan.actionGroups;
                 return _.any(actionGroups, (actionGroup: model.ActionGroup) => {
-                    // return true where any outcome has a "test" property defined
+                    // Returns true when any outcome has a defined "test" property
                     return actionGroup.envelopes.length > 0;
                 });
             };
@@ -161,6 +162,7 @@ module dockyard.controllers {
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             $scope.addSubPlan = <() => void>angular.bind(this, this.addSubPlan);
+
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
@@ -172,11 +174,10 @@ module dockyard.controllers {
             };
 
             this.$scope.selectAction = (action: model.ActivityDTO) => {
-                if (!this.$scope.current.activities || this.$scope.current.activities.id !== action.id)
+                if (!this.$scope.current.activities || this.$scope.current.activities.id !== action.id) {
                     this.selectAction(action, null, $window);
-
-            }
-
+                }
+            };
 
             $scope.$watch(
                 function () {
@@ -190,9 +191,9 @@ module dockyard.controllers {
                 }
             );
 
-            //Group: which group action is dropped to
-            //actionId: id of dropped action
-            //dropped index
+            // Group: which group action is dropped to
+            // actionId: id of dropped action
+            // dropped index
             $scope.onActionDrop = (group: model.ActionGroup, actionId: string, index: number) => {
 
                 var realAction = this.findActionById(actionId);
@@ -200,48 +201,46 @@ module dockyard.controllers {
                     return;
                 }
 
-                //let's remove this action from it's old parent
+                // Let's remove this action from it's old parent
                 var downstreamActions: model.ActivityDTO[] = this.findAndRemoveAction(realAction);
 
-                //TODO check parent action change with a more solid method
-                //this action is moved to a different parent
+                // TODO Check parent action change with a more solid method
+                // Check whether this action is moved to a different parent
                 if (realAction.parentPlanNodeId !== group.envelopes[0].activity.parentPlanNodeId) {
-                    //set new parent
+                    // Set new parent
                     realAction.parentPlanNodeId = group.envelopes[0].activity.parentPlanNodeId;
                 } else {
-                    //this action is moved to same parent
-                    //our index calculation might have been wrong
-                    //while dragging an action we don't delete that action
-                    //we just make it hidden - so it calculates dragged action too while calculating index
+                    // This action is moved to same parent and our index calculation might have been wrong
+                    // While dragging an action, we don't delete that action. Instead, we just make it hidden
+                    // so that it calculates dragged action's index too
                     if (realAction.ordering <= index) {
                         index -= 1;
                     }
                 }
 
-                //now we should inject it to proper position and get downstream actions
+                // Now we should inject it to proper position and get downstream actions
                 downstreamActions = downstreamActions.concat(this.insertActionToParent(realAction, index));
 
-                //let's add our current action to configure list
+                // Adds our current action to configure list
                 downstreamActions.push(realAction);
 
-                //let's re-render plan builder
+                // Let's re-render plan builder
                 this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
 
-                //if this action is dragged to same parent as it was before
-                //there might be duplicate actions in our downstreamactions array
-                //let's eliminate them
+                // If this action is dragged to same parent as it was before, there might be duplicate actions in 
+                // our downstream actions array. Let's eliminate them
                 var uniqueDownstreamActions = _.uniq(downstreamActions, (action: model.ActivityDTO) => action.id);
 
-                //let's wait for UI to finish it's rendering
+                // Waits for UI to finish it's rendering
                 this.$timeout(() => {
-                    //reconfigure those actions
+                    // Reconfigure those actions
                     this.reConfigure(uniqueDownstreamActions);
                 });
 
             };
             $scope.state = $state.current.name;
             this.processState($state);            
-        }
+        };
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
 
@@ -249,7 +248,6 @@ module dockyard.controllers {
                 event.preventDefault();
                 this.$state.go("planList");
             }
-
             if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan" && toState.name === "plan") {
                 this.reloadFirstActions();
             }
@@ -278,15 +276,14 @@ module dockyard.controllers {
                 createdSubPlan.criteria = null;
                 currentPlan.subPlans.push(createdSubPlan);
 
-                //dirty hack
+                // Dirty hack
                 var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
-                //this.renderPlan(<interfaces.IPlanVM>currentPlan);
                 this.$scope.$broadcast(<any>planEvents.SUB_PLAN_MODIFICATION);
             });
         }
 
-        //re-orders actions according to their position on array
+        // Re-orders actions according to their position on array
         private reOrderActions(actions: model.ActivityDTO[]) {
             for (var i = 0; i < actions.length; i++) {
                 actions[i].ordering = i + 1;
@@ -302,45 +299,47 @@ module dockyard.controllers {
             }
         }
 
-        //inserts specified action to it's parent and returns downstream actions
+        // Inserts specified action to it's parent and returns downstream actions
         private insertActionToParent(action: model.ActivityDTO, index: number): model.ActivityDTO[] {
-            //we should update childActions property of specified action
+            // We should update childActions property of specified action
             var newParent = this.findActionById(action.parentPlanNodeId);
             var newList: interfaces.IActivityDTO[];
-            //might be root level
+            
+            // Might be root level
             if (newParent !== null) {
                 newList = newParent.childrenActivities;
             } else {
-                //lets check subplans
+                // Let's check subplans
                 var subPlan = this.findSubPlanById(action.parentPlanNodeId);
                 newList = subPlan.activities;
             }
 
-            //now we should inject this action to it's new parent to proper position
+            // Now we should inject this action to it's new parent to proper position
             newList.splice(index, 0, action);
 
-            //set their ordering according to their position
+            // Set their ordering according to their position
             this.reOrderActions(<model.ActivityDTO[]>newList);
 
-            //lets call reconfigure on downstream actions
+            // Let's call reconfigure on downstream actions
             return <model.ActivityDTO[]>newList.slice(index + 1, newList.length);
         }
 
-        //removes specified action from it's parent and returns downstream actions
+        // Removes specified action from it's parent and returns downstream actions
         private findAndRemoveAction(action: model.ActivityDTO): model.ActivityDTO[] {
             var currentParent = this.findActionById(action.parentPlanNodeId);
             var listToRemoveActionFrom: interfaces.IActivityDTO[];
-            //might be root level
+
+            // Might be root level
             if (currentParent !== null) {
                 listToRemoveActionFrom = currentParent.childrenActivities;
             } else {
-                //lets check subplans
+                // Check subplans
                 var subPlan = this.findSubPlanById(action.parentPlanNodeId);
                 listToRemoveActionFrom = subPlan.activities;
             }
-
+            
+            //Remove this action from it's old parent
             var index = 0;
-            //remove this action from it's old parent
             for (var i = 0; i < listToRemoveActionFrom.length; i++) {
                 if (listToRemoveActionFrom[i].id === action.id) {
                     listToRemoveActionFrom.splice(i, 1);
@@ -350,7 +349,7 @@ module dockyard.controllers {
             }
             this.reOrderActions(<model.ActivityDTO[]>listToRemoveActionFrom);
 
-            //return downstream actions of removed action
+            // Returns downstream actions of removed action
             return <model.ActivityDTO[]>listToRemoveActionFrom.slice(index, listToRemoveActionFrom.length);
         }
 
@@ -360,7 +359,6 @@ module dockyard.controllers {
                     return this.$scope.current.plan.subPlans[i];
                 }
             }
-
             return null;
         }
 
@@ -371,7 +369,6 @@ module dockyard.controllers {
                     return foundAction;
                 }
             }
-
             return null;
         }
 
@@ -403,10 +400,8 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
-
             this.loadPlan($state.params.viewMode);
         }
-
 
         private createNewSolution(solutionName: string) {
             var plan = this.PlanService.createSolution({
@@ -484,17 +479,17 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_DownStreamReconfiguration],
                 (event: ng.IAngularEvent, eventArgs: pca.DownStreamReConfigureEventArgs) => this.PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs));
 
-            //Process Select Action Pane events
+            // Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActivityTypeSelectedEventArgs) => this.PaneSelectAction_ActivityTypeSelected(eventArgs));
 
-            //TODO: is this necessary??
+            // TODO: is this necessary??
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
             // TODO: do we need this any more?
             // this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
             //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
-            //Handles Save Request From PaneSelectAction
+            // Handles Save Request From PaneSelectAction
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
 
@@ -519,11 +514,10 @@ module dockyard.controllers {
         }
 
 
-        //This function filters activities by checking if they contain specified StandardConfigurationControls
-        //crate with given label
+        // This function filters activities by checking if they contain specified StandardConfigurationControls
         private filterActivitiesByUICrate(activities: Array<model.ActivityDTO>, uiCrateLabel: string): Array<model.ActivityDTO> {
             var filteredList: Array<model.ActivityDTO>;
-            //if our view parameter is set - we should make sure we render only activities with given crates
+            // If our view parameter is set - we should make sure we render only activities with given crates
             if (uiCrateLabel) {
                 filteredList = [];
                 for (var i = 0; i < activities.length; i++) {
@@ -545,7 +539,9 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
-            if (curPlan.subPlans.length === 0) return;
+            if (curPlan.subPlans.length === 0) {
+                return;
+            }
 
             this.$scope.processedSubPlans = [];
             for (var subPlan of curPlan.subPlans) {
@@ -574,8 +570,7 @@ module dockyard.controllers {
             //self.$scope.current.action.isTempId = false;
 
             if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
-                action.configurationControls = this.CrateHelper
-                    .createControlListFromCrateStorage(action.crateStorage);
+                action.configurationControls = this.CrateHelper.createControlListFromCrateStorage(action.crateStorage);
             }
         }
 
@@ -583,7 +578,7 @@ module dockyard.controllers {
             var self = this;
             var promise = this.PlanBuilderService.saveCurrent(this.$scope.current);
             promise.then((result: model.PlanBuilderState) => {
-                //we should just raise an event for this
+                // Should just raise an event for this
                 self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd], new psa.ActionAddEventArgs(group));
             });
         }
@@ -604,13 +599,13 @@ module dockyard.controllers {
                 });
             });
             return results;
-
         }
 
         private chooseAuthToken(action: model.ActivityDTO) {
             var self = this;
             var planActivityByTerminal = {};
             var activities = [action];
+
             //Trying to find other activities of the same terminal belong to current plan
             this.ActivityService.getAllActivities(this.$scope.current.plan).forEach(activity => {
                 var terminalName = activity.activityTemplate.terminalName;
@@ -620,6 +615,7 @@ module dockyard.controllers {
                 (<any>activity).authorizeIsRequested = false;
                 planActivityByTerminal[terminalName].push(activity);
             });
+
             var resultActivities = [];
             activities.forEach(activity => {
                 var terminalName = activity.activityTemplate.terminalName;
@@ -629,10 +625,12 @@ module dockyard.controllers {
                     delete planActivityByTerminal[terminalName];
                 }
             });
+
             activities.forEach(activity => {
                 var foundActivity = resultActivities.filter(x => x.id === activity.id)[0];
                 foundActivity.authorizeIsRequested = true;
             });
+
             activities = resultActivities;
             var modalScope = <IAuthenticationDialogScope>self.$scope.$new(true);
             modalScope.activities = activities;
@@ -657,6 +655,7 @@ module dockyard.controllers {
             var alertMessage = new model.AlertDTO();
             alertMessage.title = "Please confirm";
             alertMessage.body = "Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.";
+
             this.uiHelperService
                 .openConfirmationModal(alertMessage)
                 .then(() => {
@@ -664,11 +663,11 @@ module dockyard.controllers {
                     self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
                         self.stopLoader();
                         var deletedActionDownstreamActions = self.findAndRemoveAction(action);
-                        //let's re-render plan builder
+                        // Re-renders plan builder
                         this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
-                        //let's wait for UI to finish it's rendering
+                        // Waits for UI to finish it's rendering
                         this.$timeout(() => {
-                            //reconfigure those actions
+                            // Reconfigures those actions
                             this.reConfigure(deletedActionDownstreamActions);
                         });
                     });
@@ -703,7 +702,6 @@ module dockyard.controllers {
             }
 
             //TODO we need to change rendering code
-            
             if (this.allowsChildren(action)) {
                 this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
             } else {
@@ -725,11 +723,20 @@ module dockyard.controllers {
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
         private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
-            //this performs a call to Segment service for analytics
+            // Performs a call to Segment service for analytics
             if ($window['analytics'] != null) {
-                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.activityTemplate.name });
+                if (this.$scope.current.activities
+                    && this.$scope.current.activities.activityTemplate) {
+
+                    $window['analytics'].track(
+                        "Added Activity To Plan",
+                        {
+                            "Activity Name": this.$scope.current.activities.activityTemplate.name
+                        }
+                    );
+                }
             }
-            console.log("Activity selected: " + action.id);
+
             var originalId,
                 actionId = action.id,
                 canBypassActionLoading = false; // Whether we can avoid reloading an action from the backend
@@ -773,10 +780,10 @@ module dockyard.controllers {
                     throw Error('Activity has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
                 }
+
                 if (canBypassActionLoading) {
                     this.addActionToUI(result.activities, group);
-                }
-                else {
+                } else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
                         this.addActionToUI(action, group);
                     });
@@ -793,7 +800,6 @@ module dockyard.controllers {
                 .then((result: model.PlanBuilderState) => {
                     // Notity interested parties of action update and update $scope
                     this.handleActionUpdate(result.activities);
-
                 });
         }
 
@@ -912,7 +918,7 @@ module dockyard.controllers {
         // This should handle everything that should be done when a configure call response arrives from server.
         private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
 
-            //let's wait for last configure call before starting on aggresive actions
+            // Waits for last configure call before starting on aggresive actions
             if (this.ConfigureTrackerService.hasPendingConfigureCalls()) {
                 return;
             }
@@ -934,20 +940,19 @@ module dockyard.controllers {
                 }
             }
 
-            // scan all actions to find actions with tag AgressiveReload in ActivityTemplate
+            // Scans all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
-            // Reconfigure also child activities of the activity which initiated reconfiguration. 
+            // Reconfigures also child activities of the activity which initiated reconfiguration. 
             if (callConfigureResponseEventArgs.action && callConfigureResponseEventArgs.action.childrenActivities.length > 0) {
                 this.reConfigure(<model.ActivityDTO[]>callConfigureResponseEventArgs.action.childrenActivities);
             }
 
-
-            //wait UI to finish rendering
+            // Waits UI to finish rendering
             this.$timeout(() => {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponseFinished], new pca.CallConfigureResponseEventArgs(callConfigureResponseEventArgs.action, callConfigureResponseEventArgs.focusElement));
                 if (callConfigureResponseEventArgs.focusElement != null) {
-                    //broadcast to control to set focus on current element
+                    // Broadcast to control to set focus on current element
                     this.$scope.$broadcast(<any>planEvents.ON_FIELD_FOCUS, callConfigureResponseEventArgs);
                 }
             }, 300);
@@ -966,7 +971,6 @@ module dockyard.controllers {
                         continue;
                     }
 
-
                     for (var k = 0; k < actionGroup.envelopes.length; ++k) {
                         var envelope = actionGroup.envelopes[k];
                         if (envelope.activity.id === activity.id) {
@@ -975,7 +979,6 @@ module dockyard.controllers {
                     }
                 }
             }
-
             return null;
         }
 
@@ -990,13 +993,11 @@ module dockyard.controllers {
             }
             var currentGroup = currentGroupArray[0]; // max one item is possible.
             currentGroup.envelopes.filter(envelope =>
-                /* envelope.activity.activityTemplate.tags !== null 
-               && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1 && */
+                // envelope.activity.activityTemplate.tags !== null && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1 &&
                 envelope.activity.ordering > currentAction.ordering
             ).forEach(env => {
                 results.push(env.activity);
             });
-
             return results;
         }
     }
@@ -1004,7 +1005,6 @@ module dockyard.controllers {
     app.controller('ActivityLabelModalController', ['$scope', '$modalInstance', 'label', ($scope: any, $modalInstance: any, label: string): void => {
 
         $scope.label = label;
-
         $scope.submitForm = () => {
             $modalInstance.close($scope.label);
         };
@@ -1012,6 +1012,5 @@ module dockyard.controllers {
         $scope.cancel = () => {
             $modalInstance.dismiss();
         };
-
     }]);
 }

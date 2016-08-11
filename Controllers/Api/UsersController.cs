@@ -17,6 +17,7 @@ using Hub.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using System.Web.Http.Description;
+using Fr8.Infrastructure;
 using Swashbuckle.Swagger.Annotations;
 using WebApi.OutputCache.V2;
 
@@ -109,10 +110,10 @@ namespace HubWeb.Controllers
         /// User must be logged in
         /// </remarks>
         /// <param name="id">User Id</param>
-        /// <response code="200">User info</response>
         [HttpGet]
         [DockyardAuthorize(Roles = Roles.Admin)]
-        [ResponseType(typeof(UserDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "User info", typeof(UserDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "User doesn't exist", typeof(ErrorDTO))]
         public IHttpActionResult UserData(string id = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -126,6 +127,10 @@ namespace HubWeb.Controllers
                 else
                 {
                     user = uow.UserRepository.FindOne(u => u.Id == id);
+                }
+                if (user == null)
+                {
+                    throw new MissingObjectException($"User with Id '{id}' doesn't exist");
                 }
 
                 UserDTO userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);

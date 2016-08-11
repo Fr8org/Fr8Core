@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using Hub.Interfaces;
 using Data.Entities;
 using System.Linq;
+using System.Net;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -24,9 +26,9 @@ namespace HubWeb.Controllers
         /// Retreives activity template with specified Id
         /// </summary>
         /// <param name="id">Id of activity template to retrieve</param>
-        /// <response code="200">Retrieved activity template</response>
         [HttpGet]
-        [ResponseType(typeof(ActivityTemplateDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Retrieved activity template", typeof(ActivityTemplateDTO))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "Activity template doesn't exist", typeof(DetailedMessageDTO))]
         public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

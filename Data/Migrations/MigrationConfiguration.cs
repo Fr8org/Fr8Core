@@ -14,6 +14,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using System.Text.RegularExpressions;
+using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
@@ -60,9 +61,8 @@ namespace Data.Migrations
 
                 SeedIntoMockDb(uow);
 
-                AddRoles(uow);
                 AddAdmins(uow);
-                AddDockyardAccounts(uow);
+                AddRoles(uow);
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
 
@@ -157,7 +157,13 @@ namespace Data.Migrations
             terminalRegistration.ParticipationState = ParticipationState.Unapproved;
 
             uow.TerminalRepository.Add(terminalRegistration);
+            
             uow.SaveChanges();
+
+            //make the terminal visible for all users
+            var security = ObjectFactory.GetInstance<ISecurityServices>();
+            security.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+            security.SetDefaultRecordBasedSecurityForObject(Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
         }
 
         private static string NormalizeUrl(string terminalUrl)
@@ -365,46 +371,19 @@ namespace Data.Migrations
             }
         }
 
-        /// <summary>
-        /// Add users with 'Admin' role.
-        /// </summary>
-        /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
-        /// <returns>True if created successfully otherwise false</returns>
-        private static void AddAdmins(IUnitOfWork unitOfWork)
+        public static void AddAdmins(IUnitOfWork uow)
         {
-            CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
-            CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
-            CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
-            CreateAdmin("alp@fr8.co", "123qwe", unitOfWork);
-            CreateAdmin("emre@fr8.co", "123qwe", unitOfWork);
-            CreateAdmin("cenkozan@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
-            CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
+            //TODO: add your own admin accounts here
+            //CreateAdmin("test_foo@mail.com", "foobar",uow);
         }
 
-        /// <summary>
-        /// Add users with 'Admin' role.
-        /// </summary>
-        /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
-        /// <returns>True if created successfully otherwise false</returns>
-        private static void AddDockyardAccounts(IUnitOfWork unitOfWork)
-        {
-            CreateFr8Account("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
-            CreateFr8Account("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
-            CreateFr8Account("fileupload@dockyard.company", "test123", unitOfWork);
-            CreateFr8Account("sacre", "printf", unitOfWork);
-            CreateFr8Account("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
-        }
-        /// <summary>
-        /// Add test user with 'Admin' role
+        ///<summary>
+        /// Add test users
         /// </summary>
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)
         {
+            CreateFr8Account("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
             CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
@@ -433,8 +412,8 @@ namespace Data.Migrations
                 return;
             }
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
             user.TestAccount = true;
         }
 
@@ -450,6 +429,7 @@ namespace Data.Migrations
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
             user.TestAccount = true;
             return user;
         }
@@ -462,7 +442,7 @@ namespace Data.Migrations
                 new Tuple<Guid, string, string>(ActivityCategories.ReceiveId, ActivityCategories.ReceiveName, "/Content/icons/get-icon-64x64.png"),
                 new Tuple<Guid, string, string>(ActivityCategories.ProcessId, ActivityCategories.ProcessName, "/Content/icons/process-icon-64x64.png"),
                 new Tuple<Guid, string, string>(ActivityCategories.ForwardId, ActivityCategories.ForwardName, "/Content/icons/forward-icon-64x64.png"),
-                new Tuple<Guid, string, string>(ActivityCategories.SolutionId, ActivityCategories.SolutionName, null)
+                new Tuple<Guid, string, string>(ActivityCategories.SolutionId, ActivityCategories.SolutionName, "/Content/icons/solution-icon-64x64.png")
             };
 
             foreach (var category in predefinedCategories)
@@ -691,19 +671,19 @@ namespace Data.Migrations
 
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
-            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Terminals
-            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Users
-            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, true, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for PageDefinitions
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //add standard user to all users without profile 
             var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();

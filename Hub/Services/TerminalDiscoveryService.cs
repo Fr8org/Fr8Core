@@ -14,6 +14,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using log4net;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using Data.States;
 using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.States;
@@ -34,7 +35,6 @@ namespace Hub.Services
         private readonly EventReporter _eventReporter;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly string _serverUrl;
-        private readonly HashSet<string> _knownTerminals = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
         private readonly ISecurityServices _securityService;
 
         public TerminalDiscoveryService(
@@ -58,27 +58,6 @@ namespace Hub.Services
             var domainPort = configRepository.Get<int?>("ServerPort", null);
 
             _serverUrl = $"{serverProtocol}{domainName}{(domainPort == null || domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
-
-            var terminalUrls = ListTerminalEndpoints();
-
-            foreach (var url in terminalUrls)
-            {
-                string terminalAuthority = url;
-
-                if (url.Contains("http:") || url.Contains("https:"))
-                {
-                    try
-                    {
-                        terminalAuthority = new Uri(url).Authority;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-
-                _knownTerminals.Add(terminalAuthority);
-            }
         }
 
         public async Task SaveOrRegister(TerminalDTO terminal)
@@ -218,9 +197,10 @@ namespace Hub.Services
             }
 
             terminalDo = _terminal.RegisterOrUpdate(terminalDo, true);
+
             Logger.Info($"Terminal at '{curEndpoint}' was successfully registered.");
 
-            if (!await DiscoverInternal(curEndpoint, true))
+            if (!await DiscoverInternal(terminalDo, true))
             {
                 Logger.Info($"The terminal at {curEndpoint} has been registered but an error has occurred while carrying out discovery.");
             }
@@ -247,29 +227,39 @@ namespace Hub.Services
 
         public async Task DiscoverAll()
         {
-            var terminalUrls = ListTerminalEndpoints();
-            var discoverTerminalsTasks = terminalUrls.Select(x => DiscoverInternal(NormalizeUrl(x), false)).ToArray();
+            var discoverTerminalsTasks = _terminal.GetAll().Select(x => DiscoverInternal(x, false)).ToArray();
 
             await Task.WhenAll(discoverTerminalsTasks);
         }
 
-        public async Task<bool> Discover(string terminalUrl, bool isUserInitiated)
+        public async Task<bool> Discover(TerminalDTO terminal, bool isUserInitiated)
         {
-            Logger.Info($"Discovering of  terminal at '{terminalUrl}' was requested...");
-
-            // validate terminal url
-            var uri = new Uri(terminalUrl);
-
-            lock (_knownTerminals)
+            TerminalDO existentTerminal = null;
+            
+            if (!string.IsNullOrWhiteSpace(terminal.Name) && !string.IsNullOrWhiteSpace(terminal.Version))
             {
-                if (!_knownTerminals.Contains(uri.Authority))
+                existentTerminal = _terminal.GetAll().FirstOrDefault(x => x.Name != terminal.Name && x.Version == terminal.Version);
+
+                if (existentTerminal != null)
                 {
-                    Logger.Info($"Terminal at at '{terminalUrl}' was not registered within the Hub. Discovery request declied.");
-                    return false;
+                    Logger.Info($"Discovering of terminal Name: {terminal.Name}, Version: {terminal.Version} was requested...");
                 }
             }
 
-            return await DiscoverInternal(NormalizeUrl(terminalUrl), isUserInitiated);
+            if (existentTerminal == null)
+            {
+                Logger.Info($"Discovering of  terminal at '{terminal.Endpoint}' was requested...");
+
+                existentTerminal = _terminal.GetAll().FirstOrDefault(x => string.Equals(NormalizeUrl(x.Endpoint), NormalizeUrl(terminal.Endpoint), StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (existentTerminal == null)
+            {
+                Logger.Info($"Discovery for terminal '{terminal.Endpoint}' failed: the provided Endpoint is not found in the Endpoint field of any of the existing Terminal entries.");
+                return false;
+            }
+
+            return await DiscoverInternal(existentTerminal, isUserInitiated);
         }
 
         private static string NormalizeUrl(string terminalUrl)
@@ -278,25 +268,20 @@ namespace Hub.Services
             {
                 terminalUrl = "http://" + terminalUrl.TrimStart('\\', '/');
             }
-
-            return terminalUrl;
+            
+            return terminalUrl.TrimEnd('/', '\\');
         }
 
-        private async Task<bool> DiscoverInternal(string terminalUrl, bool isUserInitiated)
+        private async Task<bool> DiscoverInternal(TerminalDO terminalDo, bool isUserInitiated)
         {
+            var terminalUrl = terminalDo.Endpoint;
+
             Logger.Info($"Starting discovering terminal at '{terminalUrl}'. Reporting about self as the Hub at '{_serverUrl}'.");
             bool result = false;
 
             try
             {
                 string secret = null;
-                var terminalDo = _terminal.GetAll().FirstOrDefault(x => string.Equals(NormalizeUrl(x.Endpoint), NormalizeUrl(terminalUrl), StringComparison.OrdinalIgnoreCase));
-
-                if (terminalDo == null)
-                {
-                    Logger.Info($"Discovery for terminal '{terminalUrl}' failed: the provided Endpoint is not found in the Endpoint field of any of the existing Terminal entries.");
-                    return false;
-                }
 
                 if (terminalDo.ParticipationState == ParticipationState.Blocked)
                 {
@@ -395,30 +380,9 @@ namespace Hub.Services
                 return false;
             }
 
-            lock (_knownTerminals)
-            {
-                var uri = new Uri(terminalUrl);
-                _knownTerminals.Add(uri.Authority);
-            }
-
             Logger.Info($"Successfully discovered terminal at '{terminalUrl}'.");
 
             return true;
-        }
-
-        private string[] ListTerminalEndpoints()
-        {
-            var terminalUrls = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-
-            using (var uow = _unitOfWorkFactory.Create())
-            {
-                foreach (var terminalRegistration in uow.TerminalRepository.GetAll())
-                {
-                    terminalUrls.Add(terminalRegistration.Endpoint);
-                }
-            }
-
-            return terminalUrls.ToArray();
         }
     }
 }
