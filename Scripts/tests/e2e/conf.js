@@ -2,6 +2,9 @@
     //directConnect: true,
     capabilities: {
         'browserName': 'chrome',
+        'chromeOptions': {
+            'args': ['--no-sandbox']
+        },
         /* 
         * Can be used to specify the phantomjs binary path.
         * This can generally be ommitted if you installed phantomjs globally.
