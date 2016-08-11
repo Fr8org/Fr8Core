@@ -33,7 +33,7 @@ When your terminal needs to make a request to the Hub, it needs to provide an au
 
 Example:
 
-	Authorization: FR8-TOKEN key=2db48191-cda3-4922-9cc2-a636e828063f, user=76de71f2-f346-4bc9-96e0-f7bd1c87a575
+	Authorization: FR8-TOKEN key=2db48191-cda3-4922-9cc2-a636e828063f
 
 
 ###Note. It was previously also necessary to put the ID of the current user session into the authorization header, but that has been removed. 
