@@ -9,7 +9,7 @@ After button click (fr8 hub implementation) it opens modal window
 ##Example Control Payload
 ```json
 {
-           "crateDescription": []
+           "crateDescription": [],
            "errorMessage": null,
            "events": [],
            "label": "This Loop will process the data inside of",

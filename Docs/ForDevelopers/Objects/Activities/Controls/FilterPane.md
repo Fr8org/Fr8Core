@@ -23,25 +23,25 @@ As per the current implementation, the Filter Pane uses a Design Time Fields cra
 ##Example Control Payload
 ```json
 {
-                "resolvedUpstreamFields": [],
-                "fields": null,
-                "name": "Selected_Filter",
-                "required": true,
-                "value": "{\"executionType\":\"1\",\"conditions\":[{\"field\":\"a\",\"operator\":\"gt\",\"value\":\"0\"},{\"field\":\"b\",\"operator\":\"eq\",\"value\":\"2\"},{\"field\":\"c\",\"operator\":\"lte\",\"value\":\"4\"}]}",
-                "label": "Execute Actions If:",
-                "type": "FilterPane",
-                "selected": false,
-                "events": [],
-                "source": {
-                "manifestType": "Field Description",
-                "label": "Upstream Terminal-Provided Fields",
-                "filterByTag": null,
-                "requestUpstream": true,
-                "availabilityType": 0
-                },
-                "showDocumentation": null,
-                "isHidden": false,
-                "isCollapsed": false,
-                "errorMessage": null
+        "resolvedUpstreamFields": [],
+        "fields": null,
+        "name": "Selected_Filter",
+        "required": true,
+        "value": "{\"executionType\":\"1\",\"conditions\":[{\"field\":\"a\",\"operator\":\"gt\",\"value\":\"0\"},{\"field\":\"b\",\"operator\":\"eq\",\"value\":\"2\"},{\"field\":\"c\",\"operator\":\"lte\",\"value\":\"4\"}]}",
+        "label": "Execute Actions If:",
+        "type": "FilterPane",
+        "selected": false,
+        "events": [],
+        "source": {
+        "manifestType": "Field Description",
+        "label": "Upstream Terminal-Provided Fields",
+        "filterByTag": null,
+        "requestUpstream": true,
+        "availabilityType": 0
+        },
+        "showDocumentation": null,
+        "isHidden": false,
+        "isCollapsed": false,
+        "errorMessage": null
 }
 ```

@@ -4,7 +4,7 @@ The Checkbox control is a basic control class which renders an HTML button eleme
 
 ##Fields
 
-The Checkbox class extends the [ControlDefinitionDTO](/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) class and adds no additional properties.
+The Checkbox class extends the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitinDTO.md) class and adds no additional properties.
 
 <img src="images/checkbox.PNG" alt="Checkbox UI" width="200"/>
 
