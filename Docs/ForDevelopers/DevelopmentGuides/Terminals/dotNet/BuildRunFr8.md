@@ -27,6 +27,8 @@ For each *terminal* that's running, an additional web page will appear:
 
 At this point, you should be able to register an account on your HubWeb project, and create Plans that use the Terminals you've started.
 
+You may want to do [additional configuration](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfiguringHubAdvanced.md) to bring more Fr8 systems online.
+
 Troubleshooting
 ----------------
 
