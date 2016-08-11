@@ -1,6 +1,6 @@
 #FilterPane Control
 
-A widget that produces UI which generates a query. Looks like this: ![FilterPane](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/FilterPane.png)
+A widget that produces UI which generates a query. Looks like this: ![FilterPane](/Docs/img/FilterPane.png)
 
 The customer can add up to 10 of the criteria. All but the first one should have a small delete "X" button in the upper right.
 
@@ -21,14 +21,27 @@ The client needs to package up the values of these base units upon Submit and pa
 As per the current implementation, the Filter Pane uses a Design Time Fields crate to populate the left side Drop Down List Boxes. This crate should be labelled as Queryable Criteria to make this control to consider your design time fields crate.
 
 ##Example Control Payload
-```javascript
+```json
 {
-    "type": "FilterPane",
-    "name": "Selected_Filter",
-    "label": "Execute Actions If:",
-    "source": {
-         "manifestType": "Standard Design-Time Fields",
-         "label": "Queryable Criteria"
-              }
+                "resolvedUpstreamFields": [],
+                "fields": null,
+                "name": "Selected_Filter",
+                "required": true,
+                "value": "{\"executionType\":\"1\",\"conditions\":[{\"field\":\"a\",\"operator\":\"gt\",\"value\":\"0\"},{\"field\":\"b\",\"operator\":\"eq\",\"value\":\"2\"},{\"field\":\"c\",\"operator\":\"lte\",\"value\":\"4\"}]}",
+                "label": "Execute Actions If:",
+                "type": "FilterPane",
+                "selected": false,
+                "events": [],
+                "source": {
+                "manifestType": "Field Description",
+                "label": "Upstream Terminal-Provided Fields",
+                "filterByTag": null,
+                "requestUpstream": true,
+                "availabilityType": 0
+                },
+                "showDocumentation": null,
+                "isHidden": false,
+                "isCollapsed": false,
+                "errorMessage": null
 }
 ```
