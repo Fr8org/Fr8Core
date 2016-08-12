@@ -72,11 +72,11 @@ namespace Data.Migrations
                 AddPredefinedActivityCategories(uow);
                 AddTestUser(uow);
                 RenameActivity(uow);
-                RegisterTerminals(uow);
+                RegisterTerminals(uow, migrationContainer);
             }
         }
 
-        private void RegisterTerminals(UnitOfWork uow)
+        private void RegisterTerminals(UnitOfWork uow, IContainer container)
         {
             // IMPORTANT: After the migrations have worked out and after you've made sure that 
             // your terminal works fine on the target environment, you need to go to the Terminals page 
@@ -87,30 +87,30 @@ namespace Data.Migrations
             // If you're adding a 3rd party terminal, one created by an external developer
             // or just one which is not deployed by Fr8, it may have any URL but 
             // you need to set the Fr8OwnTerminal argument to true. For details see FR-4945.
-            RegisterFr8OwnTerminal(uow, "localhost:10109", "https://terminalInstagram.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:56785", "https://terminalAsana.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:46281", "https://terminalAzure.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:61121", "https://terminalBasecamp2.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:54642", "https://terminalBox.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:39504", "https://terminalSlack.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:53234", "https://terminalDocuSign.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:30700", "https://terminalNotifier.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:51234", "https://terminalSalesforce.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:50705", "https://terminalFr8Core.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:10601", "https://terminalSendGrid.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:30699", "https://terminalTwilio.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:25923", "https://terminalGoogle.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:47011", "https://terminalExcel.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:19760", "https://terminalDropbox.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:30701", "https://terminalPapertrail.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:39768", "https://terminalAtlassian.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:48317", "https://terminalQuickBooks.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:39555", "https://terminalYammer.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:50479", "https://terminalTutorial.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:48675", "https://terminalStatX.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:22666", "https://terminalFacebook.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:59022", "https://terminalTelegram.fr8.co");
-            RegisterFr8OwnTerminal(uow, "https://terminalTwitter.fr8.co", "https://terminalTwitter.fr8.co", false);
+            RegisterFr8OwnTerminal(uow, container, "localhost:10109", "https://terminalInstagram.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:56785", "https://terminalAsana.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:46281", "https://terminalAzure.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:61121", "https://terminalBasecamp2.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:54642", "https://terminalBox.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:39504", "https://terminalSlack.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:53234", "https://terminalDocuSign.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:30700", "https://terminalNotifier.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:51234", "https://terminalSalesforce.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:50705", "https://terminalFr8Core.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:10601", "https://terminalSendGrid.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:30699", "https://terminalTwilio.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:25923", "https://terminalGoogle.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:47011", "https://terminalExcel.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:19760", "https://terminalDropbox.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:30701", "https://terminalPapertrail.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:39768", "https://terminalAtlassian.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:48317", "https://terminalQuickBooks.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:39555", "https://terminalYammer.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:50479", "https://terminalTutorial.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:48675", "https://terminalStatX.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:22666", "https://terminalFacebook.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "localhost:59022", "https://terminalTelegram.fr8.co");
+            RegisterFr8OwnTerminal(uow, container, "https://terminalTwitter.fr8.co", "https://terminalTwitter.fr8.co", false);
         }
 
         private string ExtractPort(string url)
@@ -130,7 +130,7 @@ namespace Data.Migrations
         }
 
         // ReSharper disable once UnusedMember.Local
-        private void RegisterFr8OwnTerminal(UnitOfWork uow, string devUrl, string prodUrl = null, bool isFr8OwnTerminal = true)
+        private void RegisterFr8OwnTerminal(UnitOfWork uow, IContainer container, string devUrl, string prodUrl = null, bool isFr8OwnTerminal = true)
         {
             var terminalRegistration = new TerminalDO();
             string terminalPort = ExtractPort(devUrl);
@@ -143,7 +143,7 @@ namespace Data.Migrations
                     (ExtractPort(x.DevUrl) != null && ExtractPort(devUrl) != null &&
                         string.Equals(ExtractPort(x.DevUrl), terminalPort, StringComparison.OrdinalIgnoreCase)
             )));
-            var securityService = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            var securityService = container.GetInstance<ISecurityObjectsStorageProvider>();
 
             if (existingTerminal != null)
             {
