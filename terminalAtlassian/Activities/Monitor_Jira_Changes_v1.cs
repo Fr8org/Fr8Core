@@ -109,7 +109,8 @@ namespace terminalAtlassian.Actions
                                             .AddField(IssueAssignee)
                                             .AddField(IssueSummary)
                                             .AddField(IssueStatus)
-                                            .AddField(IssueDescription);
+                                            .AddField(IssueDescription)
+                                            .AddField(IssueKey);
         }
         public override Task Activate()
         {
@@ -152,7 +153,8 @@ namespace terminalAtlassian.Actions
                                                                     new KeyValueDTO(IssueAssignee, jiraIssue.IssueEvent.IssueAssigneeName),
                                                                     new KeyValueDTO(IssueSummary, jiraIssue.IssueEvent.IssueSummary),
                                                                     new KeyValueDTO(IssueStatus, jiraIssue.IssueEvent.IssueStatus),
-                                                                    new KeyValueDTO(IssueDescription, jiraIssue.IssueEvent.Description)
+                                                                    new KeyValueDTO(IssueDescription, jiraIssue.IssueEvent.Description),
+                                                                    new KeyValueDTO(IssueKey, jiraIssue.IssueKey)
                                                                     )));
             }
     }
