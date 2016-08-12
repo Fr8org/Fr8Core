@@ -40,11 +40,11 @@ namespace terminalAtlassian.Services
         private readonly string ProdConnectName = "Fr8 Company Jira integration";
         private readonly string TemporaryConnectName = "Fr8 Jira Integration";
 
-        private readonly string prodUrl = "https://terminalAtlassian.fr8.co";
-        private readonly string devUrl = "http://dev-terminals.fr8.co:39768";
-        private readonly string demoUrl = "http://demo-terminals.fr8.co:39768";
-        private readonly string callbackUrl = CloudConfigurationManager.GetSetting("terminalAtlassian.CallbackUrl");
-        private readonly string terminalEndpoint = CloudConfigurationManager.GetSetting("terminalAtlassian.TerminalEndpoint");
+        private string prodUrl = "https://terminalAtlassian.fr8.co";
+        private string devUrl = "http://dev-terminals.fr8.co:39768";
+        private string demoUrl = "http://demo-terminals.fr8.co:39768";
+        private string callbackUrl = CloudConfigurationManager.GetSetting("terminalAtlassian.CallbackUrl");
+        private string terminalEndpoint = CloudConfigurationManager.GetSetting("terminalAtlassian.TerminalEndpoint");
 
         private Jira CreateRestClient(string token)
         {
