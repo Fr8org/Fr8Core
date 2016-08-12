@@ -58,6 +58,7 @@ namespace Data.Entities
         public int? OrganizationId { get; set; }
         public virtual OrganizationDO Organization { get; set; }
 
+
         public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))

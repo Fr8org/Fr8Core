@@ -24,7 +24,7 @@ namespace Data.Infrastructure.StructureMap
         bool AuthorizeActivity(PermissionType permissionType, Guid curObjectId, string curObjectType, string propertyName = null);
         bool UserHasPermission(PermissionType permissionType, string objectType);
         void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissions = null);
-        IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals);
+        IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals, bool byOwnershipOnly = false);
         List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType);
     }
 }

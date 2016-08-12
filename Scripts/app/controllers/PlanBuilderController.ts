@@ -117,6 +117,12 @@ module dockyard.controllers {
             private ActivityTemplateHelperService: services.IActivityTemplateHelperService,
             private ActivityService: services.IActivityService
         ) {
+            // For testing only.
+            // $window['analytics'] = {
+            //     track: function () {
+            //         console.log('analytics.track', arguments);
+            //     }
+            // };
 
             this.LayoutService.resetLayout();
 
@@ -719,7 +725,16 @@ module dockyard.controllers {
         private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
             // Performs a call to Segment service for analytics
             if ($window['analytics'] != null) {
-                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.activityTemplate.name });
+                if (this.$scope.current.activities
+                    && this.$scope.current.activities.activityTemplate) {
+
+                    $window['analytics'].track(
+                        "Added Activity To Plan",
+                        {
+                            "Activity Name": this.$scope.current.activities.activityTemplate.name
+                        }
+                    );
+                }
             }
 
             var originalId,

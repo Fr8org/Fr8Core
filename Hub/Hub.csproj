@@ -320,6 +320,7 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Exceptions\ActivityExecutionException.cs" />
     <Compile Include="Exceptions\InvalidTokenException.cs" />
+    <Compile Include="Exceptions\WrongAuthenticationTypeException.cs" />
     <Compile Include="Exceptions\ManifestGenerationException.cs" />
     <Compile Include="Exceptions\ManifestNotFoundException.cs" />
     <Compile Include="Exceptions\ManifestPageNotFoundException.cs" />
@@ -339,6 +340,7 @@
     <Compile Include="Interfaces\IPageDefinition.cs" />
     <Compile Include="Interfaces\IPlanDirectoryService.cs" />
     <Compile Include="Interfaces\IPlanTemplate.cs" />
+    <Compile Include="Interfaces\IPlanTemplateDetailsGenerator.cs" />
     <Compile Include="Interfaces\ISearchProvider.cs" />
     <Compile Include="Interfaces\ITagGenerator.cs" />
     <Compile Include="Interfaces\ITemplateGenerator.cs" />
@@ -353,16 +355,6 @@
     <Compile Include="Interfaces\IJobDispatcher.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
-    <Compile Include="Resources\ManifestDescriptionTemplate.cs">
-      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Resources\PlanCategoryTemplate.cs">
-      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
     <Compile Include="Security\HangFireAuthorizationFilter.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
@@ -436,11 +428,9 @@
     <Compile Include="Services\PageDefinition.cs" />
     <Compile Include="Services\PlanDirectoryService.cs" />
     <Compile Include="Services\PlanDirectory\ActivityTemplateTag.cs" />
-    <Compile Include="Services\PlanDirectory\ManifestPageGenerator.cs" />
     <Compile Include="Services\PlanDirectory\TagGenerator.cs" />
     <Compile Include="Services\PlanDirectory\TemplateTag.cs" />
     <Compile Include="Services\PlanDirectory\TemplateTagStorage.cs" />
-    <Compile Include="Services\PlanDirectory\WebservicesPageGenerator.cs" />
     <Compile Include="Services\PlanDirectory\WebServiceTemplateTag.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
@@ -475,7 +465,6 @@
     <Compile Include="Services\UpstreamValueExtractors\TextSourceValueExtractror.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstreamValueExtractorBaseT.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstremFieldChooserValueExtractror.cs" />
-    <Compile Include="StructureMap\PlanDirectoryBootstrapper.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
     <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
@@ -493,10 +482,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\PlanCategoryTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
-    </Content>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
@@ -512,10 +497,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\ManifestDescriptionTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
-    </Content>
     <Content Include="Resources\perfect-krawsant.png" />
   </ItemGroup>
   <ItemGroup>

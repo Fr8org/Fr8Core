@@ -1,6 +1,6 @@
 #Fr8 for Developers
 
-[Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   
+[Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   ([video](https://vimeo.com/178394308))
 
 [Part 2 - Understanding the Fr8 Architectural Model](/Docs/ForDevelopers/ArchitecturalModel.md)  
 
@@ -12,6 +12,8 @@ General Resources
 -------------------
 [Fr8 User Guide](/Docs/ForUsers/Fr8ForUsers.md)  
 [Video Gallery](/Docs/ForDevelopers/VideoGallery.md)
+
+Fr8 Slack Team - [Visit](http://fr8org.slack.com) or [Join](http://slack.fr8.co)
     
 [Operating Concepts](/Docs/ForDevelopers/OperatingConceptsHome.md)
 -----------------------------------------------
