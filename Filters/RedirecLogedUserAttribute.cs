@@ -13,9 +13,14 @@ namespace HubWeb.Filters
             base.OnActionExecuting(filterContext);
 
             var claimsIdentity = (ClaimsIdentity)filterContext.HttpContext.User.Identity;
-            var isGuest = claimsIdentity.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Guest");
 
-            if (filterContext.HttpContext.User.Identity.IsAuthenticated)
+            bool isGuest = false;
+            if (claimsIdentity != null)
+            {
+                isGuest = claimsIdentity.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Guest");
+            }
+
+            if (filterContext.HttpContext.User.Identity.IsAuthenticated && !isGuest)
             {
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
                 {
