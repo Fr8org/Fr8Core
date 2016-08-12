@@ -41,7 +41,7 @@ namespace terminalAtlassian.Services
                 IssueId = issue.Issue.Id,
                 UserId = issue.User.Email,
                 Time = issue.Timestamp,
-                ChangedAspect = issue.IssueEventTypeName,
+                ChangedAspect = issue.Issue.Fields.Project.Name,
                 IssueEvent = new JiraIssueEventCM
                 {
                     IssueAssigneeName = issue.Issue.Fields.Assignee.DisplayName,
