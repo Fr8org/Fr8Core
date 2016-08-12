@@ -95,10 +95,6 @@ The TextBoxBig control renders a textarea tag.
 
 The TextSource control renders a text-aource tag.
 
-*[UpstreamDataChooser](Controls/UpstreamDataChooser.md)*
-
-The UpstreamDataChooser is a composite control which allows a user to select data from a crate from an upstream activity.
-
 *[UpstreamFieldChooser](Controls/UpstreamFieldChooser.md)*
 
 The UpstreamFieldChooser is a composite control which allos a user to select dynamically generated fields
@@ -127,6 +123,5 @@ TextBlock | "TextBlock"
 TextBox | "TextBox"
 TextBoxBig | "TextBoxBig"
 TextSource | "TextSource"
-UpstreamDataChooser | "UpstreamDataChooser"
 UpstreamFieldChooser | "UpstreamFieldChooser"
 
