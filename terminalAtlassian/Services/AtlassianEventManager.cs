@@ -54,7 +54,9 @@ namespace terminalAtlassian.Services
                     ProjectName = issue.Issue.Fields.Project.Name,
                     Timestamp = issue.Timestamp,
                     UserName = issue.User.DisplayName,
-                    WebhookEvent = issue.WebhookEvent
+                    WebhookEvent = issue.WebhookEvent,
+                    Description = issue.Issue.Fields.Description,
+                    Comments = issue.Issue.Fields.IssueComment.Comments
                 }
                 
             };
@@ -66,7 +68,6 @@ namespace terminalAtlassian.Services
                 Manufacturer = "Atlassian"
             };
             
-            ////prepare the event report
             var curEventReport = Crate.FromContent("Atlassian Issue Event", eventReportContent);
             return curEventReport;
         }
@@ -82,10 +83,6 @@ namespace terminalAtlassian.Services
             catch
             {
                 _atlassianSubscription.CreateOrUpdatePolling(hubCommunicator, curFr8UserAndToken.Item2);
-            }
-            finally
-            {
-                await _atlassianSubscription.CreatePlan_MonitorAllDocuSignEvents(hubCommunicator, curFr8UserAndToken.Item2);
             }
             return null;
 

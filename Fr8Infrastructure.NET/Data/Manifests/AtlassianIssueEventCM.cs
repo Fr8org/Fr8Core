@@ -29,5 +29,6 @@ namespace Fr8.Infrastructure.Data.Manifests
         public string IssueAssigneeEmailAddress { get; set; }
         public string IssueStatus { get; set; }
         public string IssueType { get; set; }
+        public string Description { get; set; }
     }
 }

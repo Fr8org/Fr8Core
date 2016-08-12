@@ -43,6 +43,8 @@ namespace terminalAtlassian.Models
         public IssueStatus Status { get; set; }
 
         public IssueType IssueType { get; set; }
+
+        public string Description { get; set; }
     }
     public class IssueType
     {
