@@ -142,9 +142,14 @@ namespace Data.Migrations
                     (ExtractPort(x.DevUrl) != null && ExtractPort(devUrl) != null &&
                         string.Equals(ExtractPort(x.DevUrl), terminalPort, StringComparison.OrdinalIgnoreCase)
             )));
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
 
             if (existingTerminal != null)
             {
+                //in order to avoid problems, check if permissions for terminal is already applied. If not, create those permissions 
+                securityService.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, existingTerminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                securityService.SetDefaultRecordBasedSecurityForObject(Roles.Guest, existingTerminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+
                 return;
             }
 
@@ -161,9 +166,8 @@ namespace Data.Migrations
             uow.SaveChanges();
 
             //make the terminal visible for all users
-            var security = ObjectFactory.GetInstance<ISecurityServices>();
-            security.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
-            security.SetDefaultRecordBasedSecurityForObject(Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+            securityService.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+            securityService.SetDefaultRecordBasedSecurityForObject(Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
         }
 
         private static string NormalizeUrl(string terminalUrl)
