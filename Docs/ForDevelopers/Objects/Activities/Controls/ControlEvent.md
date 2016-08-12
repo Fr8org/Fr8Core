@@ -1,6 +1,6 @@
 #ControlEvent
 
-The ControlEvent class is used in [ControlDefinitionDTO](../DataTransfer/ControlDefinitinDTO.md) class in order to specify a list of JavaScript events to which the control should respond.
+The ControlEvent class is used in [ControlDefinitionDTO](../DataTransfer/ControlDefinitionDTO.md) class in order to specify a list of JavaScript events to which the control should respond.
 
 ##Fields
 __name__: the name of the JavaScript event to which the control should respond. Examples are _onClick_ and _onChange_
