@@ -11,12 +11,12 @@
 
     function setNavbarLight() {
         $('.navbar').addClass('navbar-light');
-        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo.png');
+        $('.navbar-brand img').attr('src', '../Content/img/dockyard_logo.png');
     }
 
     function setNavbarTransparent() {
         $('.navbar').removeClass('navbar-light');
-        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_white.png');
+        $('.navbar-brand img').attr('src', '../Content/img/dockyard_logo_white.png');
     }
 
     function resizePageComponents() {

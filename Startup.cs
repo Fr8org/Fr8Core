@@ -30,8 +30,10 @@ using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
 using System.Globalization;
 using System.Threading;
-using System.Web.Routing;
-using PlanDirectory.Infrastructure;
+using Fr8.Infrastructure.Data.Manifests;
+using Hub.Enums;
+using Hub.Services;
+using HubWeb.Infrastructure_PD;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -94,6 +96,23 @@ namespace HubWeb
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
 #pragma warning restore 4014
+
+            await GenerateManifestPages();
+        }
+
+        private async Task GenerateManifestPages()
+        {
+            var systemUser = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser()?.EmailAddress?.Address;
+            var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
+            {
+                var generateTasks = new List<Task>();
+                foreach (var manifestName in uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(systemUser, x => true).Select(x => x.Name).Distinct())
+                {
+                    generateTasks.Add(generator.Generate(manifestName, GenerateMode.GenerateAlways));
+                }
+                await Task.WhenAll(generateTasks);
+            }
         }
 
         public void ConfigureControllerActivator(HttpConfiguration configuration)

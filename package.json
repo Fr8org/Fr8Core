@@ -7,16 +7,16 @@
     "gulp-bower": "^0.0.7"
   },
   "devDependencies": {
-	"gulp-header": "1.8.2",
     "gulp-angular-templatecache": "^1.8.0",
     "gulp-bower": "0.0.7",
     "gulp-cdnizer": "^1.1.6",
     "gulp-concat": "^2.6.0",
+    "gulp-header": "1.8.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
     "phantomjs": "^2.1.7",
-    "protractor": "^3.3.0",
-    "selenium-standalone": "^5.1.0",
+    "protractor": "^4.0.3",
+    "selenium-standalone": "^5.5.0",
     "yargs": "^4.6.0"
   }
 }

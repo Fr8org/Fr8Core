@@ -2,7 +2,7 @@
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
-For a basic introduction to Fr8 concepts, see [this](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForUsers/Fr8ForUsers.md) .  
+[Basic introduction to Fr8 concepts](http://documentation.fr8.co/how-it-works/) .  
 
 Fr8 is a fully distributed application environment designed from the ground up to specialize in connecting existing cloud services. End Users will mostly experience Fr8 through prebuilt solutions that make cloud integration problems vanish. Power Users will mostly experience Fr8 through the point-and-click Plan Builder, the easiest and most powerful tool for assembling cloud business processes.  
 

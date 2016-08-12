@@ -6,7 +6,7 @@ namespace Hub.Interfaces
     public interface ITerminalDiscoveryService
     {
         Task DiscoverAll();
-        Task<bool> Discover(string terminalUrl, bool isUserInitiated);
+        Task<bool> Discover(TerminalDTO terminal, bool isUserInitiated);
         Task SaveOrRegister(TerminalDTO terminal);
     }
 }

@@ -14,6 +14,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using System.Text.RegularExpressions;
+using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
@@ -156,7 +157,13 @@ namespace Data.Migrations
             terminalRegistration.ParticipationState = ParticipationState.Unapproved;
 
             uow.TerminalRepository.Add(terminalRegistration);
+            
             uow.SaveChanges();
+
+            //make the terminal visible for all users
+            var security = ObjectFactory.GetInstance<ISecurityServices>();
+            security.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+            security.SetDefaultRecordBasedSecurityForObject(Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
         }
 
         private static string NormalizeUrl(string terminalUrl)
@@ -664,19 +671,19 @@ namespace Data.Migrations
 
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
-            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Terminals
-            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Users
-            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, true, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for PageDefinitions
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), false, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //add standard user to all users without profile 
             var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
