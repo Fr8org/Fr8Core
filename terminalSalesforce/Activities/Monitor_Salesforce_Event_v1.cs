@@ -22,14 +22,12 @@ namespace terminalSalesforce.Actions
             Name = "Monitor_Salesforce_Event",
             Label = "Monitor Salesforce Events",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Monitors,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

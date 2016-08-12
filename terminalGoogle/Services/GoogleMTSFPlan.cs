@@ -53,7 +53,7 @@ namespace terminalGoogle.Services
             {
                 Name = "MonitorSubmissionTerminalForm",
                 Description = "MonitorSubmissionTerminalForm",
-                PlanState = PlanState.Running,
+                PlanState = "Active",
                 Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
@@ -239,6 +239,7 @@ namespace terminalGoogle.Services
             var field = data.AvailableCrates.Where(c => c.Fields.Where(f => f.Name == fieldKey).FirstOrDefault() != null).FirstOrDefault().Fields.Where(f => f.Name == fieldKey).FirstOrDefault();
             nameTextBox.ValueSource = "upstream";
             nameTextBox.SelectedItem = field;
+            nameTextBox.selectedKey = field.Name;
         }
 
         private void SetDDL(ActivityPayload payload, string name, string key)

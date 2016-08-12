@@ -72,14 +72,14 @@ namespace terminalDocuSignTests.Integration
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity" && a.Ordering == 1),
                 "Failed to detect Monitor DocuSign Envelope Activity as the first child activity");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Send DocuSign Envelope" && a.Ordering == 2),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Send_DocuSign_Envelope" && a.Ordering == 2),
                 "Failed to detect Send DocuSign Envelope as the second child activity");
 
 
             var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
-                .Single(x => x.Name == "Monitor DocuSign Envelope Activity");
+                .Single(x => x.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity");
 
             //
             // Apply auth-token to child MonitorDocuSignEvnelope activity.
@@ -159,7 +159,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
+            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.ActivityTemplate.Name == "Send_DocuSign_Envelope");
 
             var sendEnvelopeApplyToken = new AuthenticationTokenGrantDTO()
             {
@@ -232,8 +232,8 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + _solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam =(int)ActivityCategory.Processors;
-            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
+            var activityCategoryParam = ActivityCategories.ProcessId.ToString();
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates
                 .SelectMany(a => a.Activities)
                 .Single(a => a.Name == "Add_Payload_Manually");
@@ -247,7 +247,6 @@ namespace terminalDocuSignTests.Integration
             var apmAction = new ActivityDTO()
             {
                 ActivityTemplate = activityTemplateSummary,
-                Name = apmActivityTemplate.Label,
                 ParentPlanNodeId = _solution.Id,
                 RootPlanNodeId = plan.Id
             };

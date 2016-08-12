@@ -233,7 +233,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
-                Category = ActivityCategory.Forwarders,
                 Categories = new[] { ActivityCategories.Forward }
             };
         }
@@ -246,7 +245,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
                 Categories = new [] { ActivityCategories.Forward }
             };
         }

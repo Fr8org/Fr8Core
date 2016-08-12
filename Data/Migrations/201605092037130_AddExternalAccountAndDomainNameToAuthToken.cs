@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddExternalAccountAndDomainNameToAuthToken : DbMigration
+    public partial class AddExternalAccountAndDomainNameToAuthToken : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="LICENSE" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -90,10 +91,6 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496C-8512-4708-925A-EE9D0F9199D4}</Project>
       <Name>Hub</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Services\PlanDirectory\PlanDirectory.csproj">
-      <Project>{2B78433B-BA79-470B-BEF6-DBA5C1904865}</Project>
-      <Name>PlanDirectory</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -57,7 +57,9 @@ namespace HubTests.Controllers
                     Version = "1",
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
-                    Secret = Guid.NewGuid().ToString()
+                    Secret = Guid.NewGuid().ToString(),
+                    OperationalState = OperationalState.Active,
+                    ParticipationState = ParticipationState.Approved
                 };
 
                 uow.TerminalRepository.Add(terminalDO);
@@ -125,7 +127,7 @@ namespace HubTests.Controllers
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 

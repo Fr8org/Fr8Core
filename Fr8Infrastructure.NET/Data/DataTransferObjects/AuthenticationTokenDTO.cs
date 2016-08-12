@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class AuthenticationTokenTerminalDTO
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -20,7 +21,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("authenticationType")]
         public int AuthenticationType { get; set; }
-
+        
         [JsonProperty("authTokens")]
         public List<AuthenticationTokenDTO> AuthTokens { get; set; }
     }

@@ -124,7 +124,6 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
-                Name = name,
                 CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
@@ -189,9 +188,11 @@ namespace Hub.Services
                         {
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
+
                         Logger.GetLogger().Info($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
                         Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
+
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
                         var storage = _crateManager.GetStorage(activatedActivityDo);
                         var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
@@ -558,7 +559,7 @@ namespace Hub.Services
 
             var root = exisiting.GetTreeRoot() as PlanDO;
 
-            if (root?.PlanState == PlanState.Running)
+            if (root?.PlanState == PlanState.Executing || root?.PlanState == PlanState.Active)
             {
                 root.PlanState = PlanState.Inactive;
             }
@@ -700,7 +701,6 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
-                    Name = curActivityTerminalDTO.Name,
                     ActivityTemplate = new ActivityTemplateSummaryDTO
                     {
                         Name = curActivityTerminalDTO.Name,
@@ -739,10 +739,12 @@ namespace Hub.Services
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var solutionId = ActivityCategories.SolutionId;
+
                 var curActivities = uow.ActivityTemplateRepository
                     .GetQuery()
                     .Where(x => x.Terminal.Name == terminalName
-                        && x.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution)
+                        && x.Categories.Any(y => y.ActivityCategoryId == solutionId))
                     .GroupBy(x => x.Name)
                     .AsEnumerable()
                     .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())

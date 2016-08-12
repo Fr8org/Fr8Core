@@ -26,15 +26,13 @@ namespace terminalDocuSign.Activities
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

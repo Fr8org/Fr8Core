@@ -30,6 +30,18 @@ namespace HubWeb.App_Start
             );
 
             routes.MapRoute(
+                name: "Plan_Directory",
+                url: "plan_directory",
+                defaults: new { controller = "PlanDirectory", action = "Index" }
+            );
+
+            routes.MapRoute(
+                name: "Manifest_Registry",
+                url: "manifest_registry",
+                defaults: new { controller = "ManifestRegistry", action = "Index" }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional}

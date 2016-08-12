@@ -196,15 +196,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
-        return {
+        return <any>{
             request: (config: ng.IRequestConfig) => {
                 // Show page spinner If there is no request parameter suppressSpinner.
                 if (config && config.params && config.params['suppressSpinner']) {
                     // We don't want this parameter to be sent to backend so remove it if found.
                     delete (config.params.suppressSpinner);
-                }
-                else {
-                    //   Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
                 }
                 return config;
             },
@@ -216,127 +213,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 //Andrei Chaplygin: not applicable as this is a valid response from methods signalling that user is authorized but doesn't have sufficient priviligies
                 //All unauthorized requests are handled (and redirected to login page) by built-in functionality (authorize attributes)
                 if (config.status === 403) {
-                    $window.location.href = $window.location.origin + '/DockyardAccount'
-                        + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
+                    $window.location.href = $window.location.origin + '/Account/InterceptLogin'
+                        + '?returnUrl=' + encodeURIComponent($window.location.pathname + $window.location.search);
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
-            }
-        }
-    }]);
-
-    class ApiRequestCoordinatorService {
-        private configurePattern: string = 'activities/configure';
-        private savePattern: string = 'activities/save';
-        private currentConfigurationRequests: string[] = [];
-
-        // If the function returns false, request must be rejected. If true, the request can proceed.
-        public startRequest(url: string, activityId: string): boolean {
-            if (url.indexOf(this.configurePattern) > -1) {
-                // check if such activity is currently being configured. if so, reject the request.
-                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                    return false;
-                }
-                else {
-                    // if not, add it in the list of configured activities
-                    this.currentConfigurationRequests.push(activityId);
-                }
-            }
-
-            else if (url.indexOf(this.savePattern) > -1) {
-                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public endRequest(url: string, activityId: string) {
-            if (url.indexOf(this.configurePattern) == -1) return;
-
-            // check if such activity is currently being configured. if so, remove it from the array
-            let idx: number = this.currentConfigurationRequests.indexOf(activityId);
-            if (idx > -1) {
-                this.currentConfigurationRequests.splice(idx, 1);
-            }
-        }
-    }
-
-    app.service('ApiRequestCoordinatorService', [ApiRequestCoordinatorService]);
-
-
-    // Install a HTTP request interceptor that syncronizes Save and Config requests for a single activity.
-    // If a Configure request is currently executing, Save and other Configure requests will be dropped. 
-    // See FR-3475 for rationale. 
-    $httpProvider.interceptors.push(['$q', ($q: ng.IQService) => {
-
-        // Since we cannot reference services from initialization code, we define a nested class and instantiate it. 
-        class ApiRequestCoordinatorService {
-            private configurePattern: string = 'activities/configure';
-            private savePattern: string = 'activities/save';
-            private currentConfigurationRequests: string[] = [];
-
-            // If the function returns false, request must be rejected. If true, the request can proceed.
-            public startRequest(url: string, activityId: string): boolean {
-                if (url.indexOf(this.configurePattern) > -1) {
-                    // check if such activity is currently being configured. if so, reject the request.
-                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                        return false;
-                    }
-                    else {
-                        // if not, add it in the list of configured activities
-                        this.currentConfigurationRequests.push(activityId);
-                    }
-                }
-
-                else if (url.indexOf(this.savePattern) > -1) {
-                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            public endRequest(url: string, activityId: string) {
-                if (url.indexOf(this.configurePattern) == -1) return;
-
-                // check if such activity is currently being configured. if so, remove it from the array
-                let idx: number = this.currentConfigurationRequests.indexOf(activityId);
-                if (idx > -1) {
-                    this.currentConfigurationRequests.splice(idx, 1);
-                }
-            }
-        }
-
-        let apiRequestCoordinatorService = new ApiRequestCoordinatorService();
-
-        return {
-            request: (config) => {
-                // bypass any requests which are not of interest for us
-                if (config.method != 'POST') return config;
-                if (!config.params || !config.params.id) return config;
-                if (!apiRequestCoordinatorService.startRequest(config.url, config.params.id)) {
-                    var canceler = $q.defer();
-                    config.timeout = canceler.promise;
-                    canceler.resolve();
-                }
-                return config;
-            },
-
-            response: (response) => {
-                let config = response.config;
-                if (!config.url) return response;
-                if (!response.data || !response.data.id) return response;
-                apiRequestCoordinatorService.endRequest(config.url, response.data.id)
-                return response;
-            },
-
-            responseError: (response) => {
-                if (!response.url) return $q.reject(response);
-                if (!response.data || !response.data.id) return $q.reject(response);
-                apiRequestCoordinatorService.endRequest(response.url, response.data.id)
-                return $q.reject(response);
             }
         }
     }]);
@@ -484,12 +365,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             url: "/terminals/{id}",
             templateUrl: "/AngularTemplate/TerminalDetail",
             data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
-        })
-        .state('manifestregistry',
-        {
-            url: "/manifest_registry",
-            templateUrl: "/AngularTemplate/ManifestRegistryList",
-            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
         .state('manageAuthTokens',
         {

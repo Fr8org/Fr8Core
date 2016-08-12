@@ -165,6 +165,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Fr8TerminalSDK.Dev.nuspec" />
+    <Content Include="LICENSE" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

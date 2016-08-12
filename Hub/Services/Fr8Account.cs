@@ -16,6 +16,7 @@ using System.Web;
 using System.Net.Http;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -420,7 +421,7 @@ namespace Hub.Services
                 var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
                 code = HttpUtility.HtmlEncode(code);
 
-                var callbackUrl = string.Format("{0}DockyardAccount/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
+                var callbackUrl = string.Format("{0}Account/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
                     user.Id, code);
 
                 var emailDO = new EmailDO();
@@ -484,7 +485,8 @@ namespace Hub.Services
                 var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 planQuery
-                    .Where(pt => pt.PlanState == PlanState.Running)//1.
+                    .Where(pt => pt.PlanState == PlanState.Executing ||
+                                 pt.PlanState == PlanState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
                 activePlans = planQuery.ToList();

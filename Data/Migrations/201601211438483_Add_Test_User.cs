@@ -10,7 +10,7 @@ namespace Data.Migrations
     using System.Data.Entity.Migrations;
     //This migration added test user
     //To complete it, we make add rows to tables _UserStateTemplate, EmailAddress, AspNetUsers and finally User.
-    public partial class Add_Test_User : DbMigration
+    public partial class Add_Test_User : System.Data.Entity.Migrations.DbMigration
     {
         private string email = "integration_test_runner@fr8.company";
         private string name = "IntegrationTestRunner";
@@ -21,7 +21,7 @@ namespace Data.Migrations
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                MigrationConfiguration.CreateDockyardAccount(email, password, uow);
+                MigrationConfiguration.CreateFr8Account(email, password, uow);
             }
             
             //var passwordHasher = new PasswordHasher();

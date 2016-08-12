@@ -14,7 +14,7 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm",
 {
     @Html.AntiForgeryToken()
     <ul class="pull-right welcomemsg smalltext">
-        <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+        <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
     </ul>
 
     <nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
@@ -33,7 +33,7 @@ using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm",
         {
             <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Booker" }, new { id = "btnDashBoard" })</li>
         }
-        <li>@Html.ActionLink("Log off", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
+        <li>@Html.ActionLink("Log off", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
     </ul>
 </nav>
     }
@@ -44,7 +44,7 @@ else
         <ul class="nav navbar-nav navbar-right">
             <!--@*<li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@-->
             <li>@Html.ActionLink("Dashboard", "Dashboard", "Admin", routeValues: null, htmlAttributes: new { id = "dashboardLink" })</li>
-            <li>@Html.ActionLink("Log in", "Index", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+            <li>@Html.ActionLink("Log in", "Index", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
         </ul>
     </nav>
 }
