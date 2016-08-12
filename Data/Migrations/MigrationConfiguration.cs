@@ -57,7 +57,11 @@ namespace Data.Migrations
                 migrationContainer.Configure(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
 
                 var uow = new UnitOfWork(context, migrationContainer);
-
+                migrationContainer.Configure(x =>
+                {
+                    x.For<IUnitOfWork>().Use(_ => uow);
+                });
+                
                 UpdateRootPlanNodeId(uow);
 
                 SeedIntoMockDb(uow);
