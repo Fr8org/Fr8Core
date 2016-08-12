@@ -63,7 +63,7 @@ namespace terminalFr8Core.Activities
         {
             var textSourceControl = GetControl<TextSource>("File Crate label");
             var fileNameField = GetControl<TextBox>("File_Name");
-            var fileCrateLabel = textSourceControl.TextValue;
+            var fileCrateLabel = string.IsNullOrEmpty(textSourceControl.TextValue) ? textSourceControl.Value : textSourceControl.TextValue;
             if (string.IsNullOrEmpty(fileCrateLabel))
             {
                 RaiseError("No Label was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
