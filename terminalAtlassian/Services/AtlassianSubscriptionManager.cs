@@ -38,13 +38,13 @@ namespace terminalAtlassian.Services
         private readonly string DevConnectName = "(dev) Fr8 Company Jira integration";
         private readonly string DemoConnectName = "(demo) Fr8 Company Jira integration";
         private readonly string ProdConnectName = "Fr8 Company Jira integration";
-        private readonly string TemporaryConnectName = "Fr8 Jira Integration Test";
+        private readonly string TemporaryConnectName = "Fr8 Jira Integration";
 
-        private readonly string debugUrl = "http://localhost:39768";
-        private readonly string prodUrl = "https://terminalAtlassian.fr8.co";
-        private readonly string devUrl = "http://dev-terminals.fr8.co:39768";
-        private readonly string demoUrl = "http://demo-terminals.fr8.co:39768";
-        private readonly string callbackUrl = CloudConfigurationManager.GetSetting("terminalAtlassian.CallbackUrl");
+        private string prodUrl = "https://terminalAtlassian.fr8.co";
+        private string devUrl = "http://dev-terminals.fr8.co:39768";
+        private string demoUrl = "http://demo-terminals.fr8.co:39768";
+        private string callbackUrl = CloudConfigurationManager.GetSetting("terminalAtlassian.CallbackUrl");
+        private string terminalEndpoint = CloudConfigurationManager.GetSetting("terminalAtlassian.TerminalEndpoint");
 
         private Jira CreateRestClient(string token)
         {
@@ -72,7 +72,7 @@ namespace terminalAtlassian.Services
             post.Events = events;
             post.ExcludeIssueDetails = false;
             post.JqlFilter = "";
-            post.Url = callbackUrl;
+            post.Url = terminalEndpoint + "/terminals/terminalatlassian/subscribe";
 
             if (callbackUrl.Contains(prodUrl)) {
                 post.Name = ProdConnectName;
@@ -92,15 +92,15 @@ namespace terminalAtlassian.Services
             var getSubscriptions = await jira.RestClient.ExecuteRequestAsync(Method.GET, url, post);
             var oldSubscriptions = getSubscriptions.ToList<JToken>();
 
-            var subscriptionIsExists = false;
+            var subscriptionDoesExists = false;
             for (var i = 0; i < oldSubscriptions.Count; i++)
             {
                 if(oldSubscriptions[i].Value<string>("name") == post.Name)
                 {
-                    subscriptionIsExists = true;
+                    subscriptionDoesExists = true;
                 }
             }
-            if (!subscriptionIsExists)
+            if (!subscriptionDoesExists)
             {
                 var subscription = await jira.RestClient.ExecuteRequestAsync(Method.POST, url, post);
             }
