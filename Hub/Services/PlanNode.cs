@@ -14,22 +14,53 @@ using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 
+
 namespace Hub.Services
 {
     public class PlanNode : IPlanNode
     {
+        #region ActivityCategories comparer.
+
+        private class ActivitiesCategoriesComparer : IComparer<IEnumerable<ActivityCategorySetDO>>
+        {
+            public int Compare(IEnumerable<ActivityCategorySetDO> x, IEnumerable<ActivityCategorySetDO> y)
+            {
+                var xIndex = GetActivityCategoryIndex(x);
+                var yIndex = GetActivityCategoryIndex(y);
+
+                return xIndex.CompareTo(yIndex);
+            }
+
+            private static int GetActivityCategoryIndex(IEnumerable<ActivityCategorySetDO> s)
+            {
+                for (int i = 0; i < ActivityCategories.ActivityCategoryIds.Count; ++i)
+                {
+                    if (s.Select(x => x.ActivityCategoryId).Contains(ActivityCategories.ActivityCategoryIds[i]))
+                    {
+                        return i + 1;
+                    }
+                }
+
+                return ActivityCategories.ActivityCategoryIds.Count + 1;
+            }
+        }
+
+        #endregion ActivityCategories comparer.
+
         #region Fields
 
         private readonly ICrateManager _crate;
+        private readonly ITerminal _terminal;
         private readonly IActivityTemplate _activityTemplate;
         private const string ValidationErrorsLabel = "Validation Errors";
 
         #endregion
 
-        public PlanNode()
+        public PlanNode(ICrateManager crateManager, IActivityTemplate activityTemplate, ITerminal terminal)
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _terminal = terminal;
+            _activityTemplate = activityTemplate;
+            _crate = crateManager;
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -164,7 +195,6 @@ namespace Hub.Services
                 GetDownstreamRecusive(planNodeDo, nodes);
             }
 
-
             while (curActivityDO != null)
             {
                 if (curActivityDO.ParentPlanNode != null)
@@ -195,14 +225,14 @@ namespace Hub.Services
                 return null;
             }
 
-            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Runnable && x.Ordering > currentActivity.Ordering);
+            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
         }
 
         public PlanNodeDO GetFirstChild(PlanNodeDO currentActivity)
         {
             if (currentActivity.ChildNodes.Count != 0)
             {
-                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
             }
 
             return null;
@@ -282,7 +312,7 @@ namespace Hub.Services
 
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .OrderBy(t => t.Category)
+                .OrderBy(t => t.Categories, new ActivitiesCategoriesComparer())
                 .Select(Mapper.Map<ActivityTemplateDTO>)
                 .ToList();
 
@@ -308,19 +338,21 @@ namespace Hub.Services
                 .GetAll()
                 .Where(predicate)
                 .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
-                .OrderBy(t => t.Category)
+                .OrderBy(t => t.Categories, new ActivitiesCategoriesComparer())
                 .Select(Mapper.Map<ActivityTemplateDTO>)
                 .ToList();
         }
 
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow)
         {
+            var solutionId = ActivityCategories.SolutionId;
+
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution
+                .Where(at => at.Categories.Any(y => y.ActivityCategoryId == solutionId)
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
-                .OrderBy(t => t.Category)
+                .OrderBy(t => t.Categories, new ActivitiesCategoriesComparer())
                 .Select(Mapper.Map<ActivityTemplateDTO>)
                 .ToList();
 
@@ -339,30 +371,41 @@ namespace Hub.Services
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivityGroups()
         {
-            var curActivityTemplates = _activityTemplate
+			var availableTerminalIds = _terminal.GetAll().Select(x=>x.Id).ToList();
+            var activityTemplates = _activityTemplate
                 .GetQuery()
-                .Where(at => at.ActivityTemplateState == ActivityTemplateState.Active).AsEnumerable().ToArray()
-                .GroupBy(t => t.Category)
-                .OrderBy(c => c.Key)
-                .Select(c => new ActivityTemplateCategoryDTO
+                .Where(at => at.ActivityTemplateState == ActivityTemplateState.Active
+					&& availableTerminalIds.Contains(at.TerminalId)).AsEnumerable().ToArray()
+                .ToList();
+
+            var result = ActivityCategories.ActivityCategoryList
+                .Where(x => activityTemplates.Any(y => y.Categories.Any(z => z.ActivityCategoryId == x.Id)
+                    && y.ActivityTemplateState == ActivityTemplateState.Active))
+                .Select(x => new ActivityTemplateCategoryDTO()
                 {
-                    Activities = c.GroupBy(x => x.Name)
-                                  .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
-                                  .Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
-                    Name = c.Key.ToString()
+                    Name = x.Name,
+                    Activities = activityTemplates
+                        .Where(y => y.Categories.Any(z => z.ActivityCategoryId == x.Id)
+                            && y.ActivityTemplateState == ActivityTemplateState.Active)
+                        .GroupBy(y => y.Name)
+                        .Select(y => y.OrderByDescending(z => int.Parse(z.Version)).First())
+                        .Select(Mapper.Map<ActivityTemplateDTO>)
+                        .ToList()
                 })
                 .ToList();
 
-            return curActivityTemplates;
+            return result;
         }
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
         {
+            var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
+
             var categories = _activityTemplate
                 .GetQuery()
-                .Where(x => x.Categories != null)
+                .Where(x => availableTerminalIds.Contains(x.TerminalId) && x.Categories != null)
                 .SelectMany(x => x.Categories)
-                .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .Select(x => new { x.ActivityCategory.Id, x.ActivityCategory.Name, x.ActivityCategory.IconPath })
                 .OrderBy(x => x.Name)
                 .Distinct()
                 .ToList();
@@ -370,6 +413,7 @@ namespace Hub.Services
             var result = categories
                 .Select(x => new ActivityTemplateCategoryDTO()
                 {
+                    Id = x.Id,
                     Name = x.Name,
                     IconPath = x.IconPath,
                     Activities = _activityTemplate.GetQuery()

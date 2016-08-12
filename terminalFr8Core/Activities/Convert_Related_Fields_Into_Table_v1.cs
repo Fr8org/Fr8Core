@@ -14,6 +14,9 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
+    //////////////////
+    /// DISABLED (needs rethinking)
+    //////////////////
 
     public class Convert_Related_Fields_Into_Table_v1 : ExplicitTerminalActivity
     {
@@ -22,15 +25,13 @@ namespace terminalFr8Core.Activities
             Id = new Guid("51e59b13-b164-4a4a-9a37-f528cb05e0fb"),
             Name = "Convert_Related_Fields_Into_Table",
             Label = "Convert Related Fields Into a Table",
-            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 400,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -47,10 +48,10 @@ namespace terminalFr8Core.Activities
 
         private string GetRowPrefix()
         {
-            return ConfigurationControls.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
+            return ConfigurationControls.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;
         }
-        
-      
+
+
         private void CreateConfigurationControls()
         {
             var actionExplanation = new TextBlock()
@@ -62,7 +63,7 @@ namespace terminalFr8Core.Activities
             {
                 Name = "Upstream_data_chooser",
                 Label = "Please select data type",
-                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
             var fieldSelectPrefix = new TextBox()
             {
@@ -174,7 +175,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task FollowUp()
         {
-           
+
         }
     }
 }

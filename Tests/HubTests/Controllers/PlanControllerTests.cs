@@ -15,6 +15,7 @@ using Fr8.Testing.Unit.Fixtures;
 
 using HubWeb.ViewModels.RequestParameters;
 using System.Text.RegularExpressions;
+using Data.States;
 
 namespace HubTests.Controllers
 {
@@ -130,30 +131,30 @@ namespace HubTests.Controllers
             //Assert
             var okResult = response as OkNegotiatedContentResult<PlanDTO>;
             var okResult1 = response1 as OkNegotiatedContentResult<PlanDTO>;
-            var result = Int32.Parse(Regex.Match(okResult.Content.Plan.Name, @"\d+").Value);
-            var result1 = Int32.Parse(Regex.Match(okResult1.Content.Plan.Name, @"\d+").Value);
+            var result = Int32.Parse(Regex.Match(okResult.Content.Name, @"\d+").Value);
+            var result1 = Int32.Parse(Regex.Match(okResult1.Content.Name, @"\d+").Value);
  
             Assert.IsTrue(result1 - result == 1);
 
         }
 
         [Test]
-        public void PlanController_Will_ReturnEmptyOkResult_If_No_Plan_Found()
+        public async void PlanController_Will_ReturnEmptyOkResult_If_No_Plan_Found()
         {
             //Act
             PlansController PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-            var postResult = PlanController.Get(new PlansGetParams()
+            var postResult = await PlanController.Get(new PlansGetParams()
             {
                 id = FixtureData.GetTestGuidById(55)
             });
-                //FixtureData.GetTestGuidById(55));
+            //FixtureData.GetTestGuidById(55));
             Assert.IsNull(postResult as OkNegotiatedContentResult<PlanDO>);
         }
 
         [Test]
-        public void ProcessController_Will_Return_All_When_Get_Invoked_With_Null()
+        public async void ProcessController_Will_Return_All_When_Get_Invoked_With_Null()
         {
             //Arrange
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
@@ -178,7 +179,7 @@ namespace HubTests.Controllers
                 PlanController.Post(PlanDto);
             }
             //Act
-            var actionResult = PlanController.Get(new PlansGetParams()) as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
+            var actionResult = await PlanController.Get(new PlansGetParams()) as OkNegotiatedContentResult<IList<PlanNoChildrenDTO>>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -186,7 +187,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void ProcessController_Will_Return_One_When_Get_Invoked_With_Id()
+        public async void ProcessController_Will_Return_One_When_Get_Invoked_With_Id()
         {
             //Arrange
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
@@ -194,15 +195,15 @@ namespace HubTests.Controllers
             var resultPlan = (PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanDTO>).Content;
 
             //Act
-            var actionResult = PlanController.Get( new PlansGetParams()
+            var actionResult = await PlanController.Get(new PlansGetParams()
             {
-                id = resultPlan.Plan.Id
-            }) as OkNegotiatedContentResult<PlanEmptyDTO>;
+                id = resultPlan.Id
+            }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Content);
-            Assert.AreEqual(resultPlan.Plan.Id, actionResult.Content.Id);
+            Assert.AreEqual(resultPlan.Id, actionResult.Content.Id);
 
         }
 
@@ -210,28 +211,28 @@ namespace HubTests.Controllers
         // We add object to PlanRepository but Delete logic recusively traverse Activity repository.
         [Ignore("MockDB behavior is incorrect")]
         [Test]
-        public void PlanController_CanDelete()
+        public async void PlanController_CanDelete()
         {
             //Arrange 
             var PlanDto = FixtureData.CreateTestPlanDTO();
 
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var postResult = PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var postResult = PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanNoChildrenDTO>;
 
             Assert.NotNull(postResult);
 
             //Act
-            var deleteResult = PlanController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
+            var deleteResult = await PlanController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
 
             Assert.NotNull(deleteResult);
 
             //Assert
             //After delete, if we get the same process template, it should be null
             var afterDeleteAttemptResult =
-                PlanController.Get( new PlansGetParams()
-                {
-                    id = postResult.Content.Id
-                }) as OkNegotiatedContentResult<PlanEmptyDTO>;
+               await PlanController.Get(new PlansGetParams()
+               {
+                   id = postResult.Content.Id
+               }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.IsNull(afterDeleteAttemptResult);
         }
 
@@ -250,11 +251,11 @@ namespace HubTests.Controllers
             //Assert
             var okResult = response as OkNegotiatedContentResult<PlanDTO>;
             
-            Assert.IsTrue(okResult.Content.Plan.Name.Contains("Untitled Plan"));
+            Assert.IsTrue(okResult.Content.Name.Contains("Untitled Plan"));
         }
 
         [Test]
-        public void ProcessController_CanEditProcess()
+        public async void ProcessController_CanEditProcess()
         {
             //Arrange 
             //var processTemplateDto = FixtureData.CreateTestPlanDTO();
@@ -273,10 +274,10 @@ namespace HubTests.Controllers
             Assert.NotNull(postResult);
 
             //Then Get
-            var getResult = PlanController.Get(new PlansGetParams()
+            var getResult = await PlanController.Get(new PlansGetParams()
             {
-                id = postResult.Content.Plan.Id
-            }) as OkNegotiatedContentResult<PlanEmptyDTO>;
+                id = postResult.Content.Id
+            }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.NotNull(getResult);
 
             //Then Edit
@@ -286,23 +287,23 @@ namespace HubTests.Controllers
             Assert.NotNull(editResult);
 
             //Then Get
-            var postEditGetResult = PlanController.Get( new PlansGetParams()
+            var postEditGetResult = await PlanController.Get(new PlansGetParams()
             {
-                id = editResult.Content.Plan.Id
-            }) as OkNegotiatedContentResult<PlanEmptyDTO>;
+                id = editResult.Content.Id
+            }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.NotNull(postEditGetResult);
 
             //Assert 
             Assert.AreEqual(postEditGetResult.Content.Name, postEditNameValue);
-            Assert.AreEqual(postEditGetResult.Content.Id, editResult.Content.Plan.Id);
-            Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Plan.Id);
+            Assert.AreEqual(postEditGetResult.Content.Id, editResult.Content.Id);
+            Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Id);
         }
 
-        
+
         [Test]
-        public void ShouldGetFullPlan()
+        public async void ShouldGetFullPlan()
         {
-            var curPlanController = new PlansController();
+            var curPlanController = ObjectFactory.GetInstance<PlansController>();
             var curPlanDO = FixtureData.TestPlan3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -310,8 +311,7 @@ namespace HubTests.Controllers
                 curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    TerminalId = 1,
-
+                    TerminalId = FixtureData.GetTestGuidById(1),
                     Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
                 });
@@ -319,12 +319,14 @@ namespace HubTests.Controllers
 
                 uow.TerminalRepository.Add(new TerminalDO()
                 {
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",
-                    Version = "1"
-
+                    Version = "1",
+                    OperationalState = OperationalState.Active,
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint = "http://localhost:11111"
                 });
                 uow.UserRepository.Add(curPlanDO.Fr8Account);
                 uow.PlanRepository.Add(curPlanDO);
@@ -332,14 +334,14 @@ namespace HubTests.Controllers
             }
 
             //var curResult = curPlanController.GetFullPlan(curPlanDO.Id) as OkNegotiatedContentResult<PlanDTO>;
-            var curResult = curPlanController.Get( new PlansGetParams()
+            var curResult = await curPlanController.Get(new PlansGetParams()
             {
                 id = curPlanDO.Id,
                 include_children = true
             })
                 as OkNegotiatedContentResult<PlanDTO>;
 
-            var curPlanDTO = curResult.Content.Plan;
+            var curPlanDTO = curResult.Content;
 
             Assert.AreEqual(curPlanDO.Name, curPlanDTO.Name);
             Assert.AreEqual(curPlanDO.Description, curPlanDTO.Description);
@@ -351,7 +353,7 @@ namespace HubTests.Controllers
         // Current user shoud be resolved using mocked ISecurityServices.
         private static PlansController CreatePlanController(string userId, string email)
         {
-            return new PlansController();
+            return ObjectFactory.GetInstance<PlansController>();
         }
     }
 }

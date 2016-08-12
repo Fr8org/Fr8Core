@@ -159,28 +159,26 @@ namespace Hub.Managers
                         ObjectId = activityDo.Id.ToString(),
                         Fr8UserId = _security.GetCurrentUser(),
                         CreatedByID = _security.GetCurrentUser(),
-                        Data = string.Join( Environment.NewLine, "Activity Name: " + template?.Name)
+                        Data = string.Join(Environment.NewLine, "Activity Name: " + template?.Name)
                     };
 
                     var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
                     planId = planDO.Id;
                     planLastUpdated = planDO.LastUpdated;
-
                     SaveAndLogFact(factDO);
+                    //create user notifications
+                    var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+                    _pusherNotifier.NotifyUser(new NotificationPlanDTO
+                    {
+                        NotificationType = NotificationType.GenericInfo,
+                        Subject = "Executing Activity",
+                        Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
+                        ActivityName = template.Label,
+                        PlanId = planId,
+                        PlanLastUpdated = planLastUpdated,
+                        Collapsed = true,
+                    }, activityDo.Fr8Account.Id);
                 }
-
-                //create user notifications
-                var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-                _pusherNotifier.NotifyUser(new NotificationPlanDTO
-                {
-                    NotificationType = NotificationType.GenericInfo,
-                    NotificationArea = NotificationArea.ActivityStream,
-                    Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
-                    ActivityName = activityDo.Name,
-                    PlanId = planId,
-                    PlanLastUpdated = planLastUpdated,
-                    Collapsed = true,
-                }, activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {
@@ -891,6 +889,7 @@ namespace Hub.Managers
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
+
 
             var headers = terminalService.GetRequestHeaders(authenticatedTerminal, userId);
 

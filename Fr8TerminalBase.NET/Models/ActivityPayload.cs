@@ -11,7 +11,7 @@ namespace Fr8.TerminalBase.Models
         public string Label { get; set; }
         public string Name { get; set; }
         public List<ActivityPayload> ChildrenActivities { get; set; }
-        public ActivityTemplateDTO ActivityTemplate { get; set; }
+        public ActivityTemplateSummaryDTO ActivityTemplate { get; set; }
         public ICrateStorage CrateStorage { get; set; }
         public Guid? RootPlanNodeId { get; set; }
         public Guid? ParentPlanNodeId { get; set; }

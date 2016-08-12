@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Fr8.Testing.Integration;
@@ -11,6 +12,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
+using System.Configuration;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -30,7 +32,13 @@ namespace terminalDocuSignTests.Integration
 
         ActivityDTO _solution;
         ICrateStorage _crateStorage;
-
+        private string TestEmail 
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["TestUserEmail"];
+            }
+        }
 
         private void ShouldHaveCorrectCrateStructure(ICrateStorage crateStorage)
         {
@@ -52,7 +60,7 @@ namespace terminalDocuSignTests.Integration
         {
             var docusignTerminalUrl = TerminalUrl;
             //everything seems perfect -> let's fake a docusign event
-            var fakeDocuSignEventContent = @"<?xml version=""1.0"" encoding=""utf-8""?><DocuSignEnvelopeInformation xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://www.docusign.net/API/3.0""><EnvelopeStatus><RecipientStatuses><RecipientStatus><Type>Signer</Type><Email>test@fr8.co</Email><UserName>Fr8 Test User</UserName><RoutingOrder>1</RoutingOrder><Sent>2016-02-09T04:19:58.41</Sent><DeclineReason xsi:nil=""true"" /><Status>Sent</Status><RecipientIPAddress /><CustomFields /><TabStatuses><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>189</XPosition><YPosition>326</YPosition><TabLabel>Text 5</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>675</XPosition><YPosition>504</YPosition><TabLabel>Text 8</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>941</XPosition><YPosition>860</YPosition><TabLabel>Checkbox 1</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>860</YPosition><TabLabel>Checkbox 2</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>941</XPosition><YPosition>889</YPosition><TabLabel>Checkbox 3</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>889</YPosition><TabLabel>Checkbox 4</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>939</XPosition><YPosition>918</YPosition><TabLabel>Checkbox 5</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>918</YPosition><TabLabel>Checkbox 6</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>812</XPosition><YPosition>192</YPosition><TabLabel>DateOfBirth</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Date</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>364</XPosition><YPosition>400</YPosition><TabLabel>Condition</TabLabel><TabName>Text</TabName><TabValue>Marthambles</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Marthambles</OriginalValue><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>181</XPosition><YPosition>239</YPosition><TabLabel>Doctor</TabLabel><TabName>Text</TabName><TabValue>Dohemann</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Dohemann</OriginalValue><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>FullName</TabType><Status>Active</Status><XPosition>243</XPosition><YPosition>196</YPosition><TabLabel>Name 1</TabLabel><TabName>Name</TabName><TabValue>Bahadir Bozdag</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Joanna Smith</OriginalValue></TabStatus></TabStatuses><AccountStatus>Active</AccountStatus><RecipientId>3c498fd2-499c-414c-a980-6b3a8a108643</RecipientId></RecipientStatus></RecipientStatuses><TimeGenerated>2016-02-09T04:22:25.6749113</TimeGenerated><EnvelopeID>fffb6908-4c84-4a05-9fb4-e3e94d5aaa1a</EnvelopeID><Subject>Please DocuSign: medical_intake_form.pdf</Subject><UserName>Dockyard Developer</UserName><Email>freight.testing@gmail.com</Email><Status>Sent</Status><Created>2016-02-09T04:19:40.08</Created><Sent>2016-02-09T04:19:58.567</Sent><ACStatus>Original</ACStatus><ACStatusDate>2016-02-09T04:19:40.08</ACStatusDate><ACHolder>Dockyard Developer</ACHolder><ACHolderEmail>freight.testing@gmail.com</ACHolderEmail><ACHolderLocation>DocuSign</ACHolderLocation><SigningLocation>Online</SigningLocation><SenderIPAddress>178.233.137.179</SenderIPAddress><EnvelopePDFHash /><CustomFields /><AutoNavigation>true</AutoNavigation><EnvelopeIdStamping>true</EnvelopeIdStamping><AuthoritativeCopy>false</AuthoritativeCopy><DocumentStatuses><DocumentStatus><ID>1</ID><Name>medical_intake_form.pdf</Name><TemplateName>Medical_Form_v1</TemplateName><Sequence>1</Sequence></DocumentStatus></DocumentStatuses></EnvelopeStatus></DocuSignEnvelopeInformation>";
+            var fakeDocuSignEventContent = @"<?xml version=""1.0"" encoding=""utf-8""?><DocuSignEnvelopeInformation xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://www.docusign.net/API/3.0""><EnvelopeStatus><RecipientStatuses><RecipientStatus><Type>Signer</Type><Email>test@fr8.co</Email><UserName>Fr8 Test User</UserName><RoutingOrder>1</RoutingOrder><Sent>2016-02-09T04:19:58.41</Sent><DeclineReason xsi:nil=""true"" /><Status>Sent</Status><RecipientIPAddress /><CustomFields /><TabStatuses><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>189</XPosition><YPosition>326</YPosition><TabLabel>Text 5</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>675</XPosition><YPosition>504</YPosition><TabLabel>Text 8</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>941</XPosition><YPosition>860</YPosition><TabLabel>Checkbox 1</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>860</YPosition><TabLabel>Checkbox 2</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>941</XPosition><YPosition>889</YPosition><TabLabel>Checkbox 3</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>889</YPosition><TabLabel>Checkbox 4</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>939</XPosition><YPosition>918</YPosition><TabLabel>Checkbox 5</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>918</YPosition><TabLabel>Checkbox 6</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>812</XPosition><YPosition>192</YPosition><TabLabel>DateOfBirth</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Date</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>364</XPosition><YPosition>400</YPosition><TabLabel>Condition</TabLabel><TabName>Text</TabName><TabValue>Marthambles</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Marthambles</OriginalValue><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>181</XPosition><YPosition>239</YPosition><TabLabel>Doctor</TabLabel><TabName>Text</TabName><TabValue>Dohemann</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Dohemann</OriginalValue><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>FullName</TabType><Status>Active</Status><XPosition>243</XPosition><YPosition>196</YPosition><TabLabel>Name 1</TabLabel><TabName>Name</TabName><TabValue>Bahadir Bozdag</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Joanna Smith</OriginalValue></TabStatus></TabStatuses><AccountStatus>Active</AccountStatus><RecipientId>3c498fd2-499c-414c-a980-6b3a8a108643</RecipientId></RecipientStatus></RecipientStatuses><TimeGenerated>2016-02-09T04:22:25.6749113</TimeGenerated><EnvelopeID>fffb6908-4c84-4a05-9fb4-e3e94d5aaa1a</EnvelopeID><Subject>Please DocuSign: medical_intake_form.pdf</Subject><UserName>Dockyard Developer</UserName><Email>"+ TestEmail + @"</Email><Status>Sent</Status><Created>2016-02-09T04:19:40.08</Created><Sent>2016-02-09T04:19:58.567</Sent><ACStatus>Original</ACStatus><ACStatusDate>2016-02-09T04:19:40.08</ACStatusDate><ACHolder>Dockyard Developer</ACHolder><ACHolderEmail>"+ TestEmail + @"</ACHolderEmail><ACHolderLocation>DocuSign</ACHolderLocation><SigningLocation>Online</SigningLocation><SenderIPAddress>178.233.137.179</SenderIPAddress><EnvelopePDFHash /><CustomFields /><AutoNavigation>true</AutoNavigation><EnvelopeIdStamping>true</EnvelopeIdStamping><AuthoritativeCopy>false</AuthoritativeCopy><DocumentStatuses><DocumentStatus><ID>1</ID><Name>medical_intake_form.pdf</Name><TemplateName>Medical_Form_v1</TemplateName><Sequence>1</Sequence></DocumentStatus></DocumentStatuses></EnvelopeStatus></DocuSignEnvelopeInformation>";
             var httpContent = new StringContent(fakeDocuSignEventContent, Encoding.UTF8, "application/xml");
             await HttpPostAsync<string>(docusignTerminalUrl + "/terminals/terminalDocuSign/events", httpContent);
         }
@@ -82,9 +90,9 @@ namespace terminalDocuSignTests.Integration
             // Create solution
             //
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
-            var planReloadUrl = string.Format(baseUrl + "plans?id={0}&include_children=true", plan.Plan.Id);
+            var planReloadUrl = string.Format(baseUrl + "plans?id={0}&include_children=true", plan.Id);
 
             //
             // Send configuration request without authentication token
@@ -100,7 +108,11 @@ namespace terminalDocuSignTests.Integration
                 // Authenticate with DocuSign
                 //
                 var creds = GetDocuSignCredentials();
-                creds.Terminal = solution.ActivityTemplate.Terminal;
+                creds.Terminal = new TerminalSummaryDTO
+                {
+                    Name = solution.ActivityTemplate.TerminalName,
+                    Version = solution.ActivityTemplate.TerminalVersion
+                };
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds);
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
@@ -191,6 +203,7 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Minutes = 0;
             var handlersCrate = _crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableHandlers");
             var emailHandler = handlersCrate.Content.Values.Single(c => c.Key.Contains("Send Email"));
+            // var emailHandler = handlersCrate.Content.Values.First(c => c.Key.Contains("Send Email Using SendGrid"));
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
             var recipientEventsCrate = _crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableRecipientEvents");
@@ -209,16 +222,20 @@ namespace terminalDocuSignTests.Integration
             //from now on our solution should have followup crate structure
             Assert.True(this._solution.ChildrenActivities.Length == 4, "Solution child actions failed to create.");
 
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Set Delay" && a.Ordering == 2));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Set_Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Query_Fr8_Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Test_Incoming_Data" && a.Ordering == 4));
 
             plan = await HttpGetAsync<PlanDTO>(planReloadUrl);
-            Assert.AreEqual(3, plan.Plan.SubPlans.First().Activities.Count);
-            Assert.True(plan.Plan.SubPlans.First().Activities.Any(a => a.Name == "Build a Message" && a.Ordering == 2));
-            var emailActivity = plan.Plan.SubPlans.First().Activities.Last();
-            Assert.True(emailActivity.Name == notificationHandler.selectedKey);
+            Assert.AreEqual(3, plan.SubPlans.First().Activities.Count);
+            Assert.True(plan.SubPlans.First().Activities.Any(a => a.ActivityTemplate.Name == "Build_Message" && a.Ordering == 2));
+            var emailActivity = plan.SubPlans.First().Activities.Last();
+
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>($"{baseUrl}/activity_templates");
+            var templates = activityTemplates.SelectMany(x => x.Activities);
+            var selectedActivityName = templates.Single(x => x.Id == Guid.Parse(notificationHandler.Value));
+            Assert.True(emailActivity.ActivityTemplate.Name == selectedActivityName.Name);
 
             //let's configure email settings
 
@@ -237,8 +254,8 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("NotificationMessage", emailBody.Value);
 
             emailAddress.ValueSource = "specific";
-            emailAddress.Value = "freight.testing@gmail.com";
-            emailAddress.TextValue = "freight.testing@gmail.com";
+            emailAddress.Value = TestEmail;
+            emailAddress.TextValue = TestEmail;
 
             emailSubject.ValueSource = "specific";
             emailSubject.Value = "Fr8-TrackDocuSignRecipientsTest";
@@ -260,11 +277,11 @@ namespace terminalDocuSignTests.Integration
             //
             //Rename plan
             //
-            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, PlanFullDTO>(baseUrl + "plans?id=" + plan.Plan.Id, new { id = plan.Plan.Id, name = newName });
+            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
+            await HttpPostAsync<object, PlanDTO>(baseUrl + "plans?id=" + plan.Id, new { id = plan.Id, name = newName });
 
             //let's activate our plan
-            await HttpPostAsync<string, string>(baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(baseUrl + "plans/run?planId=" + plan.Id, null);
 
 
             //everything seems perfect -> let's fake a docusign event
@@ -278,15 +295,15 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(baseUrl + "plans/deactivate?planid=" + plan.Plan.Id, plan.Plan.Id.ToString());
+            await HttpPostAsync<string, string>(baseUrl + "plans/deactivate?planid=" + plan.Id, plan.Id.ToString());
 
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Plan.Id);
+            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Id);
 
             // Verify that test email has been received
-            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
+            //EmailAssert.EmailReceived(ConfigurationManager.AppSettings["OpsEmail"], "Fr8-TrackDocuSignRecipientsTest");
 
         }
     }

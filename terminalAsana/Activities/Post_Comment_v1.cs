@@ -31,15 +31,13 @@ namespace terminalAsana.Activities
             Id = new Guid("0ee8bf8f-941e-4861-beb8-d7d98536eba8"),
             Name = "Post_Comment",
             Label = "Post Comment",
-            Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[] {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -155,7 +153,7 @@ namespace terminalAsana.Activities
         public override async Task Run()
         {
             var taskId = ActivityUI.Tasks.Value;
-            var payloadMessage = ActivityUI.Comment.GetValue(Payload);
+            var payloadMessage = ActivityUI.Comment.TextValue;
 
             var comment = await AClient.Stories.PostCommentAsync(taskId, payloadMessage);            
         }

@@ -13,12 +13,14 @@ namespace Hub.Interfaces
         IEnumerable<ActivityTemplateDO> GetQuery();
         ActivityTemplateDO[] GetAll();
         ActivityTemplateDO GetByKey(Guid curActivityTemplateDOId);
+        bool TryGetByKey(Guid activityTemplateId, out ActivityTemplateDO activityTemplate);
         //ActivityTemplateDO GetByActivityKey(Guid curActivityId);
         string GetTerminalUrl(Guid? curActivityTemplateDOId);
         void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo);
         ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
         ActivityTemplateDO GetByNameAndVersion(string name, string version);
         // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
-        void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplateDO);
+        void RemoveInactiveActivities(TerminalDO terminal, List<ActivityTemplateDO> activityTemplateDO);
+        bool Exists(Guid activityTemplateId);
     }
 }

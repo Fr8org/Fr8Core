@@ -16,6 +16,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using HubTests.Services.Container;
 using Fr8.Testing.Unit.Fixtures;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Controllers
 {
@@ -66,14 +67,14 @@ namespace HubTests.Controllers
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                plan.PlanState = PlanState.Running;
+                plan.PlanState = PlanState.Executing;
                 plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
                 plan.Fr8Account = userAcct;
                 uow.SaveChanges();
 
-                var controller = new PlansController();
+                var controller = ObjectFactory.GetInstance<PlansController>();
                 // Act
                 var container = await controller.Run(plan.Id, null);
 
@@ -114,14 +115,13 @@ namespace HubTests.Controllers
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
-            pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<NotificationMessageDTO>()));
-
+            pusherMock.Setup(x => x.NotifyUser(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
 
             ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
             ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-            var controller = new PlansController();
+            var controller = ObjectFactory.GetInstance<PlansController>();
 
             // Act
             var result = controller.Run(Guid.NewGuid(), null);
@@ -156,14 +156,13 @@ namespace HubTests.Controllers
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
-            pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<NotificationMessageDTO>()));
-
+            pusherMock.Setup(x => x.NotifyUser(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
 
             ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
             ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-            var controller = new PlansController();
+            var controller = ObjectFactory.GetInstance<PlansController>();
 
             var crate = Crate.FromContent("Payload", new StandardPayloadDataCM(new KeyValueDTO("I'm", "payload")));
 

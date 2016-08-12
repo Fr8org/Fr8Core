@@ -29,18 +29,27 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var dropboxGetFileListActivityDto = FixtureData.Get_File_List_v1_InitialConfiguration();
 
             var activityName = "Get_File_List";
-            var activityCategoryParam = (int)ActivityCategory.Receivers;
+            var activityCategoryParam = ActivityCategories.ReceiveId.ToString();
             var activityTemplates = await _baseHubITest
                 .HttpGetAsync<List<WebServiceActivitySetDTO>>(
                 _baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .Single(a => a.Name == activityName);
 
             dropboxGetFileListActivityDto.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             dropboxGetFileListActivityDto.ParentPlanNodeId = subPlan.SubPlanId;
-            dropboxGetFileListActivityDto.RootPlanNodeId = plan.Plan.Id;
+            dropboxGetFileListActivityDto.RootPlanNodeId = plan.Id;
             dropboxGetFileListActivityDto.Ordering = ordering;
 
             //call initial configuration to server

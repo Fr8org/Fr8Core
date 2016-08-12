@@ -24,16 +24,14 @@ namespace terminalYammer.Actions
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -138,7 +136,7 @@ namespace terminalYammer.Actions
 
             //Quick fix FR-2719
             var messageField = GetControl<TextSource>("Message");
-            groupMessage.Message = messageField.GetValue(payload);
+            groupMessage.Message = messageField.TextValue;
             return groupMessage;
         }
 

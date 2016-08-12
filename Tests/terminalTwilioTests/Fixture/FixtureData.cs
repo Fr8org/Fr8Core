@@ -7,6 +7,7 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using StructureMap;
+using System.Configuration;
 
 namespace terminalTwilio.Tests.Fixtures
 {
@@ -35,11 +36,10 @@ namespace terminalTwilio.Tests.Fixtures
             return activityContext;
         }
 
-        public static ActivityTemplateDTO TwilioActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO TwilioActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio",
                 Version = "1"
             };
@@ -49,7 +49,7 @@ namespace terminalTwilio.Tests.Fixtures
         {
             var confControls =
                 JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"TextValue\": \"+15005550006\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"SMS_Body\",\"required\": true,\"TextValue\": \"Unit Test Message\",\"label\": \"SMS Body\",\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}}]}",
+                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"TextValue\": \""+ ConfigurationManager.AppSettings["TestPhoneNumber"] + "\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"SMS_Body\",\"required\": true,\"TextValue\": \"Unit Test Message\",\"label\": \"SMS Body\",\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}}]}",
                     new ControlDefinitionDTOConverter());
 
             return Crate.FromContent("Configuration_Controls", confControls);

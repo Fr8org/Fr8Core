@@ -26,15 +26,13 @@ namespace terminalFr8Core.Activities
             Name = "Send_SMS",
             Label = "Send SMS",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -134,8 +132,8 @@ namespace terminalFr8Core.Activities
 
         public KeyValueDTO ParseSMSNumberAndMsg()
         {
-            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.GetValue(Payload).Trim());
-            var smsBody = ActivityUI.SmsBody.GetValue(Payload);
+            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.TextValue.Trim());
+            var smsBody = ActivityUI.SmsBody.TextValue;
 
             return new KeyValueDTO(smsNumber, smsBody);
         }

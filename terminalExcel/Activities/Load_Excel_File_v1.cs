@@ -150,7 +150,7 @@ namespace terminalExcel.Activities
                 if (rows != null && rows.Count > 0)
                 {
                     tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(hasFirstRowHeader, rows));
-                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
+                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, rows, headersArray);
                     if (fieldsCrate != null)
                     {
                         crates.Add(fieldsCrate);
@@ -229,15 +229,13 @@ namespace terminalExcel.Activities
             Name = "Load_Excel_File",
             Label = "Load Excel File",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

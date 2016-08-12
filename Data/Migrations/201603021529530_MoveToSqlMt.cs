@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class MoveToSqlMt : DbMigration
+    public partial class MoveToSqlMt : System.Data.Entity.Migrations.DbMigration
     {
         const string DropNewStructure = @"
 IF OBJECT_ID('dbo.MtData', 'U') IS NOT NULL 

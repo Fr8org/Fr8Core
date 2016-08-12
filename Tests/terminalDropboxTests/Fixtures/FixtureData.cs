@@ -37,11 +37,11 @@ namespace terminalDropboxTests.Fixtures
                  .OmitAutoProperties()
                  .Create();
 
-            ActivityTemplateDTO activityTemplateDTO = Fixture.Build<ActivityTemplateDTO>()
-                 .With(x => x.Id)
+            ActivityTemplateSummaryDTO activityTemplateDTO = Fixture.Build<ActivityTemplateSummaryDTO>()
                  .With(x => x.Name)
                  .With(x => x.Version)
-                 .With(x => x.Terminal, terminalDTO)
+                 .With(x => x.TerminalName, terminalDTO.Name)
+                 .With(x => x.TerminalVersion, terminalDTO.Version)
                  .OmitAutoProperties()
                  .Create();
             ActivityPayload activityPayload = Fixture.Build<ActivityPayload>()

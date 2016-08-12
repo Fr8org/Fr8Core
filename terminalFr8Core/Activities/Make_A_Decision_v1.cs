@@ -10,6 +10,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Helpers;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -21,15 +23,13 @@ namespace terminalFr8Core.Activities
             Name = "Make_A_Decision",
             Label = "Make a Decision",
             Version = "1",
-            Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 550,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -45,7 +45,7 @@ namespace terminalFr8Core.Activities
         private const int MinAllowedElapsedTimeInSeconds = 12;
 
 
-        public Make_A_Decision_v1(ICrateManager crateManager) 
+        public Make_A_Decision_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }
@@ -55,30 +55,29 @@ namespace terminalFr8Core.Activities
             //let's check current branch status
             var currentBranch = OperationalState.CallStack.GetLocalData<OperationalStateCM.BranchStatus>("Branch") ??
                                 CreateBranch();
-                currentBranch.Count += 1;
-                if (currentBranch.Count >= SlowRunLimit)
-                {
+            currentBranch.Count += 1;
+            if (currentBranch.Count >= SlowRunLimit)
+            {
                 RaiseError("This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
                 return;
-                }
-                if (currentBranch.Count >= SmoothRunLimit)
+            }
+            if (currentBranch.Count >= SmoothRunLimit)
+            {
+                //it seems we need to slow down things
+                var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
+                if (diff.TotalSeconds < MinAllowedElapsedTimeInSeconds)
                 {
-                    //it seems we need to slow down things
-                    var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
-                    if (diff.TotalSeconds < MinAllowedElapsedTimeInSeconds)
-                    {
-                        await Task.Delay(10000);
-                    }
+                    await Task.Delay(10000);
                 }
+            }
 
-                currentBranch.LastBranchTime = DateTime.UtcNow;
+            currentBranch.LastBranchTime = DateTime.UtcNow;
             OperationalState.CallStack.StoreLocalData("Branch", currentBranch);
-                
-            var payloadFields = GetAllPayloadFields().Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
             var containerTransition = (ContainerTransition)ConfigurationControls.Controls.Single();
+
             foreach (var containerTransitionField in containerTransition.Transitions)
             {
-                if (CheckConditions(containerTransitionField.Conditions, payloadFields))
+                if (CheckConditions(containerTransitionField.Conditions, containerTransition.ResolvedUpstreamFields.AsQueryable()))
                 {
                     //let's return whatever this one says
                     switch (containerTransitionField.Transition)
@@ -124,6 +123,12 @@ namespace terminalFr8Core.Activities
             }
             //none of them matched let's continue normal execution
             Success();
+        }
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateTransitions((ContainerTransition)ConfigurationControls.Controls.Single());
+            return base.Validate();
         }
 
         private OperationalStateCM.BranchStatus CreateBranch()

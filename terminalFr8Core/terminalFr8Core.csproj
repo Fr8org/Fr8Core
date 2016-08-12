@@ -263,7 +263,6 @@
     <Compile Include="Activities\Convert_Related_Fields_Into_Table_v1.cs" />
     <Compile Include="Activities\Execute_Sql_v1.cs" />
     <Compile Include="Activities\Loop_v1.cs" />
-    <Compile Include="Activities\Manage_Plan_v1.cs" />
     <Compile Include="Activities\Select_Fr8_Object_v1.cs" />
     <Compile Include="Activities\Show_Report_Onscreen_v1.cs" />
     <Compile Include="Activities\Save_To_Fr8_Warehouse_v1.cs" />
@@ -349,6 +348,7 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Config\terminalFr8Core\Settings.config.readme" />
+    <Content Include="LICENSE" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -408,7 +408,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)pluginDockyardCore.dll del /Q $(TargetDir)pluginDockyardCore.dll</PostBuildEvent>
@@ -434,5 +434,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

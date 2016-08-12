@@ -2,7 +2,7 @@
 
     <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showActive" style="margin-top: 30px;">
         <div class="md-toolbar-tools">
-            <h2 class="md-title font-green-haze">Running Plans</h2>
+            <h2 class="md-title font-green-haze">Active Plans</h2>
             <div flex></div>
             <md-button class="md-icon-button" ng-click="filter.showActive = true">
                 <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
@@ -36,12 +36,16 @@
                 </tr>
             </thead>
             <tbody md-body>
-                <tr md-row ng-repeat="plan in activePlans.plans | filter: {planState:2}">
+                <tr md-row ng-repeat="plan in activePlans.plans | filter: activeOrExecutingPlans">
                     <td md-cell class="column-spacer">{{ plan.name }}</td>
                     <td md-cell class="column-spacer">{{ plan.description }}</td>
                     <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                     <td md-cell>
-                        <span class="bold font-green-haze">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
+                        <span class="bold font-green-haze">
+                            <span ng-if="plan.planState == 'Executing'">Executing</span>
+                            <span ng-if="plan.planState == 'Active'">Active</span>
+                            <span ng-if="plan.planState == 'Inactive'">Inactive</span>
+                        </span>
                     </td>
                     <td md-cell style="display: flex;">
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
@@ -75,9 +79,7 @@
     </md-table-container>
 
     <md-table-pagination md-limit="activeQuery.planPerPage" md-limit-options="[5, 10, 15, 20]" md-page="activeQuery.page" md-total="{{(activePlans.totalPlanCount || activePlans.totalPlanCount === 0) ? activePlans.totalPlanCount : 'NaN'}}" md-on-paginate="getActivePlans" md-page-select></md-table-pagination>
-
-
-
+    
     <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showInactive">
         <div class="md-toolbar-tools">
             <h2 class="md-title font-green-haze">Plan Library</h2>
@@ -114,12 +116,12 @@
                 </tr>
             </thead>
             <tbody md-body>
-                <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:1}">
+                <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:'Inactive'}">
                     <td md-cell class="column-spacer">{{ plan.name }}</td>
                     <td md-cell class="column-spacer">{{ plan.description }}</td>
                     <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                     <td md-cell>
-                        <span class="bold">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
+                        <span class="bold">{{plan.planState == 'Executing' ? 'Running' : 'Inactive' }}</span>
                     </td>
                     <td md-cell style="display: flex;">
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">

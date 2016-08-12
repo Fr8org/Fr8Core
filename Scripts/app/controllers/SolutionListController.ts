@@ -2,27 +2,27 @@
 
 module dockyard.controllers {
     export interface ISelectActionScope extends ng.IScope {
-        activityCategories: ng.resource.IResource<interfaces.IActivityCategoryDTO[]>;
+        activityCategories: interfaces.IActivityCategoryDTO[];
         onSolutionSelected: (solution: interfaces.IActivityCategoryDTO) => void;
     }
     export class SolutionListController {
 
         public static $inject = [
             '$scope',
-            'ActivityTemplateService',
+            'ActivityTemplateHelperService',
             '$modal',
             '$state'
         ];
         constructor(
             private $scope: ISelectActionScope,
-            private ActivityTemplateService: services.IActivityTemplateService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService,
             private ActionService: services.IActionService,
             private $state: ng.ui.IStateService) {
 
             $scope.onSolutionSelected = <(solution: interfaces.IActivityCategoryDTO) => void>
                 angular.bind(this, this.onSolutionSelected);
 
-            $scope.activityCategories = ActivityTemplateService.getAvailableActivities();
+            $scope.activityCategories = ActivityTemplateHelperService.getAvailableActivityTemplatesInCategories();
         }
 
         private onSolutionSelected(solution: interfaces.IActivityTemplateVM) {

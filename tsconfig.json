@@ -14,6 +14,7 @@
     "bower_components",
     "wwwroot/lib",
     "typings/main",
-    "typings/main.d.ts"
+    "typings/main.d.ts",
+	"packages"
   ]
 }

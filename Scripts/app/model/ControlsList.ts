@@ -7,7 +7,12 @@
         controls: Array<ControlDefinitionDTO>;
     }
 
-    export class ControlDefinitionDTO {
+    export interface ISupportsErrorMessage {
+        name: string;
+        errorMessage: string;
+    }
+
+    export class ControlDefinitionDTO implements ISupportsErrorMessage {
         type: string;
         fieldLabel: string;
         label: string;
@@ -29,7 +34,7 @@
     }
 
     export class Button extends ControlDefinitionDTO {
-        checked: boolean;
+        clicked: boolean;
 
         constructor(label: string) {
             super();
@@ -224,10 +229,12 @@
         metaDescriptions: Array<ControlMetaDescriptionDTO>;
     }
 
-    export class ContainerTransitionField {
+    export class ContainerTransitionField implements ISupportsErrorMessage {
         conditions: Array<FilterConditionDTO>;
         transition: number;
         targetNodeId: string;
+        name: string;
+        errorMessage: string;
 
         constructor() {
             this.conditions = [];

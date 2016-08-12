@@ -31,14 +31,12 @@ namespace terminalSalesforce.Actions
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -268,11 +266,11 @@ namespace terminalSalesforce.Actions
             set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText => ActivityUI.FeedTextSource.GetValue(Payload);
+        private string FeedText => ActivityUI.FeedTextSource.TextValue;
 
         private string ChatterFilter => ActivityUI.ChatterFilter.Value;
 
-        private string IncomingChatterId => Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey);
+        private string IncomingChatterId => ActivityUI.IncomingChatterIdSelector.Value;
 
         #endregion
     }

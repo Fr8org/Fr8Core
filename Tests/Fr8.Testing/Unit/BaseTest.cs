@@ -12,7 +12,9 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Data.Managers;
 using Hub.StructureMap;
 
@@ -127,9 +129,9 @@ namespace Fr8.Testing.Unit
                 string userId = null,
                 string[] userRoles = null,
                 Tuple<string, string>[] claimValues = null
-            ) where TController : ApiController, new()
+            ) where TController : ApiController
         {
-            var controller = new TController();
+            var controller = ObjectFactory.GetInstance<TController>();
 
             if (!string.IsNullOrEmpty(userId))
             {
@@ -153,14 +155,39 @@ namespace Fr8.Testing.Unit
 
         public static void ConfigureAutoMapper()
         {
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
+                .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
+                .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => PlanState.IntToString(ad.PlanState)))
+                .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
+                .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
+                .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => new PlanVisibilityDTO() { Hidden = ad.Visibility.BooleanValue() }));
+
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
+                .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
+                .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => PlanState.StringToInt(ad.PlanState)))
+                .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
+                .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
+                .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => ad.Visibility?.PlanVisibilityValue()));
+
             Mapper.CreateMap<ActivityNameDTO, ActivityTemplateDO>()
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
-            Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>();
 
             Mapper.CreateMap<ActivityDO, ActivityDTO>();
+            Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateSummaryDTO>()
+                .ForMember(x => x.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(x => x.Version, opts => opts.MapFrom(src => src.Version))
+                .ForMember(x => x.TerminalName, opts => opts.MapFrom(src => src.Terminal.Name))
+                .ForMember(x => x.TerminalVersion, opts => opts.MapFrom(src => src.Terminal.Version));
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))

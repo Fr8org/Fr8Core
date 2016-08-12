@@ -18,7 +18,6 @@ namespace Data.Repositories.MultiTenant.Sql
         public SqlMtTypeStorageProvider(IMtTypeStorage storage)
         {
             _storage = storage;
-            // _connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
         private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)

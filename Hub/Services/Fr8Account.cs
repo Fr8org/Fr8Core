@@ -14,14 +14,13 @@ using Data.States;
 using Hub.Security;
 using System.Web;
 using System.Net.Http;
-using System.Security.Claims;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using RazorEngine.Templating;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
-    public class Fr8Account
+    public class Fr8Account : IFr8Account
     {
         private readonly IUnitOfWorkFactory _uowFactory;
 
@@ -91,11 +90,8 @@ namespace Hub.Services
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
-                case "Customer":
-                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
-                    break;
-                case "Booker":
-                    acceptableRoles = new[] { "Booker", "Admin" };
+                case "StandardUser":
+                    acceptableRoles = new[] { "StandardUser", "Admin" };
                     break;
                 case "Admin":
                     acceptableRoles = new[] { "Admin" };
@@ -220,7 +216,7 @@ namespace Hub.Services
                 var systemUserEmail = _configRepository.Get("SystemUserEmail");
                 using (var uow = _uowFactory.Create())
                 {
-                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
                 }
             }
             catch (ConfigurationException)
@@ -282,13 +278,13 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
             }
 
@@ -425,7 +421,7 @@ namespace Hub.Services
                 var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
                 code = HttpUtility.HtmlEncode(code);
 
-                var callbackUrl = string.Format("{0}DockyardAccount/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
+                var callbackUrl = string.Format("{0}Account/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
                     user.Id, code);
 
                 var emailDO = new EmailDO();
@@ -469,10 +465,8 @@ namespace Hub.Services
                 string userRole = "";
                 if (getRoles.Select(e => e.Name).Contains("Admin"))
                     userRole = "Admin";
-                else if (getRoles.Select(e => e.Name).Contains("Booker"))
-                    userRole = "Booker";
-                else if (getRoles.Select(e => e.Name).Contains("Customer"))
-                    userRole = "Customer";
+                else if (getRoles.Select(e => e.Name).Contains("StandardUser"))
+                    userRole = "StandardUser";
                 return userRole;
             }
         }
@@ -491,7 +485,8 @@ namespace Hub.Services
                 var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 planQuery
-                    .Where(pt => pt.PlanState == PlanState.Running)//1.
+                    .Where(pt => pt.PlanState == PlanState.Executing ||
+                                 pt.PlanState == PlanState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
                 activePlans = planQuery.ToList();
@@ -558,7 +553,7 @@ namespace Hub.Services
 
                 uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
                 // Add new role
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, existingUserDO.Id);
             }
 
             uow.SaveChanges();
@@ -576,7 +571,7 @@ namespace Hub.Services
                 //get the roles to check if the account has admin role
                 var curAccountRoles = curAccount.Roles;
                 //get the role id
-                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
+                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == Roles.Admin).Id;
                 //provide all facts if the user has admin role
                 if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
                 {
@@ -586,5 +581,54 @@ namespace Hub.Services
 
             return isAdmin;
         }
+
+        /// <summary>
+        /// Check if there is in existence any Admin user account
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckForExistingAdminUsers()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string userEmail = configRepository.Get("SystemUserEmail");
+                var systemUser = uow.UserRepository.GetOrCreateUser(userEmail);
+
+                var adminRoleId = uow.AspNetUserRolesRepository.GetRoleID(Roles.Admin);
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.RoleId == adminRoleId && x.UserId != systemUser.Id);
+            }
+        }
+
+        /// <summary>
+        /// Create new Admin Account 
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="curPassword"></param>
+        /// <returns></returns>
+        public Fr8AccountDO CreateAdminAccount(string userEmail, string curPassword)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFr8Account = uow.UserRepository.GetOrCreateUser(userEmail);
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, newFr8Account.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, newFr8Account.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, newFr8Account.Id);
+
+                if (newFr8Account != null)
+                {
+                    AssignProfileToUser(uow, newFr8Account, DefaultProfiles.Fr8Administrator);
+                }
+
+                uow.SaveChanges();
+
+                if (newFr8Account != null)
+                {
+                    EventManager.UserRegistration(newFr8Account);
+                }
+                
+                return newFr8Account;
+            }
+        } 
     }
 }

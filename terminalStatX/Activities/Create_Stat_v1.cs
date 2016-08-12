@@ -34,15 +34,13 @@ namespace terminalStatX.Activities
             Name = "Create_Stat",
             Label = "Create Stat",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
@@ -52,6 +50,12 @@ namespace terminalStatX.Activities
         {
             get { return this[nameof(SelectedStatType)]; }
             set { this[nameof(SelectedStatType)] = value; }
+        }
+
+        private string SelectedStatGroup
+        {
+            get { return this[nameof(SelectedStatGroup)]; }
+            set { this[nameof(SelectedStatGroup)] = value; }
         }
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -172,6 +176,11 @@ namespace terminalStatX.Activities
                 ActivityUI.ClearDynamicFields();
                 SelectedStatType = string.Empty;
             }
+
+            SelectedStatGroup = ActivityUI.ExistingStatGroupList.Value;
+            ActivityUI.ExistingStatGroupList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
+                .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
+            ActivityUI.ExistingStatGroupList.Value = SelectedStatGroup;
         }
 
         public async override Task Run()
@@ -187,7 +196,7 @@ namespace terminalStatX.Activities
             var statProperties = new List<KeyValueDTO>();
             if (ActivityUI.AvailableStatProperties != null && ActivityUI.AvailableStatProperties.Any())
             {
-                statProperties.AddRange(ActivityUI.AvailableStatProperties.Select(x => new KeyValueDTO() { Key = x.Name, Value = x.GetValue(Payload) }).ToList());
+                statProperties.AddRange(ActivityUI.AvailableStatProperties.Select(x => new KeyValueDTO() { Key = x.Name, Value = x.TextValue }).ToList());
             }
 
             var statItemsList = new List<KeyValueDTO>();

@@ -4,7 +4,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
     
-    public partial class AddedActivityTypeToActivityTemplateDO : DbMigration
+    public partial class AddedActivityTypeToActivityTemplateDO : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

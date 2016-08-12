@@ -20,15 +20,9 @@ namespace terminalSalesforceTests.Fixtures
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
-            await auth.UsernamePasswordAsync(
-                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
-                "611998545425677937",
-                "alex@dockyard.company",
-                "thales@123");
 
             return new AuthorizationTokenDTO()
             {
-                ExternalAccountId = "611998545425677937",
                 Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
                 AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
@@ -52,7 +46,7 @@ namespace terminalSalesforceTests.Fixtures
                 var userDO = uow.UserRepository.FindOne(u => u.EmailAddressID == emailAddressId);
                 var terminalId = uow.TerminalRepository.FindOne(t => t.Name.Equals("terminalSalesforce")).Id;
 
-                var tokenDTO = await Salesforce_AuthToken();
+                var tokenDTO = await terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.Salesforce_AuthToken();
 
                 var tokenDO = new AuthorizationTokenDO()
                 {
@@ -70,25 +64,21 @@ namespace terminalSalesforceTests.Fixtures
             }
         }
 
-        public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Get_Data_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
                 Version = "1",
-                Name = "Get_Data_TEST",
-                Label = "Get Data from Salesforce",
-                NeedsAuthentication = true
+                Name = "Get_Data_TEST"
             };
         }
 
-        public static ActivityTemplateDTO Post_To_Chatter_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Post_To_Chatter_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
                 Version = "1",
-                Name = "Post_To_Chatter_TEST",
-                Label = "Post To Chatter",
-                NeedsAuthentication = true
+                Name = "Post_To_Chatter_TEST"
             };
         }
 
@@ -100,7 +90,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Get Data from Salesforce.com",
-                AuthToken = Salesforce_AuthToken().Result,
+                AuthToken = terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
 
@@ -110,12 +100,11 @@ namespace terminalSalesforceTests.Fixtures
         public static Fr8DataDTO Post_To_Chatter_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Post_To_Chatter_v1_ActivityTemplate();
-
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Post To Chatter",
-                AuthToken = Salesforce_AuthToken().Result,
+                AuthToken = terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };

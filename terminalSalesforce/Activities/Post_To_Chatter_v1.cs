@@ -25,14 +25,12 @@ namespace terminalSalesforce.Actions
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -110,7 +108,7 @@ namespace terminalSalesforce.Actions
 
         public override async Task Run()
         {
-            var feedText = ActivityUI.FeedTextSource.GetValue(Payload);
+            var feedText = ActivityUI.FeedTextSource.TextValue;
             if (string.IsNullOrEmpty(feedText))
             {
                 throw new ActivityExecutionException("Can't post empty message to chatter");
@@ -130,7 +128,7 @@ namespace terminalSalesforce.Actions
             }
             if (ActivityUI.UseUpstreamFeedParentIdOption.Selected)
             {
-                feedParentId = ActivityUI.FeedParentIdSource.GetValue(Payload);
+                feedParentId = ActivityUI.FeedParentIdSource.TextValue;
                 if (string.IsNullOrEmpty(feedParentId))
                 {
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");

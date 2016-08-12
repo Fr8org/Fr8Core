@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Managers;
@@ -20,9 +21,7 @@ namespace terminalStatXTests.Activities
     [TestFixture, Category("terminalStatX")]
     public class Monitor_Stat_Changes_v1_Tests : BaseTest
     {
-        private static readonly CrateManager CrateManager = new CrateManager();
-
-        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken { Token = "1" };
+        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken { Token = "{\"authToken\":\"1\", \"apiKey\":\"1\"}" };
 
         public override void SetUp()
         {
@@ -34,8 +33,12 @@ namespace terminalStatXTests.Activities
             var statXIntegrationMock = new Mock<IStatXIntegration>();
             statXIntegrationMock.Setup(x => x.GetGroups(It.IsAny<StatXAuthDTO>()))
                                 .Returns(Task.FromResult(new List<StatXGroupDTO> { new StatXGroupDTO() {Id = Guid.NewGuid().ToString(), Name = "Test Group"} }));
+
+            statXIntegrationMock.Setup(x => x.GetStatsForGroup(It.IsAny<StatXAuthDTO>(), It.IsAny<string>()))
+                    .Returns(Task.FromResult(new List<BaseStatDTO> { new GeneralStatWithItemsDTO() { Id = Guid.NewGuid().ToString(), Title = "Test Stat" } }));
             ObjectFactory.Container.Inject(statXIntegrationMock);
             ObjectFactory.Container.Inject(statXIntegrationMock.Object);
+            ObjectFactory.Container.Inject(new Mock<IStatXPolling>().Object);
         }
 
         [Test]
@@ -56,7 +59,7 @@ namespace terminalStatXTests.Activities
         }
 
         [Test]
-        public async Task Initialize_Always_HasEventSubscriptonCrate()
+        public async Task Followup_Always_HasEventSubscriptonCrate()
         {
             var activity = New<Monitor_Stat_Changes_v1>();
             var activityContext = new ActivityContext
@@ -69,11 +72,19 @@ namespace terminalStatXTests.Activities
                 AuthorizationToken = AuthorizationToken
             };
             await activity.Configure(activityContext);
+
+            var currentActivityStorage = activityContext.ActivityPayload.CrateStorage;
+            var standardConfiguraitonControlsCrate = currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
+
+            standardConfiguraitonControlsCrate.Content.Controls.First(x => x.Name == "ExistingGroupsList").Value = "selectedGroup1";
+
+            await activity.Configure(activityContext);
+
             Assert.IsNotNull(activityContext.ActivityPayload.CrateStorage.FirstCrateOrDefault<EventSubscriptionCM>(), "Event subscription was not created");
         }
 
         [Test]
-        public async Task Initialize_Always_ReportsRuntimeAvailableFields()
+        public async Task Followup_Always_ReportsRuntimeAvailableFields()
         {
             var activity = New<Monitor_Stat_Changes_v1>();
             var activityContext = new ActivityContext
@@ -86,7 +97,14 @@ namespace terminalStatXTests.Activities
                 AuthorizationToken = AuthorizationToken
             };
             await activity.Configure(activityContext);
+
             var currentActivityStorage = activityContext.ActivityPayload.CrateStorage;
+            var standardConfigControls = currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
+
+            standardConfigControls.Content.Controls.First(x => x.Name == "ExistingGroupsList").Value = "selectedGroup1";
+
+            await activity.Configure(activityContext);
+
             var runtimeCratesDescriptionCrate = currentActivityStorage.FirstCrateOrDefault<CrateDescriptionCM>();
             Assert.IsNotNull(runtimeCratesDescriptionCrate, "Runtime crates description crate was not created");
             Assert.IsTrue(runtimeCratesDescriptionCrate.Content.CrateDescriptions[0].Fields.Count > 0, "Runtime available fields were not reported");

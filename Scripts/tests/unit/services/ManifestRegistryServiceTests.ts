@@ -22,7 +22,7 @@ module dockyard.tests.controller {
         it('should call query endpoint',() => {
             httpBackend.resetExpectations();
 
-            httpBackend.whenPOST('/api/v1/manifest_registries/query').respond(200, { id: "" });
+            httpBackend.whenPOST('/api/v1/manifest_registry/query').respond(200, { id: "" });
             httpBackend.whenGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
 
             let testVandName = mrSvc.checkVersionAndName({ version: 'v2.0', name: 'activity' });

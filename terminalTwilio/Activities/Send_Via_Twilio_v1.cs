@@ -23,17 +23,15 @@ namespace terminalTwilio.Activities
         {
             Id = new Guid("ddd5be71-a23c-41e3-baf0-501e34f0517b"),
             Name = "Send_Via_Twilio",
-            Label = "Send SMS",
+            Label = "Send SMS Using Twilio Account",
             Tags = "Twillio,Notifier",
-            Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -161,7 +159,7 @@ namespace terminalTwilio.Activities
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
-            smsNumber = control.GetValue(payloadCrates).Trim();
+            smsNumber = control.TextValue.Trim();
 
             smsNumber = GeneralisePhoneNumber(smsNumber);
 
@@ -176,7 +174,7 @@ namespace terminalTwilio.Activities
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
 
-            smsBody = control.GetValue(payloadCrates);
+            smsBody = control.TextValue;
             if (smsBody == null)
             {
                 throw new ArgumentException("SMS body can not be null.");

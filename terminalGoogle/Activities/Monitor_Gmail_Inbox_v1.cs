@@ -34,15 +34,13 @@ namespace terminalGoogle.Activities
             Name = "Monitor_Gmail_Inbox",
             Label = "Monitor Gmail Inbox",
             Version = "1",
-            Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.GmailWebServiceDTO,
             MinPaneWidth = 300,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
 

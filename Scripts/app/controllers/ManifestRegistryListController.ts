@@ -5,7 +5,8 @@ module dockyard.controllers {
 
     export interface IManifestRegistryListScope extends ng.IScope {
         manifestRegistry: Array<interfaces.IManifestRegistryVM>;
-        goToManifestSubmissionForm:() => void;
+        goToManifestSubmissionForm: () => void;
+        goToManifestDescriptionPage: (nameOfManifest: string) => void;
     }
 
     class ManifestRegistryListController {
@@ -27,18 +28,23 @@ module dockyard.controllers {
             private $modal: any,
             private $http: any) {
 
-            $scope.goToManifestSubmissionForm = function () {
-                $http.get('/api/manifestregistries/submit')
-                     .then(result => {
-                         window.open(result.data);
+            ManifestRegistryService.query().$promise.then(data => {
+                $scope.manifestRegistry = data;
+            });
+
+            $scope.goToManifestSubmissionForm = () => {
+                $http.get('/api/manifestregistry/submit')
+                    .then(result => {
+                        window.open(result.data);
                     });
             };
 
-            
-            ManifestRegistryService.query().$promise.then(data => {
-                    $scope.manifestRegistry = data;
-            });
-
+            $scope.goToManifestDescriptionPage = (nameOfManifest: string) => {
+                $http.get('/api/manifestregistry/get_manifest_page_url', { params: { manifestName: nameOfManifest } })
+                    .then(result => {
+                        window.open(result.data);
+                    });
+            };
         }
     }
 

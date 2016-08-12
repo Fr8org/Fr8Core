@@ -8,6 +8,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using terminalGoogle.Activities;
+using System.Configuration;
 
 namespace terminalGoogleTests.Integration
 {
@@ -21,11 +22,35 @@ namespace terminalGoogleTests.Integration
             CrateManager = new CrateManager();
         }
 
+        private static string GoogleTestAccountToken 
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["GoogleTestAccountToken"];
+            }
+        }
+
+        private static string SurveyFormValue
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["SurveyFormValue"];
+            }
+        }
+
+        private static string GoogleAccount
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["GoogleAccount"];
+            }
+        }
+
         public static AuthorizationTokenDTO Google_AuthToken()
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
+                Token = GoogleTestAccountToken
             };
         }
 
@@ -33,7 +58,7 @@ namespace terminalGoogleTests.Integration
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
+                Token = GoogleTestAccountToken
             };
         }
 
@@ -44,20 +69,15 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-           return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Survey Form", "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" )));
+           return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Survey Form", SurveyFormValue)));
         }
 
-        public static ActivityTemplateDTO Monitor_Form_Responses_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Monitor_Form_Responses_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses_TEST",
-                Version = "1",
-                Terminal = new TerminalDTO()
-                {
-                    AuthenticationType = AuthenticationType.External
-                }
+                Version = "1"
             };
         }
 
@@ -69,7 +89,7 @@ namespace terminalGoogleTests.Integration
                 Name = "Selected_Google_Form",
                 Required = true,
                 selectedKey = "Survey Form",
-                Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8",
+                Value = SurveyFormValue,
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Forms",
@@ -165,13 +185,13 @@ namespace terminalGoogleTests.Integration
         private Crate PayloadRaw()
         {
             List<KeyValueDTO> payloadFields = new List<KeyValueDTO>();
-            payloadFields.Add(new KeyValueDTO() { Key = "user_id", Value = "g_admin@dockyard.company" });
+            payloadFields.Add(new KeyValueDTO() { Key = "user_id", Value = GoogleAccount });
             payloadFields.Add(new KeyValueDTO() { Key = "response", Value = "What is your pets name=cat&What is your favorite book?=book&Who is your favorite superhero?=hero&" });
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = "g_admin@dockyard.company",
+                ExternalAccountId = GoogleAccount,
                 Manufacturer = "Google"
             };
 
@@ -187,7 +207,7 @@ namespace terminalGoogleTests.Integration
             {
                 EventNames = "Google Form Response",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = "g_admin@dockyard.company",
+                ExternalAccountId = GoogleAccount,
                 Manufacturer = "Google"
             };
 
@@ -234,17 +254,12 @@ namespace terminalGoogleTests.Integration
             return activity;
         }
 
-        public static ActivityTemplateDTO Get_Google_Sheet_Data_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Get_Google_Sheet_Data_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
                 Version = "1",
-                Terminal = new TerminalDTO()
-                {
-                    AuthenticationType = 1
-                }
             };
         }
         public static Fr8DataDTO Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO()

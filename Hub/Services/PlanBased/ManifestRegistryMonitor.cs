@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -144,7 +145,7 @@ namespace Hub.Services
 
         private async Task RunPlan(PlanDO plan)
         {
-            if (plan.PlanState == PlanState.Running)
+            if (plan.PlanState == PlanState.Executing || plan.PlanState == PlanState.Active)
             {
                 return;
             }

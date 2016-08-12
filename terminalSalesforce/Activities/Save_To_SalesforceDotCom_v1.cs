@@ -29,14 +29,12 @@ namespace terminalSalesforce.Actions
             Name = "Save_To_SalesforceDotCom",
             Label = "Save to Salesforce.Com",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
@@ -119,10 +117,7 @@ namespace terminalSalesforce.Actions
             //for each required field's control, check its value source
             requiredFieldControlsList.ToList().ForEach(c =>
             {
-                if (!c.HasValue || (c.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(c.GetValue(ValidationManager.Payload))))
-                {
-                    ValidationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
-                }
+                ValidationManager.ValidateTextSourceNotEmpty(c, $"{c.Label} must be provided for creating {chosenObject}");
             });
 
             var controls = ConfigurationControls.Controls.Where(c => c.Name.Contains("Phone") || c.Name == "Fax");
@@ -152,7 +147,7 @@ namespace terminalSalesforce.Actions
             var fieldControlsList = ConfigurationControls.Controls.OfType<TextSource>();
 
             //get <Field> <Value> key value pair for the non empty field
-            var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, Payload);
+            var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList);
 
             string result;
 

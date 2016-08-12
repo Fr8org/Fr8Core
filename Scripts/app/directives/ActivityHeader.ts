@@ -12,6 +12,8 @@ module dockyard.directives.ActivityHeader {
         deleteAction: (action: model.ActivityDTO) => void;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         planState: number;
+        finishedLoading: () => void;
+        myActivityTemplate: interfaces.IActivityTemplateVM;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -29,16 +31,17 @@ module dockyard.directives.ActivityHeader {
                     resolve: {
                         label: () => action.label
                     }
-                })
+                });
                 modalInstance.result.then(function (label: string) {
                     action.label = label;
                     ActionService.save(action);
                 });
             }
             $scope.hasHelpMenuItem = (activity) => {
-                if (activity.activityTemplate.showDocumentation != null) {
-                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
-                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
+                var at = $scope.envelope.activityTemplate;
+                if (at.showDocumentation != null) {
+                    if (at.showDocumentation.body.displayMechanism != undefined &&
+                        at.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
                         return true;
                     }
                 }
@@ -57,6 +60,12 @@ module dockyard.directives.ActivityHeader {
                     }
                 });
             }
+
+            angular.element(document.querySelector('.col-sm-8.ellipsis')).ready(function () {
+                window.setTimeout(function () {
+                    $scope.$emit('titleLoadingFinished');
+                }, 500);
+            });          
 
         }];
 
