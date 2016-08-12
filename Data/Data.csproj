@@ -809,6 +809,10 @@
     <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.cs" />
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.Designer.cs">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1489,6 +1493,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608121505031_RemoveInactualAdminUsers.resx">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

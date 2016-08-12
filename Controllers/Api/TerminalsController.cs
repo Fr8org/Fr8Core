@@ -187,7 +187,7 @@ namespace HubWeb.Controllers
             }
             else
             {
-                terminal = discoveryRef.Value<TerminalDTO>();
+                terminal = ((JObject) discoveryRef).ToObject<TerminalDTO>();
             }
 
             if (!await _terminalDiscovery.Discover(terminal, false))

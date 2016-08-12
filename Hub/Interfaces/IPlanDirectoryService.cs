@@ -10,6 +10,6 @@ namespace Hub.Interfaces
         Task Share(Guid planId, string userId);
         Task Unpublish(Guid planId, string userId, bool privileged);
         PlanDTO CrateTemplate(Guid planId, string userId);
-        PlanNoChildrenDTO CreateFromTemplate(PlanDTO plan, string userId);
+        Task<PlanNoChildrenDTO> CreateFromTemplate(PlanDTO plan, string userId);
     }
 }
