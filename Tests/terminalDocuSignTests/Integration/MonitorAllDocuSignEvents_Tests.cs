@@ -16,6 +16,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Models;
 using System.Configuration;
+using Data.Repositories.MultiTenant.Queryable;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -110,9 +111,9 @@ namespace terminalDocuSignTests.Integration
 
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
-                var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
-                    .Count();
+                var mtDataCountBefore = MtQueryableExtensions.Count(unitOfWork.MultiTenantObjectRepository
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id))
+                    ;
 
                 //Set up DS
                 var token = await Authenticate();
@@ -135,8 +136,8 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
-                    mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
+                    mtDataCountAfter = MtQueryableExtensions.Count(unitOfWork.MultiTenantObjectRepository
+    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id));
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
