@@ -5,6 +5,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
+using System.Configuration;
 
 namespace terminalTwilioTests.Fixture
 {
@@ -58,7 +59,7 @@ namespace terminalTwilioTests.Fixture
                     UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
                     InitialLabel = "SMS Number",
                     Name = "SMS_Number",
-                    Value = "15005550006",
+                    Value = ConfigurationManager.AppSettings["TestPhoneNumber"],
                     Label = "SMS Number"
                 },
 
@@ -82,7 +83,7 @@ namespace terminalTwilioTests.Fixture
                 InitialLabel = "SMS Number",
                 ValueSource = "specific",
                 Name = "SMS_Number",
-                Value = "+15005550006",
+                Value = ConfigurationManager.AppSettings["TestPhoneNumber"],
                 Label = "SMS Number",
                 Source = new FieldSourceDTO()
                 {

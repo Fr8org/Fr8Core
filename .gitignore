@@ -242,3 +242,4 @@ Views/Shared/CDN/
 *.csproj.DotSettings
 *.csproj.DotSettings
 Services/PlanDirectory/ManifestPages/*.html
+ManifestPages/*.html

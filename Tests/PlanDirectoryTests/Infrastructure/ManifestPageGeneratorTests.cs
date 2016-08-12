@@ -11,8 +11,7 @@ using NUnit.Framework;
 using Hub.Exceptions;
 using Hub.Enums;
 using Hub.Services.PlanDirectory;
-using PlanDirectory.Infrastructure;
-
+using HubWeb.Infrastructure_PD.TemplateGenerators;
 
 namespace PlanDirectoryTests.Infrastructure
 {

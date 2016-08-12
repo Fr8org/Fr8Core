@@ -28,7 +28,8 @@
         </p>
 
         <div class="form-group" ng-class="{ 'has-error': !form.verificationCode.$valid }">
-            <label>Enter verification code send to your mobile phone: </label>
+            <label ng-if="!formData.title">Enter verification code send to your mobile phone: </label>
+            <label ng-if="formData.title">{{formData.title}}</label>
             <input type="text" class="form-control" ng-model="formData.verificationCode" name="verificationCode" required />
         </div>
         <p ng-show="formData.message">
