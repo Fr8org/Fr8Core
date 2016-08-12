@@ -34,7 +34,6 @@ namespace terminalAtlassian.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private const string AtlassianIssue = "issue";
         private const string RuntimeCrateLabel = "Monitor Atlassian Runtime Fields";
         private const string EventSubscriptionsCrateLabel = "Atlassian Issue Event";
 
@@ -45,6 +44,7 @@ namespace terminalAtlassian.Actions
         private const string IssueAssignee = "Issue Assignee Name";
         private const string IssueSummary = "Issue Summary";
         private const string IssueStatus = "Issue Status";
+        private const string IssueDescription = "Issue Description";
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -108,7 +108,8 @@ namespace terminalAtlassian.Actions
                                             .AddField(IssuePriority)
                                             .AddField(IssueAssignee)
                                             .AddField(IssueSummary)
-                                            .AddField(IssueStatus);
+                                            .AddField(IssueStatus)
+                                            .AddField(IssueDescription);
         }
         public override Task Activate()
         {
@@ -135,7 +136,7 @@ namespace terminalAtlassian.Actions
             }
 
             var atlassianEventPayload = eventCrate.EventPayload.CrateContentsOfType<AtlassianIssueEventCM>()
-                    .FirstOrDefault(e => e.ChangedAspect.Contains(AtlassianIssue));
+                    .FirstOrDefault(e => e.ChangedAspect.Contains(ActivityUI.ProjectSelector.selectedKey));
 
             if (atlassianEventPayload == null)
             {
@@ -150,7 +151,8 @@ namespace terminalAtlassian.Actions
                                                                     new KeyValueDTO(IssuePriority, jiraIssue.IssueEvent.IssuePriority),
                                                                     new KeyValueDTO(IssueAssignee, jiraIssue.IssueEvent.IssueAssigneeName),
                                                                     new KeyValueDTO(IssueSummary, jiraIssue.IssueEvent.IssueSummary),
-                                                                    new KeyValueDTO(IssueStatus, jiraIssue.IssueEvent.IssueStatus)
+                                                                    new KeyValueDTO(IssueStatus, jiraIssue.IssueEvent.IssueStatus),
+                                                                    new KeyValueDTO(IssueDescription, jiraIssue.IssueEvent.Description)
                                                                     )));
             }
     }

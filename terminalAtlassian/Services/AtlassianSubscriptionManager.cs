@@ -25,6 +25,7 @@ using Fr8.TerminalBase.Services;
 using Newtonsoft.Json.Linq;
 using System.Web.Script.Serialization;
 using RestSharp;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalAtlassian.Services
 {
@@ -34,10 +35,16 @@ namespace terminalAtlassian.Services
         private readonly IHubEventReporter _eventReporter;
         private readonly IRestfulServiceClient _client;
 
-        private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
-        private readonly string DemoConnectName = "(demo) Fr8 Company DocuSign integration";
-        private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
-        private readonly string TemporaryConnectName = "int-tests-Fr8";
+        private readonly string DevConnectName = "(dev) Fr8 Company Jira integration";
+        private readonly string DemoConnectName = "(demo) Fr8 Company Jira integration";
+        private readonly string ProdConnectName = "Fr8 Company Jira integration";
+        private readonly string TemporaryConnectName = "Fr8 Jira Integration Test";
+
+        private readonly string debugUrl = "http://localhost:39768";
+        private readonly string prodUrl = "https://terminalAtlassian.fr8.co";
+        private readonly string devUrl = "http://dev-terminals.fr8.co:39768";
+        private readonly string demoUrl = "http://demo-terminals.fr8.co:39768";
+        private readonly string callbackUrl = CloudConfigurationManager.GetSetting("terminalAtlassian.CallbackUrl");
 
         private Jira CreateRestClient(string token)
         {
@@ -50,11 +57,6 @@ namespace terminalAtlassian.Services
             _client = client;
             _crateManager = crateManager;
             _eventReporter = eventReporter;
-        }
-
-       
-        public async Task CreatePlan_MonitorAllJiraEvents(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
-        {
         }
 
         //only create a connect when running on dev/production
@@ -70,9 +72,21 @@ namespace terminalAtlassian.Services
             post.Events = events;
             post.ExcludeIssueDetails = false;
             post.JqlFilter = "";
-            post.Url = "https://4333d1a6.ngrok.io/terminals/terminalatlassian/subscribe";
-            post.Name = "test";
+            post.Url = callbackUrl;
 
+            if (callbackUrl.Contains(prodUrl)) {
+                post.Name = ProdConnectName;
+            }
+            else if(callbackUrl.Contains(devUrl)) {
+                post.Name = DevConnectName;
+            }
+            else if (callbackUrl.Contains(demoUrl)) {
+                post.Name = DemoConnectName;
+            }
+            else
+            {
+                post.Name = TemporaryConnectName;
+            }
             var url = "/rest/webhooks/1.0/webhook";
             Jira jira = CreateRestClient(authToken.Token);
             var getSubscriptions = await jira.RestClient.ExecuteRequestAsync(Method.GET, url, post);
@@ -96,10 +110,6 @@ namespace terminalAtlassian.Services
         {
         }
 
-        public Task CreatePlan_MonitorAllDocuSignEvents(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
  
