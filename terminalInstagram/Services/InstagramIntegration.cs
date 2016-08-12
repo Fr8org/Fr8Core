@@ -63,16 +63,8 @@ namespace terminalInstagram.Services
 
         public async Task<InstagramPost> GetPostById(string mediaId, string oauthToken)
         {
-            try
-            {
-                var response = await _client.GetAsync<JObject>(new Uri("https://api.instagram.com/v1/media/" + mediaId + "?access_token=" + oauthToken));
-                return response.ToObject<InstagramPost>();
-            }
-            catch(Exception e)
-            {
-                var x = 0;
-            }
-            return null;
+            var response = await _client.GetAsync<JObject>(new Uri("https://api.instagram.com/v1/media/" + mediaId + "?access_token=" + oauthToken));
+            return response.ToObject<InstagramPost>();
         }
     }
 }
