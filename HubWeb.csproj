@@ -4351,10 +4351,12 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="category\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="details\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />
