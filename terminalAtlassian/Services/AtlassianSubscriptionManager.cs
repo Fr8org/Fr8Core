@@ -60,25 +60,35 @@ namespace terminalAtlassian.Services
         //only create a connect when running on dev/production
         public async void CreateConnect(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            string[] events = new string[2];
+            string[] events = new string[4];
             events[0] = "jira:issue_created";
             events[1] = "jira:issue_updated";
+            events[2] = "jira:issue_deleted";
+            events[3] = "jira:worklog_updated";
             var post = new JiraSubscriptionPost();
 
             post.Events = events;
             post.ExcludeIssueDetails = false;
             post.JqlFilter = "";
-            post.Url = "https://6183552a.ngrok.io/terminals/terminalatlassian/subscribe";
+            post.Url = "https://4333d1a6.ngrok.io/terminals/terminalatlassian/subscribe";
             post.Name = "test";
 
-            var url = "https://maginot.atlassian.net/rest/webhooks/1.0/webhook";
-            try
+            var url = "/rest/webhooks/1.0/webhook";
+            Jira jira = CreateRestClient(authToken.Token);
+            var getSubscriptions = await jira.RestClient.ExecuteRequestAsync(Method.GET, url, post);
+            var oldSubscriptions = getSubscriptions.ToList<JToken>();
+
+            var subscriptionIsExists = false;
+            for (var i = 0; i < oldSubscriptions.Count; i++)
             {
-                Jira jira = CreateRestClient(authToken.Token);
+                if(oldSubscriptions[i].Value<string>("name") == post.Name)
+                {
+                    subscriptionIsExists = true;
+                }
+            }
+            if (!subscriptionIsExists)
+            {
                 var subscription = await jira.RestClient.ExecuteRequestAsync(Method.POST, url, post);
-            }catch(Exception ex)
-            {
-                var x = 0;
             }
         }
 

@@ -38,7 +38,7 @@ namespace terminalAtlassian.Controllers
         public async Task<IHttpActionResult> ProcessHubEvents()
         {
             var eventPayLoadContent = await Request.Content.ReadAsStringAsync();
-            await _eventReporter.Broadcast(await _event.ProcessInternalEvents(_container, eventPayLoadContent));
+            await _event.ProcessInternalEvents(_container, eventPayLoadContent);
             return Ok();
         }
     }
