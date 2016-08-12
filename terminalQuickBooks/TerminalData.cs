@@ -9,7 +9,8 @@ namespace terminalQuickBooks
         public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "QuickBooks",
-            IconPath = "/Content/icons/web_services/quickbooks-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/quickbooks-icon-64x64.png",
+            Type = "WebService"
         };
         public static TerminalDTO TerminalDTO = new TerminalDTO
         {

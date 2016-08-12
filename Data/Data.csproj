@@ -809,6 +809,10 @@
     <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608120337509_AddTypePropertyToActivityCategory.cs" />
+    <Compile Include="Migrations\201608120337509_AddTypePropertyToActivityCategory.Designer.cs">
+      <DependentUpon>201608120337509_AddTypePropertyToActivityCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1489,6 +1493,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608120337509_AddTypePropertyToActivityCategory.resx">
+      <DependentUpon>201608120337509_AddTypePropertyToActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
