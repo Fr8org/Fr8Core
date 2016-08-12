@@ -55,8 +55,7 @@ namespace terminalAtlassian.Services
                     Timestamp = issue.Timestamp,
                     UserName = issue.User.DisplayName,
                     WebhookEvent = issue.WebhookEvent,
-                    Description = issue.Issue.Fields.Description,
-                    Comments = issue.Issue.Fields.IssueComment.Comments
+                    Description = issue.Issue.Fields.Description
                 }
                 
             };
