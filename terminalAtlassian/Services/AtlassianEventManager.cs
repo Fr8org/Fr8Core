@@ -8,7 +8,6 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Interfaces;
-using System.Diagnostics;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -81,7 +80,7 @@ namespace terminalAtlassian.Services
             }
             catch
             {
-                _atlassianSubscription.CreateOrUpdatePolling(hubCommunicator, curFr8UserAndToken.Item2);
+                throw new ArgumentException("Webhook could not be created");
             }
             return null;
 
