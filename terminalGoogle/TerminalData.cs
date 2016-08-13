@@ -10,13 +10,15 @@ namespace terminalGoogle
         public static ActivityCategoryDTO GooogleActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Google",
-            IconPath = "/Content/icons/web_services/google-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/google-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static ActivityCategoryDTO GmailActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Gmail",
-            IconPath = "/Content/icons/web_services/gmail-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/gmail-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO
