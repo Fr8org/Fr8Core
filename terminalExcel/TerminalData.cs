@@ -9,7 +9,8 @@ namespace terminalExcel
         public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Excel",
-            IconPath = "/Content/icons/web_services/ms-excel-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/ms-excel-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

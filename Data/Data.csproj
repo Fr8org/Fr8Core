@@ -813,6 +813,10 @@
     <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.Designer.cs">
       <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.cs" />
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.Designer.cs">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1496,6 +1500,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608121505031_RemoveInactualAdminUsers.resx">
       <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608130142161_AddTypeToActivityCategory.resx">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
