@@ -1,6 +1,4 @@
-﻿using Atlassian.Jira;
-using Newtonsoft.Json;
-using terminalAtlassian.Interfaces;
+﻿using Newtonsoft.Json;
 
 namespace terminalAtlassian.Models
 {
