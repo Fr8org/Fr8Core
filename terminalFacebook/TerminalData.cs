@@ -9,7 +9,8 @@ namespace terminalFacebook
         public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Facebook",
-            IconPath = "/Content/icons/web_services/facebook-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/facebook-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO
