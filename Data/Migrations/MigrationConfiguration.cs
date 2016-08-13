@@ -491,7 +491,8 @@ namespace Data.Migrations
                 {
                     Id = id,
                     Name = name,
-                    IconPath = iconPath
+                    IconPath = iconPath,
+                    Type = null
                 };
 
                 uow.ActivityCategoryRepository.Add(activityCategory);
