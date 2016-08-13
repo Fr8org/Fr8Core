@@ -35,7 +35,8 @@ namespace terminalAtlassian.Controllers
                 return new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(credentials),
-                    ExternalAccountId = credentials.Username
+                    ExternalAccountId = credentials.Username,
+                    AuthCompletedNotificationRequired = true
                 };
             }
             return new AuthorizationTokenDTO()

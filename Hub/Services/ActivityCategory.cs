@@ -120,7 +120,8 @@ namespace Hub.Services
                             {
                                 Id = activityCategory.Id,
                                 Name = activityCategory.Name,
-                                IconPath = activityCategory.IconPath
+                                IconPath = activityCategory.IconPath,
+                                Type = activityCategory.Type
                             };
 
                             uow.ActivityCategoryRepository.Add(activityCategoryById);
@@ -128,6 +129,7 @@ namespace Hub.Services
                         else
                         {
                             activityCategoryById.IconPath = activityCategory.IconPath;
+                            activityCategoryById.Type = activityCategory.Type;
                         }
 
                         foreach (var assignedActivityTemplate in activityTemplateAssignments)
@@ -158,7 +160,8 @@ namespace Hub.Services
                             {
                                 Id = Guid.NewGuid(),
                                 Name = activityCategory.Name,
-                                IconPath = activityCategory.IconPath
+                                IconPath = activityCategory.IconPath,
+                                Type = activityCategory.Type
                             };
 
                             uow.ActivityCategoryRepository.Add(activityCategoryByName);
@@ -166,6 +169,7 @@ namespace Hub.Services
                         else
                         {
                             activityCategoryByName.IconPath = activityCategory.IconPath;
+                            activityCategoryByName.Type = activityCategory.Type;
                         }
 
                         _activityCategories[activityCategoryByName.Id] = Clone(activityCategoryByName);

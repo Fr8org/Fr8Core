@@ -11,6 +11,7 @@ namespace Data.Entities
         [MaxLength(200)]
         public string Name { get; set; }
         public string IconPath { get; set; }
+        public string Type { get; set; }
 
         protected bool Equals(ActivityCategoryDO other)
         {

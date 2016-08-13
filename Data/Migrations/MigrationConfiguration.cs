@@ -373,7 +373,7 @@ namespace Data.Migrations
 
         public static void AddAdmins(IUnitOfWork uow)
         {
-            //TODO: add your own admin accounts here
+            //you can programmatically add Admin accounts here. Now that Fr8 has a Configuration Wizard that is used to create a system administrator account, this is only really used for testing
             //CreateAdmin("test_foo@mail.com", "foobar",uow);
         }
 
@@ -486,7 +486,8 @@ namespace Data.Migrations
                 {
                     Id = id,
                     Name = name,
-                    IconPath = iconPath
+                    IconPath = iconPath,
+                    Type = null
                 };
 
                 uow.ActivityCategoryRepository.Add(activityCategory);

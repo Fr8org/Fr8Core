@@ -5,8 +5,6 @@ module dockyard.services {
 
     export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
-        //TODO inspect this - why do we have 2 different methods returning different responses by similar names?
-        getAvailableActivitiesByCategory: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
@@ -14,12 +12,7 @@ module dockyard.services {
             {
                 'getAvailableActivities': {
                     method: 'GET',
-                    url: '/api/activity_templates',
-                    isArray: true
-                },
-                'getAvailableActivitiesByCategory': {
-                    method: 'GET',
-                    url: '/api/activity_templates/by_categories',
+                    url: '/api/activity_templates/',
                     isArray: true
                 }
             })
@@ -45,7 +38,6 @@ module dockyard.services {
                     this.activityTemplateCache.push(this.ActivityTemplates[i].activities[j]);
                 }
             }
-
         }
 
         public getActivityTemplate(activity: model.ActivityDTO) {
@@ -86,7 +78,7 @@ module dockyard.services {
             if (this.activityTemplateByCategoryCache != null) {
                 deferred.resolve(this.activityTemplateByCategoryCache);
             } else {
-                this.activityTemplateService.getAvailableActivitiesByCategory().$promise.then((data) => {
+                this.activityTemplateService.getAvailableActivities().$promise.then((data) => {
                     this.activityTemplateByCategoryCache = data;
                     deferred.resolve(data);
                 }, (err) => {

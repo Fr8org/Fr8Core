@@ -437,7 +437,7 @@ bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpS
     return {
         bootstrap: (appName) => {
             var deferred = $q.defer();
-            $http.get('/api/v1/activity_templates')
+            $http.get('/api/v1/activity_templates/')
                 .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
                     // set all returned values as constants on the app
                     var myApp = angular.module(appName);
