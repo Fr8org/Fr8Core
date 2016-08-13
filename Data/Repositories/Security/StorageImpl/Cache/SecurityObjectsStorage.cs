@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -17,7 +18,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
     /// Inside all methods for get security data, at first, we check if that data is found inside cache, if not then we return from security data provider and we update cache with that data
     /// Inside all create/update methods at first we create data inside storage provider, and then we update the cache. 
     /// </summary>
-    public class SecurityObjectsStorage : ISecurityObjectsStorageProvider, IDisposable
+    public class SecurityObjectsStorage : ISecurityObjectsStorageProvider
     {
         private readonly ISecurityObjectsCache _cache;
         private readonly IUnitOfWork _uow;
@@ -200,11 +201,6 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                 var rolePermissions = GetRecordBasedPermissionSetForObject(dataObjectId, dataObjectType);
                 _cache.AddOrUpdateRecordBasedPermissionSet($"{dataObjectType}:{dataObjectId}", rolePermissions);
             }
-        }
-
-        public void Dispose()
-        {
-            _uow.Dispose();
         }
     }
 }
