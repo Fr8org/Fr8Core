@@ -25,7 +25,7 @@ namespace terminalAtlassian.Controllers
         }
 
         [HttpPost]
-        [Route("subscribe")]
+        [Route("process-issue")]
         public async Task<IHttpActionResult> ProcessIncomingIssue()
         {
             var eventPayLoadContent = await Request.Content.ReadAsStringAsync();
