@@ -848,6 +848,7 @@
     <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
     <Content Include="Config\HubWeb\Settings.config.readme" />
     <Content Include="LICENSE" />
+    <Content Include="Views\AngularTemplate\AdminTools.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
@@ -4399,10 +4400,12 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="category\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="details\" />
     <Folder Include="Exceptions\" />
     <Folder Include="ManifestPages\" />
     <Folder Include="Scripts\app\directives\filters\" />
