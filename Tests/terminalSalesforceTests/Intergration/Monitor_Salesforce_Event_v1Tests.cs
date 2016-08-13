@@ -146,7 +146,7 @@ namespace terminalSalesforceTests.Intergration
 
         private async Task<ActivityTemplateDTO> ExtractActivityTemplate()
         {
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates/by_categories");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var monitorActivityTemplate = activityTemplates
                 .Where(x => x.Name.ToUpper().Contains("Salesforce".ToUpper()))
                 .SelectMany(x => x.Activities)
