@@ -44,7 +44,6 @@ namespace Data.Infrastructure
             For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
             For<PlanStorage>().Use<PlanStorage>();
             For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
-            For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
             For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
             For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
         }

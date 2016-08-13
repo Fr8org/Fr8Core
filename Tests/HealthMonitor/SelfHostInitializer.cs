@@ -33,8 +33,7 @@ namespace HealthMonitor
             IEnumerable<TerminalDO> terminals;
 
             var _container = new Container();
-            _container.Configure(expression =>
-                expression.AddRegistry<Hub.StructureMap.StructureMapBootStrapper.LiveMode>());
+            _container.Configure(expression => expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
 
             var selfHostedApps = GetSelfHostedApps();
 
