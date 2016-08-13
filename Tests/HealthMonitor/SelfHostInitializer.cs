@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Data;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.StructureMap;
 
 namespace HealthMonitor
 {
@@ -32,8 +33,7 @@ namespace HealthMonitor
             IEnumerable<TerminalDO> terminals;
 
             var _container = new Container();
-            _container.Configure(expression =>
-                expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
+            _container.Configure(expression => expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
 
             var selfHostedApps = GetSelfHostedApps();
 
