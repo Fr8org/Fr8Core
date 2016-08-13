@@ -9,7 +9,8 @@ namespace terminalSlack
         public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Slack",
-            IconPath = "/Content/icons/web_services/slack-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/slack-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO
