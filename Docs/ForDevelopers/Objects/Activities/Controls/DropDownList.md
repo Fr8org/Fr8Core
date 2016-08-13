@@ -1,7 +1,7 @@
 #DropDownList Control
 
 ##Example Control Payload
-```javascript
+```json
 {
        "type": "DropDownList",      
        "listItems": [

@@ -366,12 +366,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/TerminalDetail",
             data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
         })
-        .state('manifestregistry',
-        {
-            url: "/manifest_registry",
-            templateUrl: "/AngularTemplate/ManifestRegistryList",
-            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
-        })
         .state('manageAuthTokens',
         {
             url: '/manageAuthTokens',
@@ -436,7 +430,7 @@ bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpS
     return {
         bootstrap: (appName) => {
             var deferred = $q.defer();
-            $http.get('/api/v1/activity_templates')
+            $http.get('/api/v1/activity_templates/')
                 .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
                     // set all returned values as constants on the app
                     var myApp = angular.module(appName);

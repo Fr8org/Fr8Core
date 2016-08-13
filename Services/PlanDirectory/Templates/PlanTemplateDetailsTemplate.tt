@@ -1,0 +1,120 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
+<#@ assembly name="$(ProjectDir)\bin\PlanDirectory.dll" #>
+<#@ import namespace="PlanDirectory.ViewModels" #>
+<#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="../Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/css/additionalcss/font-awesome/css/style.css" rel="stylesheet" type="text/css" />
+    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../Content/metronic/components.css" />
+    <link rel="stylesheet" href="../Content/css/plan-directory.css" />
+    <link rel="stylesheet" href="../Content/css/shared/main.css" />
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../Content/metronic/jquery.blockui.min.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../Content/metronic/ui.js"></script>
+    <script src="../Scripts/main.js"></script>
+    <title>Fr8 - Plan Template Details -
+        <#=planTemplate.Name#>
+    </title>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div id="wrap">
+        <!-- NAVIGATION BAR-->
+        <header id="site-header" class="header container-fluid">
+            <nav class="navbar navbar-fixed-top">
+                <div class="container">
+                    <!-- NAVIGATION BAR LOGO -->
+                    <div class="navbar-header">
+                        <a href="<#=NavLinks.BaseUrl#>" class="navbar-brand">
+                            <img src="../Content/img/dockyard_logo_white.png" alt="FR8">
+                            <h1 class="hide">FR8 Company</h1>
+                        </a>
+                    </div>
+                    <!-- NAVIGATION BAR CONTENT -->
+                    <div class="navbar-collapse collapse" id="main-nav" role="navigation">
+                        <!-- SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE -->
+                        <!-- MENU -->
+                        <ul class="nav navbar-nav navbar-right">
+                            <!--How It Works-->
+                            <li><a href="<#=NavLinks.BaseUrl#>/#about">How it Works</a></li>
+                            <!--Services-->
+                            <li data-scroll="scrolling" class="dropdown">
+                                <a data-target="#" href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="<#=NavLinks.BaseUrl#>/Services/DocuSign">DocuSign</a></li>
+                                    <li><a href="<#=NavLinks.BaseUrl#>/Services/Salesforce">Salesforce.com</a></li>
+                                    <li><a href="<#=NavLinks.PlanDirectory#>">Plan Directory</a></li>
+                                </ul>
+                            </li>
+                            <!--Developers-->
+                            <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developers</a></li>
+                            <!--Company-->
+                            <li data-scroll="scrolling" class="dropdown">
+                                <a href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#vision">Vision</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#team">Team</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#press">Press Releases</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#location">Location</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#jobs">Jobs</a></li>
+                                </ul>
+                            </li>
+                            <!--Contact-->
+                            <li><a href="<#=NavLinks.BaseUrl#>/Support" title="Contact">Contact</a></li>
+                            <!--Blog-->
+                            <li><a href="<#=NavLinks.Blog#>" target="_blank">Blog</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section id="planDirectory" class="plan-directory-background full-height-block text-block" data-section="support">
+            <div class="inner-bg full-size-bg"></div>
+            <div class="container full-height-block">
+                <div class="inner-wrap centered base-block-white">
+                    <!-- SEARCH BAR-->
+                    <div class="search-bar-container">
+                        <div>
+                            <h2 style="width:100%">Details - <em><#=planTemplate.Name#></em></h2>
+                        </div>
+                        <hr/>
+                    </div>
+                    <!-- SEARCH RESULTS-->
+                    <div class="result-container">
+                        <div class="item">
+                            <button class="btn green create-plan-btn">Create</button>                            
+                            <div class="info-row first">
+                                <div class="label">Name:</div> {{planTemplate.Name}}
+                            </div>
+                            <div class="info-row">
+                                <div class="label">Created by:</div> {{planTemplate.Owner}}
+                            </div>
+                            <div class="info-row">
+                                <div class="label">Description:</div>
+                                <div class="value">{{planTemplate.Description}}</div>
+                            </div>
+                        </div>             
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="clear clear-footer-spacer"></div>
+    </div>
+    <!-- FOOTER -->
+    <footer id="site-footer" class="section">
+        <div class="container">
+            <p class="copyright">
+                <#=DateTime.Now.Year#> © The Fr8 Company. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <!-- END FOOTER -->
+</body>

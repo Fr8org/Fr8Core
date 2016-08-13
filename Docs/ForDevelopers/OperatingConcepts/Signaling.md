@@ -157,7 +157,7 @@ When the user goes to configure the Publish To Slack activity to use data from u
 
 the Fr8 client makes "available upstream data" request to the Hub using **/api/v1/plan_nodes/signals** endpoint. To process this request the Hub looks through crate storages of all upstream activities for Publish To Slack and collect all Crate Description crate from them to build one general list of available crates for Publish To Slack activity. 
 
-> **Note**:  TextSource is not the only control that can be used to select data from upstream. There is also UpstreamCrateChooser that allows to select entire crates from upstream. But all these controls are using the same approach for getting information about available data.
+> **Note**:  TextSource is not the only control that can be used to select data from upstream. There is also CrateChooser that allows to select entire crates from upstream. But all these controls are using the same approach for getting information about available data.
 
 This is how the Hub response looks like:
 ```javascript

@@ -4,12 +4,12 @@ A complex control enabling user either to type specific text or to select a valu
 ##Fields
 **valueSource** property will contact user’s selected option: either specific or upstream.The value property will contain either
 
-**specific** text or a value selected in the drop down list.
+**specific** text or a value selected in the incoming data.
 
-![TextSource](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/TextSource.png)
+![Text Source](images/text_source.png)
 
 ##Example Control Payload
-```javascript
+```json
 {
     "initialLabel": "For the Email Address Use",
     "valueSource": null,
@@ -18,7 +18,7 @@ A complex control enabling user either to type specific text or to select a valu
     "selected": false,
     "value": null,
     "type": "TextSource",
-    "listItems": []
+    "listItems": [],
     "source": {
         "filterByTag": null,
         "manifestType": "Standard Design-Time Fields",

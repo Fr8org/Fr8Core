@@ -29,6 +29,20 @@ namespace Data.Migrations
                 
                 insert into dbo.PermissionSetPermissions(PermissionSetId, PermissionTypeTemplateId) values('{permissionSetId}', 11) 
 
+                --check if roles exist for recreating new 
+                set @counter = 0;
+                set @counter = (select top 1 Id from dbo.AspNetRoles where Name= 'Guest')
+                if(@counter = 0) 
+                begin 
+	                insert into dbo.AspNetRoles(id, Name, LastUpdated, CreateDate, Discriminator) values(newid(), 'Guest','2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00', 'AspNetRolesDO' )
+                end
+                set @counter = 0;
+                set @counter = (select top 1 Id from dbo.AspNetRoles where Name= 'StandardUser')
+                if(@counter = 0) 
+                begin 
+	                insert into dbo.AspNetRoles(id, Name, LastUpdated, CreateDate, Discriminator) values(newid(), 'StandardUser','2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00', 'AspNetRolesDO' )
+                end
+
                 -- create RolePermissions with given permission set             
                 insert into dbo.RolePermissions(Id, PermissionSetId, RoleId, LastUpdated, CreateDate) 
                     values ('{guestUserRolePermissionId}', '{permissionSetId}', (select top 1 Id from dbo.AspNetRoles where Name= 'Guest'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')

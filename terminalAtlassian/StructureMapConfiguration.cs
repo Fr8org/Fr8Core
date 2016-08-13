@@ -18,6 +18,8 @@ namespace terminalAtlassian
         public static void LiveConfiguration(ConfigurationExpression configuration)
         {
             configuration.AddRegistry<LiveMode>();
+            configuration.For<IAtlassianEventManager>().Use<AtlassianEventManager>();
+            configuration.For<IAtlassianSubscriptionManager>().Use<AtlassianSubscriptionManager>();
         }
     }
 }

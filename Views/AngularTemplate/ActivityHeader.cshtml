@@ -3,7 +3,7 @@
     <div class="md-toolbar-tools">
         <!-- Icon -->
         <div class="action-header-icon" style="display: flex;">
-            <img draggable="false" ng-src="{{envelope.activityTemplate.webService.iconPath}}" ng-if="envelope.activityTemplate.webService.iconPath" />
+            <img draggable="false" ng-src="{{(envelope.activityTemplate.categories | filter:{type:'WebService'})[0].iconPath}}" ng-if="(envelope.activityTemplate.categories | filter:{type:'WebService'})[0].iconPath" />
         </div>
         <!-- Main Title -->
         <div class="col-sm-8 ellipsis">
