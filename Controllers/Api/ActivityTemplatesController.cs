@@ -37,30 +37,16 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<ActivityTemplateDTO>(activityTemplate));
             }
         }
+
+
         /// <summary>
         /// Retreives all available activity templates grouped by category
         /// </summary>
         /// <response code="200">Collection of activity templates grouped by category</response>
-        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         public IHttpActionResult Get()
-        {
-            var categoriesWithActivities = _activity.GetAvailableActivityGroups();
-            return Ok(categoriesWithActivities);
-        }
-
-
-        //TODO inspect this - why do we have 2 different methods returning different responses by similar names?
-        /// <summary>
-        /// Retreives all available activity templates grouped by category
-        /// </summary>
-        /// <response code="200">Collection of activity templates grouped by category</response>
-        [AllowAnonymous]
-        [HttpGet]
-        [ActionName("by_categories")]
-        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
-        public IHttpActionResult GetByCategories()
         {
             var categoriesWithActivities = _activity.GetActivityTemplatesGroupedByCategories();
             return Ok(categoriesWithActivities);
