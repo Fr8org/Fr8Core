@@ -9,7 +9,7 @@ This is most robust option of deploying Fr8 on your PC. All the job is done by t
 4. Configure Visual Studio projects to use local IIS.
 
 
-### Prerequesties  
+### Prerequisites  
 1. You should have administrator access to your PC.
 2. You should have IIS installed. There are a lot of resources in the Internet telling how install IIS. For example, see [here](http://www.howtogeek.com/112455/how-to-install-iis-8-on-windows-8/) or [here](https://technet.microsoft.com/en-us/library/hh831475(v=ws.11).aspx).
 3. You should have enabled PowerShell script execution on your system. If you have never used PoweShell before then script execution is likely to be disabled. See [how to enable it](http://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts).
