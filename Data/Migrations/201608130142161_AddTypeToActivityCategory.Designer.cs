@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddTypePropertyToActivityCategory : IMigrationMetadata
+    public sealed partial class AddTypeToActivityCategory : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddTypePropertyToActivityCategory));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddTypeToActivityCategory));
         
         string IMigrationMetadata.Id
         {
-            get { return "201608120337509_AddTypePropertyToActivityCategory"; }
+            get { return "201608130142161_AddTypeToActivityCategory"; }
         }
         
         string IMigrationMetadata.Source
