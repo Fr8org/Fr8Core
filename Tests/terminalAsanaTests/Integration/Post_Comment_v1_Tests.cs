@@ -83,6 +83,7 @@ namespace terminalAsanaTests.Integration
 
         /// <summary>
         /// Validate correct crate-storage structure in followup configuration response.
+        /// same test as for Get_Task activity
         /// </summary>
         [Test]
         public async Task Post_Comment_v1_FollowUp_Configuration_Check_Crate_Structure()
@@ -97,6 +98,7 @@ namespace terminalAsanaTests.Integration
             var crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var ddlb = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
             ddlb.Value = ddlb.ListItems[0].Value;
+            ddlb.selectedKey = ddlb.ListItems[0].Key;
 
             responseDTO = Mapper.Map<ActivityDTO>(payload);
             
@@ -118,56 +120,5 @@ namespace terminalAsanaTests.Integration
 
             AssertInitialConfigurationResponse(responseDTO);
         }
-
-        //[Test]
-        //[Ignore] // because to Run Activity we need to deal with container 
-        //public async Task Post_Comment_v1_Run_Should_Return_List_Of_Tasks()
-        //{
-        //    // it is integration test so it will be oooho loooong.
-        //    var configureUrl = GetTerminalConfigureUrl();
-        //    var token = Fixtures.FixtureData.SampleAuthorizationToken();
-
-        //    var responseDTO = await CompleteInitialConfiguration();
-
-        //    var payload = Mapper.Map<ActivityPayload>(responseDTO);
-        //    var crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-        //    var ddlb = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
-        //    ddlb.Value = ddlb.ListItems[0].Value;
-
-        //    responseDTO = Mapper.Map<ActivityDTO>(payload);
-
-        //    var tokenDTO = Mapper.Map<AuthorizationTokenDTO>(token);
-        //    responseDTO.AuthToken = tokenDTO;
-
-        //    var dataDTO = new Fr8DataDTO
-        //    {
-        //        ActivityDTO = responseDTO,
-        //    };
-
-        //    responseDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-
-        //    payload = Mapper.Map<ActivityPayload>(responseDTO);
-        //    crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-        //    var workspaces = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
-        //    var users = crates.Controls.Find(x => x.Name.Equals("UsersList")) as DropDownList;
-
-        //    workspaces.Value = workspaces.ListItems[0].Value;
-        //    users.Value = users.ListItems[0].Value;
-
-        //    // this should be done with container things.
-        //    // ----------------------------------------
-        //    var operationalState = new OperationalStateCM();
-        //    operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
-        //    {
-        //        NodeName = "Starting subplan",
-        //        NodeId = Guid.NewGuid()
-        //    });
-        //    payload.CrateStorage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent("Operational state", operationalState));
-        //    // ----------------------------------------
-      
-
-
-        //}
-
     }
 }
