@@ -42,7 +42,7 @@ namespace terminalAsanaTests.Integration
         private async Task<ActivityDTO> CompleteInitialConfiguration()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestDataDTO = Fixtures.FixtureData.Get_Tasks_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = Fixtures.FixtureData.Post_Comment_v1_InitialConfiguration_Fr8DataDTO();
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
         }
 
