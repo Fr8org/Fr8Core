@@ -61,7 +61,7 @@ namespace terminalSalesforceTests.Intergration
             _plansHelper = new IntegrationTestTools(this);
         }
 
-        [Test]
+        [Test, Ignore("Being resolved in FR-5500")]
         public async void Monitor_Salesforce_Event_Local_Payload_Processed()
         {
             var objectTypes = new[]
