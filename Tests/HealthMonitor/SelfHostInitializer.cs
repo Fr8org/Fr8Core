@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Data;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.StructureMap;
 
 namespace HealthMonitor
 {
@@ -33,7 +34,7 @@ namespace HealthMonitor
 
             var _container = new Container();
             _container.Configure(expression =>
-                expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
+                expression.AddRegistry<Hub.StructureMap.StructureMapBootStrapper.LiveMode>());
 
             var selfHostedApps = GetSelfHostedApps();
 
