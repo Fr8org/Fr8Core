@@ -775,10 +775,6 @@
       <TransformOnBuild>true</TransformOnBuild>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="ApplicationInsights.alexlocal.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -792,14 +788,6 @@
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ApplicationInsights.fr8dev - FTP.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="ApplicationInsights.fr8dev - Web Deploy.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
     </None>
     <None Include="ApplicationInsights.Release.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
@@ -826,19 +814,6 @@
     <Content Include="Views\AngularTemplate\MainContainer_AS.cshtml" />
     <Content Include="Views\AngularTemplate\MainContainer.cshtml" />
     <Content Include="Views\AngularTemplate\ExternalObjectChooser.cshtml" />
-    <Content Include="Config\log4net.config" />
-    <Content Include="Config\log4net.Demo.config" />
-    <Content Include="Config\log4net.Dev.config" />
-    <Content Include="Config\log4net.Release.config" />
-    <Content Include="Config\log4net.terminals.config" />
-    <Content Include="Config\log4net.terminals.Demo.config" />
-    <Content Include="Config\log4net.terminals.Dev.config" />
-    <Content Include="Config\log4net.terminals.Release.config" />
-    <Content Include="Config\log4net.tests.config" />
-    <Content Include="Config\log4net.tests.healthMonitor.config" />
-    <Content Include="Config\log4net.tests.healthMonitor.Demo.config" />
-    <Content Include="Config\log4net.tests.healthMonitor.Dev.config" />
-    <Content Include="Config\log4net.tests.healthMonitor.Release.config" />
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
@@ -848,6 +823,10 @@
     <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
     <Content Include="Config\HubWeb\Settings.config.readme" />
     <Content Include="LICENSE" />
+    <Content Include="Config\HubWeb\log4net.config.readme" />
+    <Content Include="Config\HubWeb\log4net.Demo.config.readme" />
+    <Content Include="Config\HubWeb\log4net.Dev.config.readme" />
+    <Content Include="Config\HubWeb\log4net.Release.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
@@ -4517,7 +4496,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.226.2\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.226.2\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4604,5 +4583,5 @@
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
   <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.226.2\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.226.2\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

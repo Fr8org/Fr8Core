@@ -250,10 +250,6 @@
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="LICENSE" />
-    <Content Include="log4net.terminals.config" />
-    <Content Include="log4net.terminals.Demo.config" />
-    <Content Include="log4net.terminals.Dev.config" />
-    <Content Include="log4net.terminals.Release.config" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
