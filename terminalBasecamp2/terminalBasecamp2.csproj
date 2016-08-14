@@ -271,6 +271,9 @@
     <Content Include="Config\log4net.terminals.Release.config.readme" />
     <Content Include="Config\Settings.config.readme" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\log4net.terminals.config.readme" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
