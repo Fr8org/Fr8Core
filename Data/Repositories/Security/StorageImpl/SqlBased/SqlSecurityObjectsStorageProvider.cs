@@ -223,24 +223,37 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
-                using (var insertCommand = new SqlCommand())
+                using (var command = new SqlCommand())
                 {
-                    insertCommand.Connection = connection;
+                    command.Connection = connection;
 
-                    insertCommand.Parameters.Clear();
-                    insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
-                    insertCommand.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
-                    insertCommand.Parameters.AddWithValue("@fr8AccountId", currentUserId);
-                    insertCommand.Parameters.AddWithValue("@organizationId", (organizationId.HasValue) ? (object)organizationId.Value : DBNull.Value);
-                    insertCommand.Parameters.AddWithValue("@type", dataObjectType);
-                    insertCommand.Parameters.AddWithValue("@propertyName", DBNull.Value);
-                    insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
-                    insertCommand.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
+                    //check if already exist a record inserted and prevent duplication 
+                    command.Parameters.AddWithValue("@objectId", dataObjectId);
+                    command.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
+                    command.Parameters.AddWithValue("@type", dataObjectType);
+                    command.CommandText = "select count(*) as existingData from dbo.ObjectRolePermissions where objectId = @objectId and rolePermissionId = @rolePermissionId and type = @type";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var existingData = reader["existingData"] != DBNull.Value ? (int)reader["existingData"] : 0;
+                            //permissions for this object for a given role were already applied. in that case don't insert any data inside ObjectRolePermissions
+                            if (existingData > 0)
+                                return;
+                        }
+                    }
+
+                    command.Parameters.AddWithValue("@fr8AccountId", currentUserId);
+                    command.Parameters.AddWithValue("@organizationId", (organizationId.HasValue) ? (object)organizationId.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@propertyName", DBNull.Value);
+                    command.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
+                    command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
                     var cmdText = InsertObjectRolePermissionCommand;
 
-                    insertCommand.CommandText = cmdText;
-                    var affectedRows = insertCommand.ExecuteNonQuery();
+                    command.CommandText = cmdText;
+                    var affectedRows = command.ExecuteNonQuery();
 
                     if (affectedRows == 0)
                     {
@@ -293,27 +306,20 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
         
         private RolePermission ReadRolePermissionFromSql(SqlDataReader reader)
         {
-            var obj = new RolePermission
-            {
-                Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
+            return new RolePermission
+            {   
+                Id = reader["Id"] != DBNull.Value ? (Guid) reader["Id"] : Guid.Empty,
+                PermissionSet = new PermissionSetDO()
+                {
+                    Id = reader["PermissionSetId"] != DBNull.Value ? (Guid) reader["PermissionSetId"] : Guid.Empty,
+                    ObjectType = reader["ObjectType"] != DBNull.Value ? (string) reader["ObjectType"] : string.Empty,
+                },
+                Role = new RoleDO()
+                {
+                    RoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty,
+                    RoleName = reader["roleName"] != DBNull.Value ? (string)reader["roleName"] : string.Empty
+                }
             };
-
-            obj.PermissionSet = new PermissionSetDO()
-            {
-                Id = reader["PermissionSetId"] != DBNull.Value ? (Guid)reader["PermissionSetId"] : Guid.Empty,
-                ObjectType = reader["ObjectType"] != DBNull.Value ? (string)reader["ObjectType"] : string.Empty,
-            };
-
-            var objRoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;
-            var objRoleName = reader["roleName"] != DBNull.Value ? (string)reader["roleName"] : string.Empty;
-
-            obj.Role = new RoleDO()
-            {
-                RoleId = objRoleId,
-                RoleName = objRoleName
-            };
-
-            return obj;
         }
 
         private void ReadObjectRolePermissionFromSql(SqlDataReader reader, ObjectRolePermissionsWrapper objectRolePermissionsWrapper)
@@ -324,7 +330,6 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             objectRolePermissionsWrapper.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
             objectRolePermissionsWrapper.Fr8AccountId = reader["Fr8AccountId"] != DBNull.Value ? (string)reader["Fr8AccountId"] : string.Empty;
             objectRolePermissionsWrapper.OrganizationId = reader["OrganizationId"] != DBNull.Value ? (int?)reader["OrganizationId"] : null;
-
 
             //read property name and check for values
             var propertyName = reader["PropertyName"] != DBNull.Value ? (string) reader["PropertyName"] : string.Empty;

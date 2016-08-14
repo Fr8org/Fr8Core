@@ -61,7 +61,7 @@ namespace terminalSalesforceTests.Intergration
             _plansHelper = new IntegrationTestTools(this);
         }
 
-        [Test]
+        [Test, Ignore("Being resolved in FR-5500")]
         public async void Monitor_Salesforce_Event_Local_Payload_Processed()
         {
             var objectTypes = new[]
@@ -146,7 +146,7 @@ namespace terminalSalesforceTests.Intergration
 
         private async Task<ActivityTemplateDTO> ExtractActivityTemplate()
         {
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates/by_categories");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var monitorActivityTemplate = activityTemplates
                 .Where(x => x.Name.ToUpper().Contains("Salesforce".ToUpper()))
                 .SelectMany(x => x.Activities)
