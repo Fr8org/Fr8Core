@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -302,22 +302,6 @@
     <Compile Include="TestReportNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Config\log4net.tests.healthMonitor.config">
-      <Link>log4net.tests.healthMonitor.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Config\log4net.tests.healthMonitor.Demo.config">
-      <Link>log4net.tests.healthMonitor.Demo.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Config\log4net.tests.healthMonitor.Dev.config">
-      <Link>log4net.tests.healthMonitor.Dev.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\Config\log4net.tests.healthMonitor.Release.config">
-      <Link>log4net.tests.healthMonitor.Release.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="Build-Settings.ps1" />
     <None Include="App.config">
       <SubType>Designer</SubType>
