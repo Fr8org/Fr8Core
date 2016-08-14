@@ -821,12 +821,12 @@
     <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
     <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
-    <Content Include="Config\HubWeb\Settings.config.readme" />
+    <Content Include="Config\Settings.config.readme" />
     <Content Include="LICENSE" />
-    <Content Include="Config\HubWeb\log4net.config.readme" />
-    <Content Include="Config\HubWeb\log4net.Demo.config.readme" />
-    <Content Include="Config\HubWeb\log4net.Dev.config.readme" />
-    <Content Include="Config\HubWeb\log4net.Release.config.readme" />
+    <Content Include="Config\log4net.config.readme" />
+    <Content Include="Config\log4net.Demo.config.readme" />
+    <Content Include="Config\log4net.Dev.config.readme" />
+    <Content Include="Config\log4net.Release.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
@@ -4496,7 +4496,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.227.14733-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.227.14733-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4583,5 +4583,5 @@
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
   <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.226.14726-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.227.14733-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.227.14733-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>
