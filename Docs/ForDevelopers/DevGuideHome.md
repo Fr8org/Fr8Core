@@ -8,3 +8,4 @@ Development Guides
 
 * [Manifest Development Guide](/Docs/ForDevelopers/DevelopmentGuides/ManifestDevelopmentGuide.md)
 * [SDK Development Guide](/Docs/ForDevelopers/DevelopmentGuides/SDKDevelopmentGuide.md)
+* [Deployment on the local PC](/Docs/ForDevelopers/DeployingFr8Locally.md)
