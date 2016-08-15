@@ -23,7 +23,8 @@
         var windowHeight = $(window).height(),
             headerHeight = $('header#site-header .navbar').innerHeight(),
             footerHeight = $('#site-footer').outerHeight(),
-            contentInnerHeight = $(".inner-wrap.centered").height();
+            contentInnerHeight = $(".inner-wrap.centered").height(),
+            searchBarHeight = $('.search-bar-container').height();
 
         // Helps the background setting for footer
         $("section.full-height-block").css({

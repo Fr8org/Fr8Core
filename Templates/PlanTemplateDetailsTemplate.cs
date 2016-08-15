@@ -209,14 +209,7 @@ namespace HubWeb.Templates
                     <!-- SEARCH RESULTS-->
                     <div class=""result-container"">
                         <div class=""item"">
-                            <a href=""");
-            
-            #line 95 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(planCreateUrl));
-            
-            #line default
-            #line hidden
-            this.Write(@""" style=""text-decoration: none;color: #FFFFFF;"">
+                            <a onClick=""createPlan()"" style=""text-decoration: none;color: #FFFFFF;"">
 							<button class=""btn green create-plan-btn"">Create</button>                            
 							</a>
                             <div class=""info-row first"">
@@ -257,7 +250,16 @@ namespace HubWeb.Templates
             #line default
             #line hidden
             this.Write(" © The Fr8 Company. All Rights Reserved.</p>\r\n        </div>\r\n    </footer>\r\n    " +
-                    "<!-- END FOOTER -->\r\n</body>\r\n");
+                    "<!-- END FOOTER -->\r\n</body>\r\n<script>\r\nvar createPlan = function() {\r\n    $.pos" +
+                    "t(\"");
+            
+            #line 123 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(planCreateUrl));
+            
+            #line default
+            #line hidden
+            this.Write("\", function(data) {\r\n        window.open(data.redirectUrl, \"_blank\");\r\n    });\r\n}" +
+                    "\r\n</script>");
             return this.GenerationEnvironment.ToString();
         }
         
