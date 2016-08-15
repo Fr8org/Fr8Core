@@ -11,6 +11,8 @@ namespace Hub.Interfaces
 
         PageDefinitionDO Get(int id);
 
+        PageDefinitionDO Get(IEnumerable<string> tags);
+
         IList<PageDefinitionDO> Get(Expression<Func<PageDefinitionDO, bool>> filter);
 
         void CreateOrUpdate(PageDefinitionDO pageDefinitionDO);
