@@ -248,6 +248,12 @@ namespace Hub.Services
 
             if (existentTerminal == null)
             {
+                if (string.IsNullOrWhiteSpace(terminal.Endpoint))
+                {
+                    Logger.Warn("No endpoint was specified for discovery request");
+                    return false;
+                }
+
                 Logger.Info($"Discovering of  terminal at '{terminal.Endpoint}' was requested...");
 
                 existentTerminal = _terminal.GetAll().FirstOrDefault(x => string.Equals(NormalizeUrl(x.Endpoint), NormalizeUrl(terminal.Endpoint), StringComparison.OrdinalIgnoreCase));
@@ -334,6 +340,7 @@ namespace Hub.Services
                 }
                 else
                 {
+                    terminalDo.Secret = secret;
                     terminalDo.OperationalState = OperationalState.Active;
                     terminalDo.AuthenticationType = terminalRegistrationInfo.Definition.AuthenticationType;
                     terminalDo.Description = terminalRegistrationInfo.Definition.Description;

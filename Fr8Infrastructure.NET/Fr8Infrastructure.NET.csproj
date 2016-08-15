@@ -279,6 +279,7 @@
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v3.cs" />
+    <Compile Include="Data\Manifests\AtlassianIssueEventCM.cs" />
     <Compile Include="Data\Manifests\InstagramUserEventCM.cs" />
     <Compile Include="Data\Manifests\FacebookUserEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEventCM.cs" />
@@ -330,6 +331,7 @@
     <Compile Include="Data\States\TerminalStatus.cs" />
     <Compile Include="Documentation\Swagger\SampleData\DetailedMessageSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ErrorSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\Fr8DataSampleFactory.cs" />
     <Compile Include="Exceptions\MissingObjectException.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />

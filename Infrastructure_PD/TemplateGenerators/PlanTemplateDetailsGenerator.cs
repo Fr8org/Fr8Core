@@ -25,11 +25,12 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
             var pageName = publishPlanTemplateDto.Name + "-" + publishPlanTemplateDto.ParentPlanId + ".html";
             if (publishPlanTemplateDto.Description == null)
                 publishPlanTemplateDto.Description = "";
+
             await _templateGenerator.Generate(new PlanTemplateDetailsTemplate(), pageName, new Dictionary<string, object>
             {
                 ["planTemplate"] = publishPlanTemplateDto,
-                ["planCreateUrl"] = CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                        + "/dashboard/plans/" + publishPlanTemplateDto.ParentPlanId + "/builder?viewMode=plan"
+                ["planCreateUrl"] = CloudConfigurationManager.GetSetting("HubApiUrl") +
+                "plan_templates/createplan/?id=" + publishPlanTemplateDto.ParentPlanId
             });
         }
     }

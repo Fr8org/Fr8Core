@@ -50,8 +50,8 @@ namespace Hub.Services.PlanDirectory
             //);
 
             var activityCategories = _activity.GetAvailableActivityGroups();
-               // await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
-               //uri, headers: headers);
+            // await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
+            //uri, headers: headers);
 
             var activityDict = activityCategories
                 .SelectMany(a => a.Activities)
@@ -89,6 +89,7 @@ namespace Hub.Services.PlanDirectory
             //4. adding tags for webservices
             var usedWebServices = usedActivityTemplates
                 .SelectMany(x => x.Categories)
+                .Where(a => !ActivityCategories.ActivityCategoryIds.Any(b => b == a.Id)) //remove "common" categories
                 .Distinct(ActivityCategoryDTO.NameComparer)
                 .OrderBy(b => b.Name)
                 .ToList();
@@ -117,8 +118,8 @@ namespace Hub.Services.PlanDirectory
         private void CollectActivityTemplateIds(ActivityDTO activity, HashSet<string> ids)
         {
             var at = activity.ActivityTemplate;
-            if (at != null && !string.IsNullOrEmpty(at.Name) 
-                && !string.IsNullOrEmpty(at.Version) 
+            if (at != null && !string.IsNullOrEmpty(at.Name)
+                && !string.IsNullOrEmpty(at.Version)
                 && !string.IsNullOrEmpty(at.TerminalName)
                 && !string.IsNullOrEmpty(at.TerminalVersion))
             {

@@ -31,6 +31,8 @@ module dockyard.controllers {
                 $scope.submit = isValid => {
                     if (isValid) {
                         $scope.processing = true;
+                        $scope.terminal.devUrl = $scope.terminal.endpoint;
+
                         var result = TerminalService.save($scope.terminal);
                         result.$promise
                             .then(terminal => {

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -14,7 +12,15 @@ namespace HubWeb.Filters
         {
             base.OnActionExecuting(filterContext);
 
-            if (filterContext.HttpContext.User.Identity.IsAuthenticated)
+            var claimsIdentity = (ClaimsIdentity)filterContext.HttpContext.User.Identity;
+
+            bool isGuest = false;
+            if (claimsIdentity != null)
+            {
+                isGuest = claimsIdentity.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Guest");
+            }
+
+            if (filterContext.HttpContext.User.Identity.IsAuthenticated && !isGuest)
             {
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
                 {
