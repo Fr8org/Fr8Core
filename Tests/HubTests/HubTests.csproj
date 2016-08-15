@@ -303,6 +303,7 @@
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Integration\ActivityControllerTests.cs" />
     <Compile Include="Fixtures\WebServicesControllerFixtureData.cs" />
+    <Compile Include="Integration\SwaggerTests.cs" />
     <Compile Include="Integration\WebServicesControllerTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
@@ -340,7 +341,7 @@
     <Compile Include="Services\Container\Mocks\SubplanJumperActivityMock.cs" />
     <Compile Include="Services\Container\Mocks\SuspenderActivityMock.cs" />
     <Compile Include="Services\DisableCacheSettings.cs" />
-    <Compile Include="Services\DockyardAccountTest.cs" />
+    <Compile Include="Services\AccountTest.cs" />
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\HMACAuthenticatorTests.cs" />

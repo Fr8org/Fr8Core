@@ -405,7 +405,7 @@ namespace Hub.Services
                 .GetQuery()
                 .Where(x => availableTerminalIds.Contains(x.TerminalId) && x.Categories != null)
                 .SelectMany(x => x.Categories)
-                .Select(x => new { x.ActivityCategory.Id, x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .Select(x => new { x.ActivityCategory.Id, x.ActivityCategory.Name, x.ActivityCategory.IconPath, x.ActivityCategory.Type })
                 .OrderBy(x => x.Name)
                 .Distinct()
                 .ToList();

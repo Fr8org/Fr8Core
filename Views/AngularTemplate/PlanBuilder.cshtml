@@ -21,13 +21,11 @@
                         <div ng-if="mode !== 'solution' || $index === 0">
                             <div ng-show="group.arrowOffsetLeft != 0" class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
                             <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
-                                <div ng-repeat="envelope in group.envelopes track by $index">
+                                <div ng-repeat="envelope in group.envelopes track by $index" dnd-draggable="envelope.activity.id" dnd-disable-if="current.planState=='Executing'">
                                     <div class="action" ng-class="{'solution-action': envelope.activityTemplate.category === 'Solution' && mode !== 'solution'}"
                                          layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
                                         <div class="ap-resize" activity-resize min-width="{{envelope.activityTemplate.minPaneWidth}}">
-                                            <activity-header dnd-draggable="envelope.activity.id"
-                                                             dnd-disable-if="current.planState=='Executing'"
-                                                             envelope="envelope"
+                                            <activity-header envelope="envelope"
                                                              re-configure-action="reConfigureAction"
                                                              delete-action="deleteAction"
                                                              choose-auth-token="chooseAuthToken">
@@ -36,6 +34,7 @@
                                                                    current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
                                         </div>
                                     </div>
+                                    <!-- Direction Arrows-->
                                     <div class="jumptarget-wrapper jumptarget" ng-if="envelope.jumpTargets.length > 0">
                                         <div class="action-arrow-right action-arrow-right-jumptarget"> </div>
                                         <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
@@ -45,6 +44,7 @@
                                     </div>
                                     <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
                                     <div ng-if="!envelope.allowsSiblings && (!envelope.jumpTargets || envelope.jumpTargets.length < 1)" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
+                                    <!-- Add Activity Button-->
                                     <action-picker ng-if="$last" plan-state="{{current.plan.planState}}"></action-picker>
                                 </div>
                                 <action-picker ng-if="group.envelopes.length < 1" plan-state="{{current.plan.planState}}"></action-picker>

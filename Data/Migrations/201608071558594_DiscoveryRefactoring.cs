@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class DiscoveryRefactoring : DbMigration
+    public partial class DiscoveryRefactoring : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
@@ -27,7 +27,6 @@ namespace Data.Migrations
             CreateIndex("dbo.Terminals", "ParticipationState");
             AddForeignKey("dbo.Terminals", "ParticipationState", "dbo._ParticipationStateTemplate", "Id", cascadeDelete: true);
             DropTable("dbo.TerminalRegistration");
-            Sql("UPDATE Terminals SET IsFr8OwnTerminal = 1 WHERE [Endpoint] LIKE '%localhost:%' OR [Endpoint] LIKE '%fr8.co:%'"); 
             Sql("UPDATE Terminals SET DevUrl = [Endpoint] WHERE [Endpoint] LIKE '%localhost%'"); // for local env
             Sql("UPDATE Terminals SET DevUrl = [Endpoint] WHERE [Endpoint] LIKE '%dev-terminals.fr8.co%'"); // for dev env
             Sql(@"
@@ -52,10 +51,10 @@ namespace Data.Migrations
                 UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:39555' WHERE [Endpoint] LIKE '%terminalYammer.fr8.co%'
                 UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:10109' WHERE [Endpoint] LIKE '%terminalInstagram.fr8.co%'
                 UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:54642' WHERE [Endpoint] LIKE '%terminalBox.fr8.co%'
-                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:48675' WHERE [Endpoint] LIKE '%terminalStatX.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:    ' WHERE [Endpoint] LIKE '%terminalStatX.fr8.co%'
                 SET NOCOUNT OFF
             "); // for Prod
-
+            Sql("UPDATE Terminals SET IsFr8OwnTerminal = 1 WHERE [DevUrl] LIKE '%localhost:%' OR [ProdUrl] LIKE '%fr8.co:%'");
             AlterColumn("dbo.Terminals", "Name", c => c.String());
             AlterColumn("dbo.Terminals", "Version", c => c.String());
             AlterColumn("dbo.Terminals", "Label", c => c.String());

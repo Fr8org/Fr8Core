@@ -801,6 +801,22 @@
     <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
       <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608092230355_OperationalState1.cs" />
+    <Compile Include="Migrations\201608092230355_OperationalState1.Designer.cs">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.cs" />
+    <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
+      <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.cs" />
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.Designer.cs">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.cs" />
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.Designer.cs">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -910,6 +926,7 @@
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
+    <Compile Include="States\OperationalState.cs" />
     <Compile Include="States\ParticipationState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
@@ -937,7 +954,7 @@
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\ITerminalDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
-    <Compile Include="Migrations\DockyardDbMigration.cs" />
+    <Compile Include="Migrations\DbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
@@ -955,6 +972,7 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_OperationalStateTemplate.cs" />
     <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
@@ -1473,6 +1491,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
       <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608092230355_OperationalState1.resx">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
+      <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608121505031_RemoveInactualAdminUsers.resx">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608130142161_AddTypeToActivityCategory.resx">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

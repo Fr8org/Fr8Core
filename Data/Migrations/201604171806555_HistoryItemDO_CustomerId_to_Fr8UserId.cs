@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class HistoryItemDO_CustomerId_to_Fr8UserId : DbMigration
+    public partial class HistoryItemDO_CustomerId_to_Fr8UserId : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

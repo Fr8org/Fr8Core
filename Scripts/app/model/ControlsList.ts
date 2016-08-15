@@ -34,7 +34,7 @@
     }
 
     export class Button extends ControlDefinitionDTO {
-        checked: boolean;
+        clicked: boolean;
 
         constructor(label: string) {
             super();

@@ -10,6 +10,7 @@ using Hub.Exceptions;
 using Hub.Managers;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
@@ -24,21 +25,10 @@ namespace HubWeb.ExceptionHandling
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            //if (context.Exception is TaskCanceledException)
-            //{
-            //    // TaskCanceledException is an exception representing a successful task cancellation 
-            //    // Don't need to log it
-            //    // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
-            //    return;
-            //}
-
             ErrorDTO errorDto;
-
             // Collect error messages of all inner exceptions
-
             var alertManager = ObjectFactory.GetInstance<EventReporter>();
             var ex = context.Exception;
-
             //Post exception information to AppInsights
             Dictionary<string, string> properties = new Dictionary<string, string>();
             foreach (KeyValuePair<string, object> arg in context.ActionContext.ActionArguments)
@@ -47,25 +37,30 @@ namespace HubWeb.ExceptionHandling
             }
             new TelemetryClient().TrackException(ex, properties);
 
-            alertManager.UnhandledErrorCaught(
-                String.Format("Unhandled exception has occurred.\r\nError message: {0}\r\nCall stack:\r\n{1}",
-                ex.GetFullExceptionMessage(),
-                ex.StackTrace));
+            alertManager.UnhandledErrorCaught($"Unhandled exception has occurred.\r\nError message: {ex.GetFullExceptionMessage()}\r\nCall stack:\r\n{ex.StackTrace}");
 
-            if (ex.GetType() == typeof (HttpException))
+            if (ex.GetType() == typeof(HttpException))
             {
                 var httpException = (HttpException) ex;
                 context.Response = new HttpResponseMessage((HttpStatusCode) httpException.GetHttpCode());
-
-                context.Response = context.Request.CreateResponse(HttpStatusCode.Forbidden,
-                    ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
+                context.Response = context.Request.CreateResponse(HttpStatusCode.Forbidden, ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
                 return;
             }
-            else
+            if (ex.GetType() == typeof(MissingObjectException))
             {
-                context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                var missingObjectEx = (MissingObjectException) ex;
+                context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest, ErrorDTO.InternalError(
+                    missingObjectEx.Message,
+                    "MISSING_OBJECT"));
+                return;
             }
-            
+            if (ex.GetType() == typeof(WrongAuthenticationTypeException))
+            {
+                context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest,ErrorDTO.AuthenticationError("Terminal doesn't require authentication"));
+                return;
+            }
+            context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
             if (ex is AuthenticationExeception)
             {
                 errorDto = ErrorDTO.AuthenticationError();

@@ -30,6 +30,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("iconPath")]
         public string IconPath { get; set; }
 
+        [JsonProperty("type")]
+        public string Type { get; set; }
 
         private sealed class NameEqualityComparer : IEqualityComparer<ActivityCategoryDTO>
         {

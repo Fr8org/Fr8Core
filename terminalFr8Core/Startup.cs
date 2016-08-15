@@ -51,7 +51,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Add_Payload_Manually_v1>(Add_Payload_Manually_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<App_Builder_v1>(App_Builder_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Build_Message_v1>(Build_Message_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Build_Query_v1>(Build_Query_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Build_Query_v1>(Build_Query_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Connect_To_Sql_v1>(Connect_To_Sql_v1.ActivityTemplateDTO);
             //ActivityStore.RegisterActivity<Convert_Related_Fields_Into_Table_v1>(Convert_Related_Fields_Into_Table_v1.ActivityTemplateDTO); FR-4669
             ActivityStore.RegisterActivity<Execute_Sql_v1>(Execute_Sql_v1.ActivityTemplateDTO);

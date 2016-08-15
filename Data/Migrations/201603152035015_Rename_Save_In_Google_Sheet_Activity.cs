@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Rename_Save_In_Google_Sheet_Activity : DbMigration
+    public partial class Rename_Save_In_Google_Sheet_Activity : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

@@ -78,7 +78,15 @@ namespace terminalDropbox.Actions
             var fileList = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileList
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+            var file = await _dropboxService.GetFile(AuthorizationToken,"/" + ActivityUI.Controls.Where(s => s.Label == "Select a file").FirstOrDefault().Value);
+
+            CrateSignaller.MarkAvailableAtDesignTime<Manifest>("Dropbox File Crate Label").AddField("Dropbox selected file");
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("Dropbox selected file");
+            Storage.ReplaceByLabel(Crate<StandardFileDescriptionCM>.FromContent("Dropbox selected file", file));
+            
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel).AddFields(fileList.Select(f=>Path.GetFileName(f)).ToArray());
             Storage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
         }
 
@@ -87,9 +95,16 @@ namespace terminalDropbox.Actions
         public override async Task Run()
         {
             IList<string> fileNames;
+            StandardFileDescriptionCM file;
+            var selectedFileName = ActivityUI.Controls.Where(s => s.Label == "Select a file").FirstOrDefault().Value;
             try
             {
                 fileNames = await _dropboxService.GetFileList(AuthorizationToken);
+                if (!string.IsNullOrEmpty(selectedFileName))
+                {
+                    file = await _dropboxService.GetFile(AuthorizationToken, "/" + selectedFileName);
+                    Payload.Add(Crate<StandardFileDescriptionCM>.FromContent("Dropbox selected file", file));
+                }
             }
             catch (Dropbox.Api.AuthException)
             {

@@ -5,8 +5,8 @@
             <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': descriptionEditing}">
                 <h4>
                     <b>Description:  </b>
-                    <div class="route-name" ng-click="descriptionEditing = !descriptionEditing">{{current.description}}</div>
-                    <input style="width:initial" class="design-header-title-editField" type="text" ng-model="current.description" ng-blur="onTitleChange()" input-focus="descriptionEditing" />
+                    <div class="route-name" ng-click="descriptionEditing = !descriptionEditing">{{current.plan.description}}</div>
+                    <input style="width:initial" class="design-header-title-editField" type="text" ng-model="current.plan.description" ng-blur="onTitleChange()" input-focus="descriptionEditing" />
                 </h4>
             </div>
             <md-button class="md-icon-button" ng-click="descriptionEditing = !descriptionEditing" style="margin-top: 8px">

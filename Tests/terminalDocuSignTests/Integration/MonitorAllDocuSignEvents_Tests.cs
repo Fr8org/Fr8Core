@@ -15,6 +15,8 @@ using AutoMapper;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Models;
+using System.Configuration;
+using Data.Repositories.MultiTenant.Queryable;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -23,17 +25,42 @@ namespace terminalDocuSignTests.Integration
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
-        private const string UserAccountName = "integration_test_runner@fr8.company";
+        private string UserAccountName
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["TestUserAccountName"];
+            }
+        }
+        private string ToEmail // "freight.testing@gmail.com";
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["MADSETestEmail"];
+            }
+        }
+
+        private string DocuSignEmail // "freight.testing@gmail.com";
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["MADSETestEmail"];
+            }
+        }
+
+        private string DocuSignApiPassword
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["DocuSignApiPassword"];
+            }
+        }
 
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
         private const int MadseCreationPeriod = 30000;
 
         private const string templateId = "b0c8eb61-ff16-410d-be0b-6a2feec57f4c"; // "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
-
-        private const string ToEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
-        private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
-        private const string DocuSignApiPassword = "I6HmXEbCxN";
 
         private string ConnectName = "madse-connect";
         private string publishUrl;
@@ -46,7 +73,7 @@ namespace terminalDocuSignTests.Integration
 
         /*protected override string TestUserPassword
         {
-            get { return "123qwe"; }
+            get { return ConfigurationManager.AppSettings["DefaultUserPassword"]; }
         }*/
 
 
@@ -84,9 +111,9 @@ namespace terminalDocuSignTests.Integration
 
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
-                var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
-                    .Count();
+                var mtDataCountBefore = MtQueryableExtensions.Count(unitOfWork.MultiTenantObjectRepository
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id))
+                    ;
 
                 //Set up DS
                 var token = await Authenticate();
@@ -109,8 +136,8 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
-                    mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
+                    mtDataCountAfter = MtQueryableExtensions.Count(unitOfWork.MultiTenantObjectRepository
+    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id));
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
