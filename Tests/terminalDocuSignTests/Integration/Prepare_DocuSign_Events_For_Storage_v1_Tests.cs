@@ -24,7 +24,7 @@ namespace terminalDocuSignTests.Integration
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
 
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count());
