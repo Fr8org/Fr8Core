@@ -42,6 +42,9 @@ Step 4: Build and Run Fr8
 
 If you're running in Debug mode, the Administration Wizard should appear in a web page, allowing you to configure an admin account.  Some less-critical services won't work at this point unless you do additional configuration. That's discussed [here](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfiguringHubAdvanced.md).
 
+Step 5: [Run the Configuration Wizard](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfigurationWizard.md)
+======================
+
 ------------------
 Next: Try building a [Terminal Project](./TerminalProjects.md)
 

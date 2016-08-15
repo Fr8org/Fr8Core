@@ -1,7 +1,7 @@
 #TextBlock Control
 
 ##Example Control Payload
-```javascript
+```json
 {
       "type": "TextBlock",      
       "class": "well well-lg",

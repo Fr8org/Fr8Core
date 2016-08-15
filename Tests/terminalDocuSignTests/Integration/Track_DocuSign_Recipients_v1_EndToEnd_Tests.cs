@@ -234,7 +234,7 @@ namespace terminalDocuSignTests.Integration
 
             var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>($"{baseUrl}/activity_templates");
             var templates = activityTemplates.SelectMany(x => x.Activities);
-            var selectedActivityName = templates.Single(x => x.Id == Guid.Parse(notificationHandler.Value));
+            var selectedActivityName = templates.First(x => x.Id == Guid.Parse(notificationHandler.Value));
             Assert.True(emailActivity.ActivityTemplate.Name == selectedActivityName.Name);
 
             //let's configure email settings
