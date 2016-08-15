@@ -197,3 +197,64 @@ header#site-header:after {
     right: 10px;
     top: 10px;
 }
+
+
+/* Category container */
+.web-services-container {
+    text-align: left;
+    overflow-y: auto;
+    max-height: 250px;
+}
+
+.web-services-container .item {
+    position: relative;
+    display: inline-block;
+    margin: 5px 5px 5px 5px;
+    cursor: pointer;
+    text-align: center;
+    max-width: 94px;
+    overflow: hidden;
+    padding: 15px 15px 10px 15px;
+}
+
+.web-services-container .item i {
+    color: #428bca;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+}
+
+.web-services-container .item.selected {
+    background-color: rgba(30, 70, 140, 0.05);
+}
+
+.web-services-container .item .icon img {
+    width: 64px;
+    height: 64px;
+    outline: none;
+}
+
+.web-services-container .item .label {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    outline: none;
+    color: #697882;
+    margin-top: 5px;
+    white-space: normal;
+    height: 18px;
+    max-width: 64px;
+}
+
+/* Category summary */
+.web-service-summary {
+    text-align: left;
+    cursor: pointer;
+    background-color: rgba(30, 70, 140, 0.1);
+    padding: 15px 15px 5px 15px;
+}
+
+.web-service-summary .summary-header {
+    font-weight: bold;
+    font-size: 1.2em;
+}
