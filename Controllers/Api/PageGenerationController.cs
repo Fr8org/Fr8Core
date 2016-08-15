@@ -42,12 +42,7 @@ namespace HubWeb.Controllers.Api
         [DockyardAuthorize(Roles = Roles.Admin)]
         public async Task<IHttpActionResult> GeneratePages()
         {
-            //_planTemplateDetailsGenerator.Generate();
-
-            var count = 
-            
-
-            // here will be logic for check templates
+            var count = await _pagesCheckUtility.CheckPlanTempletesPages();
 
             return Ok($"it works. Number of templates {count}");
         }

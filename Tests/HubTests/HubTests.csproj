@@ -353,6 +353,7 @@
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DateUtilityTests.cs" />
     <Compile Include="ConfigurationOverride.cs" />
+    <Compile Include="Utilities\PagesCheckUtilityTests.cs" />
     <Compile Include="Utilization\ActivityExecutionRateLimiterIntTests.cs" />
     <Compile Include="Utilization\ActivityExecutionRateLimiterTests.cs" />
     <Compile Include="Utilization\ManualyTriggeredTimer.cs" />

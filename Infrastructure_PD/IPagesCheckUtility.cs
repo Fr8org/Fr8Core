@@ -16,7 +16,7 @@ namespace HubWeb.Infrastructure_PD
         /// Check whether static pages exist for all plan templates in directory search index, create that ones which are not exist, and deletes that ones which are not in search index.
         /// </summary>
         /// <returns>Number of generated pages</returns>
-        Task<int> CheckPlanTempletesPages();
+        Task<long> CheckPlanTempletesPages();
 
     }
 }
