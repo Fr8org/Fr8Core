@@ -24,7 +24,12 @@ namespace Hub.Services
         /// <remarks>WARNING: THIS METHOD IS NOT TRANSACTIONAL. It is possible to successfuly save to the remote store and then have the FileDO update fail.</remarks>
         public void Store(IUnitOfWork uow, FileDO curFileDO, Stream curFile, string curFileName)
         {
-            string remoteFileUrl = _cloudFileManager.SaveRemoteFile(curFile, curFileName);
+            var existingFile = FilesList(curFileDO.DockyardAccountID).FirstOrDefault(x => x.OriginalFileName == curFileName);
+            if (existingFile != null)
+            {
+                Delete(existingFile);
+            }
+            var remoteFileUrl = _cloudFileManager.SaveRemoteFile(curFile, curFileName);
 
             curFileDO.CloudStorageUrl = remoteFileUrl;
             curFileDO.OriginalFileName = curFileName;
