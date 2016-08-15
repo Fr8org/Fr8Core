@@ -748,7 +748,9 @@
     <Content Include="Scripts\tests\e2e\authorizationPathways\salesforce.spec.js" />
     <Content Include="Scripts\tests\e2e\authorizationPathways\slack.spec.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
+    <Content Include="Scripts\tests\e2e\contact\contact.spec.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
+    <Content Include="Scripts\tests\e2e\pages\contact.page.js" />
     <Content Include="Scripts\tests\e2e\pages\myAccount.page.js" />
     <Content Include="Scripts\tests\e2e\pages\plans.page.js" />
     <Content Include="Scripts\tests\e2e\registration\registration.spec.js" />
