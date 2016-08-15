@@ -124,7 +124,7 @@ namespace Hub.Services
 
         }
 
-        public int UserPlansCount(IUnitOfWork uow,string userId)
+        public int UserPlansCount(IUnitOfWork uow, string userId)
         {
             return uow.PlanRepository.GetPlanQueryUncached().Where(p => p.Fr8AccountId == userId && p.Visibility == PlanVisibility.Standard).Count();
         }
@@ -393,6 +393,14 @@ namespace Hub.Services
                 {
                     deactivateTasks.Add(_activity.Deactivate(activity));
                 }
+
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.ExecutionStopped,
+                    Subject = "Plan Stopped",
+                    Message = $"\"{plan.Name}\" has been stopped.",
+                    Collapsed = false
+                }, plan.Fr8AccountId);
             }
 
             try
@@ -578,7 +586,7 @@ namespace Hub.Services
             await _containerService.Run(uow, container);
 
             // Publishing message to indicate monitoring continues
-            if ( IsMonitoringPlan(uow, plan) )
+            if (IsMonitoringPlan(uow, plan))
             {
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
@@ -616,7 +624,7 @@ namespace Hub.Services
 
                         if (activity != null)
                         {
-                            
+
                             var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate?.Name : activity.Label;
                             if (label == null)
                             {
@@ -1001,7 +1009,7 @@ namespace Hub.Services
             }, plan.Fr8AccountId);
 
             //Sending an Email
-            
+
             var account = uow.UserRepository.GetQuery().FirstOrDefault(a => a.Id == plan.Fr8AccountId);
             try
             {

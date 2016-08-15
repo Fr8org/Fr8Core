@@ -99,10 +99,10 @@ namespace HubWeb
 
             await GenerateManifestPages();
 
-            EnsureMThasAType();
+            EnsureMThasaDocuSignRecipientCMTypeStored();
         }
 
-        private void EnsureMThasAType()
+        private void EnsureMThasaDocuSignRecipientCMTypeStored()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
             {
