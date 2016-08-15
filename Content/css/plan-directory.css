@@ -203,6 +203,7 @@ header#site-header:after {
 .web-services-container {
     text-align: left;
     overflow-y: auto;
+    max-height: 250px;
 }
 
 .web-services-container .item {
