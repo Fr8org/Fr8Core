@@ -10,6 +10,75 @@ namespace Fr8.Infrastructure.Data.Helpers
 {
     public class Fr8ReflectionHelper
     {
+        public enum PropertiesVisitorOp
+        {
+            Continue,
+            Terminate,
+            SkipBranch
+        }
+
+        public static void VisitPropertiesRecursive(object obj, Func<object, IMemberAccessor, PropertiesVisitorOp> visitor)
+        {
+            VisitPropertiesRecursive(obj, visitor, new HashSet<object>());
+        }
+
+        private static bool VisitPropertiesRecursive(object obj, Func<object, IMemberAccessor, PropertiesVisitorOp> visitor, HashSet<object> visited)
+        {
+            if (obj == null || !visited.Add(obj))
+            {
+                return true;
+            }
+
+            var list = obj as IEnumerable;
+
+            if (list != null)
+            {
+                int id = -1;
+                foreach (var element in list)
+                {
+                    id ++;
+                    switch (visitor(element, new IndexerMemeberAccessor(element?.GetType(), id, element)))
+                    {
+                        case PropertiesVisitorOp.Terminate:
+                            return false;
+
+                        case PropertiesVisitorOp.SkipBranch:
+                            continue;
+                    }
+
+                    if (!VisitPropertiesRecursive(element, visitor, visited))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            var type = obj.GetType();
+            var members = GetMembers(type);
+
+            foreach (var memberAccessor in members)
+            {
+                switch (visitor(obj, memberAccessor))
+                {
+                    case PropertiesVisitorOp.Terminate:
+                        return false;
+
+                    case PropertiesVisitorOp.SkipBranch:
+                        continue;
+                }
+
+                if (memberAccessor.CanRead)
+                {
+                    VisitPropertiesRecursive(memberAccessor.GetValue(obj), visitor, visited);
+                }
+            }
+
+            return true;
+        }
+
+
         public static IEnumerable<KeyValueDTO> FindFieldsRecursive(object obj)
         {
             var result = new List<KeyValueDTO>();
@@ -72,8 +141,7 @@ namespace Fr8.Infrastructure.Data.Helpers
             return result;
         }
 
-        public static bool CheckAttributeOrTrue<T>(IMemberAccessor memberAccessor, Predicate<T> predicate)
-            where T : Attribute
+        public static bool CheckAttributeOrTrue<T>(IMemberAccessor memberAccessor, Predicate<T> predicate) where T : Attribute
         {
             var attribute = memberAccessor.GetCustomAttribute<T>();
 
@@ -99,7 +167,7 @@ namespace Fr8.Infrastructure.Data.Helpers
 
             if (obj is IEnumerable)
             {
-                return ((IEnumerable)obj).OfType<Object>().ToArray();
+                return ((IEnumerable) obj).OfType<Object>().ToArray();
             }
 
             var objType = obj.GetType();
@@ -124,18 +192,12 @@ namespace Fr8.Infrastructure.Data.Helpers
 
         public static IEnumerable<IMemberAccessor> GetMembers(Type type)
         {
-            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters().Length == 0).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
-                       .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters().Length == 0).Select(x => (IMemberAccessor) new PropertyMemberAccessor(x)).Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor) new FieldMemberAccessor(x)));
         }
 
         public static bool IsPrimitiveType(Type type)
         {
-            return type.IsPrimitive
-                   || type.IsValueType
-                   || type == typeof(string)
-                   || type == typeof(Guid)
-                   || type == typeof(DateTime)
-                   || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
+            return type.IsPrimitive || type.IsValueType || type == typeof(string) || type == typeof(Guid) || type == typeof(DateTime) || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
         }
 
         public static bool CheckIfMemberIsCollectionOf<TItem>(IMemberAccessor member)

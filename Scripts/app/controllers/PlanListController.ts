@@ -28,6 +28,13 @@ module dockyard.controllers {
         inActiveQuery: model.PlanQueryDTO;
         inActivePromise: ng.IPromise<model.PlanResultDTO>;
         inActivePlans: model.PlanResultDTO;
+
+        executingQuery: model.PlanQueryDTO;
+        executingPromise: ng.IPromise<model.PlanResultDTO>;
+        executingPlans: model.PlanResultDTO;
+        getExecutingPlans: () => void;
+
+        activeOrExecutingPlans: (plans: model.PlanDTO) => boolean;
         getInactivePlans: () => void;
         removeInactiveFilter: () => void;
 
@@ -37,6 +44,7 @@ module dockyard.controllers {
         activePlans: model.PlanResultDTO;
         getActivePlans: () => void;
         removeActiveFilter: () => void;
+
     }
 
     /*
@@ -86,16 +94,22 @@ module dockyard.controllers {
             };
 
             $scope.inActiveQuery = new model.PlanQueryDTO();
-            $scope.inActiveQuery.status = 1;
+            $scope.inActiveQuery.status = model.PlanState.Inactive;
             $scope.inActiveQuery.planPerPage = 10;
             $scope.inActiveQuery.page = 1;
             $scope.inActiveQuery.orderBy = "-lastUpdated";
 
             $scope.activeQuery = new model.PlanQueryDTO();
-            $scope.activeQuery.status = 2;
+            $scope.activeQuery.status = model.PlanState.Active;
             $scope.activeQuery.planPerPage = 10;
             $scope.activeQuery.page = 1;
             $scope.activeQuery.orderBy = "-lastUpdated";
+
+            $scope.executingQuery = new model.PlanQueryDTO();
+            $scope.executingQuery.status = model.PlanState.Executing;
+            $scope.executingQuery.planPerPage = 10;
+            $scope.executingQuery.page = 1;
+            $scope.executingQuery.orderBy = "-lastUpdated";
 
             $scope.Query = new model.PlanQueryDTO();
             $scope.Query.planPerPage = 20;
@@ -112,13 +126,11 @@ module dockyard.controllers {
             $scope.updatePlansLastUpdated = <(id: any, date: any) => void>angular.bind(this, this.updatePlanLastUpdated);
             $scope.getInactivePlans = <() => void>angular.bind(this, this.getInactivePlans);
             $scope.getActivePlans = <() => void>angular.bind(this, this.getActivePlans);
+            $scope.getExecutingPlans = <() => void>angular.bind(this, this.getExecutingPlans);
             $scope.removeInactiveFilter = <() => void>angular.bind(this, this.removeInactiveFilter);
             $scope.removeActiveFilter = <() => void>angular.bind(this, this.removeActiveFilter);
 
-
             $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
-                console.log(oldValue);
-                console.log(newValue);
                 var bookmark: number = 1;
                 if (!oldValue) {
                     bookmark = $scope.inActiveQuery.page;
@@ -129,22 +141,24 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.inActiveQuery.page = bookmark;
                 }
-                if (!!newValue && !!oldValue) {
-                    this.getInactivePlans();
-                }
+                this.getInactivePlans();
             });
+
+            $scope.activeOrExecutingPlans = function (plan: model.PlanDTO) {
+                return plan.planState === model.PlanState.Active || plan.planState === model.PlanState.Executing; 
+            }
 
             $scope.addPlan = function () {
                var plan = new dockyard.model.PlanDTO();
                plan.planState = dockyard.model.PlanState.Inactive;
-               plan.visibility = dockyard.model.PlanVisibility.Standard;
+               plan.visibility = { hidden: false, public: false };
+               //plan.visibility = dockyard.model.PlanVisibility.Standard;
                var result = PlanService.save(plan);
 
-                    result.$promise
-                        .then(() => {
-                            $state.go('plan', { id: result.plan.id });
-                            //window.location.href = 'plans/' + result.plan.id + '/builder';
-                        });
+               result.$promise.then(() => {
+                    $state.go('plan', { id: result.id });
+                    //window.location.href = 'plans/' + result.plan.id + '/builder';
+               });
 
             };
 
@@ -159,13 +173,11 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.activeQuery.page = bookmark;
                 }
-                if (!!newValue && !!oldValue) {
-                    this.getActivePlans();
-                }
+                this.getActivePlans();
             });      
 
             UserService.getCurrentUser().$promise.then(data => {
-                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.ActivityStream], (data: any) => {
+                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericInfo], (data: any) => {
                     this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
 
@@ -196,14 +208,14 @@ module dockyard.controllers {
                     this.$scope.activePlans.plans = [];
                     this.$scope.activePlans.totalPlanCount = 0;
                     data.plans.map(
-                        plan => {                          
-                            if (plan.planState === 1) {
+                        plan => {
+                            if (plan.planState === model.PlanState.Inactive) {
                                 this.$scope.inActivePlans.plans.push(plan);
                                 this.$scope.inActivePlans.totalPlanCount++;
-                            } else if (plan.planState === 2){
+                            } else if (plan.planState === model.PlanState.Active || plan.planState === model.PlanState.Executing) {
                                 this.$scope.activePlans.plans.push(plan);
                                 this.$scope.activePlans.totalPlanCount++;
-                            }
+                            } 
                         }
                     );
                 });
@@ -220,13 +232,20 @@ module dockyard.controllers {
             this.$scope.activePromise = this.PlanService.getByQuery(this.$scope.activeQuery).$promise;
             this.$scope.activePromise.then((data: model.PlanResultDTO) => {
                 this.$scope.activePlans = data;
-                                     });
+            });
+        }
+
+        private getExecutingPlans() {
+            this.$scope.executingPromise = this.PlanService.getByQuery(this.$scope.executingQuery).$promise;
+            this.$scope.executingPromise.then((data: model.PlanResultDTO) => {
+                this.$scope.activePlans.plans.concat(data.plans);
+                this.$scope.activePlans.totalPlanCount += data.totalPlanCount;
+            });
         }
 
         private reArrangePlans(plan) {
-            
             var planIndex = null;
-            if (plan.planState === 1) {
+            if (plan.planState === model.PlanState.Inactive) {
                 planIndex = this.$scope.activePlans.plans.map(function (r) { return r.id }).indexOf(plan.id);
                 if (planIndex > -1) {
                     this.$scope.inActivePlans.plans.push(plan);
@@ -242,8 +261,9 @@ module dockyard.controllers {
                     this.$scope.inActivePlans.plans.splice(planIndex, 1);
                     --this.$scope.inActivePlans.totalPlanCount;
                 }
-            }
-            if (this.$scope.activePlans.plans.length == 0 && this.$scope.inActivePlans.plans.length > 0) {
+            } 
+
+            if ((this.$scope.activePlans.plans.length == 0) && this.$scope.inActivePlans.plans.length > 0) {
                 this.$rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
             }
             if (this.$scope.inActivePlans.plans.length == 0 && this.$scope.activePlans.plans.length > 0) {
@@ -254,6 +274,7 @@ module dockyard.controllers {
         private deactivatePlan(plan) {
             this.PlanService.deactivate({ planId: plan.id }).$promise.then((result) => {
                 this.getActivePlans();
+                this.getExecutingPlans();
                 this.getInactivePlans();
             }, () => {
                 //deactivation failed
@@ -263,19 +284,19 @@ module dockyard.controllers {
         private updatePlanLastUpdated(id, date) {
             for (var i = 0; i < this.$scope.activePlans.plans.length; i++) {
                 if (!this.$scope.activePlans.plans[i].id){
-                                           break;
+                    break;
                 }
                 if (this.$scope.activePlans.plans[i].id === id) {
                     this.$scope.activePlans.plans[i].lastUpdated = date;
-                                           break;
-                                       }
-                             }
-                   }
+                    break;
+                }
+            }
+        }
         private executePlan(plan, $event) {
             // If Plan is inactive, activate it in-order to move under Running section
-            var isInactive = plan.planState === 1;
+            var isInactive = plan.planState === model.PlanState.Inactive;
             if (isInactive) {
-                plan.planState = 2;
+                plan.planState = model.PlanState.Executing;
                 this.reArrangePlans(plan);
             }
             if ($event.ctrlKey) {
@@ -289,21 +310,24 @@ module dockyard.controllers {
                 this.PlanService
                     .runAndProcessClientAction(plan.id)
                     .then((data) => {
-                        if (isInactive && data && data.currentPlanType === 1) {
+                        if (isInactive && data && data.currentPlanType == model.PlanType.RunOnce) {
                             // mark plan as Inactive as it is Run Once and then rearrange
-                            plan.planState = 1;
+                            plan.planState = model.PlanState.Inactive;
                             this.reArrangePlans(plan);
                             this.getInactivePlans();
                             //this.$scope.inActivePlans = this.PlanService.getbystatus({ id: null, status: 1, category: '' });
                         }
+                        if (data.currentPlanType === model.PlanType.OnGoing) {
+                            plan.planState = model.PlanState.Active;
+                        }
                     })
                     .catch((failResponse) => {
                         if (failResponse.data.details === "GuestFail") {
-                            location.href = "DockyardAccount/RegisterGuestUser";
+                            location.href = "Account/RegisterGuestUser";
                         } else {
                             if (isInactive) {
                                 // mark plan as Inactive as it is Run Once and then rearrange
-                                plan.planState = 1;
+                                plan.planState = model.PlanState.Inactive;
                                 this.reArrangePlans(plan);
                                 this.getInactivePlans();
                                 this.goToPlanPage(plan.id);
@@ -343,7 +367,6 @@ module dockyard.controllers {
                                 break;
                             }
                         }
-
                         if (isActive === 2 && self.$scope.activePlans.plans.length < 1) {
                             self.getActivePlans();
                         }

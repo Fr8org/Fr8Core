@@ -11,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
+using Data.States;
 
 namespace HubTests.Services
 {
@@ -19,6 +20,8 @@ namespace HubTests.Services
     public class ActivityTemplateTests : BaseTest
     {
         private IApplicationSettings _originalSettings;
+
+        private readonly Dictionary<int, Guid> _idIndex = new Dictionary<int, Guid>();
 
         [SetUp]
         public override void SetUp()
@@ -33,11 +36,22 @@ namespace HubTests.Services
             CloudConfigurationManager.RegisterApplicationSettings(_originalSettings);
         }
 
+        private Guid GetGuidId(int id)
+        {
+            Guid result;
+            if (!_idIndex.TryGetValue(id, out result))
+            {
+                result = Guid.NewGuid();
+                _idIndex.Add(id, result);
+            }
+
+            return result;
+        }
+
         private static bool AreEqual(ActivityTemplateDO a, ActivityTemplateDO b, bool skipId = false)
         {
             return a.NeedsAuthentication == b.NeedsAuthentication &&
                    a.ActivityTemplateState == b.ActivityTemplateState &&
-                   a.Category == b.Category &&
                    a.Description == b.Description &&
                    (skipId || a.Id == b.Id) &&
                    a.Label == b.Label &&
@@ -48,11 +62,41 @@ namespace HubTests.Services
                    AreEqual(a.Terminal, b.Terminal, skipId) &&
                    a.Type == b.Type &&
                    a.Version == b.Version &&
-                   (skipId || a.WebServiceId == b.WebServiceId) &&
-                   AreEqual(a.WebService, b.WebService, skipId);
+                   AreEqual(a.Categories, b.Categories, skipId);
         }
 
-        private static bool AreEqual(WebServiceDO a, WebServiceDO b, bool skipId = false)
+        private static bool AreEqual(IEnumerable<ActivityCategorySetDO> a, IEnumerable<ActivityCategorySetDO> b, bool skipId = false)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
+            var al = a.ToList();
+            var bl = b.ToList();
+
+            if (al.Count != bl.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < al.Count; ++i)
+            {
+                if (!AreEqual(al[i].ActivityCategory, bl[i].ActivityCategory, skipId))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool AreEqual(ActivityCategoryDO a, ActivityCategoryDO b, bool skipId = false)
         {
             return a.IconPath == b.IconPath &&
                    (skipId || a.Id == b.Id) &&
@@ -78,36 +122,18 @@ namespace HubTests.Services
             Assert.IsNotNull(activityTemplate.Terminal);
             Assert.AreEqual(activityTemplate.Terminal.Id, activityTemplate.TerminalId);
 
-            if (activityTemplate.WebServiceId != null)
-            {
-                Assert.IsNotNull(activityTemplate.WebService);
-                Assert.AreEqual(activityTemplate.WebServiceId.Value, activityTemplate.WebService.Id);
-            }
-            else
-            {
-                Assert.IsNull(activityTemplate.WebService);
-            }
-
             AreEqual(activityTemplate.Terminal, ObjectFactory.GetInstance<ITerminal>().GetByKey(activityTemplate.TerminalId));
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (activityTemplate.WebServiceId != null)
-                {
-                    AreEqual(activityTemplate.WebService, uow.WebServiceRepository.GetByKey(activityTemplate.WebServiceId));
-                }
-            }
         }
 
         public IEnumerable<TerminalDO> GenerateTerminals(int count, string prefix = "")
         {
             for (int id = 1; id <= count; id++)
             {
-                yield return CreateTerminal(id, prefix);
+                yield return CreateTerminal(FixtureData.GetTestGuidById(id), prefix);
             }
         }
 
-        private TerminalDO CreateTerminal(int id, string prefix = "")
+        private TerminalDO CreateTerminal(Guid id, string prefix = "")
         {
             return new TerminalDO
             {
@@ -119,10 +145,12 @@ namespace HubTests.Services
                 Label = prefix + "Label" + id,
                 Version = prefix + "Ver" + id,
                 TerminalStatus = 1,
+                OperationalState = OperationalState.Active,
+                ParticipationState = ParticipationState.Approved
             };
         }
 
-        public IEnumerable<WebServiceDO> GenerateWebServices(int count, string prefix = "")
+        public IEnumerable<ActivityCategoryDO> GenerateWebServices(int count, string prefix = "")
         {
             for (int i = 1; i <= count; i++)
             {
@@ -130,23 +158,22 @@ namespace HubTests.Services
             }
         }
 
-        private WebServiceDO CreateWebService(int id, string prefix = "")
+        private ActivityCategoryDO CreateWebService(int id, string prefix = "")
         {
-            return new WebServiceDO()
+            return new ActivityCategoryDO()
             {
-                Id = id,
+                Id = GetGuidId(id),
                 Name = "name" + id,
                 IconPath = prefix + "iconPath" + id
             };
         }
 
-        private ActivityTemplateDO CreateActivityTemplate(Guid id, TerminalDO terminal, WebServiceDO webService, string prefix = "")
+        private ActivityTemplateDO CreateActivityTemplate(Guid id, TerminalDO terminal, ActivityCategoryDO webService, string prefix = "")
         {
-            return new ActivityTemplateDO
+            var result = new ActivityTemplateDO
             {
                 Id = id,
                 ActivityTemplateState = 1,
-                Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 Description = prefix + "des" + id,
                 Name = "name" + id,
@@ -156,10 +183,19 @@ namespace HubTests.Services
                 TerminalId = terminal.Id,
                 Terminal = terminal,
                 Type = ActivityType.Standard,
-                Version = "1",
-                WebService = webService,
-                WebServiceId = webService?.Id
+                Version = "1"
             };
+
+            result.Categories = new List<ActivityCategorySetDO>()
+            {
+                new ActivityCategorySetDO()
+                {
+                    ActivityCategory = webService,
+                    ActivityTemplate = result
+                }
+            };
+
+            return result;
         }
 
         private void CompareCollections(ActivityTemplateDO[] reference, ActivityTemplateDO[] fact, bool skipIds = false)
@@ -212,12 +248,12 @@ namespace HubTests.Services
                     uow.TerminalRepository.Add(terminal);
                 }
 
-                var webServices = new WebServiceDO[5];
+                var webServices = new ActivityCategoryDO[5];
 
                 for (int i = 1; i <= 5; i++)
                 {
                     webServices[i - 1] = CreateWebService(i);
-                    uow.WebServiceRepository.Add(webServices[i - 1]);
+                    uow.ActivityCategoryRepository.Add(webServices[i - 1]);
                 }
 
                 uow.SaveChanges();
@@ -255,13 +291,12 @@ namespace HubTests.Services
         {
             var template = CreateActivityTemplate(
                 Guid.NewGuid(),
-                CreateTerminal(-234, "new"),
+                CreateTerminal(Guid.Empty, "new"),
                 CreateWebService(234234, "new")
             );
-            template.WebServiceId = -2344;
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
             template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
@@ -272,7 +307,7 @@ namespace HubTests.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                AreEqual(CreateWebService(234234, "new"), uow.WebServiceRepository.GetQuery().First(), true);
+                AreEqual(CreateWebService(234234, "new"), uow.ActivityCategoryRepository.GetQuery().First(), true);
             }
         }
 
@@ -290,13 +325,12 @@ namespace HubTests.Services
         {
             GenerateSeedData();
 
-            var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
+            var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(FixtureData.GetTestGuidById(1)), CreateWebService(234234));
 
-            template.WebServiceId = -2344;
             template.Id  = Guid.NewGuid();
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
             template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();

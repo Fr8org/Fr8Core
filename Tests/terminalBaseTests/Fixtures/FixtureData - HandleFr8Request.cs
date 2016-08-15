@@ -5,21 +5,19 @@ namespace terminalTests.Fixtures
 {
     public class Fixture_HandleRequest
     {
-        public static ActivityTemplateDTO ActivityTemplateTest()
+        public static ActivityTemplateSummaryDTO ActivityTemplateTest()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "terminalActivityMock_TEST",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO ActivityTemplate()
+        public static ActivityTemplateSummaryDTO ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "ExplicitTerminalActivityMock",
                 Version = "1"
             };

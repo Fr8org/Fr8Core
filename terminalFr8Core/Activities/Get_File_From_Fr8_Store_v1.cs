@@ -23,16 +23,14 @@ namespace terminalFr8Core.Actions
             Id = new Guid("82a722b5-40a6-42d7-8296-aa5239f10173"),
             Name = "Get_File_From_Fr8_Store",
             Label = "Get File From Fr8 Store",
-            Category = ActivityCategory.Receivers,
             Version = "1",
             Type = ActivityType.Standard,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

@@ -37,10 +37,10 @@ namespace Fr8.TerminalBase.Services
             _userId = userId;
         }
 
-        public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public async Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/plans/load");
-            return await _restfulServiceClient.PostAsync<JToken, PlanEmptyDTO>(uri, planContents);
+            return await _restfulServiceClient.PostAsync<PlanDTO, PlanNoChildrenDTO>(uri, planContents);
         }
 
         public async Task<PayloadDTO> GetPayload(Guid containerId)
@@ -136,10 +136,10 @@ namespace Fr8.TerminalBase.Services
             return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates.ToList();
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false)
         {
             var allTemplates = await GetActivityTemplates(getLatestsVersionsOnly);
-            var templates = allTemplates.Where(x => x.Category == category);
+            var templates = allTemplates.Where(x => x.Categories.Any(y => y.Id == category));
             return templates.ToList();
         }
 
@@ -230,11 +230,11 @@ namespace Fr8.TerminalBase.Services
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public async Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<PlanEmptyDTO, PlanDTO>(uri, planDTO);
+            return await _restfulServiceClient.PostAsync<PlanNoChildrenDTO, PlanDTO>(uri, planDTO);
         }
 
         public async Task RunPlan(Guid planId, IEnumerable<Crate> payload)
@@ -265,7 +265,7 @@ namespace Fr8.TerminalBase.Services
             return await _restfulServiceClient.GetAsync<PlanDTO>(uri);
         }
 
-        public async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public async Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             var jsonObject = JsonConvert.SerializeObject(plan);
             HttpContent jsonContent = new StringContent(jsonObject, Encoding.UTF8, "application/json");

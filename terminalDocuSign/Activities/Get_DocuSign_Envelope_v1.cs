@@ -23,15 +23,13 @@ namespace terminalDocuSign.Activities
             Version = "1",
             Name = "Get_DocuSign_Envelope",
             Label = "Get DocuSign Envelope",
-            Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -92,7 +90,7 @@ namespace terminalDocuSign.Activities
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
-            string envelopeId = control.GetValue(Payload);
+            string envelopeId = control.TextValue;
 
             if (envelopeId.IsGuid())
             {

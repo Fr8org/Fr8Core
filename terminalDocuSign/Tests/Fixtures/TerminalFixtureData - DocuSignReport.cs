@@ -13,7 +13,6 @@ namespace terminalDocuSign.Tests.Fixtures
                 Name = "Generate_DocuSign_Report",
                 Label = "Generate a DocuSign Report",
                 Version = "1",
-                Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,
                 MinPaneWidth = 550,
                 Tags = "HideChildren",

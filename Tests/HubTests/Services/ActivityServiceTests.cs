@@ -25,6 +25,7 @@ using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
 using Action = Hub.Services.Activity;
 using IContainer = StructureMap.IContainer;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Services
 {
@@ -57,7 +58,7 @@ namespace HubTests.Services
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async Task Activity_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
-            var _service = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>());
+            var _service = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>(), ObjectFactory.GetInstance<IUpstreamDataExtractionService>());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -86,7 +87,7 @@ namespace HubTests.Services
                 uow.SaveChanges();
             }
 
-            IActivity activity = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>());
+            IActivity activity = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>(), ObjectFactory.GetInstance<IUpstreamDataExtractionService>());
 
             //Add
             await activity.SaveOrUpdateActivity(origActivityDO);
@@ -116,7 +117,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -152,7 +153,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -198,7 +199,7 @@ namespace HubTests.Services
                 var plan = new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { tree }
                 };
 
@@ -302,7 +303,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -348,7 +349,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "sdfsdf",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -383,7 +384,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -423,7 +424,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();

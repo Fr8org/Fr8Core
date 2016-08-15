@@ -1,7 +1,14 @@
-#Control Objects
-Some terminal activities require interaction with users at both design-time and runtime. In order to facilitate this interaction, several "control" classes are defined. These classes are serialized to JSON then sent over HTTP as payload data in a [Crate](https://github.com/Fr8org/Fr8Core/tree/master/Docs/ForDevelopers/OperatingConceptsk/Crates.md). In the Plan Builder interface the JSON data is translated by the Hub in to typical HTML elements such as select drop down lists, text fields, and radio buttons.
+#UI Controls
 
-This document outlines the available controls. it is important to note that all controls extend the [ControlDefinitionDTO](../DataTransfer/ControlDefinitinDTO.md) and have access to the properties defined by the parent class, including events.
+Fr8's UI philosophy is that Activity designers should be able to tap a rich set of UI controls for purpose of passing information to users and collecting configuration information from users, but should never have to think about layout or FE issues. So we emulated the basic idea of HTML (declare the UI you want in more-or-less English) and created a mechanism for the settings input by the user to be passed back to the Activity when it needs them. 
+
+Like the rest of Fr8 UI structures are defined in JSON and passed around in [Crates](/Docs/ForDevelopers/OperatingConceptsk/Crates.md). UI Controls Crates are added to the Crate Storage of Activities. The Client parses the data and renders the appropriate structures on screen, and when users type in or select values, those are saved into the same Crates.
+
+In practice, Activity designers aren't expected to want to engage in actual JSON manipulation, so one of the core services provided by the growing set of [Fr8 Platform SDK's](/Docs/ForDevelopers/SDKHome.md) is a set of UI classes that can be used in native code and handle the JSON quietly in the background. 
+
+As a result, the JSON docs here are a useful reference, but you'll want to look at your SDK and at examples of existing Activity code to see the best practices for your particular platform.
+
+Note that all controls extend the [ControlDefinitionDTO](/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitionDTO.md) base set.
 
 ##Controls
 *[BuildMessageAppender](Controls/BuildMessageAppender.md)*
@@ -40,10 +47,6 @@ The DropDownList control generates a select form element.
 
 The Duration control generates a form element which allows a user to select days, hours, and minutes. This element can be used to specify a period of time that can act as a delay.
 
-*[ExternalObjectChooser](Controls/ExternalObjectChooser.md)*
-
-The ExternalObjectChooser control generates a form element which will allow a user to select data from a data structure that is developed and maintained outside the Fr8 ecosystem.
-
 *[FieldList](Controls/FieldList.md)*
 
 The FieldList control generates a form element which displays fields generated from external data.
@@ -56,23 +59,9 @@ The FilePicker control generates a form element for choosing a file from the use
 
 The FilterPane control generates a form for applying conditions which can create a subset of data.
 
-*[Generic](Controls/Generic.md)*
-
-The Gnereic control is a TextBox.
-
-*[ManagerRoute](Controls/ManagerRoute.md)*
-
-*[MappingPane](Controls/MappingPane.md)*
-
-The MappingPane control is a composite control which generates a form with two select dropdown HTML elements. The first select element represents a set of meta data that can be assigned to a set of target metadata in the second select element.
-
 *[QueryBuilder](Controls/QueryBuilder.md)*
 
 The QueryBuilder control is a composite control which generates a form to apply conditional operators to a set of data. The form can have many queries using "and" and "or" operators.
-
-*[Routing](Controls/Routing.md)*
-
-This control is used at design time to specify what should happen if a related filter evaluates True or False. This allows the easy creation of branching logic.
 
 *[RadioButtonGroup](Controls/RadioButtonGroup.md)*
 
@@ -81,10 +70,6 @@ The RadioButtonGroup control is a metadata container control which is designed t
 *[RadioButtonOption](Controls/RadioButtonOption.md)*
 
 The RadioButtonOption control renders an HTML radio button element. This control is generally used in groups and is assigned to a RadioButtonControl object.
-
-*[RunRouteButton](Controls/RunRouteButton.md)*
-
- This control renders "Run now" button. When the button is clicked route is being executed.
 
 *[SelectData](Controls/SelectData.md)*
 
@@ -110,14 +95,6 @@ The TextBoxBig control renders a textarea tag.
 
 The TextSource control renders a text-aource tag.
 
-*[UpstreamCrateChooser](Controls/UpstreamCrateChooser.md)*
-
-The UpstreamCrateChooser is a composite control which allows a user to select a crate from an upstream activity.
-
-*[UpstreamDataChooser](Controls/UpstreamDataChooser.md)*
-
-The UpstreamDataChooser is a composite control which allows a user to select data from a crate from an upstream activity.
-
 *[UpstreamFieldChooser](Controls/UpstreamFieldChooser.md)*
 
 The UpstreamFieldChooser is a composite control which allos a user to select dynamically generated fields
@@ -126,32 +103,25 @@ The UpstreamFieldChooser is a composite control which allos a user to select dyn
 
 ControlType | Name
 :---:|:---:
+BuildMessageAppender | "BuildMessageAppender"
+Button | "Button"
+CheckBox | "CheckBox"
+ContainerTransition | "ContainerTransition"
+ControlList | "ControlList"
+CrateChooser | "CrateChooser"
+DatePicker | "DatePicker"
+DropDownList | "DropDownList"
+Duration | "Duration"
+FieldList | "FieldList"
+FilePicker | "FilePicker"
+FilterPane | "FilterPane"
+QueryBuilder | "QueryBuilder"
+RadioButtonGroup | "RadioButtonGroup"
+SelectData | "SelectData"
+TextArea | "TextArea"
+TextBlock | "TextBlock"
 TextBox | "TextBox"
 TextBoxBig | "TextBoxBig"
-CheckBox | "CheckBox"
-DropDownList | "DropDownList"
-RadioButtonGroup | "RadioButtonGroup"
-FilterPane | "FilterPane"
-MappingPane | "MappingPane"
-TextBlock | "TextBlock"
-FilePicker | "FilePicker"
-Routing | "Routing"
-FieldList | "FieldList"
-Button | "Button"
 TextSource | "TextSource"
-TextArea | "TextArea"
-QueryBuilder | "QueryBuilder"
-ManagePlan | "ManagePlan"
-Duration | "Duration"
-RunPlanButton | "RunPlanButton"
-UpstreamDataChooser | "UpstreamDataChooser"
 UpstreamFieldChooser | "UpstreamFieldChooser"
-UpstreamCrateChooser | "UpstreamCrateChooser"
-DatePicker | "DatePicker"
-CrateChooser | "CrateChooser"
-ContainerTransition | "ContainerTransition"
-MetaControlContainer | "MetaControlContainer"
-ControlList | "ControlList"
-SelectData | "SelectData"
-ExternalObjectChooser | "ExternalObjectChooser"
-BuildMessageAppender | "BuildMessageAppender"
+

@@ -31,10 +31,8 @@ namespace terminalDocuSign.Activities
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "2",
-            Category = ActivityCategory.Solution,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };
@@ -204,7 +202,7 @@ namespace terminalDocuSign.Activities
                 var previousNotifierOrdering = 3;
                 if (!isInitialBuild)
                 {
-                    var currentPlan = (await HubCommunicator.GetPlansByActivity(ActivityId.ToString())).Plan;
+                    var currentPlan = (await HubCommunicator.GetPlansByActivity(ActivityId.ToString()));
                     var startingSubPlan = currentPlan.SubPlans.First(x => x.SubPlanId == currentPlan.StartingSubPlanId);
                     var previousNotifier = startingSubPlan.Activities.FirstOrDefault(x => x.Id == previousNotifierId);
                     if (previousNotifier != null)

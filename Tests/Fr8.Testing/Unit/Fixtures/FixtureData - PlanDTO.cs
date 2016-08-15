@@ -5,14 +5,14 @@ namespace Fr8.Testing.Unit.Fixtures
 {
     partial class FixtureData
     {
-        public static PlanEmptyDTO CreateTestPlanDTO(string planName = "")
+        public static PlanNoChildrenDTO CreateTestPlanDTO(string planName = "")
         {
-            return new PlanEmptyDTO()
+            return new PlanNoChildrenDTO()
             {
                 Name = string.IsNullOrEmpty(planName) ? "plan1" : planName,
                 Description = "Description for test plan",
-                PlanState = 1,
-                Visibility = PlanVisibility.Standard
+                PlanState = "Inactive",
+                Visibility = new PlanVisibilityDTO() { Hidden = false }
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };
         }

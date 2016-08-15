@@ -4,7 +4,7 @@ A radioGroup control should have at least 2 individual radio button definitions
 Only one of the radion buttons can have selected=true
 
 ##Example Control Payload
-```javascript
+```json
 {
       "type": "RadioButtonGroup",
       "groupName": "Recipient",

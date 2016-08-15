@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
 
-    public partial class UpdateMTDatabaseWithNewCLRTypes1 : DbMigration
+    public partial class UpdateMTDatabaseWithNewCLRTypes1 : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

@@ -59,7 +59,7 @@ namespace Data.Entities
         public Fr8AccountDO UserDO { get; set; }
 
         [ForeignKey("Terminal")]
-        public int TerminalID { get; set; }
+        public Guid TerminalID { get; set; }
         // Authorization tokens are cached. We can't make lazy loading work in this case so disable it. 
         // If you need Terminal resolve it using ITerminal service and TerminalID property.
         public TerminalDO Terminal { get; set; }

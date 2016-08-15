@@ -13,7 +13,7 @@
         window.opener.postMessage(
             {
                 type: 'external-auth-success',
-                terminalId: @Model.TerminalId,
+                terminalId: '@Model.TerminalId',
                 terminalName: '@Model.TerminalName',
                 authTokenId: '@Model.AuthorizationTokenId.ToString()'
             },

@@ -32,7 +32,7 @@ namespace HubWeb.Infrastructure_HubWeb
         protected void Success(HttpAuthenticationContext context, string terminalToken, string userId)
         {
             var identity = new Fr8Identity("terminal-" + terminalToken, userId);
-            var principle = new Fr8Principle(terminalToken, identity, new[] { "Terminal" });
+            var principle = new Fr8Principal(terminalToken, identity, new[] { "Terminal" });
             Thread.CurrentPrincipal = principle;
             context.Principal = principle;
             if (HttpContext.Current != null)

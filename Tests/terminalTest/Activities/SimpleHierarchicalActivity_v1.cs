@@ -16,9 +16,7 @@ namespace terminalTest.Actions
         {
             Name = "SimpleHierarchicalActivity",
             Label = "SimpleHierarchicalActivity",
-            Category = ActivityCategory.Processors,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -35,7 +33,13 @@ namespace terminalTest.Actions
         public override async Task Initialize()
         {
             var templates = await HubCommunicator.GetActivityTemplates();
-            var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
+            var activityTemplate = templates.Select(x => new ActivityTemplateSummaryDTO
+            {
+                Name = x.Name,
+                Version = x.Version,
+                TerminalName = x.Terminal.Name,
+                TerminalVersion = x.Terminal.Version
+            }).First(x => x.Name == "SimpleActivity");
 
             ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {

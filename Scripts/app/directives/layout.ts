@@ -36,7 +36,9 @@ module dockyard.directives {
                     }
                     return 0;
                 }, (newValue) => {
-                    elem.css('height', newValue);
+                    var w = $(window).width();
+                    if( w > 400)
+                        elem.css('height', newValue);
                 });
             }
         };

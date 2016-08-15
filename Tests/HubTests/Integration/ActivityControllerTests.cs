@@ -44,7 +44,7 @@ namespace HubTests.Integration
             var solutionNames = new List<string> { "Mail Merge Into DocuSign", "Extract Data From Envelopes", "Track DocuSign Recipients" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "documentation/activity";
-            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateDTO() };
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateSummaryDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<DocumentationResponseDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());
@@ -74,7 +74,7 @@ namespace HubTests.Integration
             var solutionNames = new List<string> { "Search Fr8 Warehouse" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "documentation/activity";
-            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core", ActivityTemplate = new ActivityTemplateDTO() };
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core", ActivityTemplate = new ActivityTemplateSummaryDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<DocumentationResponseDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());

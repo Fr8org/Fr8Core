@@ -241,3 +241,5 @@ Views/Shared/CDN/
 /terminalAzure/log4net.terminals.config
 *.csproj.DotSettings
 *.csproj.DotSettings
+Services/PlanDirectory/ManifestPages/*.html
+ManifestPages/*.html

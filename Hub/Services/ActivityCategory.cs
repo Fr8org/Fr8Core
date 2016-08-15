@@ -85,35 +85,99 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var categoryNameUpper = activityCategory.Name.ToUpper(CultureInfo.InvariantCulture);
-                    var category = uow.ActivityCategoryRepository
+                    var activityCategoryByName = uow.ActivityCategoryRepository
                         .GetQuery()
-                        .FirstOrDefault(x => x.Name.ToUpper() == categoryNameUpper);
+                        .FirstOrDefault(x => x.Name == activityCategory.Name && x.Id != activityCategory.Id);
 
-                    if (category == null)
+                    if (activityCategory.Id != Guid.Empty)
                     {
-                        var newActivityCategory = new ActivityCategoryDO()
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = activityCategory.Name,
-                            IconPath = activityCategory.IconPath
-                        };
+                        var activityTemplateAssignments = new List<ActivityTemplateDO>();
 
-                        uow.ActivityCategoryRepository.Add(newActivityCategory);
+                        if (activityCategoryByName != null)
+                        {
+                            var existingAssignments = uow.ActivityCategorySetRepository.GetQuery()
+                                .Where(x => x.ActivityCategoryId == activityCategoryByName.Id)
+                                .ToList();
+
+                            foreach (var assignment in existingAssignments)
+                            {
+                                activityTemplateAssignments.Add(assignment.ActivityTemplate);
+                                uow.ActivityCategorySetRepository.Remove(assignment);
+                            }
+                            uow.SaveChanges();
+
+                            uow.ActivityCategoryRepository.Remove(activityCategoryByName);
+                            uow.SaveChanges();
+                        }
+
+                        var activityCategoryById = uow.ActivityCategoryRepository
+                            .GetQuery()
+                            .FirstOrDefault(x => x.Id == activityCategory.Id);
+
+                        if (activityCategoryById == null)
+                        {
+                            activityCategoryById = new ActivityCategoryDO()
+                            {
+                                Id = activityCategory.Id,
+                                Name = activityCategory.Name,
+                                IconPath = activityCategory.IconPath,
+                                Type = activityCategory.Type
+                            };
+
+                            uow.ActivityCategoryRepository.Add(activityCategoryById);
+                        }
+                        else
+                        {
+                            activityCategoryById.IconPath = activityCategory.IconPath;
+                            activityCategoryById.Type = activityCategory.Type;
+                        }
+
+                        foreach (var assignedActivityTemplate in activityTemplateAssignments)
+                        {
+                            uow.ActivityCategorySetRepository.Add(
+                                new ActivityCategorySetDO()
+                                {
+                                    Id = Guid.NewGuid(),
+                                    ActivityCategoryId = activityCategory.Id,
+                                    ActivityCategory = activityCategory,
+                                    ActivityTemplateId = assignedActivityTemplate.Id,
+                                    ActivityTemplate = assignedActivityTemplate
+                                }
+                            );
+                        }
+
+                        _activityCategories[activityCategoryById.Id] = Clone(activityCategoryById);
+
                         uow.SaveChanges();
 
-                        category = newActivityCategory;
+                        return activityCategoryById;
                     }
                     else
                     {
-                        category.Name = activityCategory.Name;
-                        category.IconPath = activityCategory.IconPath;
+                        if (activityCategoryByName == null)
+                        {
+                            activityCategoryByName = new ActivityCategoryDO()
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = activityCategory.Name,
+                                IconPath = activityCategory.IconPath,
+                                Type = activityCategory.Type
+                            };
+
+                            uow.ActivityCategoryRepository.Add(activityCategoryByName);
+                        }
+                        else
+                        {
+                            activityCategoryByName.IconPath = activityCategory.IconPath;
+                            activityCategoryByName.Type = activityCategory.Type;
+                        }
+
+                        _activityCategories[activityCategoryByName.Id] = Clone(activityCategoryByName);
+
                         uow.SaveChanges();
+
+                        return activityCategoryByName;
                     }
-
-                    _activityCategories[category.Id] = Clone(category);
-
-                    return category;
                 }
             }
         }

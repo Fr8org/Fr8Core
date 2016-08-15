@@ -4,8 +4,9 @@ using WebActivatorEx;
 using HubWeb;
 using Swashbuckle.Application;
 using System.Linq;
+using Fr8.Infrastructure.Documentation.Swagger;
 using HubWeb.Documentation.Swagger;
-using HubWeb.Documentation.Swagger.OperationFilters;
+using HubWeb.Documentation.Swagger.DocumentFilters;
 using Swashbuckle.Swagger;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
@@ -180,6 +181,8 @@ namespace HubWeb
                         //Removing duplicates filter
                         c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
                         c.DocumentFilter<AddDefaultValuesDocumentFilter>();
+                        c.DocumentFilter<AddTitleAndDescriptionDocumentFilter>();
+                        c.DocumentFilter<AddHubDefaultValuesDocumentFilter>();
 
                         // In contrast to WebApi, Swagger 2.0 does not include the query string component when mapping a URL
                         // to an action. As a result, Swashbuckle will raise an exception if it encounters multiple actions

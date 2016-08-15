@@ -211,14 +211,12 @@ namespace terminalExcel.Actions
             Name = "Save_To_Excel",
             Label = "Save to Excel",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -344,7 +342,7 @@ namespace terminalExcel.Actions
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "Excel File URL Generated", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Excel File URL Generated", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
     }
 }

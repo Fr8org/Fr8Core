@@ -11,6 +11,15 @@ namespace Fr8.TerminalBase.Models
             ActivityTemplateDTO = activityTemplateDTO;
         }
 
+        public ActivityRegistrationKey(string name, string version)
+        {
+            ActivityTemplateDTO = new ActivityTemplateDTO
+            {
+                Name = name,
+                Version = version
+            };
+        }
+
         public bool Equals(ActivityRegistrationKey other)
         {
             return string.Equals(ActivityTemplateDTO.Name, other.ActivityTemplateDTO.Name) && string.Equals(ActivityTemplateDTO.Version, other.ActivityTemplateDTO.Version);

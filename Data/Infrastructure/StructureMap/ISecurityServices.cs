@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Data.States;
 
 namespace Data.Infrastructure.StructureMap
@@ -18,9 +20,11 @@ namespace Data.Infrastructure.StructureMap
         bool IsAuthenticated();
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
-        void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
-        void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType);
-        bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null);
+        Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
+        bool AuthorizeActivity(PermissionType permissionType, Guid curObjectId, string curObjectType, string propertyName = null);
         bool UserHasPermission(PermissionType permissionType, string objectType);
+        void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissions = null);
+        IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals, bool byOwnershipOnly = false);
+        List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType);
     }
 }

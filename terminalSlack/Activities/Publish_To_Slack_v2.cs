@@ -24,16 +24,14 @@ namespace terminalSlack.Activities
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "2",
-            WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -100,7 +98,7 @@ namespace terminalSlack.Activities
         public override async Task Run()
         {
             var channel = ActivityUI.ChannelSelector.Value;
-            var message = ActivityUI.MessageSource.GetValue(Payload);
+            var message = ActivityUI.MessageSource.TextValue;
             var success = await _slackIntegration.PostMessageToChat(AuthorizationToken.Token, channel, message).ConfigureAwait(false);
             if (!success)
             {

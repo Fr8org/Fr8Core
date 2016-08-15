@@ -9,22 +9,16 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     /// </summary>
     public class SubplanDTO
     {
-        [JsonProperty("subPlanId")]
+        [JsonProperty("id")]
         public Guid? SubPlanId { get; set; }
 
         [JsonProperty("planId")]
         public Guid? PlanId { get; set; }
 
-        [JsonProperty("parentId")]
+        [JsonProperty("parentPlanNodeId")]
         public Guid? ParentId { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("transitionKey")]
-        public string TransitionKey { get; set; }
-
-        [JsonProperty("runnable")]
-        public bool Runnable { get; set; }
     }
 }

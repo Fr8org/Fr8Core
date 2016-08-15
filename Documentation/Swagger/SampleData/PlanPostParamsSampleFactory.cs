@@ -1,4 +1,5 @@
-﻿using HubWeb.ViewModels.RequestParameters;
+﻿using Fr8.Infrastructure.Documentation.Swagger;
+using HubWeb.ViewModels.RequestParameters;
 
 namespace HubWeb.Documentation.Swagger
 {
