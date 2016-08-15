@@ -15,6 +15,27 @@
 [Ss]ettings.Demo.config
 [Ss]ettings.config.src
 
+# Fr8 Logging Settings Files
+log4net.terminals.config
+log4net.terminals.Demo.config
+log4net.terminals.Dev.config
+log4net.terminals.Release.config
+log4net.config
+log4net.Demo.config
+log4net.Dev.config
+log4net.Release.config
+log4net.tests.healthMonitor.config
+log4net.tests.healthMonitor.Dev.config
+log4net.tests.healthMonitor.Demo.config
+log4net.tests.healthMonitor.Release.config
+
+# Application Insights configuration files
+ApplicationInsights.config
+ApplicationInsights.Dev.config
+ApplicationInsights.Demo.config
+ApplicationInsights.Release.config
+ApplicationInsights.Debug.config
+
 # Service Configuration files for Azure Cloud Service
 ServiceConfiguration.Release.cscfg
 ServiceConfiguration.Dev.cscfg

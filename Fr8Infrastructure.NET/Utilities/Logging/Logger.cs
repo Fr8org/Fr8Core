@@ -86,6 +86,6 @@ namespace Fr8.Infrastructure.Utilities.Logging
             curPapertrailAppender.ActivateOptions();
 
             return GetLogger("",depth);
-        }
+        } 
     }
 }
