@@ -75,12 +75,13 @@ public override void AfterCreate()
     securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id, nameof(PlanNodeDO));
 }
 ```
-In moment of creation of Domain Object we are using the Role OwnerOfCurrentObject. This helps us to allocate who is owner of the Domain Object being creation. So he as an user can manage that specific object afterwards.
+In moment of creation of Domain Object we are using the Role OwnerOfCurrentObject. This helps us to allocate who is owner of the Domain Object being created. So he as an user can manage that specific object afterwards.
 
 This method has additional parameter: customPermissionTypes where an user can define an array of Permissions to set for that Domain Object:
 
 Example:
-```  securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+```
+ securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
 ```
 If you don't provide values for the parameter customPermissionTypes then the system will enter default permissionTypes:
 ```
