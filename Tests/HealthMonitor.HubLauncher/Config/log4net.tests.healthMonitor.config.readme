@@ -5,6 +5,9 @@
 The Fr8 Integration Test Runner Logging Configuration File
 ==========================================================
 
+This is the same log4net configuration file using for HealthMonitor. 
+Just copy it from the HealthMonitor folder.
+
 Remove the "readme" extension from the filename and optionally add your custom loggers.
 -->
 
