@@ -198,7 +198,7 @@ public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO>
 ```
 This method will iterate every item in the collection, and will return a filtered collection that the user can have access to.
 
-### Caching
+## Caching
 
 All permission related logic is being cached into our system. Once we provide new ObjectRolePermissions for newly created Domain Object the SecurityObjectsCache Service is coming in hand. Every ObjecrRolePermissions are being cached for a configured amount of time.
 
