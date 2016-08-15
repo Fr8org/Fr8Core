@@ -1,7 +1,7 @@
 Security System Walkthrough
 ===========================
 
-Before continue reading this, make sure you are familiar with these given terms:
+Before continue reading this, make sure you are familiar with these given topics:
 
 [Security Overview](/Docs/Security/SecurityOverview.md)
 
@@ -36,15 +36,20 @@ public enum PermissionType
 NOTE: when changing this Enum, you also need to change his Front-End representation. Go to the PermissionType.ts file in order to make the change.
 
 ##Profile and Default Permissions for Objects in Fr8.
-A user can have only one profile, in opposite to the Roles defined to him. Profiles define how a user can interact with object groups from general perspective into the system.
-Until we have provided a management page for security settings, current Profiles are managed inside our MigrationConfiguration. There are 3 default Profile configurations in Fr8 right now.
-In future we can have custom profiles that will be configured from the Fr8 Admins.
-One Profile contains multiple PermissionSets linked to him for every Domain Object that is connected to the Security System. In the moment our system provides security for these next Fr8 objects    
-       ⋅⋅⋅PlanNodeDO
-       ⋅⋅⋅ContainerDO
-       ⋅⋅⋅TerminalDO
-       ⋅⋅⋅Fr8AccountDO
-       ⋅⋅⋅PageDefinitionDO
+A user can have only one profile, in opposite to the multiple Roles defined for him. Profiles define how a user can interact with object groups from general perspective into the system.
+Until we have provided a management page for security settings, current Profiles are managed inside our MigrationConfiguration.cs file. There are 3 default Profile configurations in Fr8 right now.
+In future we will have custom profiles that will be configured from the Fr8 Admins.
+One Profile contains multiple PermissionSets linked to it for every Domain Object that is connected to the Security System. In the moment our system provides security for these next Fr8 objects    
+       ⋅PlanNodeDO
+
+       ⋅ContainerDO
+
+       ⋅TerminalDO
+
+       ⋅Fr8AccountDO
+
+       ⋅PageDefinitionDO
+
 
 When including additional Fr8 Object in the Security System with enabled permissions, go to the method AddDefaultProfiles() into MigrationConfiguration.cs and include that object with defining the permission sets for all 3 Default Profiles.
 
