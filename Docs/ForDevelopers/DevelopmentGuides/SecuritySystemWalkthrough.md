@@ -15,7 +15,7 @@ Currently the system has a dozen predefined Permission Types that can be used. E
 Permission types are defined in an Enum than can be found in Data.States.PermissionType.
 First 7 are generic permission types that can be used for every Fr8Object. Other are custom defined for some specific actions.
 
-These permission types are saved into the database and are persisted via our StateTemplate system.
+These permission types are saved into the database and are persisted via our StateTemplate system that is being run on every application start.
 
 ```
 public enum PermissionType
