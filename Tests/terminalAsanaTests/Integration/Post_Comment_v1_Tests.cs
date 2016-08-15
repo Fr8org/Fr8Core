@@ -52,31 +52,8 @@ namespace terminalAsanaTests.Integration
         public async Task Post_Comment_v1_initial_configuration_check()
         {
             var responseDTO = await CompleteInitialConfiguration();
-            var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
 
             AssertInitialConfigurationResponse(responseDTO);
-
-            var fieldsToPayload = crateStorage.CratesOfType<CrateDescriptionCM>().ToList();
-            // there should be one field of MT.AsanaTaskList and one feild of MT.StandardTableData
-            Assert.AreEqual(1,fieldsToPayload.Count);
-
-            var asanaTaskMTId = (int)MT.AsanaTaskList;
-            var AsanaTaskListPayloadCount = fieldsToPayload
-                    .FirstOrDefault()
-                    .Content
-                    .CrateDescriptions
-                    .Count(x => x.ManifestId == asanaTaskMTId);
-
-            Assert.AreEqual(AsanaTaskListPayloadCount, 1);
-
-            var tableDataMTId = (int)MT.StandardTableData;
-            var TableDataPayloadCount = fieldsToPayload
-                    .FirstOrDefault()
-                    .Content
-                    .CrateDescriptions
-                    .Count(x => x.ManifestId == asanaTaskMTId);
-
-            Assert.AreEqual(TableDataPayloadCount, 1);
         }
 
 
@@ -95,7 +72,7 @@ namespace terminalAsanaTests.Integration
 
             var payload = Mapper.Map<ActivityPayload>(responseDTO);
             var crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var ddlb = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
+            var ddlb = crates.Controls.Find(x => x.Name.Equals("Workspaces")) as DropDownList;
             ddlb.Value = ddlb.ListItems[0].Value;
             ddlb.selectedKey = ddlb.ListItems[0].Key;
 
@@ -114,7 +91,7 @@ namespace terminalAsanaTests.Integration
             // we should get at least one project if test account not empty.
             payload = Mapper.Map<ActivityPayload>(responseDTO);
             crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            ddlb = crates.Controls.Find(x => x.Name.Equals("ProjectsList")) as DropDownList;
+            ddlb = crates.Controls.Find(x => x.Name.Equals("Projects")) as DropDownList;
             Assert.IsTrue(ddlb.ListItems.Count > 0);
 
             AssertInitialConfigurationResponse(responseDTO);
