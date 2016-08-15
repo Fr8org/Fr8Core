@@ -19,7 +19,6 @@ using terminalAsana.Activities;
 namespace terminalAsanaTests.Integration
 {
     [Explicit]
-    [Category("Integration.terminalAsana")]
     class Post_Comment_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
@@ -27,8 +26,8 @@ namespace terminalAsanaTests.Integration
         private void AssertConfigurationControls(StandardConfigurationControlsCM control)
         {
             Assert.AreEqual(4, control.Controls.Count, "Control count is not 4");
-            Assert.IsTrue(control.Controls.Where(x=> x is DropDownList).Count() == 3);
-            Assert.IsTrue(control.Controls.Where(x => x is TextSource).Count() == 1);
+            Assert.IsTrue(control.Controls.Count(x => x.GetType() == typeof(DropDownList)) == 3);
+            Assert.IsTrue(control.Controls.Count(x => x.GetType() == typeof(TextSource)) == 1);
         }
 
         private void AssertInitialConfigurationResponse(ActivityDTO responseDTO)
