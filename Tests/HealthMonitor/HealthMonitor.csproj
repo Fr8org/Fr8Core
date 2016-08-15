@@ -358,6 +358,14 @@
       <Project>{0dcd9aae-f141-4fad-8e87-1c610f0582db}</Project>
       <Name>terminalAsana</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalBasecamp2\terminalBasecamp2.csproj">
+      <Project>{19e2fda9-d7ac-4365-a25a-4bbcaf8be7fd}</Project>
+      <Name>terminalBasecamp2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalBox\terminalBox.csproj">
+      <Project>{84800565-b464-471d-8f02-1a93311c3388}</Project>
+      <Name>terminalBox</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalFacebook\terminalFacebook.csproj">
       <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
       <Name>terminalFacebook</Name>
