@@ -247,6 +247,7 @@ namespace Data.Repositories.Plan
                             original.RemoveFromParent();
                             parent.ChildNodes.Add(original);
                             original.ParentPlanNode = parent;
+                            original.ParentPlanNodeId = parent.Id;
                           
                             approveUpdate = true;
                         }

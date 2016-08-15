@@ -48,7 +48,6 @@ namespace Hub.Services
             _upstreamDataExtractionService = upstreamDataExtractionService;
         }
 
-
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
             if (submittedActivityData.Id == Guid.Empty)
@@ -275,7 +274,6 @@ namespace Hub.Services
                         }
                     }
                 }
-
                 uow.SaveChanges();
             }
         }
@@ -335,7 +333,6 @@ namespace Hub.Services
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
-
             }
             catch (Exception e)
             {
@@ -391,10 +388,14 @@ namespace Hub.Services
 
         private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy)
         {
+            var isNewActivity = false;
             PlanTreeHelper.Visit(submittedActiviy, x =>
             {
                 if (x.Id == Guid.Empty)
                 {
+                    if (Object.ReferenceEquals(x, submittedActiviy)) {
+                        isNewActivity = true;
+                    }
                     x.Id = Guid.NewGuid();
                 }
                 var activityDO = x as ActivityDO;
@@ -412,8 +413,6 @@ namespace Hub.Services
                 }
             });
 
-
-
             PlanNodeDO plan;
             PlanNodeDO originalAction;
             if (submittedActiviy.ParentPlanNodeId != null)
@@ -426,7 +425,7 @@ namespace Hub.Services
                 originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
                 
                 //This might mean that this plan's parent was changed
-                if (originalAction == null)
+                if (originalAction == null && !isNewActivity)
                 {
                     originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
                     if (originalAction != null) {
@@ -441,7 +440,6 @@ namespace Hub.Services
                 originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
                 plan = originalAction.ParentPlanNode;
             }
-
 
             if (originalAction != null)
             {
@@ -582,7 +580,6 @@ namespace Hub.Services
 
             exisiting.ActivationState = ActivationState.Deactivated;
         }
-
 
         private async Task<ActivityDO> CallActivityConfigure(IUnitOfWork uow, string userId, ActivityDO submittedActivity)
         {
