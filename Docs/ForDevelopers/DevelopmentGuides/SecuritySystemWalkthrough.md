@@ -205,4 +205,6 @@ All permission related logic is being cached into our system. Once we provide ne
 ##Domain Objects Used In Security System
 
 Most important objects used in Security System are the ObjectRolePermissions.
-Those are detached from the Entity Framework context because of the usage of AspNetRoles. In order to provide support for caching and easy manipulation of AspNetRoles, we use a POCO implementation RoleDO inside Security System.  
+Those are detached from the Entity Framework context because of the usage of AspNetRoles. In order to provide support for caching and easy manipulation of AspNetRoles, we use a POCO implementation RoleDO inside Security System.
+
+Note: For reference check Data.Repositories.Security.Entities.ObjectRolePermissionsWrapper class.
