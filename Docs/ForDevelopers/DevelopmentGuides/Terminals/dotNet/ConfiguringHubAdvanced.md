@@ -1,12 +1,17 @@
-Deeper Configuration of the Fr8 Hub
+Configuration of the Fr8 Hub
 ========================
 
 If you simply fire a Fr8 Hub up locally, its core should work with no additional require configuration beyond the setting of your master administrator account.
-However, there are a number of subsystems that require additional accounts or configuration.
-These settings are stored (in the .NET version of the Hub) in web.config  When The Fr8 Company deploys 
-the Fr8 Hub to production or dev at fr8.co, it merges these settings in via an external file. If you're deploying your own Hub, you should be
-aware of these. Some Fr8 Subsystems will not work out of the box until these settings are configured. We've just created an Administration Settings
-Wizard to make this process easier but it's in an early stage.
+
+However, there are a number of essentially optional subsystems that require additional accounts or configuration. There are also a case or two where the default settings point to a single free account that may get noisy with the output of other Fr8 Developers, in which case you may want to change the settings to "go private".
+
+The Fr8 Hub project uses web.config, of course, but we've set it up to look for an external file called settings.config for some settings. A sample of this file is available in a file in the root called settings.config.readme, found in HubWeb/Config/HubWeb. 
+
+If you want to use any of these settings, update their values and save the file as settings.config, in the same location.  (i.e. remove the ".readme".)
+
+Some Fr8 Subsystems will not work out of the box until these settings are configured. 
+
+Roadmap: We've just created an Administration Settings Wizard to make this process easier but it's in an early stage.
 
 
 The System User Account
@@ -74,8 +79,8 @@ In some non-OAuth scenarios, the Hub needs to store user passwords. Fr8.co does 
 <!-- Key Vault -->
 <add key="AuthorizationTokenStorageMode" value="KeyVault" />
 <add key="KeyVaultUrl" value="https://fr8Dev2KV.vault.azure.net:443" />
-<add key="KeyVaultClientId" value="472bbcb2-b99a-4ba9-812f-a9f90d1aa47f" />
-<add key="KeyVaultClientSecret" value="UaqUni5KaywTeOh8UEj8zpz+qAnlxIRTi50bTSKer6Y=" />
+<add key="KeyVaultClientId" value="[###]" />
+<add key="KeyVaultClientSecret" value="[###]" />
 ```
 
 This is turned off by default. For more information look in settings.config.readme.

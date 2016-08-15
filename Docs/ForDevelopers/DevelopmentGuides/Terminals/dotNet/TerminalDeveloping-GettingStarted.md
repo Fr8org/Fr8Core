@@ -25,22 +25,34 @@ In this image you can see the useless "Roaming" path that seems to get added aut
 
 
 
-Step 2: Install a Local Development Database
-============================================
+Step 2: Clone the Repositories
+==============================
+Start by cloning [Fr8Core](https://github.com/Fr8org/Fr8Core). This will provide you with all Hub and Client code, and all of the Terminals that have been written in .NET.
+
+
+Step 3: Hub Configuration (Skip to Step 4 unless you want to run a local Hub)
+===================================================
+
+Do step 3 only if you want to run a local Hub. [You may want to simplify your life by developing against a public Hub](/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md).
+
+Step 3a: (ONLY IF YOU WANT TO RUN A LOCAL HUB) Install a Local Development Database
+----------------------------------------------------
 
 If you are planning to run Hub locally you'll need to [configure a sql database](./LocalDB.md). Otherwise, you can skip this step.
 Fr8 uses EntityFramework 6.1 to interact with data. Fr8 uses CodeFirst Migrations.
 
+Step 3b: Update your Hub Configuration Settings
+------------------------------------------------------------
 
-Step 3: Clone the Repositories
-==============================
-Start by cloning [Fr8Core](https://github.com/Fr8org/Fr8Core). This will provide you with all Hub and Client code, and all of the Terminals that have been written in .NET.
+Some less-critical services won't work at this point unless you do additional configuration. That's discussed [here](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfiguringHubAdvanced.md).
+
+Likewise, if you're going to run some Terminals locally, you'll need to configure them as well. That's discussed [here](/Docs/ForDevelopers/SDK/.NET/TerminalConfiguration.md)
 
 Step 4: Build and Run Fr8
 ========================
 [Build and Run](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/BuildRunFr8.md)
 
-If you're running in Debug mode, the Administration Wizard should appear in a web page, allowing you to configure an admin account.  Some less-critical services won't work at this point unless you do additional configuration. That's discussed [here](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfiguringHubAdvanced.md).
+
 
 Step 5: [Run the Configuration Wizard](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfigurationWizard.md)
 ======================
