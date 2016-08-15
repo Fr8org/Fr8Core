@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Hub.Interfaces;
 using StructureMap;
+using Newtonsoft.Json;
 
 namespace Hub.Services
 {
@@ -36,6 +37,18 @@ namespace Hub.Services
             using (var uow = _uowFactory.Create())
             {
                 return uow.PageDefinitionRepository.GetByKey(id);
+            }
+        }
+
+        public PageDefinitionDO Get(IEnumerable<string> tags)
+        {
+            using (var uow = _uowFactory.Create())
+            {
+                var tagsString = JsonConvert.SerializeObject(tags.OrderBy(x => x));
+                return uow.PageDefinitionRepository
+                    .GetQuery()
+                    .Where(x => x.TagsString == tagsString)
+                    .FirstOrDefault();
             }
         }
 
