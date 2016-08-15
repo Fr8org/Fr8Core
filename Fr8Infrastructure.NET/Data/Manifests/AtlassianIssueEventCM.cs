@@ -5,7 +5,6 @@ namespace Fr8.Infrastructure.Data.Manifests
     public class AtlassianIssueEventCM : Manifest
     {
         public string IssueId { get; set; }
-
         public string IssueKey { get; set; }
         public string UserId { get; set; }
         public string Time { get; set; }
@@ -30,5 +29,15 @@ namespace Fr8.Infrastructure.Data.Manifests
         public string IssueStatus { get; set; }
         public string IssueType { get; set; }
         public string Description { get; set; }
+    }
+    public class JiraIssueWithCustomFieldsCM
+    {
+        public AtlassianIssueEventCM JiraIssue {get; set; }
+        public JiraCustomFields[] CustomFields { get; set; }
+    }
+    public class JiraCustomFields
+    {
+        public string Key { get; set; }
+        public string[] Values { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using AutoMapper;
+using Atlassian.Jira;
 
 namespace terminalAtlassian.Services
 {
@@ -102,11 +103,6 @@ namespace terminalAtlassian.Services
             }
 
             return new Tuple<string, AuthorizationToken>(curFr8UserId, Mapper.Map<AuthorizationToken>(authToken));
-        }
-
-        public Task<Crate> ProcessExternalEvents(IContainer container, string curExternalEventPayload)
-        {
-            throw new NotImplementedException();
         }
     }
 }

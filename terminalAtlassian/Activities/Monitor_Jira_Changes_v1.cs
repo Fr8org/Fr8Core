@@ -13,6 +13,8 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalAtlassian.Interfaces;
+using terminalAtlassian.Helpers;
+using Atlassian.Jira;
 
 namespace terminalAtlassian.Actions
 {
@@ -100,8 +102,9 @@ namespace terminalAtlassian.Actions
             ActivityUI.ProjectSelector.ListItems = _atlassianService
             .GetProjects(AuthorizationToken)
             .ToListItems()
-            .ToList(); 
-            
+            .ToList();
+
+           
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
                                             .AddField(ProjectName)
                                             .AddField(IssueResolution)
@@ -145,17 +148,37 @@ namespace terminalAtlassian.Actions
                 return;
             }
             var jiraIssue = atlassianEventPayload;
-            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
-                                                                    new KeyValueDTO(IssueKey, jiraIssue.IssueKey),
-                                                                    new KeyValueDTO(ProjectName, jiraIssue.IssueEvent.ProjectName),
-                                                                    new KeyValueDTO(IssueResolution, jiraIssue.IssueEvent.IssueResolution),
-                                                                    new KeyValueDTO(IssuePriority, jiraIssue.IssueEvent.IssuePriority),
-                                                                    new KeyValueDTO(IssueAssignee, jiraIssue.IssueEvent.IssueAssigneeName),
-                                                                    new KeyValueDTO(IssueSummary, jiraIssue.IssueEvent.IssueSummary),
-                                                                    new KeyValueDTO(IssueStatus, jiraIssue.IssueEvent.IssueStatus),
-                                                                    new KeyValueDTO(IssueDescription, jiraIssue.IssueEvent.Description),
-                                                                    new KeyValueDTO(IssueKey, jiraIssue.IssueKey)
-                                                                    )));
+            JiraIssueWithCustomFieldsCM jiraIssueWithCustomFields = new JiraIssueWithCustomFieldsCM();
+            jiraIssueWithCustomFields.JiraIssue = jiraIssue;
+            var jira = CreateJiraRestClient();
+            var issue = jira.GetIssue(jiraIssue.IssueKey);
+
+            var customFields = new JiraCustomFields[issue.CustomFields.Count];
+            for(var i = 0; i < issue.CustomFields.Count; i++)
+            {
+                customFields[i].Key = issue.CustomFields[i].Name;
+                for(var j = 0; j < issue.CustomFields[i].Values.Length; j++)
+                {
+                    customFields[i].Values[j] = issue.CustomFields[i].Values[j];
+                }
             }
+            jiraIssueWithCustomFields.CustomFields = customFields;
+            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel,jiraIssueWithCustomFields));
+            }
+        public IEnumerable<CustomField> GetCustomFields()
+        {
+            var jira = CreateJiraRestClient();
+            var customFields = jira.GetCustomFields();
+            return customFields;
+        }
+
+        public Jira CreateJiraRestClient()
+        {
+            var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token).EnforceDomainSchema();
+            Jira jira = Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
+            return jira;
+        }
+
     }
+    
 }
