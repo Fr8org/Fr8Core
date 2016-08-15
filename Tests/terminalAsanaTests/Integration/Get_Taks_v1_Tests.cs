@@ -19,7 +19,7 @@ using terminalAsana.Activities;
 namespace terminalAsanaTests.Integration
 {
     [Explicit]
-    [Category("Integration.terminalAsana")]
+    [Ignore]
     class Get_Taks_v1_Tests: BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
