@@ -5,14 +5,9 @@
 */
 
 module dockyard.services {
-
-    export interface IUINotificationService {
-        notify: (message: string, status: dockyard.enums.UINotificationStatus, options: any) => any
-    }
-
     declare var noty: Noty;
 
-    class UINotificationService implements IUINotificationService {
+    class UINotificationService implements interfaces.IUINotificationService {
         public notify(message: string, status: dockyard.enums.UINotificationStatus, options: any) {
             // For more options please look at noty library
             if (!options) {

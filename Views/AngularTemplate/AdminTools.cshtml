@@ -3,12 +3,12 @@
     Layout = null;
 }
 
-<div class="portlet light ">
+<div class="portlet light " ng-controller="AdminToolsController">
     <h1 class="md-title font-green-haze">Admin tools page</h1>
 
     <section class="row">
         <div class="col-sm-4">
-            <md-button class="btn btn-primary btn-small">Check and Generate page definitions</md-button>
+            <md-button class="btn btn-primary btn-small" ng-click="checkPages()" >Check and Generate page definitions</md-button>
         </div>
         <div class="col-sm-8">
             here will be progress bar and status

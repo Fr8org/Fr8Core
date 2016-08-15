@@ -1,7 +1,12 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanDirectory;
 using Hub.Enums;
+using Hub.Infrastructure;
 using Hub.Interfaces;
+using Hub.Managers;
+using HubWeb.Infrastructure_PD;
 using StructureMap;
 
 namespace HubWeb.Controllers.Api
@@ -9,9 +14,20 @@ namespace HubWeb.Controllers.Api
     public class PageGenerationController : ApiController
     {
         private readonly IManifestPageGenerator _manifestPageGenerator;
-        public PageGenerationController()
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
+        private readonly ISearchProvider _searchProvider;
+
+        private readonly IPagesCheckUtility _pagesCheckUtility;
+
+        public PageGenerationController(IManifestPageGenerator manifestPageGenerator,
+                                        IPlanTemplateDetailsGenerator planTemplateDetailsGenerator,
+                                        ISearchProvider searchProvider,
+                                        IPagesCheckUtility pagesCheckUtility)
         {
-            _manifestPageGenerator = ObjectFactory.GetInstance<IManifestPageGenerator>();
+            _manifestPageGenerator = manifestPageGenerator;
+            _planTemplateDetailsGenerator = planTemplateDetailsGenerator;
+            _searchProvider = searchProvider;
+            _pagesCheckUtility = pagesCheckUtility;
         }
 
         [HttpPost]
@@ -19,6 +35,21 @@ namespace HubWeb.Controllers.Api
         public async Task<IHttpActionResult> GenerateManifestPage([FromBody] string manifestName)
         {
             return Ok(await _manifestPageGenerator.Generate(manifestName, GenerateMode.GenerateIfNotExists));
+        }
+
+        [HttpGet]
+        [ActionName("generate_pages")]
+        [DockyardAuthorize(Roles = Roles.Admin)]
+        public async Task<IHttpActionResult> GeneratePages()
+        {
+            //_planTemplateDetailsGenerator.Generate();
+
+            var count = 
+            
+
+            // here will be logic for check templates
+
+            return Ok($"it works. Number of templates {count}");
         }
     }
 }
