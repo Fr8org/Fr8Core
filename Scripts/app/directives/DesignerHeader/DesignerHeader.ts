@@ -119,6 +119,12 @@ module dockyard.directives.designerHeader {
                             return;
                         }
                     }
+
+                    if (!at.categories.some((value) => { return value.name.toLowerCase() === "triggers";
+                    })) {
+                        // mark plan as Inactive
+                        $scope.plan.planState = model.PlanState.Inactive;
+                    }
                 };
 
                 $scope.$on(<any>designHeaderEvents.PLAN_IS_DEACTIVATED,
