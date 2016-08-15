@@ -11,7 +11,7 @@ describe('contact page test', function () {
     it('should open contact Page', function () {
        return accountHelper.contact().then(function () {
            contactPage.setName("Fr8 Company");
-           contactPage.setEmail(browser.params.username);
+           contactPage.setEmail("emre@fr8.co");
            contactPage.setSubject("Test subject");
            contactPage.setMessage("Test message");
            return browser.wait(uiHelpers.waitForElementToBePresent(contactPage.sendMessage()).then(function () {
