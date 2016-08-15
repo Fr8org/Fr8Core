@@ -6,6 +6,8 @@
 
 Terminals often needs to communicate with hub. Some examples include getting payload, running a plan or creating an activity. There are certain endpoints on hub which are allowed to be called by terminals.
 
+Basics of Terminal Authentication are covered [here](/Docs/ForDevelopers/OperatingConcepts/Authorization/TerminalAuthentication.md)
+
 
 ## Hub Endpoints
 
