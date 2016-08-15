@@ -72,6 +72,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Test_Incoming_Data_v1>(Test_Incoming_Data_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_Email_v1>(Send_Email_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_SMS_v1>(Send_SMS_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_All_Payload_To_Fr8_Warehouse>(Save_All_Payload_To_Fr8_Warehouse.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

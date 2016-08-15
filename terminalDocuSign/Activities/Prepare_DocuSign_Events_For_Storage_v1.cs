@@ -48,7 +48,7 @@ namespace terminalDocuSign.Activities
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
             var textBlock = UiBuilder.GenerateTextBlock("Monitor All DocuSign events", "This Action doesn't require any configuration.", "well well-lg");
-            
+
             AddControl(textBlock);
 
             var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
@@ -60,8 +60,6 @@ namespace terminalDocuSign.Activities
 
             Storage.Add(docuSignUserCrate);
 
-            CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>("DocuSign Envelope");
-
             return Task.FromResult(0);
         }
 
@@ -72,6 +70,7 @@ namespace terminalDocuSign.Activities
 
         public override async Task Run()
         {
+            var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             Debug.WriteLine($"Running PrepareDocuSignEventForStorage: {ActivityId} - view viewhere!!!{0} - label {ActivityPayload.Label}");
             Debug.WriteLine($"for container {ExecutionContext.ContainerId} and authToken {AuthorizationToken}");
 
@@ -80,11 +79,27 @@ namespace terminalDocuSign.Activities
             {
                 var crate = curEventReport.EventPayload.CrateContentsOfType<DocuSignEnvelopeCM_v2>().First();
                 Payload.Add(Crate.FromContent("DocuSign Envelope", crate));
+
+                foreach (var recipient in crate.Recipients)
+                {
+                    var recManifest = new DocuSignRecipientCM()
+                    {
+                        DocuSignAccountId = authToken.AccountId,
+                        EnvelopeId = crate.EnvelopeId,
+                        RecipientEmail = recipient.Email,
+                        RecipientId = recipient.RecipientId,
+                        RecipientUserName = recipient.Name,
+                        Status = recipient.Status
+                    };
+                    Payload.Add(Crate.FromContent("DocuSign Recipient " + recManifest.RecipientEmail, recManifest));
+                }
             }
+
+            Payload.RemoveByManifestId((int)MT.StandardEventReport);
             Debug.WriteLine($"Returning success for payload {ExecutionContext.ContainerId} - {Payload}");
             Success();
         }
 
-        
+
     }
 }
