@@ -4,20 +4,16 @@ Building and Running Fr8
 
 1. Open the Fr8 solution in Visual Studio.
 
-2. Decide which Terminals you want to run with and verify that your solution is set to open [Multiple Startup Projects](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/MultipleStartupProjects.md)
+2. Decide which Terminals you want to run with and if you're going to run a local Hub, and verify that your solution is set to open the corresponding [Multiple Startup Projects](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/MultipleStartupProjects.md)
 
-*Note*: most Terminals are associated intimately with a web service like Salesforce.com or SendGrid. To get them to work locally, you're going to need to obtain a developer key, or api token (it varies from service to service) and update the configuration of the Terminal, usually in its web.config. For more information, see "Configuring Terminals"). Importantly, you can use Terminals without running your own local version of them. You simply point your Hub at the Terminals operated by Fr8.co or some other operator. For more information on this, see "Incorporating Public Terminals into your Development Environment").
+*Note*: most Terminals are associated intimately with a web service like Salesforce.com or SendGrid. To get them to work locally, you're going to need to obtain a developer key, or api token (it varies from service to service) and update the configuration of the Terminal, usually in its web.config. For more information, see [Terminal Configuration](/Docs/ForDevelopers/SDK/.NET/TerminalConfiguration.md)). Importantly, you can use Terminals without running your own local version of them. You simply point your Hub at the Terminals operated by Fr8.co or some other operator. For more information on this, see "Incorporating Public Terminals into your Development Environment").
 
-*Note*: each Terminal has a setting in its Web.config file that specifies the address of the terminal. It looks like this:
-`  <add key="terminalName.TerminalEndpoint" value="http://localhost:8888" />`
-We don't store port settings in the repository, so once you open the solution for the first time Visual Studio will assign random port numbers for all web applications.
-If you are using IIS express you can either manually change the address in Web section of project properties for each terminal you are about to run. Or you can use Fr8Core\PortSetter utillity application, that will try to do it for you for all the terminals. 
 
 3. Run Fr8. 
 
 What you should see:
 
-A web page should appear that has been produced by your HubWeb project. Curently this is on port 28672:
+A web page showing the Administrative Setup Wizard should appear that has been produced by your HubWeb project (but only if you're running a local Hub). Curently this is on port 28672:
 ![](./hubwebpage.png)
 
 For each *terminal* that's running, an additional web page will appear:
@@ -26,6 +22,8 @@ For each *terminal* that's running, an additional web page will appear:
 (These pages serve no purpose except to signal that a Terminal is up and running.)
 
 At this point, you should be able to register an account on your HubWeb project, and create Plans that use the Terminals you've started.
+
+You may want to do [additional configuration](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/ConfiguringHubAdvanced.md) to bring more Fr8 systems online.
 
 Troubleshooting
 ----------------
