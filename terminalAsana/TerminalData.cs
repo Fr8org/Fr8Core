@@ -9,7 +9,8 @@ namespace terminalAsana
         public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Asana",
-            IconPath = "/Content/icons/web_services/asana-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/asana-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

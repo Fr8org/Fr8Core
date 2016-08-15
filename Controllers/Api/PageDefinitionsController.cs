@@ -8,6 +8,7 @@ using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
+using Newtonsoft.Json;
 using StructureMap;
 using System.Web.Http.Description;
 using Swashbuckle.Swagger.Annotations;
@@ -47,6 +48,19 @@ namespace HubWeb.Controllers.Api
             var pageDefinition = _pageDefinition.Get(id);
             return Mapper.Map<PageDefinitionDTO>(pageDefinition);
         }
+        /// <summary>
+        /// Retrieves a page defintion with specified tags set.
+        /// </summary>
+        /// <param name="tags">Tags set</param>
+        /// <returns>Page defintion with specified tags</returns>
+        [ResponseType(typeof(PageDefinitionDTO))]
+        [ActionName("by_tags")]
+        public PageDefinitionDTO ByTags(IEnumerable<string> tags)
+        {
+            var pageDefinition = _pageDefinition.Get(tags);
+            return Mapper.Map<PageDefinitionDTO>(pageDefinition);
+        }
+
         /// <summary>
         /// Creates or updates specified page definition
         /// </summary>

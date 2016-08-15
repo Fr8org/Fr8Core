@@ -272,7 +272,7 @@ namespace terminalExcel.Actions
             else
             {
                 var existingFileStream = await HubCommunicator.DownloadFile(
-                    Int32.Parse(ActivityUI.ExistingSpreadsheetsList.Value)
+                    int.Parse(ActivityUI.ExistingSpreadsheetsList.Value)
                 );
 
                 byte[] existingFileBytes;
@@ -329,7 +329,8 @@ namespace terminalExcel.Actions
 
         private async Task<List<ListItem>> GetCurrentUsersFiles()
         {
-            var curAccountFileList = await HubCommunicator.GetFiles();
+            //Leave only XLSX files as activity fails to rewrite XLS files
+            var curAccountFileList = (await HubCommunicator.GetFiles()).Where(x => x.OriginalFileName?.EndsWith(".xlsx", StringComparison.InvariantCultureIgnoreCase) ?? true);
             //TODO where tags == Docusign files
             return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
         }
