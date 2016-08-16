@@ -70,8 +70,8 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                         Tuple<string, string, string>(
                         publishPlanTemplateDTO.Name,
                         publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
-                        CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                        + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+                        CloudConfigurationManager.GetSetting("HubApiUrl") +
+                                    "plan_templates/createplan/?id=" + publishPlanTemplateDTO.ParentPlanId));
                 }
                 await _templateGenerator.Generate(new PlanCategoryTemplate(), pageName, new Dictionary<string, object>
                 {
@@ -80,6 +80,38 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                     ["RelatedPlans"] = relatedPlans
                 });
             }
+        }
+
+        public async Task Generate(PageDefinitionDO pageDefinition, string fr8AccountId)
+        {
+            var tag = await _tagGenerator.GetWebServiceTemplateTag(pageDefinition);
+            var pageName = GeneratePageNameFromTags(pageDefinition.Tags);
+
+            var curRelatedPlans = new List<PublishPlanTemplateDTO>();
+            foreach (var planTemplateId in pageDefinition.PlanTemplatesIds)
+            {
+                var planDto = _planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result;
+                if (planDto != null)
+                    curRelatedPlans.Add(planDto);
+            }
+
+            var relatedPlans = new List<Tuple<string, string, string>>();
+            foreach (var publishPlanTemplateDTO in curRelatedPlans)
+            {
+                relatedPlans.Add(new
+                    Tuple<string, string, string>(
+                    publishPlanTemplateDTO.Name,
+                    publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
+                    CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
+                    + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+            }
+
+            await _templateGenerator.Generate(new PlanCategoryTemplate(), pageName, new Dictionary<string, object>
+            {
+                ["Name"] = pageName,
+                ["Tags"] = tag.TagsWithIcons,
+                ["RelatedPlans"] = relatedPlans
+            });
         }
 
         /// <summary>

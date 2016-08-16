@@ -28,14 +28,17 @@ namespace TerminalSqlUtilities
             }
         }
 
-        public ColumnInfo(TableInfo tableInfo, string columnName, DbType dbType)
+        public ColumnInfo(TableInfo tableInfo, string columnName, DbType dbType, bool isNullable = true)
         {
             _tableInfo = tableInfo;
             _columnName = columnName;
             _dbType = dbType;
+            _isNullable = isNullable;
         }
 
         public TableInfo TableInfo { get { return _tableInfo; } }
+
+        public bool isNullable { get { return _isNullable; } }
 
         public string ColumnName { get { return _columnName; } }
 
@@ -65,5 +68,6 @@ namespace TerminalSqlUtilities
         private readonly TableInfo _tableInfo;
         private readonly string _columnName;
         private readonly DbType _dbType;
+        private bool _isNullable = true;
     }
 }

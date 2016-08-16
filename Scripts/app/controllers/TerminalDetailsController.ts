@@ -73,7 +73,10 @@ module dockyard.controllers {
                     return;
                 }
 
-                if (!$scope.terminal.isFr8OwnTerminal && $scope.terminal.devUrl.indexOf('localhost') >= 0) {
+                if (!$scope.terminal.isFr8OwnTerminal
+                    && $scope.terminal.devUrl
+                    && $scope.terminal.devUrl.indexOf('localhost') >= 0) {
+
                     let msg: string = "";
                     if ($scope.canEditAllTerminals) {
                         msg += "For non-Fr8 own terminals ";
@@ -83,7 +86,7 @@ module dockyard.controllers {
                     return;
                 }
 
-                if ($scope.terminal.prodUrl.indexOf('localhost') >= 0) {
+                if ($scope.terminal.prodUrl && $scope.terminal.prodUrl.indexOf('localhost') >= 0) {
                     $scope.errorMessage = 'Production URL' + this.StringService.terminal["localhost_prod"];
                     return;
                 }
@@ -98,7 +101,6 @@ module dockyard.controllers {
                 //        return;
                 //    }
                 //}
-
                 if ($scope.approved) {
                     if ($scope.terminal.participationState != enums.ParticipationState.Approved) {
                         this.showConfigurationDialog($event, "approve", $scope.terminal.name).then(() => {
@@ -154,6 +156,7 @@ module dockyard.controllers {
                 this.$state.go('terminals');
             })
                 .catch((e) => {
+                    console.log('Terminal update failed: ' + e.data.message);
                     switch (e.status) {
                         case 400:
                             that.$scope.errorMessage = that.StringService.terminal["error400"];

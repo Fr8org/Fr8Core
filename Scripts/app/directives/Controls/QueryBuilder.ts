@@ -39,6 +39,7 @@ module dockyard.directives {
         addCondition: () => void;
         removeCondition: (index: number) => void;
         addRowText: string;
+        change: () => (field: model.ControlDefinitionDTO) => void;
     }
 
     export function QueryBuilder(): ng.IDirective {
@@ -51,7 +52,8 @@ module dockyard.directives {
                 rows: '=?',
                 requestUpstream: '=?',
                 isDisabled: '=',
-                addRowText: '@'
+                addRowText: '@',
+                change: '='
             },
             controller: ['$scope', '$timeout', 'CrateHelper','UpstreamExtractor',
                 function (
