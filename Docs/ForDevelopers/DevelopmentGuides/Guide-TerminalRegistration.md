@@ -11,7 +11,9 @@ In order to register your terminal, do the following:
 * Paste the public URL you've established for your Terminal into the "Your Terminal's Public Endpoint" text field.
 
 Example endpoints:
+
 myterminal.mydomain.com:2940
+
 http://inconshreveable.ngrok.io
 
 When you click save, the Hub will _immediately_ attempt to call that endpoint with /discover, and will expect to get a proper [discovery response.](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md), so don't bother trying to register your Terminal until you've verified locally that you can shoot it a discover request. Our [Swagger tools](http://dev-terminals.fr8.co:25923/swagger/ui/index#!/Terminal/Terminal_Get) might help here.
