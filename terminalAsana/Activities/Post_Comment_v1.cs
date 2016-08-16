@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Infrastructure;
@@ -106,38 +107,52 @@ namespace terminalAsana.Activities
         protected override void InitializeInternalState()
         {
             base.InitializeInternalState();
-            
-            //_workspaces = new Workspaces(OAuthCommunicator, _parameters);
-            //_projects = new Projects(OAuthCommunicator, _parameters);
-            //_tasks = new Tasks(OAuthCommunicator, _parameters);
-            //_stories = new Stories(OAuthCommunicator, _parameters);
         }
 
         public override async Task Initialize()
         {
-            var workspaces = await AClient.Workspaces.GetAsync();
-            ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();           
+            try
+            {
+                var workspaces = await AClient.Workspaces.GetAsync();
+                ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+            }
+            catch (Exception exp)
+            {
+                Logger.GetLogger("terminalAsana").Error("Error ocured while initializing Post_Comment_v1 Asana activity", exp);
+                throw exp;
+            }
+            
         }
 
         public override async Task FollowUp()
         {
-            if (!ActivityUI.Workspaces.Value.IsNullOrWhiteSpace())
+            try
             {
-                var projects = await AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.Workspaces.Value});
-                ActivityUI.Projects.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+                if (!ActivityUI.Workspaces.Value.IsNullOrWhiteSpace())
+                {
+                    var projects = await AClient.Projects.Get(new AsanaProjectQuery() { Workspace = ActivityUI.Workspaces.Value });
+                    ActivityUI.Projects.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
 
-                IEnumerable<AsanaTask> tasks;
-                if (!ActivityUI.Projects.Value.IsNullOrWhiteSpace())
-                {
-                    tasks = await AClient.Tasks.GetAsync(new AsanaTaskQuery() { Project = ActivityUI.Projects.Value });
+                    IEnumerable<AsanaTask> tasks;
+                    if (!ActivityUI.Projects.Value.IsNullOrWhiteSpace())
+                    {
+                        tasks = await AClient.Tasks.GetAsync(new AsanaTaskQuery() { Project = ActivityUI.Projects.Value });
+                    }
+                    else
+                    {
+                        tasks = await AClient.Tasks.GetAsync(new AsanaTaskQuery() { Workspace = ActivityUI.Workspaces.Value });
+                    }
+
+                    ActivityUI.Tasks.ListItems = tasks.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
                 }
-                else
-                {
-                    tasks = await AClient.Tasks.GetAsync(new AsanaTaskQuery() { Workspace = ActivityUI.Workspaces.Value });
-                }
-                
-                ActivityUI.Tasks.ListItems = tasks.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
             }
+            catch (Exception exp)
+            {
+                Logger.GetLogger("terminalAsana").Error("Error ocured while followup configuring Post_Comment_v1 Asana activity", exp);
+                throw exp;
+            }
+            
+            
         }
 
         protected override Task Validate()
