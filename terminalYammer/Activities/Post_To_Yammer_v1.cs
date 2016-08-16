@@ -92,11 +92,17 @@ namespace terminalYammer.Actions
 
         public override async Task Initialize()
         {
+            AddControls(new ActivityUi().Controls);
             var oauthToken = AuthorizationToken.Token;
             var groups = await _yammer.GetGroupsList(oauthToken);
+            var groupsControll = ConfigurationControls.Controls.OfType<DropDownList>().FirstOrDefault();
+            foreach (var group in groups)
+            {
+                groupsControll.ListItems.Add(new ListItem() { Key = group.Key, Value = group.Value });
+            }
+
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
-            Storage.Clear();
-            AddControls(new ActivityUi().Controls);
+
             Storage.Add(crateAvailableGroups);
         }
 
