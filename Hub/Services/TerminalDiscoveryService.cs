@@ -22,7 +22,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using System.Linq.Expressions;
 using Hub.Exceptions;
 using StructureMap;
-
+using System.Net.Http;
+using System.Net.Http.Formatting;
 namespace Hub.Services
 {
     public class TerminalDiscoveryService : ITerminalDiscoveryService
@@ -142,37 +143,44 @@ namespace Hub.Services
                     throw new Fr8InsifficientPermissionsException("Insufficient permissions to manage a Fr8Own terminal.",
                         "Terminal URL cannot contain the string 'localhost'. Please correct your terminal URL and try again.");
                 }
+            }
 
-                // Validating discovery response 
-                if (terminal.ParticipationState == ParticipationState.Approved ||
-                    terminal.ParticipationState == ParticipationState.Unapproved)
+            // Validating discovery response 
+            if (terminal.ParticipationState == ParticipationState.Approved ||
+                terminal.ParticipationState == ParticipationState.Unapproved)
+            {
+                if (!curEndpoint.Contains("://localhost"))
                 {
-                    if (!curEndpoint.Contains("://localhost"))
+                    string errorMessage = "Terminal at the specified URL did not return a valid response to the discovery request.";
+                    try
                     {
-                        string errorMessage = "Terminal at the specified URL did not return a valid response to the discovery request.";
-                        try
-                        {
-                            var terminalRegistrationInfo = await SendDiscoveryRequest(curEndpoint, null);
-                            if (terminalRegistrationInfo == null)
-                            {
-                                Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
-                                throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessage, errorMessage);
-                            }
-                            if (string.IsNullOrEmpty(terminalRegistrationInfo.Definition.Name))
-                            {
-                                string validationErrorMessage = $"Validation of terminal at '{curEndpoint}' failed: Terminal Name is empty.";
-                                Logger.Info(validationErrorMessage);
-                                throw new Fr8ArgumentException(nameof(terminal.Endpoint), validationErrorMessage, validationErrorMessage);
-                            }
-                        }
-                        catch (Exception ex)
+                        var terminalRegistrationInfo = await SendDiscoveryRequest(curEndpoint, null);
+                        if (terminalRegistrationInfo == null)
                         {
                             Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
-                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), ex.ToString(), errorMessage);
+                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessage, errorMessage);
                         }
+                        if (string.IsNullOrEmpty(terminalRegistrationInfo.Definition.Name))
+                        {
+                            string validationErrorMessage = $"Validation of terminal at '{curEndpoint}' failed: Terminal Name is empty.";
+                            Logger.Info(validationErrorMessage);
+                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), validationErrorMessage, validationErrorMessage);
+                        }
+                    }
+                    catch (TaskCanceledException ex)
+                    {
+                        string errorMessase = $"Terminal at '{curEndpoint}' did not respond to a /discovery request within 10 sec.";
+                        Logger.Info(errorMessase);
+                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessase, "The terminal did not respond to a discovery request within 10 seconds.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
+                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), ex.ToString(), errorMessage);
                     }
                 }
             }
+
 
             var terminalDo = new TerminalDO();
             terminalDo.Endpoint = terminal.Endpoint = curEndpoint;
@@ -278,6 +286,11 @@ namespace Hub.Services
             await Task.WhenAll(discoverTerminalsTasks);
         }
 
+        private async Task<StandardFr8TerminalCM> SendDiscoveryRequest(string terminalUrl, Dictionary<string, string> headers = null)
+        {
+            return await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl + "/discover", UriKind.Absolute), null, headers);
+        }
+
         public async Task<bool> Discover(TerminalDTO terminal, bool isUserInitiated)
         {
             TerminalDO existentTerminal = null;
@@ -326,10 +339,23 @@ namespace Hub.Services
             return terminalUrl.TrimEnd('/', '\\');
         }
 
-        private async Task<StandardFr8TerminalCM> SendDiscoveryRequest(string terminalUrl, Dictionary<string, string> headers = null)
-        {
-            return await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl + "/discover", UriKind.Absolute), null, headers);
-        }
+        //private async Task<StandardFr8TerminalCM> SendDiscoveryRequest(string terminalUrl, Dictionary<string, string> headers = null)
+        //{
+        //    // Use a custom HttpClient to query the terminal with a low timeout (10 sec)
+        //    var innerClient = new HttpClient();
+        //    innerClient.Timeout = new TimeSpan(0, 0, 10);
+        //    try
+        //    {
+        //        var response = await innerClient.GetAsync(new Uri(terminalUrl + "/discover", UriKind.Absolute));
+        //        response.EnsureSuccessStatusCode();
+        //        var responseContent = await response.Content.ReadAsStringAsync();
+        //        return JsonConvert.DeserializeObject<StandardFr8TerminalCM>(responseContent);
+        //    }
+        //    catch (Exception) // Expect an exception if the request failed
+        //    {
+        //        throw;
+        //    }
+        //}
 
         private async Task<bool> DiscoverInternal(TerminalDO terminalDo, bool isUserInitiated)
         {
