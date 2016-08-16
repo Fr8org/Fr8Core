@@ -56,8 +56,6 @@ namespace terminalDocuSign.Activities
             EventSubscriptions.Manufacturer = "DocuSign";
             EventSubscriptions.AddRange(DocuSignEventNames.GetAllEventNames());
 
-            Storage.Add(docuSignUserCrate);
-
             return Task.FromResult(0);
         }
 
