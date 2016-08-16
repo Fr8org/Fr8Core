@@ -1,13 +1,8 @@
 Security System Walkthrough
 ===========================
 
-Before continue reading this, make sure you are familiar with these given topics:
+Before continue reading this, make sure you are familiar with security from an [administrative point of view](/Docs/SecurityHome.md). 
 
-[Security Overview](/Docs/Security/SecurityOverview.md)
-
-[Profiles and PermissionSets](/Docs/Security/Profiles.md)
-
-[Internals](/Docs/Security/SecurityInternals.md)
 
 ##Permissions
 
