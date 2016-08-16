@@ -199,14 +199,14 @@ namespace Hub.Services
             }
         }
 
-        public ActivityCategoryDO GetByName(string name)
+        public ActivityCategoryDO GetByName(string name, bool throwIfNotFound = true)
         {
             Initialize();
 
             lock (_activityCategories)
             {
                 var category = _activityCategories.Values.Where(x => x.Name == name).FirstOrDefault();
-                if (category == null)
+                if (category == null && throwIfNotFound)
                 {
                     throw new KeyNotFoundException(string.Format("Can't find activity category with name {0}", name));
                 }
