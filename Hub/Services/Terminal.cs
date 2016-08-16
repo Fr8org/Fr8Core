@@ -178,7 +178,7 @@ namespace Hub.Services
             }
         }
 
-        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
+        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
         {
             Initialize();
 
@@ -192,9 +192,8 @@ namespace Hub.Services
 
             return new Dictionary<string, string>
             {
-                {"Fr8HubCallbackSecret", terminal.Secret},
-                {"Fr8HubCallBackUrl", _serverUrl},
-                {"Fr8UserId", userId }
+                {"TerminalKey", terminal.Secret},
+                {"CurrentHubUrl", _serverUrl}
             };
         }
 
@@ -259,13 +258,13 @@ namespace Hub.Services
             return solutionPages;
         }
 
-        public async Task<TerminalDO> GetByToken(string token)
+        public async Task<TerminalDO> GetByKey(string key)
         {
             Initialize();
 
             lock (_terminals)
             {
-                return _terminals.Values.FirstOrDefault(t => t.Secret == token);
+                return _terminals.Values.FirstOrDefault(t => t.Secret == key);
             }
         }
 

@@ -34,7 +34,7 @@ namespace HubWeb.Infrastructure
             _authenticationContext = new HttpAuthenticationContext(context, null);
 
             HttpRequestHeaders headers = request.Headers;
-            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8-TOKEN", "key=test, user=test");
+            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8", "terminal_key=test");
             headers.Authorization = authorization;
         }
 
@@ -51,7 +51,7 @@ namespace HubWeb.Infrastructure
         public async Task ShouldSetCurrentUser_WithCorrectAuthentication()
         {
             var terminalService = new Mock<ITerminal>();
-            terminalService.Setup(x => x.GetByToken(It.IsAny<string>())).ReturnsAsync(new TerminalDO());
+            terminalService.Setup(x => x.GetByKey(It.IsAny<string>())).ReturnsAsync(new TerminalDO());
             ObjectFactory.Configure(o => o.For<ITerminal>().Use(terminalService.Object));
 
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
@@ -63,7 +63,7 @@ namespace HubWeb.Infrastructure
         public async Task ShouldntSetCurrentUser_WithInCorrectAuthentication()
         {
             HttpRequestHeaders headers = _authenticationContext.Request.Headers;
-            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8-TOKEN", "sdasdasd");
+            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8", "sdasdasd");
             headers.Authorization = authorization;
 
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
@@ -74,7 +74,7 @@ namespace HubWeb.Infrastructure
         public async Task ShouldntSetCurrentUser_WithInvalidTerminalToken()
         {
             var terminalService = new Mock<ITerminal>();
-            terminalService.Setup(x => x.GetByToken(It.IsAny<string>())).ReturnsAsync(null);
+            terminalService.Setup(x => x.GetByKey(It.IsAny<string>())).ReturnsAsync(null);
             ObjectFactory.Configure(o => o.For<ITerminal>().Use(terminalService.Object));
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
             Assert.AreEqual(null, _authenticationContext.Principal);

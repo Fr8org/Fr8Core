@@ -98,10 +98,10 @@ namespace terminalGoogle.Services
                 var plans = await _hubCommunicator.GetPlansByName("MonitorSubmissionTerminalForm", PlanVisibility.Internal);
                 var tokens = await _hubCommunicator.GetTokens();
 
-                googleTokens = tokens.Where(t => t.Name == "terminalGoogle").FirstOrDefault();
-                atlassianTokens = tokens.Where(t => t.Name == "terminalAtlassian").FirstOrDefault();
-                slackTokens = tokens.Where(t => t.Name == "terminalSlack").FirstOrDefault();
-                if (plans.Count() == 0)
+                googleTokens = tokens.FirstOrDefault(t => t.Name == "terminalGoogle");
+                atlassianTokens = tokens.FirstOrDefault(t => t.Name == "terminalAtlassian");
+                slackTokens = tokens.FirstOrDefault(t => t.Name == "terminalSlack");
+                if (!plans.Any())
                 {
                     await ConfigureAndRunPlan();
                 }

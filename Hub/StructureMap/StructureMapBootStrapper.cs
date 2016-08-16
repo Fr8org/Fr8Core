@@ -250,14 +250,14 @@ namespace Hub.StructureMap
                 _terminal = new Terminal(configRepository, securityServices);
             }
 
-            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
             {
                 return new Dictionary<string, string>();
             }
 
-            public Task<TerminalDO> GetByToken(string token)
+            public Task<TerminalDO> GetByKey(string key)
             {
-                return _terminal.GetByToken(token);
+                return _terminal.GetByKey(key);
             }
 
             public IEnumerable<TerminalDO> GetAll()

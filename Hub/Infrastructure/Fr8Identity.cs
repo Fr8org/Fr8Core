@@ -4,10 +4,9 @@ namespace Hub.Infrastructure
 {
     public sealed class Fr8Identity : ClaimsIdentity
     {
-        public Fr8Identity(string name, string userId) : base("hmac")
+        public Fr8Identity(string terminalKey) : base("FR8")
         {
-            AddClaim(new Claim(ClaimTypes.Name, name));
-            AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+            AddClaim(new Claim("TerminalKey", terminalKey));
         }
     }
 }

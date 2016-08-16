@@ -22,34 +22,30 @@ namespace HubWeb.Infrastructure_HubWeb
     public class Fr8TerminalAuthenticationAttribute : Attribute, IAuthenticationFilter
     {
         private readonly ITerminal _terminal;
-        private readonly bool _allowRequestsWithoutUser;
-        public Fr8TerminalAuthenticationAttribute(bool allowRequestsWithoutUser = false)
+        public Fr8TerminalAuthenticationAttribute()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-            _allowRequestsWithoutUser = allowRequestsWithoutUser;
         }
 
-        protected void Success(HttpAuthenticationContext context, string terminalToken, string userId)
+        protected void Success(HttpAuthenticationContext context, string terminalKey)
         {
-            var identity = new Fr8Identity("terminal-" + terminalToken, userId);
-            var principle = new Fr8Principal(terminalToken, identity, new[] { "Terminal" });
+            var identity = new Fr8Identity(terminalKey);
+            var principle = new Fr8Principal(terminalKey, identity, new[] { "Terminal" });
             Thread.CurrentPrincipal = principle;
             context.Principal = principle;
             if (HttpContext.Current != null)
             {
                 HttpContext.Current.User = principle;
             }
-
         }
 
         private Dictionary<string, string> ExtractTokenParts(HttpRequestMessage request)
         {
-            if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("FR8-TOKEN", StringComparison.OrdinalIgnoreCase)
+            if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("FR8", StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrEmpty(request.Headers.Authorization.Parameter))
             {
                 return null;
             }
-
             string tokenString = request.Headers.Authorization.Parameter;
             string[] authenticationParameters = tokenString.Split(',');
             var headerParams = new Dictionary<string, string>();
@@ -78,41 +74,18 @@ namespace HubWeb.Infrastructure_HubWeb
             var request = context.Request;
 
             var headerParams = ExtractTokenParts(request);
-            if (headerParams == null)
-            {
-                return;
-            }
-
-            string terminalToken = headerParams.FirstOrDefault(x => x.Key == "key").Value;
-            var userId = headerParams.FirstOrDefault(x => x.Key == "user").Value;
+            string terminalKey = headerParams?.FirstOrDefault(x => x.Key == "terminal_key").Value;
             //unknown terminal
-            if (terminalToken == null)
+            if (terminalKey == null)
             {
                 return;
             }
-
-            //we should check if this user allowed this terminal somewhere around here
-            if (string.IsNullOrEmpty(userId))
-            {
-                if (_allowRequestsWithoutUser)
-                {
-                    //lets assume our user is the terminal
-                    userId = terminalToken;
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-
-            var terminal = await _terminal.GetByToken(terminalToken);
+            var terminal = await _terminal.GetByKey(terminalKey);
             if (terminal == null)
             {
                 return;
             }
-
-            Success(context, terminalToken, userId);
+            Success(context, terminalKey);
         }
 
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
