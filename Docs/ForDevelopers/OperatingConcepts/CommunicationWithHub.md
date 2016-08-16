@@ -24,6 +24,7 @@ Here are some additional notes about Create Plan that aren't covered in the swag
 Note: id, lastUpdated, planState and startingSubPlanId properties shouldn't live inside PlanEmptyDTO - move them to PlanFullDTO instead
 
 Note2: we kind of never use category on plans. are we planning to?
+Note: we shouldn't receive plan state from terminals or users. This is our internal property.
 
 #### Available Plan States
 
@@ -63,13 +64,13 @@ This endpoint loads plans by given name or by given activity id. Generally used 
 Note: This endpoint is confusing and we probably should refactor our codes to use GetPlansByQuery endpoint. There 2 different get plans endpoints. we should DRY it
 
 
-### DeletePlan
+### 5. DeletePlan
 
 This endpoint deletes given plan by id.
 
 ***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Delete
 
-### UpdateCreatePlan
+### 6. UpdateCreatePlan
 
 This endpoints updates given plan or it creates a new plan. If you pass a solutionName to this endpoint, it creates a solution.
 
@@ -79,36 +80,70 @@ Note: we should update this endpoint. it should just create the given plan. We s
 Multi purpose endpoints are confusing.
 
 And we shouldn't make users post LastUpdated property. This is for our internal usage. we should simplify API dtos
+We kind of never use categories on plans. we probably should remove them.
 
-#### Available Categories
+#### Tags
 
-    "Solutions",
-    ""
+Tags lets terminals to tag their auto created plans. This is useful to check if an auto plan was already created on the Hub.
 
-#### Available Visibility Values
+#### Available Plan States
 
+    "Inactive",
+    "Active"
 
-
-
-### GetActivityTemplates
-
-
-
-
-### ConfigureActivity
-
-### SaveActivity
-
-### CreateAndConfigureActivity
-
-### DeleteActivity
-
-### DeleteExistingChildNodesFromActivity
+Note: we are sometimes receiving plan state as int and sometimes string. we should fix that.
+Note: We shouldn't allow plan states modified externally. this is for internal usage. we should remove that.
 
 
-### GetPayload
+### 7. GetActivityTemplates
+
+This endpoint lists the Activity Templates in their corresponding categories.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/ActivityTemplates/ActivityTemplates_Get_0
+
+Note: This endpoint gives duplicate activity template data. Currently categories contain activities and activities contain categories. this endpoint should be simplified to give a list of activity templates (templates should contain their categories)
+
+### 8. ConfigureActivity
+
+This endpoint requests hub to configure an activity.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Activities/Activities_Configure
+
+Note: we should probably rename parameters for this endpoint. curActionDesignDTO isn't really helpful. And maybe we should simplify required data for this endpoint. only crateStorage and activity id should be enough to configure an activity. Currently we are asking for a complete activityDTO which includes some unnecessary stuff like planid and etc.
+
+### 9. SaveActivity
+
+This endpoint save modifications to an activity to the Hub.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Activities/Activities_Save
+
+Note: rename parameters
+
+### 10. CreateActivity
+
+This endpoint creates and configures given activity.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Activities/Activities_Create
+
+### 11. DeleteActivity
+
+This endpoint deletes given activity. This endpoint can also be used to delete only child activities of current activity by setting delete_child_nodes flag.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Activities/Activities_Delete
+
+### 12. GetPayload
+
+This endpoint gets current container's payload from the Hub.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Containers/Containers_payload
 
 ### GetTokens
+
+This endpoint gets all tokens of specified user.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Authentication/Authentication_tokens
+
+Note: really??? this is a major security flaw
 
 ### GetCurrentUser
 
