@@ -20,32 +20,53 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'TerminalService',
-            '$modalInstance'
+            '$modalInstance',
+            'StringService'
         ];
 
         constructor(
             private $scope: ITerminalFormScope,
             private TerminalService: services.ITerminalService,
-            private $modalInstance: any) {
+            private $modalInstance: any,
+            private StringService: dockyard.services.IStringService) {
+                $scope.terminal = <interfaces.ITerminalVM>{};
+                $scope.terminal.endpoint = "https://";
                 $scope.cancel = <() => void>angular.bind(this, this.cancelForm);
                 $scope.submit = isValid => {
-                    if (isValid) {
-                        $scope.processing = true;
-                        $scope.terminal.devUrl = $scope.terminal.endpoint;
+                if (isValid) {
+                    $scope.processing = true;
+                    $scope.terminal.devUrl = $scope.terminal.endpoint;
 
-                        var result = TerminalService.save($scope.terminal);
-                        result.$promise
-                            .then(terminal => {
-                                this.$modalInstance.close(terminal);
-                                $scope.processing = false;
-                            })
-                            .catch(e => {
-                                $scope.errorMessage = "Terminal create error";
-                                $scope.processing = false;
-                                console.log(e.statusText);
-                            });
-                    }
-                };
+                    var result = TerminalService.save($scope.terminal);
+                    result.$promise
+                        .then(terminal => {
+                            this.$modalInstance.close(terminal);
+                            $scope.processing = false;
+                        })
+                        .catch(e => {
+                            console.log('Terminal addition failed: ' + e.data.message);
+                            $scope.processing = false;
+                            switch (e.status) {
+                                case 400:
+                                    this.$scope.errorMessage = this.StringService.terminal["error400"];
+                                    if (e.data.message) {
+                                        this.$scope.errorMessage += " Additional information: " + e.data.message;
+                                    }
+                                    break;
+                                case 404:
+                                    this.$scope.errorMessage = this.StringService.terminal["error404"];
+                                    break;
+                                case 409:
+                                    this.$scope.errorMessage = this.StringService.terminal["error409"];
+                                    break;
+                                default:
+                                    this.$scope.errorMessage = this.StringService.terminal["error"];
+                                    break;
+                            }
+
+                        });
+                }
+            };
         }
 
         private cancelForm() {
