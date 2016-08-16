@@ -1,10 +1,6 @@
 ## Registering your Terminal with a Hub
 
 
-
-Register your Terminal
-------------------------------
-
 Before your terminal can be used with any Hub, it has to be registered.Registering your Terminal with a Hub causes the Hub to:
 1) send a /discover request to your Terminal immediately, and each time its starts up thereafter
 2) use the response to that /discover request to add your Terminal's Activitiees to the set of Activities made available to client users of that Hub.
