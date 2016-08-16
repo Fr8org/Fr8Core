@@ -53,7 +53,7 @@ namespace Hub.Services
             _eventReporter = eventReporter;
             _unitOfWorkFactory = unitOfWorkFactory;
             _securityService = securityService;
-            
+
             var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
             var domainName = configRepository.Get("ServerDomainName", String.Empty);
             var domainPort = configRepository.Get<int?>("ServerPort", null);
@@ -145,41 +145,41 @@ namespace Hub.Services
                 }
             }
 
-                            // Validating discovery response 
-                if (terminal.ParticipationState == ParticipationState.Approved ||
-                    terminal.ParticipationState == ParticipationState.Unapproved)
+            // Validating discovery response 
+            if (terminal.ParticipationState == ParticipationState.Approved ||
+                terminal.ParticipationState == ParticipationState.Unapproved)
+            {
+                if (!curEndpoint.Contains("://localhost"))
                 {
-                    if (!curEndpoint.Contains("://localhost"))
+                    string errorMessage = "Terminal at the specified URL did not return a valid response to the discovery request.";
+                    try
                     {
-                        string errorMessage = "Terminal at the specified URL did not return a valid response to the discovery request.";
-                        try
-                        {
-                            var terminalRegistrationInfo = await SendDiscoveryRequest(curEndpoint, null);
-                            if (terminalRegistrationInfo == null)
-                            {
-                                Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
-                                throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessage, errorMessage);
-                            }
-                            if (string.IsNullOrEmpty(terminalRegistrationInfo.Definition.Name))
-                            {
-                                string validationErrorMessage = $"Validation of terminal at '{curEndpoint}' failed: Terminal Name is empty.";
-                                Logger.Info(validationErrorMessage);
-                                throw new Fr8ArgumentException(nameof(terminal.Endpoint), validationErrorMessage, validationErrorMessage);
-                            }
-                        }
-                        catch (TaskCanceledException ex)
-                        {
-                            string errorMessase = $"Terminal at '{curEndpoint}' did not respond to a /discovery request within 10 sec.";
-                            Logger.Info(errorMessase);
-                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessase, "The terminal did not respond to a discovery request within 10 seconds.");
-                        }
-                        catch (Exception ex)
+                        var terminalRegistrationInfo = await SendDiscoveryRequest(curEndpoint, null);
+                        if (terminalRegistrationInfo == null)
                         {
                             Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
-                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), ex.ToString(), errorMessage);
+                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessage, errorMessage);
+                        }
+                        if (string.IsNullOrEmpty(terminalRegistrationInfo.Definition.Name))
+                        {
+                            string validationErrorMessage = $"Validation of terminal at '{curEndpoint}' failed: Terminal Name is empty.";
+                            Logger.Info(validationErrorMessage);
+                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), validationErrorMessage, validationErrorMessage);
                         }
                     }
+                    catch (TaskCanceledException ex)
+                    {
+                        string errorMessase = $"Terminal at '{curEndpoint}' did not respond to a /discovery request within 10 sec.";
+                        Logger.Info(errorMessase);
+                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessase, "The terminal did not respond to a discovery request within 10 seconds.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
+                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), ex.ToString(), errorMessage);
+                    }
                 }
+            }
 
 
             var terminalDo = new TerminalDO();
