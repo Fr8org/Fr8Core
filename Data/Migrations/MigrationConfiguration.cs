@@ -71,7 +71,6 @@ namespace Data.Migrations
                 uow.SaveChanges();
 
                 AddPredefinedActivityCategories(uow);
-                AddTestUser(uow);
                 RenameActivity(uow);
                 RegisterTerminals(uow, migrationContainer);
             }

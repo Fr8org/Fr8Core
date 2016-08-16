@@ -230,7 +230,7 @@ namespace HubTests.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _fr8Account.GetExisting(null, CloudConfigurationManager.GetSetting("TestUserAccountName");
+                _fr8Account.GetExisting(null, CloudConfigurationManager.GetSetting("TestUserAccountName"));
             }
         }
         #endregion
