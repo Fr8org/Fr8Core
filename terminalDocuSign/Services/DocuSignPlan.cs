@@ -154,9 +154,13 @@ namespace terminalDocuSign.Services
                 if (existingPlans.Count > 0)
                 {
                     //active MADSE plans are likely related to another DS account
-                    existingPlans = existingPlans.Where(a => a.PlanState == PlanState.IntToString(PlanState.Inactive)).ToList();
+                    var plansForRemoval = existingPlans
+                        .Where(val =>
+                    (val.PlanState == PlanState.IntToString(PlanState.Inactive)) || //or all from above
+                    !(val.SubPlans.Any() && val.SubPlans.ElementAt(0).Activities.Any() &&
+                    val.SubPlans.ElementAt(0).Activities[1].ActivityTemplate.Name == "Save_All_Payload_To_Fr8_Warehouse")).ToList();
 
-                    foreach (var plan in existingPlans)
+                    foreach (var plan in plansForRemoval)
                     {
                         await hubCommunicator.DeletePlan(plan.Id);
                     }
