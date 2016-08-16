@@ -1,5 +1,6 @@
-Security Home
+Administrative Security Home
 =============
+For Security from the Developer point of view, see [this]()
 
 [Overview](/Docs/Security/SecurityOverview.md)
 
