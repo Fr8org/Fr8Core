@@ -190,11 +190,6 @@
                     });
             };
 
-            $scope.generatePages = function () {
-                var url = urlPrefix + '/api/v1/plan_templates/generatepages';
-                $http.post(url, null);
-            }
-
             $scope.toggleCategorySelection = function (ac) {
                 if (isCategorySelected(ac)) {
                     removeCategorySelection(ac);
