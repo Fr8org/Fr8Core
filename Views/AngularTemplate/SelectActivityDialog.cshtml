@@ -8,8 +8,8 @@
 <div class="modal-body activity-chooser-select-dialog">
     <div ng-show="!selectedWebService" class="show-hide-transition web-service-list">
         <div ng-repeat="webService in webServiceActivities" ng-click="selectWebService(webService)" style="margin: 0 0 5px 0; cursor: pointer;">
-            <img ng-src="{{webService.webServiceIconPath}}" style="width: 48px; height: 48px;" />
-            <span style="font-size: 1.3em; margin-left: 10px;">{{webService.webServiceName}}</span>
+            <img ng-src="{{webService.iconPath}}" style="width: 48px; height: 48px;" />
+            <span style="font-size: 1.3em; margin-left: 10px;">{{webService.name}}</span>
         </div>
     </div>
     <div ng-show="selectedWebService" class="show-hide-transition activity-list">

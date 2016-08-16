@@ -15,8 +15,12 @@ using Hub.Managers;
 using System.Web.Http.Description;
 using System.Collections.Generic;
 using System.Net;
+using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
+using Hub.Services;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers.Api
@@ -25,9 +29,18 @@ namespace HubWeb.Controllers.Api
     {
         private readonly IManifestRegistryMonitor _manifestRegistryMonitor;
         private readonly IRestfulServiceClient _restfulServiceClient;
+        private readonly IUnitOfWorkFactory _uowFactory;
+        private readonly IPusherNotifier _pusher;
+        private readonly ISecurityServices _securityServices;
         private readonly string _systemUserAccountId;
 
-        public ManifestRegistryController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository, IRestfulServiceClient restfulServiceClient)
+        public ManifestRegistryController(
+            IManifestRegistryMonitor manifestRegistryMonitor,
+            IConfigRepository configRepository,
+            IRestfulServiceClient restfulServiceClient,
+            IUnitOfWorkFactory uowFactory,
+            IPusherNotifier pusher,
+            ISecurityServices securityServices)
         {
             if (manifestRegistryMonitor == null)
             {
@@ -40,6 +53,9 @@ namespace HubWeb.Controllers.Api
             _systemUserAccountId = configRepository.Get("SystemUserEmail");
             _manifestRegistryMonitor = manifestRegistryMonitor;
             _restfulServiceClient = restfulServiceClient;
+            _uowFactory = uowFactory;
+            _pusher = pusher;
+            _securityServices = securityServices;
         }
 
         /// <summary>
@@ -50,9 +66,9 @@ namespace HubWeb.Controllers.Api
         [ResponseType(typeof(List<ManifestDescriptionDTO>))]
         public IHttpActionResult Get()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
-                
+
                 var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                 var list = manifestDescriptions.Select(m => new ManifestDescriptionDTO
                 {
@@ -102,7 +118,7 @@ namespace HubWeb.Controllers.Api
             ManifestDescriptionCM manifestDescription = Mapper.Map<ManifestDescriptionCM>(description);
             manifestDescription.Id = NextId();
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
                 uow.MultiTenantObjectRepository.Add(manifestDescription, _systemUserAccountId);
 
@@ -123,23 +139,55 @@ namespace HubWeb.Controllers.Api
         public async Task<IHttpActionResult> RunMonitoring()
         {
             //We don't need to wait for the result as the purpose of this method is just to initiate a start (as a double-check measure)
-            await _manifestRegistryMonitor.StartMonitoringManifestRegistrySubmissions();
+            var currentUser = _securityServices.GetCurrentUser();
+            _pusher.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericInfo,
+                Subject = "Manifest Registry Monitoring",
+                Message = "Preparing to launch manifest registry monitoring...",
+                Collapsed = false
+            }, currentUser);
+            var resultNotification = new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericSuccess,
+                Subject = "Manifest Registry Monitoring",
+                Collapsed = true
+            };
+            ManifestRegistryMonitorResult result;
+            try
+            {
+                result = await _manifestRegistryMonitor.StartMonitoringManifestRegistrySubmissions();
+                resultNotification.Message = result.IsNewPlan
+                    ? $"New plan with Id {result.PlanId} was created and started to monitor manifest registry"
+                    : $"An existing plan with Id {result.PlanId} was used to monitor manifest registry";
+            }
+            catch (Exception ex)
+            {
+                resultNotification.NotificationType = NotificationType.GenericFailure;
+                resultNotification.Message = $"Failed to manually start manifest registry monitoring. Reason - {ex.Message}. See incidents and error logs for more details";
+                Logger.GetLogger().Error("Failed to manually start manifest registry monitoring", ex);
+                throw;
+            }
+            finally
+            {
+                _pusher.NotifyUser(resultNotification, currentUser);
+            }
             return Ok();
         }
 
         private string NextId()
         {
             int result = 1;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
                 var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                 if (!manifestDescriptions.Any())
                 {
                     return result.ToString();
                 }
-                result = manifestDescriptions.Select(x => int.Parse(x.Id)).OrderByDescending(x => x).First() + 1;                
+                result = manifestDescriptions.Select(x => int.Parse(x.Id)).OrderByDescending(x => x).First() + 1;
             }
             return result.ToString();
-        }        
+        }
     }
 }
