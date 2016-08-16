@@ -29,7 +29,7 @@ namespace Data.Entities
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public Boolean TestAccount { get; set; }
-
+        public bool SystemAccount { get; set; }
         //Booker only. Needs to be nullable otherwise DefaultValue doesn't work
         public bool? Available { get; set; }
 

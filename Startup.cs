@@ -79,7 +79,6 @@ namespace HubWeb
             IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
             incidentReporter.SubscribeToAlerts();
             
-            StartupMigration.CreateSystemUser();
             StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();

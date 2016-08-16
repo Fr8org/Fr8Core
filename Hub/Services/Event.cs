@@ -26,12 +26,14 @@ namespace Hub.Services
         private readonly ITerminal _terminal;
         private readonly IPlan _plan;
         private ICrateManager _crateManager;
+        private IFr8Account _fr8Account;
 
         public Event()
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _plan = ObjectFactory.GetInstance<IPlan>();
+            _fr8Account = ObjectFactory.GetInstance<IFr8Account>();
         }
         /// <see cref="IEvent.HandleTerminalIncident"/>
         public void HandleTerminalIncident(LoggingDataCM incident)
@@ -68,11 +70,13 @@ namespace Hub.Services
                                 $"manufacturer - {inboundEvent.Manufacturer} ");
                 return;
             }
-            // Fetching values from Config file is not working on CI.
-            //var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            //string systemUserEmail = configRepository.Get("SystemUserEmail");
 
+            var systemUser = _fr8Account.GetSystemUser();
             string systemUserEmail = "system1@fr8.co";
+            if (systemUser != null)
+            {
+                systemUserEmail = systemUser.UserName;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

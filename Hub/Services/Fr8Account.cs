@@ -213,10 +213,26 @@ namespace Hub.Services
         {
             try
             {
-                var systemUserEmail = _configRepository.Get("SystemUserEmail");
                 using (var uow = _uowFactory.Create())
                 {
-                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                    var systemAccount = uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
+
+                    if (systemAccount != null)
+                    {
+                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                        string userEmail = configRepository.Get("SystemUserEmail");
+                        string curPassword = configRepository.Get("SystemUserPassword");
+
+                        systemAccount = uow.UserRepository.GetOrCreateUser(userEmail);
+                        uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                        uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, systemAccount.Id);
+
+                        systemAccount.SystemAccount = true;
+
+                        uow.SaveChanges();
+                    }
+
+                    return systemAccount;
                 }
             }
             catch (ConfigurationException)
@@ -590,12 +606,8 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string userEmail = configRepository.Get("SystemUserEmail");
-                var systemUser = uow.UserRepository.GetOrCreateUser(userEmail);
-
                 var adminRoleId = uow.AspNetUserRolesRepository.GetRoleID(Roles.Admin);
-                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.RoleId == adminRoleId && x.UserId != systemUser.Id);
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.RoleId == adminRoleId);
             }
         }
 
@@ -629,6 +641,6 @@ namespace Hub.Services
                 
                 return newFr8Account;
             }
-        } 
+        }
     }
 }
