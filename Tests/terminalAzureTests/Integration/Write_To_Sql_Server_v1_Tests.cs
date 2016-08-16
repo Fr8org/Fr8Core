@@ -22,8 +22,8 @@ namespace terminalAzureTests.Integration
 
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
-            //Now there are two ControlsDefinitionDTO: TextBox for connnection string and Button "Continue"
-            Assert.AreEqual(2, control.Controls.Count);
+            //Now there are three ControlsDefinitionDTO: TextBox for connnection string, Button "Continue" and dropDown to select table
+            Assert.AreEqual(3, control.Controls.Count);
 
             // Assert that first control is a TextBox 
             // with Label == "SQL Connection String"
