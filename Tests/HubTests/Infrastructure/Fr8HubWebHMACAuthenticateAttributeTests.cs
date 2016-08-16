@@ -34,7 +34,7 @@ namespace HubWeb.Infrastructure
             _authenticationContext = new HttpAuthenticationContext(context, null);
 
             HttpRequestHeaders headers = request.Headers;
-            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8-TOKEN", "key=test, user=test");
+            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8", "terminal_key=test");
             headers.Authorization = authorization;
         }
 
@@ -63,7 +63,7 @@ namespace HubWeb.Infrastructure
         public async Task ShouldntSetCurrentUser_WithInCorrectAuthentication()
         {
             HttpRequestHeaders headers = _authenticationContext.Request.Headers;
-            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8-TOKEN", "sdasdasd");
+            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8", "sdasdasd");
             headers.Authorization = authorization;
 
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
