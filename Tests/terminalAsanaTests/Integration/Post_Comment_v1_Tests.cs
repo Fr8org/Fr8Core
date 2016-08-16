@@ -18,8 +18,7 @@ using terminalAsana.Activities;
 
 namespace terminalAsanaTests.Integration
 {
-    [Explicit]
-    [Ignore]
+    [Explicit]    
     class Post_Comment_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
