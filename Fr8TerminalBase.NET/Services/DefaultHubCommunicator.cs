@@ -133,7 +133,9 @@ namespace Fr8.TerminalBase.Services
             var hubUri = new Uri($"{GetHubUrlWithApiVersion()}/activity_templates");
             var allCategories = await _restfulServiceClient.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(hubUri);
             var templates = allCategories.SelectMany(x => x.Activities);
-            return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates.ToList();
+            templates = getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates.ToList();
+            templates = templates.GroupBy(y => new { y.Name, y.Version }).Select(g => g.First());
+            return templates.ToList();
         }
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false)
@@ -242,7 +244,7 @@ namespace Fr8.TerminalBase.Services
             var url = $"{GetHubUrlWithApiVersion()}/plans/run?planId=" + planId;
             var uri = new Uri(url);
             var cratesDto = new CrateDTO[0];
-            
+
             if (payload != null)
             {
                 cratesDto = payload.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
@@ -379,7 +381,7 @@ namespace Fr8.TerminalBase.Services
         {
             var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling?terminalToken={TerminalToken}";
             var uri = new Uri(hubAlarmsUrl);
-            var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes, AdditionToJobId  = additionToJobId};
+            var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes, AdditionToJobId = additionToJobId };
 
             await _restfulServiceClient.PostAsync<PollingDataDTO>(uri, data);
         }
