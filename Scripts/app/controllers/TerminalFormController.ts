@@ -20,13 +20,15 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'TerminalService',
-            '$modalInstance'
+            '$modalInstance',
+            'StringService'
         ];
 
         constructor(
             private $scope: ITerminalFormScope,
             private TerminalService: services.ITerminalService,
-            private $modalInstance: any) {
+            private $modalInstance: any,
+            private StringService: dockyard.services.IStringService) {
                 $scope.cancel = <() => void>angular.bind(this, this.cancelForm);
                 $scope.submit = isValid => {
                     if (isValid) {
@@ -40,9 +42,26 @@ module dockyard.controllers {
                                 $scope.processing = false;
                             })
                             .catch(e => {
-                                $scope.errorMessage = "Terminal create error";
+                                console.log('Terminal addition failed: ' + e.data.message);
                                 $scope.processing = false;
-                                console.log(e.statusText);
+                                switch (e.status) {
+                                    case 400:
+                                        this.$scope.errorMessage = this.StringService.terminal["error400"];
+                                        if (e.data.message) {
+                                            this.$scope.errorMessage += " Additional information: " + e.data.message;
+                                        }
+                                        break;
+                                    case 404:
+                                        this.$scope.errorMessage = this.StringService.terminal["error404"];
+                                        break;
+                                    case 409:
+                                        this.$scope.errorMessage = this.StringService.terminal["error409"];
+                                        break;
+                                    default:
+                                        this.$scope.errorMessage = this.StringService.terminal["error"];
+                                        break;
+                                }
+
                             });
                     }
                 };
