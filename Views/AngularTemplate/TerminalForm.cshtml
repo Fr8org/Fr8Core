@@ -15,14 +15,14 @@
                 <label class="control-label">Development Endpoint<span class="required"></span></label>
                 <div class="input-icon right">
                     <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
-                    <input type="url" name="name" placeholder="" class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
+                    <input type="url" name="name" placeholder="" delayed-auto-focus class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
                 </div>
             </div>           
            
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="submit">Save</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn green-haze" type="submit">Save</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
         </div>
     </form>
 </script>
