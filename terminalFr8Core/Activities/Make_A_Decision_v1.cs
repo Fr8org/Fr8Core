@@ -128,7 +128,7 @@ namespace terminalFr8Core.Activities
         protected override Task Validate()
         {
             ValidationManager.ValidateTransitions((ContainerTransition)ConfigurationControls.Controls.Single());
-            return base.Validate();
+            return Task.FromResult(0);
         }
 
         private OperationalStateCM.BranchStatus CreateBranch()
