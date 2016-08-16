@@ -314,7 +314,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\GenerateMode.cs" />
-    <Compile Include="Exceptions\ConflictException.cs" />
+    <Compile Include="Exceptions\Fr8Exceptions.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />
