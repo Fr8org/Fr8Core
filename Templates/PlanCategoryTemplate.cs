@@ -7,9 +7,10 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-
 namespace HubWeb.Templates
 {
+    using System;
+    
     /// <summary>
     /// Class to produce the template output
     /// </summary>
@@ -36,6 +37,12 @@ namespace HubWeb.Templates
     <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
 	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
 
+	<script src=""../bower_components/jquery/dist/jquery.min.js""></script>
+    <script src=""../Content/metronic/jquery.blockui.min.js""></script>
+    <script src=""../bower_components/bootstrap/dist/js/bootstrap.min.js""></script>
+    <script src=""../Content/metronic/ui.js""></script>
+    <script src=""../Scripts/PlanDirectoryMain.js""></script>
+
     <title></title>
     <meta charset=""utf-8""/>
 </head>
@@ -48,14 +55,14 @@ namespace HubWeb.Templates
     <div class=""container"">        
         <p style=""font-size: 30px"">Plan Directory - ");
             
-            #line 27 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 33 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
             this.Write("</p>\r\n        <div class=\"icons\">\r\n\t\t\t");
             
-            #line 29 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 35 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  int i = 0;
 			foreach (var tag in Tags)
 			{ 
@@ -64,14 +71,14 @@ namespace HubWeb.Templates
             #line hidden
             this.Write("\t\t\t<img class=\"web-service-icon\" src=\"..");
             
-            #line 32 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 38 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(tag.Value));
             
             #line default
             #line hidden
             this.Write("\"/>\t\t\r\n\t\t\t\t");
             
-            #line 33 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 39 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  if (i < Tags.Count - 1)
 				{ 
             
@@ -79,7 +86,7 @@ namespace HubWeb.Templates
             #line hidden
             this.Write("\t\t\t\t<img src=\"../Content/icons/plus.png\"/>\r\n\t\t\t\t");
             
-            #line 36 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 42 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  i++;
 				} 
             
@@ -87,7 +94,7 @@ namespace HubWeb.Templates
             #line hidden
             this.Write("                        \r\n\t\t");
             
-            #line 38 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 44 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  } 
             
             #line default
@@ -108,7 +115,7 @@ namespace HubWeb.Templates
                 <tbody>
                     ");
             
-            #line 53 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 59 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  int number = 1;
                     foreach (var plan in RelatedPlans) 
                     {
@@ -117,42 +124,51 @@ namespace HubWeb.Templates
             #line hidden
             this.Write("                    <tr>\r\n                        <th scope=\"row\">");
             
-            #line 57 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 63 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(number++));
             
             #line default
             #line hidden
             this.Write("</th>\r\n                        <td>");
             
-            #line 58 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 64 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item1));
             
             #line default
             #line hidden
             this.Write("</td>\r\n                        <td>");
             
-            #line 59 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 65 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item2));
             
             #line default
             #line hidden
-            this.Write("</td>\r\n                        <td><a href=\"");
+            this.Write("</td>\r\n\t\t\t\t\t\t");
             
-            #line 60 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item3));
+            #line 66 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+ string url = plan.Item3 ;
             
             #line default
             #line hidden
-            this.Write("\">Create</a></td>\r\n                    </tr>                   \r\n                " +
-                    "    ");
+            this.Write("                        <td><a onClick=\"createPlan(\'");
             
-            #line 62 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 67 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(url));
+            
+            #line default
+            #line hidden
+            this.Write("\')\">Create</a></td>\r\n                    </tr>                   \r\n              " +
+                    "      ");
+            
+            #line 69 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("                    \r\n                </tbody>\r\n            </table>\r\n</div>\r\n</b" +
-                    "ody>\r\n</html>\r\n");
+            this.Write("                    \r\n                </tbody>\r\n            </table>\r\n</div>\r\n<sc" +
+                    "ript>\r\n\tvar createPlan = function(url) {\r\n\t\t$.post(url, function(data) {\r\n\t\t\t wi" +
+                    "ndow.open(data.redirectUrl, \"_blank\"); \r\n\t\t});\r\n\t }\r\n </script>\r\n</body>\r\n</html" +
+                    ">\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
