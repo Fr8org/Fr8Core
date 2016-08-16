@@ -17,17 +17,13 @@ namespace HubWeb.Controllers.Api
         private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
         private readonly ISearchProvider _searchProvider;
 
-        private readonly IPagesCheckUtility _pagesCheckUtility;
-
         public PageGenerationController(IManifestPageGenerator manifestPageGenerator,
                                         IPlanTemplateDetailsGenerator planTemplateDetailsGenerator,
-                                        ISearchProvider searchProvider,
-                                        IPagesCheckUtility pagesCheckUtility)
+                                        ISearchProvider searchProvider)
         {
             _manifestPageGenerator = manifestPageGenerator;
             _planTemplateDetailsGenerator = planTemplateDetailsGenerator;
             _searchProvider = searchProvider;
-            _pagesCheckUtility = pagesCheckUtility;
         }
 
         [HttpPost]
