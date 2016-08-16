@@ -389,7 +389,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             url: "/page_definitions",
             templateUrl: "/AngularTemplate/PageDefinitionList",
             data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
+        })
+        .state("adminTools",
+        {
+            url: "/admin_tools",
+            templateUrl: "/AngularTemplate/AdminTools",
+            data: { pageTitle: "Admin tools", pageSubTitle: "" }
         });
+
 }]);
 
 /* Init global settings and run the app */

@@ -193,6 +193,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/PlanUploadController.js',
         'Scripts/app/controllers/PageDefinitionListController.js',
         'Scripts/app/controllers/PageDefinitionFormController.js',
+        'Scripts/app/controllers/AdminToolsController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())

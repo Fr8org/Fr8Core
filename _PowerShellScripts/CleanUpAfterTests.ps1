@@ -76,13 +76,16 @@ IF object_id('tempdb..#TempUsers') IS NOT NULL
 IF object_id('tempdb..#Nodes2') IS NOT NULL
 	DROP TABLE #Nodes2;
 
+DECLARE @registration_email VARCHAR(50);
+SET @registration_email = 'testuser_registration@fr8.co';
+
 WITH TestUser (UserId) AS (
 	SELECT Users.Id 
 	FROM Users
 	WHERE Users.EmailAddressID IN (	
 		SELECT EmailAddresses.Id
 		FROM EmailAddresses
-		WHERE EmailAddresses.Address LIKE 'testuser_registration@fr8.co')
+		WHERE EmailAddresses.Address LIKE @registration_email)
 )
 SELECT DISTINCT (TestUser.UserId) INTO #TempUsers FROM TestUser;
 
@@ -124,7 +127,14 @@ DELETE derived FROM AspNetUserRoles derived INNER JOIN #TempUsers tu ON tu.UserI
 
 DELETE derived FROM Users derived INNER JOIN #TempUsers tu ON tu.UserId = derived.Id;
 
-DELETE FROM EmailAddresses WHERE EmailAddresses.Address LIKE 'testuser_registration@fr8.co';
+DELETE derived FROM Recipients derived WHERE derived.EmailID IN (
+	SELECT derived.Id
+	FROM Emails derived INNER JOIN EmailAddresses ON EmailAddresses.Id = derived.FromID
+	WHERE EmailAddresses.Address LIKE @registration_email);
+
+DELETE derived FROM Emails derived INNER JOIN EmailAddresses ON EmailAddresses.Id = derived.FromID WHERE EmailAddresses.Address LIKE @registration_email;
+
+DELETE FROM EmailAddresses WHERE EmailAddresses.Address LIKE @registration_email;
 
 DELETE derived FROM AspNetUsers derived INNER JOIN #TempUsers tu ON tu.UserId = derived.Id;
 

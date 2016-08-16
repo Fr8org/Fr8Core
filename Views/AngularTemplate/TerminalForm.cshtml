@@ -1,7 +1,7 @@
 ﻿<script type="text/ng-template" id="terminalFormModal">
     <form role="form" block-if="processing === true" ng-submit="submit(form.$valid)" name="form" novalidate>
         <div class="modal-header">
-            <h3 class="modal-title">Add Terminal</h3>
+            <h3 class="modal-title">Add a New Terminal</h3>
         </div>
         <div class="modal-body">
             <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
@@ -15,14 +15,19 @@
                 <label class="control-label">Development Endpoint<span class="required"></span></label>
                 <div class="input-icon right">
                     <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
-                    <input type="url" name="name" placeholder="" class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
+                    <input type="url" name="name" placeholder="" delayed-auto-focus class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
                 </div>
-            </div>           
+            </div>
+            <div class="margin-bottom-10">
+                <p>Although you can use both <code>http</code> and <code>https</code> endpoins, 
+                    we recommend that you use the latter to ensure better security of user data.
+                <p>Please don't add /discover to your terminal endpoint URL.
+            </div>
            
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="submit">Save</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn green-haze" type="submit">Save</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
         </div>
     </form>
 </script>

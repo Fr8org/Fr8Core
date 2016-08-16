@@ -33,6 +33,8 @@ module dockyard.controllers {
 
             PageDefinitionService.query().$promise.then(data => {
                 $scope.pageDefinitions = data;
+                console.log('page definition after querying');
+                console.log(data);
             });
         }
 
