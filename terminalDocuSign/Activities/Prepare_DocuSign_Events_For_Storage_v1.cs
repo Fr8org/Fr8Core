@@ -51,8 +51,6 @@ namespace terminalDocuSign.Activities
 
             AddControl(textBlock);
 
-            var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
-            var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new KeyValueDTO("DocuSignUserEmail", authToken.Email)));
 
             //create a Standard Event Subscription crate
             EventSubscriptions.Manufacturer = "DocuSign";
