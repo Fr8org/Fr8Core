@@ -21,8 +21,6 @@ namespace HubWeb.Infrastructure_PD
             {
                 For<IFr8Account>().Use<Fr8Account>().Singleton();
                 For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
-                For<IPagesCheckUtility>().Use<PagesCheckUtility>().Singleton();
-
 
                 var serverPath = GetServerPath();
 

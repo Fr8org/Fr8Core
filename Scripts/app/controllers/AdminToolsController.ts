@@ -5,10 +5,8 @@ module dockyard.controllers {
 
     export interface IAdminToolsScope extends ng.IScope {
         user: interfaces.IUserDTO;
-        checkPages: ()=>void;
-
-        submit: (isValid: boolean) => void;
-        cancel: () => void;
+        generatePages: () => void;
+        generatePagesInProgress: boolean;
     }
 
     class AdminToolsController {
@@ -18,33 +16,30 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            '$state',
             '$http',
             'UINotificationService'
         ];
 
         constructor(
             private $scope: IAdminToolsScope,
-            private $state: ng.ui.IStateService,
             private $http: ng.IHttpService,
             private uiNotifications: interfaces.IUINotificationService
             ) {
-
-            //Save button
-            $scope.checkPages = function () {
-                
-
+            $scope.generatePagesInProgress = false;
+            $scope.generatePages = function () {
+                var url = '/api/plan_templates/generatepages';
                 let success = (response) => {
-                    alert(response.data);
-
+                    $scope.generatePagesInProgress = false;
+                    uiNotifications.notify(response.data, dockyard.enums.UINotificationStatus.Success, null);
                 };
                 let fail = (data) => {
-                    uiNotifications.notify(data,dockyard.enums.UINotificationStatus.Error,null);
+                    $scope.generatePagesInProgress = false;
+                    uiNotifications.notify(data, dockyard.enums.UINotificationStatus.Error, null);
                 };
 
-                $http.get("/api/page_generation/generate_pages").then(success,fail);
-            };
-
+                $scope.generatePagesInProgress = true;
+                $http.post(url, null).then(success, fail);
+            }
         }
     }
 

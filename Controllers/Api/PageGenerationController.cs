@@ -36,15 +36,6 @@ namespace HubWeb.Controllers.Api
         {
             return Ok(await _manifestPageGenerator.Generate(manifestName, GenerateMode.GenerateIfNotExists));
         }
-
-        [HttpGet]
-        [ActionName("generate_pages")]
-        [DockyardAuthorize(Roles = Roles.Admin)]
-        public async Task<IHttpActionResult> GeneratePages()
-        {
-            var count = await _pagesCheckUtility.CheckPlanTempletesPages();
-
-            return Ok($"it works. Number of templates {count}");
-        }
+        
     }
 }

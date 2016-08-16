@@ -468,8 +468,6 @@
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\IPagesCheckUtility.cs" />
-    <Compile Include="Infrastructure_PD\PagesCheckUtility.cs" />
     <Compile Include="Infrastructure_PD\PlanDirectoryBootstrapper.cs" />
     <Compile Include="Infrastructure_PD\TemplateGenerators\ManifestPageGenerator.cs" />
     <Compile Include="Infrastructure_PD\TemplateGenerators\PlanTemplateDetailsGenerator.cs" />
@@ -775,29 +773,6 @@
       <LastGenOutput>PlanTemplateDetailsTemplate.cs</LastGenOutput>
     </Content>
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
-    <Content Include="ApplicationInsights.config">
-      <TransformOnBuild>true</TransformOnBuild>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="ApplicationInsights.Debug.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ApplicationInsights.Demo.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="ApplicationInsights.Dev.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ApplicationInsights.Release.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="Content\css\fonts\brankic.eot" />
     <Content Include="Content\css\fonts\brankic.ttf" />
     <Content Include="Content\css\fonts\brankic.woff" />
