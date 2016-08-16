@@ -44,7 +44,8 @@ module dockyard.controllers {
                             $scope.processing = false;
                         })
                         .catch(e => {
-                            console.log('Terminal addition failed: ' + e.data.message);
+                            debugger;
+                            console.log('Terminal addition failed: ' + e.data.message || e.status);
                             $scope.processing = false;
                             switch (e.status) {
                                 case 400:
