@@ -5,6 +5,7 @@
 NOTE: This is only necessary if you choose, as your [development approach](./ChoosingADevelopmentApproach.md), to test against the public Fr8 Hub, or if you want to go into production and host your own production Terminal.
 
 The process for plugging your Terminal into Fr8.co is:
+
 1) Figure out a way for it to be visible via a public URL
 2) Register it with The Fr8 Company's dev server at dev.fr8.co
 3) Get it approved
