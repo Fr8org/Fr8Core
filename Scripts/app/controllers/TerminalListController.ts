@@ -7,7 +7,8 @@ module dockyard.controllers {
         terminals: Array<model.TerminalDTO>;
         openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
-    }
+        processing: boolean;
+  }
 
     class TerminalListController {
 
@@ -30,16 +31,23 @@ module dockyard.controllers {
 
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
-            TerminalService.getByCurrentUser().$promise.then(data => {
-                $scope.terminals = data;
-            }).catch(e => {
-                console.log(e.statusText);
-                });
+            this.loadTerminals();
 
             $scope.openDetails = terminal => {
                 $state.go('terminalDetails', { id: terminal.internalId });
             }
         }
+
+        private loadTerminals() {
+            this.$scope.processing = true;
+            this.TerminalService.getByCurrentUser().$promise.then(data => {
+                this.$scope.terminals = data;
+            }).catch(e => {
+                console.log(e.statusText);
+            }).finally(() => {
+                this.$scope.processing = false;
+            });
+        };
 
         private showAddTerminalModal() {
             this.$modal.open({
@@ -48,7 +56,7 @@ module dockyard.controllers {
                 controller: 'TerminalFormController'
             })
                 .result.then(terminal => {
-                    this.$scope.terminals.push(terminal);
+                    this.loadTerminals();
                 });
         }
     }
