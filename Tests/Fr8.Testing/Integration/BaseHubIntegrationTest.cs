@@ -30,8 +30,8 @@ namespace Fr8.Testing.Integration
         {
             var creds = new CredentialsDTO
             {
-                Username = "freight.testing@gmail.com",
-                Password = "I6HmXEbCxN",
+                Username = ConfigurationManager.AppSettings["TestUserEmail"], 
+                Password = ConfigurationManager.AppSettings["DocuSignApiPassword"], 
                 IsDemoAccount = true
             };
             return creds;
