@@ -37,7 +37,7 @@
                     confirmPassword: this.$scope.ConfirmNewPassword
                 }).$promise.then(
                     (result) => {
-                        this.$scope.Message = "Password Changed.";
+                        this.$scope.Message = "Your password has been changed!";
                     },
                     (failResponse) => {
                         this.$scope.Message = failResponse.data.details.exception.Message;
