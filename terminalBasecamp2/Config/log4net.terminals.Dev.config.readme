@@ -1,0 +1,16 @@
+﻿<!--- 
+===========================================
+The Fr8 Terminal Logging Configuration File
+==========================================
+
+You need to customize this file only if you use the Dev build configuration in your environment.
+
+Remove the "readme" extension from the filename and optionally add your custom loggers.
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<log4net>
+  <root>
+    <level value="ALL" />
+  </root>
+</log4net>
