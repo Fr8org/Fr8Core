@@ -178,7 +178,7 @@ namespace Hub.Services
             }
         }
 
-        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
+        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
         {
             Initialize();
 

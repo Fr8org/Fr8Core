@@ -90,7 +90,7 @@ namespace terminalIntegrationTests.Integration
             //Trigger creating Plan
             Debug.WriteLine("Trigger creating Plan");
 
-            var terminalAuthenticationHeader = GetFr8TerminalAuthorizationHeader("terminalGoogle", "1", userId);
+            var terminalAuthenticationHeader = GetFr8TerminalAuthorizationHeader("terminalGoogle", "1");
             await RestfulServiceClient.PostAsync(new Uri(googleEventUrl), new { fr8_user_id = userId }, null, terminalAuthenticationHeader);
 
             //Reconfiguring plan activities 
@@ -113,9 +113,9 @@ namespace terminalIntegrationTests.Integration
                 await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, terminalAuthenticationHeader);
             }
 
-            await ConfigureJira(plan.Activities.FirstOrDefault(a => a.Ordering == 5).Id, userId);
-            await ConfigureMessage(plan.Activities.FirstOrDefault(a => a.Ordering == 6).Id, userId, guidTestId.ToString());
-            await ConfigureSlack(plan.Activities.FirstOrDefault(a => a.Ordering == 7).Id, userId);
+            await ConfigureJira(plan.Activities.FirstOrDefault(a => a.Ordering == 5).Id);
+            await ConfigureMessage(plan.Activities.FirstOrDefault(a => a.Ordering == 6).Id, guidTestId.ToString());
+            await ConfigureSlack(plan.Activities.FirstOrDefault(a => a.Ordering == 7).Id);
 
             //Run plan again after reconfigure
             Debug.WriteLine("Run plan again after reconfigure");
@@ -282,13 +282,13 @@ namespace terminalIntegrationTests.Integration
             return Mapper.Map<ActivityPayload>(DTO);
         }
 
-        private async Task ConfigureJira(Guid activityId, string userId)
+        private async Task ConfigureJira(Guid activityId)
         {
             var payloadJira = await GetPayload(activityId);
             SetDDL(payloadJira, "AvailableProjects", "fr8test");
             DeleteSprint(payloadJira);
             var DTO = Mapper.Map<ActivityDTO>(payloadJira);
-            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl() + "activities/configure"), DTO, null, GetFr8HubAuthorizationHeader("terminalGoogle", "1", userId));
+            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl() + "activities/configure"), DTO, null, GetFr8HubAuthorizationHeader("terminalGoogle", "1"));
         }
 
         private void DeleteSprint(ActivityPayload payload)
@@ -300,7 +300,7 @@ namespace terminalIntegrationTests.Integration
             crates.Controls.Remove(crates.Controls.Last());
         }
 
-        private async Task ConfigureSlack(Guid activityId, string userId)
+        private async Task ConfigureSlack(Guid activityId)
         {
             var payloadSlack = await GetPayload(activityId);
             var slackCrates = payloadSlack.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
@@ -308,17 +308,17 @@ namespace terminalIntegrationTests.Integration
             SetDDL(payloadSlack, slackCrates.Controls[0].Name, "#general");
             var DTO = Mapper.Map<ActivityDTO>(payloadSlack);
 
-            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/save"), DTO, null, GetFr8HubAuthorizationHeader("terminalGoogle", "1", userId));
+            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/save"), DTO, null, GetFr8HubAuthorizationHeader("terminalGoogle", "1"));
         }
 
-        private async Task ConfigureMessage(Guid activityId, string userId,string guid)
+        private async Task ConfigureMessage(Guid activityId,string guid)
         {
             var payloadMessage = await GetPayload(activityId);
             var messageCrates = payloadMessage.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var bodyTextBox = (BuildMessageAppender)messageCrates.FindByName("Body");
             bodyTextBox.Value = "testing terminal submission " + guid;
             var DTO = Mapper.Map<ActivityDTO>(payloadMessage);
-            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/configure"), DTO, null, GetFr8HubAuthorizationHeader("terminalGoogle", "1", userId));
+            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/configure"), DTO, null, GetFr8HubAuthorizationHeader("terminalGoogle", "1"));
         }
 
         private void SetDDL(ActivityPayload payload, string name, string key)
