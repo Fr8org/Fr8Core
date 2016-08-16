@@ -4,7 +4,7 @@ The Checkbox control is a basic control class which renders an HTML button eleme
 
 ##Fields
 
-The Duration class extends the [ControlDefinitionDTO](../DataTransfer/ControlDefinitinDTO.md) class and includes the additional properties.
+The Duration class extends the [ControlDefinitionDTO](/Docs/Docs/ForDevelopers/Objects/DataTransfer/ControlDefinitionDTO.md) class and includes the additional properties.
 
 __value__: stores the value of the duration as an object that can be used by the code. The type of this value varies by programming language. Has a getter and a setter.
 
@@ -19,16 +19,22 @@ __innerLabel__: String property that holds the label to be displayed in the UI. 
 <img src="images/duration.PNG" width="200" alt="Duration UI"/>
 
 ##Example Control Payload
-```javascript
-{
-         "days": 0,
-         "hours": 1,
-         "minutes": 59,
-         "innerLabel":"Wait this long",
-         "name": "TimePeriod",
-         "required": false,
-         "value": "00:00:00",
-         "label": "After you send a Tracked Envelope, Fr8 will wait.",
-         "type": "Duration"
+```json
+{    
+        "value": "00:00:00",
+        "innerLabel": "Inner Dration label",
+        "days": 0,
+        "hours": 0,
+        "minutes": 0,
+        "name": "Duration3",
+        "required": false,
+        "label": "duraton control",
+        "type": "Duration",
+        "selected": false,
+        "events": [],
+        "source": null,
+        "showDocumentation": null,
+        "isHidden": false,
+        "isCollapsed": false
 }
 ```

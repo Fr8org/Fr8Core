@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.Managers;
+using System.Configuration;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -23,27 +24,33 @@ namespace terminalSalesforceTests.Intergration
         private const long MaxAwaitTime = 180000;
         private const int PeriodAwaitTime = 10000;
 
-        private const string SalesforcePayload = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
-	            <soapenv:Body>
-		            <notifications xmlns = ""http://soap.sforce.com/2005/09/outbound"">
-                        <OrganizationId> 00Di0000000ilESEAY</OrganizationId>
-			            <ActionId>04ki0000000PEkxAAG</ActionId>
-			            <SessionId>00Di0000000ilES!AQcAQFp66.3msePbVxrvLDhSnV5vQNjsif7SUbseyjj5zD0RDr5NJFX8.8rmu88O02z5CK636aBa81Okx1fS4JVFL8jAhnJr</SessionId>
-			            <EnterpriseUrl>https://na15.salesforce.com/services/Soap/c/37.0/00Di0000000ilES</EnterpriseUrl>
-			            <PartnerUrl>https://na15.salesforce.com/services/Soap/u/37.0/00Di0000000ilES</PartnerUrl>
-			            <Notification>
-				            <Id>04li000000AzmHSAAZ</Id>
-				            <sObject xsi:type=""sf:Lead"" xmlns:sf=""urn:sobject.enterprise.soap.sforce.com"">
-					            <sf:Id>003i000000W8jx3AAB</sf:Id>
-					            <sf:Email>salesforce-payload @fr8.com</sf:Email>
-					            <sf:LastName>Fr8-Test-User</sf:LastName>
-                                <sf:OwnerId>611998545425677937</sf:OwnerId>
-				            </sObject>
-			            </Notification>
-		            </notifications>
-	            </soapenv:Body>
-            </soapenv:Envelope>";
+        private string SalesforcePayload
+        {
+            get
+            {
+                return @"<?xml version=""1.0"" encoding=""UTF-8""?>
+                         <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+	                         <soapenv:Body>
+		                         <notifications xmlns = ""http://soap.sforce.com/2005/09/outbound"">
+                                     <OrganizationId> 00Di0000000ilESEAY</OrganizationId>
+			                         <ActionId>04ki0000000PEkxAAG</ActionId>
+			                         <SessionId>00Di0000000ilES!AQcAQFp66.3msePbVxrvLDhSnV5vQNjsif7SUbseyjj5zD0RDr5NJFX8.8rmu88O02z5CK636aBa81Okx1fS4JVFL8jAhnJr</SessionId>
+			                         <EnterpriseUrl>https://na15.salesforce.com/services/Soap/c/37.0/00Di0000000ilES</EnterpriseUrl>
+			                         <PartnerUrl>https://na15.salesforce.com/services/Soap/u/37.0/00Di0000000ilES</PartnerUrl>
+			                         <Notification>
+			             	            <Id>04li000000AzmHSAAZ</Id>
+			             	            <sObject xsi:type=""sf:Lead"" xmlns:sf=""urn:sobject.enterprise.soap.sforce.com"">
+			             		            <sf:Id>003i000000W8jx3AAB</sf:Id>
+			             		            <sf:Email>salesforce-payload @fr8.com</sf:Email>
+			             		            <sf:LastName>Fr8-Test-User</sf:LastName>
+                                             <sf:OwnerId>" + ConfigurationManager.AppSettings["OwnerId"] + @"</sf:OwnerId>
+			             	            </sObject>
+			                         </Notification>
+		                         </notifications>
+	                         </soapenv:Body>
+                         </soapenv:Envelope>";
+            }
+        }
 
         public override string TerminalName => "terminalSalesforce";
 
@@ -139,7 +146,7 @@ namespace terminalSalesforceTests.Intergration
 
         private async Task<ActivityTemplateDTO> ExtractActivityTemplate()
         {
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates/by_categories");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var monitorActivityTemplate = activityTemplates
                 .Where(x => x.Name.ToUpper().Contains("Salesforce".ToUpper()))
                 .SelectMany(x => x.Activities)

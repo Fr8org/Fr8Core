@@ -23,16 +23,14 @@ namespace terminalGoogle.Activities
             Name = "Get_Google_Sheet_Data",
             Label = "Get Google Sheet Data",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.GooogleWebServiceDTO,
             Tags = "Table Data Generator",
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -184,6 +182,9 @@ namespace terminalGoogle.Activities
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
                 
                 StoredSelectedSheet = selectedSpreasheetWorksheet;
+                var table = await GetSelectedSpreadSheet();
+                var hasHeaderRow = TryAddHeaderRow(table); 
+                Storage.ReplaceByLabel(Crate.FromContent(GetRuntimeCrateLabel(), new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
                 CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GetRuntimeCrateLabel(), true)
                     .AddFields(columnHeaders.Select(x => new FieldDTO(x.Key)));
@@ -191,7 +192,7 @@ namespace terminalGoogle.Activities
                 //here was logic responsible for handling one-row tables but it was faulty. It's main purpose was to spawn fields like "value immediatly below of" in a StandardPayload. 
                 //You might view TabularUtilities.PrepareFieldsForOneRowTable for reference
             }
-                }
+        }
 
         private string GetRuntimeCrateLabel()
                 {

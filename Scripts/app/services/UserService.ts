@@ -12,6 +12,7 @@ module dockyard.services {
         getProfiles: () => Array<interfaces.IProfileDTO>,
         updateUserProfile: (data: interfaces.IUserDTO) => any,
         update: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
+        checkPermission: (data: { permissionType: enums.PermissionType, objectType: string }) => any;
     }
 
     app.factory('UserService', [
@@ -41,6 +42,17 @@ module dockyard.services {
                         oldPassword: '@oldPassword',
                         newPassword: '@newPassword',
                         confirmPassword: '@confirmPassword'
+                    }
+                },
+                checkPermission: {
+                    method: 'GET',
+                    isArray: false,
+                    cache: true,
+                    url: '/api/users/checkpermission',
+                    params: {
+                        permissionType: '@permissionType',
+                        objectType: '@objectType',
+                        username: '@userId'
                     }
                 },
                 updateUserProfile: {

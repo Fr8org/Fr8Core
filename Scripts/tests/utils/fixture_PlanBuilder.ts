@@ -5,7 +5,7 @@
             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
             name: "MockPlan",
             description: "MockPlan",
-            planState: 1,
+            planState: model.PlanState.Inactive,
             subscribedDocuSignTemplates: [],
             externalEventSubscription: [],
             startingSubPlanId: 1
@@ -16,32 +16,32 @@
         public static updatedPlan = <interfaces.IPlanVM>{
             'name': 'Updated',
             'description': 'Description',
-            'planState': 1,
+            'planState': model.PlanState.Inactive,
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
         }
 
         public static fullPlan = <interfaces.IPlanVM>{
             'name': 'Updated',
             'description': 'Description',
-            'planState': 1,
+            'planState': model.PlanState.Inactive,
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626'],
             subPlans: [
                 <model.SubPlanDTO>{
-                    subPlanId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
+                    id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     isTempId: false,
                     name: 'Processnode Template 1',
                     activities: [
                         <model.ActivityDTO>{
                             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                             activityTemplate: {
-                                id: 'E553A5F9-A3AB-4116-A43D-6F5DDB923CF8'
+                                name: 'test'
                             },
                             parentPlanNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686'
                         },
                         <model.ActivityDTO>{
                             id: '82B62831-687F-4BC8-AB64-B421985D5CF3',
                             activityTemplate: {
-                                id: 'E553A5F9-A3AB-4196-A43D-6F5DDB911CF8'
+                                name: 'test'
                             },
                             parentPlanNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686'
                         }

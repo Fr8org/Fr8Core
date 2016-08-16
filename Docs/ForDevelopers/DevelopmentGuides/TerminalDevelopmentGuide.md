@@ -19,6 +19,8 @@ Sections
 *  [General Guidelines](/Docs/ForDevelopers/DevelopmentGuides/PlatformIdependentTerminalDeveloperGuide.md)
 *  [Implementing oAuth2 authentication](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md)
 *  [Connecting your Terminal to a WebService ](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-AddingAWebService.md)
+*  [Practical Terminal Development Considerations](/Docs/ForDevelopers/DevelopmentGuides/Terminals/PracticalTerminalDevelopmentConsiderations.md)
+*  [Security System Walkthrough](/Docs/ForDevelopers/DevelopmentGuides/SecuritySystemWalkthrough.md)
 
 
 [Platform SDKs (.NET, Java, Ruby, Python](/Docs/ForDevelopers/SDKHome.md)

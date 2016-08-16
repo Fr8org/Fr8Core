@@ -8,14 +8,14 @@
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
                     <div ng-repeat="envelope in group.envelopes track by $index" style="display: inline-block;">
-                        <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}" layout-action>
-                            <div class="ap-resize" activity-resize min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
+                        <div class="action" ng-class="{'solution-action': envelope.activityTemplate.category === 'Solution' && mode !== 'solution'}" layout-action>
+                            <div class="ap-resize" activity-resize min-width="{{envelope.activityTemplate.minPaneWidth}}">
                                 <!-- Activity Header-->
                                 <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
                                     <div class="md-toolbar-tools">
                                         <!-- Icon -->
-                                        <div class="action-header-icon" style="display: flex">
-                                            <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath"/>
+                                        <div class="action-header-icon">
+                                            <img ng-src="{{envelope.activityTemplate.webService.iconPath}}" ng-if="envelope.activityTemplate.webService.iconPath"/>
                                         </div>
                                         <!-- Main Title -->
                                         <div class="col-sm-10 ellipsis">

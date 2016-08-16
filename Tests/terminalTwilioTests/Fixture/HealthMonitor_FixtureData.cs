@@ -5,6 +5,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
+using System.Configuration;
 
 namespace terminalTwilioTests.Fixture
 {
@@ -16,11 +17,10 @@ namespace terminalTwilioTests.Fixture
 
             CrateManager = new CrateManager();
         }
-        public static ActivityTemplateDTO Send_Via_Twilio_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Send_Via_Twilio_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio_TEST",
                 Version = "1"
             };
@@ -59,7 +59,7 @@ namespace terminalTwilioTests.Fixture
                     UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
                     InitialLabel = "SMS Number",
                     Name = "SMS_Number",
-                    Value = "15005550006",
+                    Value = ConfigurationManager.AppSettings["TestPhoneNumber"],
                     Label = "SMS Number"
                 },
 
@@ -83,7 +83,7 @@ namespace terminalTwilioTests.Fixture
                 InitialLabel = "SMS Number",
                 ValueSource = "specific",
                 Name = "SMS_Number",
-                Value = "+15005550006",
+                Value = ConfigurationManager.AppSettings["TestPhoneNumber"],
                 Label = "SMS Number",
                 Source = new FieldSourceDTO()
                 {

@@ -14,14 +14,11 @@ namespace Data.Entities
         public string CrateStorage { get; set; }
 
         public string Label { get; set; }
-        public string Name { get; set; }
 
         [ForeignKey("ActivityTemplate")]
         public Guid ActivityTemplateId { get; set; }
 
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
-
-        public string currentView { get; set; }
 
         [ForeignKey("AuthorizationToken")]
         public Guid? AuthorizationTokenId { get; set; }
@@ -64,11 +61,9 @@ namespace Data.Entities
 
             base.CopyProperties(source);
             Label = activity.Label;
-            Name = activity.Name;
             CrateStorage = activity.CrateStorage;
             AuthorizationTokenId = activity.AuthorizationTokenId;
             ActivityTemplateId = activity.ActivityTemplateId;
-            currentView = activity.currentView;
             ActivationState = activity.ActivationState;
         }
     }

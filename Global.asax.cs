@@ -20,6 +20,8 @@ using Segment;
 using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 using System.Globalization;
+using Hub.Interfaces;
+using StructureMap;
 
 namespace HubWeb
 {
@@ -70,7 +72,7 @@ namespace HubWeb
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
 
-            Logger.GetLogger().Warn("Dockyard  starting...");
+            Logger.GetLogger().Warn("Fr8 starting...");
 
             ConfigureValidationEngine();
         }
@@ -229,7 +231,7 @@ namespace HubWeb
             {
                 var claims = principal.Claims;
                 var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
-                var userPrincipal = new Fr8Principle(null, principal.Identity, roles);
+                var userPrincipal = new Fr8Principal(null, principal.Identity, roles);
                 /*
                 GenericPrincipal userPrincipal = new GenericPrincipal(principal.Identity,
                                          claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());

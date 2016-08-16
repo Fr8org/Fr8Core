@@ -7,6 +7,33 @@ namespace Fr8.TerminalBase.Infrastructure
 {
     public static class ValidationExtensions
     {
+        public static void ValidateTransitions(this ValidationManager validationManager, ContainerTransition control)
+        {
+            for (var i = 0; i < control.Transitions.Count; i++)
+            {
+                var transition = control.Transitions[i];
+                if (transition.Transition.RequiresTargetNodeId() && transition.TargetNodeId == null)
+                {
+                    validationManager.SetError(GetMissingNodeTransitionErrorMessage(transition.Transition), $"transition_{i}");
+                }
+            }
+        }
+
+        private static string GetMissingNodeTransitionErrorMessage(ContainerTransitions transition)
+        {
+            switch (transition)
+            {
+                case ContainerTransitions.JumpToActivity:
+                    return "Target activity is not specified";
+                case ContainerTransitions.LaunchAdditionalPlan:
+                    return "Target plan is not specified";
+                case ContainerTransitions.JumpToSubplan:
+                    return "Target subplan is not specified";
+                default:
+                    return string.Empty;
+            }
+        }
+
         public static void ValidateEmail(this ValidationManager validationManager, IConfigRepository configRepository, ControlDefinitionDTO control, string errorMessage = null)
         {
             if (!RegexUtilities.IsValidEmailAddress(configRepository, control.Value))
@@ -42,7 +69,6 @@ namespace Fr8.TerminalBase.Infrastructure
                     validationManager.SetError(control.InitialLabel + " Is Invalid", control);
                     return false;
                 }
-
             }
             catch (NumberParseException npe)
             {

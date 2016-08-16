@@ -1,10 +1,15 @@
 ﻿using System;
+using Data.Entities;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.DataProtection;
 using Owin;
 using Hub.Security;
+using Microsoft.AspNet.Identity.Owin;
+using StructureMap;
 
 namespace Hub.Infrastructure
 {

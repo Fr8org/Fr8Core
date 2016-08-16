@@ -8,9 +8,10 @@ using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
 using Moq;
 using NUnit.Framework;
-using PlanDirectory.Exceptions;
-using PlanDirectory.Infrastructure;
-using PlanDirectory.Interfaces;
+using Hub.Exceptions;
+using Hub.Enums;
+using Hub.Services.PlanDirectory;
+using HubWeb.Infrastructure_PD.TemplateGenerators;
 
 namespace PlanDirectoryTests.Infrastructure
 {

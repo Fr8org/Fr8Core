@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
 	using System.Data.Entity.Migrations;
 	
-	public partial class ActivityTemplate_Add_WebServiceReference_Migration : DbMigration
+	public partial class ActivityTemplate_Add_WebServiceReference_Migration : System.Data.Entity.Migrations.DbMigration
 	{
 		public override void Up()
 		{

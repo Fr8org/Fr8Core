@@ -367,24 +367,29 @@ app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, 
     };
 }]);
 
-//== scroll grey area of PB vertically and horizontally
+//== scroll grey area of PB vertically and horizontally 
 app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {
             let _validScrollFlag = false;
             let $scroller = null;
+            let curSrollTop = 0;
+            let curScrollLeft = 0;
+
+            $scroller = (<any>$(element)).kinetic();
 
             $(element).on('mousedown', function (e) {
                 let startObj = e.target,
                     posX = e.pageX,
                     posY = e.pageY;
 
+                curSrollTop = $(element).scrollTop();
+                curScrollLeft = $(element).scrollLeft();
+
                 var impossibleObjs = $('#scrollPane .action');                
 
-                _validScrollFlag = true;
-                
-                $scroller = (<any>$(element)).kinetic();
+                _validScrollFlag = true;               
 
                 angular.forEach(impossibleObjs, (elem) => {
                     let w = $(elem).width(),
@@ -395,13 +400,43 @@ app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $windo
                         _validScrollFlag = false;                        
                     }
                 });
-                
-                if (!_validScrollFlag) {
-                    e.preventDefault();
-                    $scroller.start();                   
-                    return false;
-                }                                
+
+                if (_validScrollFlag) $scroller.kinetic('attach');
+                else $scroller.kinetic('detach');
             });            
+        }
+    };
+}]);
+
+//== scroll grey area of PB vertically and horizontally 
+app.directive('activityFullHeight', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope: ng.IScope, element) {
+            
+            angular.element(window).bind('resize', function () {
+                setHeight();
+            });
+
+            scope.$on('onKioskModalLoad', function () {
+                $timeout(setHeight, 500);                
+            });
+            
+            function setHeight() {                
+                var winH = $(window).height();
+                var winW = $(window).width();
+                var wrapH = winH - 60;
+
+                if (winW <= 400) {
+                    $(element).height(wrapH);
+                    $(element).find('.page-container').height(wrapH);
+                    $(element).find('.route-builder-container').height(wrapH);
+                    $(element).find('.action').height(wrapH);
+                    $(element).find('.action').css('margin-bottom', '0px');
+                    $(element).find('.ng-scope').css('margin-top', '0px');
+                    $(element).find('.page-content').css('padding-bottom', '0px');                    
+                }
+            }
         }
     };
 }]);

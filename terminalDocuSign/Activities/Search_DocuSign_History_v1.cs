@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -35,16 +36,14 @@ namespace terminalDocuSign.Activities
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             Tags = Tags.Internal,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -144,7 +143,8 @@ namespace terminalDocuSign.Activities
                 SearchText = { Value = actionUi.SearchText.Value }
             };
 
-            var template = (await FindTemplates(x => x.Name == "Query_DocuSign")).FirstOrDefault();
+            var template = (await FindTemplates(x => x.Name == "Query_DocuSign"))
+                            .FirstOrDefault();
 
             if (template == null)
             {
@@ -168,7 +168,7 @@ namespace terminalDocuSign.Activities
             {
                 activity = new ActivityPayload
                 {
-                    ActivityTemplate = template,
+                    ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(template),
                     Name = template.Label,
                     Ordering = 1,
                 };

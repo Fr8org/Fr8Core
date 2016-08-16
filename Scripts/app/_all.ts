@@ -10,6 +10,7 @@
 /// <reference path="interfaces/iplanbuilder.ts" />
 /// <reference path="interfaces/iuser.ts" />
 /// <reference path="interfaces/iprofile.ts" />
+/// <reference path="interfaces/IUINotificationService.ts" />
 
 /*
     MODEL
@@ -33,6 +34,9 @@
 /// <reference path="services/planbuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
 /// <reference path="services/pushernotifierservice.ts" />
+/// <reference path="services/ActivityTemplateService.ts" />
+/// <reference path="services/UINotificationService.ts" />
+
 
 /*
     FILTERS AND COMPONENTS

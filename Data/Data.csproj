@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -262,9 +262,7 @@
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
-    <Compile Include="Entities\TerminalRegistrationDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
-    <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
@@ -747,6 +745,10 @@
     <Compile Include="Migrations\201607271152557_FixManifestDescriptionTypos.Designer.cs">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607241524205_Terminals_Standard_Permissions.cs" />
+    <Compile Include="Migrations\201607241524205_Terminals_Standard_Permissions.Designer.cs">
+      <DependentUpon>201607241524205_Terminals_Standard_Permissions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.cs" />
     <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.Designer.cs">
       <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
@@ -758,6 +760,62 @@
     <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs" />
     <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.Designer.cs">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.cs" />
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.Designer.cs">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.cs" />
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.Designer.cs">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608021530462_RemoveRunnable.cs" />
+    <Compile Include="Migrations\201608021530462_RemoveRunnable.Designer.cs">
+      <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs" />
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.cs" />
+    <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.Designer.cs">
+      <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs" />
+    <Compile Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.Designer.cs">
+      <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091020235_FixUp_Migration_2.cs" />
+    <Compile Include="Migrations\201608091020235_FixUp_Migration_2.Designer.cs">
+      <DependentUpon>201608091020235_FixUp_Migration_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.cs" />
+    <Compile Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.Designer.cs">
+      <DependentUpon>201608091306036_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091310148_ConvertMtDataIdToGuid.cs" />
+    <Compile Include="Migrations\201608091310148_ConvertMtDataIdToGuid.Designer.cs">
+      <DependentUpon>201608091310148_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs" />
+    <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
+      <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608092230355_OperationalState1.cs" />
+    <Compile Include="Migrations\201608092230355_OperationalState1.Designer.cs">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.cs" />
+    <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
+      <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.cs" />
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.Designer.cs">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.cs" />
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.Designer.cs">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -863,13 +921,13 @@
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
-    <Compile Include="Repositories\TerminalRegistrationRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
-    <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\OperationalState.cs" />
+    <Compile Include="States\ParticipationState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
@@ -896,7 +954,7 @@
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\ITerminalDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
-    <Compile Include="Migrations\DockyardDbMigration.cs" />
+    <Compile Include="Migrations\DbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
@@ -914,6 +972,8 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_OperationalStateTemplate.cs" />
+    <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\ContainerState.cs" />
@@ -1030,6 +1090,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1389,6 +1450,9 @@
     <EmbeddedResource Include="Migrations\201607271152557_FixManifestDescriptionTypos.resx">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607241524205_Terminals_Standard_Permissions.resx">
+      <DependentUpon>201607241524205_Terminals_Standard_Permissions.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607291915038_RemovePlanTemplateEntities.resx">
       <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
     </EmbeddedResource>
@@ -1397,6 +1461,48 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.resx">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.resx">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.resx">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608021530462_RemoveRunnable.resx">
+      <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608071558594_DiscoveryRefactoring.resx">
+      <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.resx">
+      <DependentUpon>201608090542310_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091020235_FixUp_Migration_2.resx">
+      <DependentUpon>201608091020235_FixUp_Migration_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091306036_ConvertedTerminalIdToGuid.resx">
+      <DependentUpon>201608091306036_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091310148_ConvertMtDataIdToGuid.resx">
+      <DependentUpon>201608091310148_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
+      <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608092230355_OperationalState1.resx">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
+      <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608121505031_RemoveInactualAdminUsers.resx">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608130142161_AddTypeToActivityCategory.resx">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1417,8 +1523,6 @@
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
-  <Target Name="BeforeBuild">
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

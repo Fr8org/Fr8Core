@@ -26,15 +26,13 @@ namespace terminalDocuSign.Actions
             Version = "1",
             Name = "Monitor_DocuSign_Envelope_Activity",
             Label = "Monitor DocuSign Envelope Activity",
-            Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

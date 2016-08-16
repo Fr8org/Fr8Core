@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
 
-    public partial class FillManifestRegistry : DbMigration
+    public partial class FillManifestRegistry : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
@@ -330,8 +330,7 @@ VALUES(@ManifestTypeId, SYSDATETIME(), SYSDATETIME(), 'system1@fr8.co', 0, '19',
 			""subPlanId"" : ""0eb2f713-55d3-4d12-bb90-d6a32228205d"",
 			""planId"" : ""0eb2f713-55d3-4d12-bb90-d6a32228205d"",
 			""parentId"" : ""0eb2f713-55d3-4d12-bb90-d6a32228205d"",
-			""name"" : ""sub plan name"",
-			""runnable"" : true
+			""name"" : ""sub plan name""
 		}
 	]
 }', 'Contains information about Fr8 plan', 'Fr8', '{""Type"" : ""Manifest Description"", ""Id"" : 30}');

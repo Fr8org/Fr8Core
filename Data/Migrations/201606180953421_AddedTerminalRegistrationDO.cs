@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedTerminalRegistrationDO : DbMigration
+    public partial class AddedTerminalRegistrationDO : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

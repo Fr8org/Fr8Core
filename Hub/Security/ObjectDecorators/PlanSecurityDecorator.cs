@@ -27,7 +27,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId, nameof(PlanNodeDO)))
             {
                 return _target.Activate(planId, planBuilderActivate);
             }
@@ -39,7 +39,7 @@ namespace Hub.Security.ObjectDecorators
 
         public PlanDO Clone(Guid planId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId, nameof(PlanNodeDO)))
             {
                 return _target.Clone(planId);
             }
@@ -52,6 +52,11 @@ namespace Hub.Security.ObjectDecorators
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo)
         {
             return _target.IsMonitoringPlan(uow, planDo);
+        }
+
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            return _target.IsPlanActiveOrExecuting(planNodeId);
         }
 
         public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
@@ -67,7 +72,7 @@ namespace Hub.Security.ObjectDecorators
 
         public PlanDO GetFullPlan(IUnitOfWork uow, Guid planId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId, nameof(PlanNodeDO)))
             {
                 return _target.GetFullPlan(uow, planId);
             }
@@ -84,7 +89,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task Deactivate(Guid curPlanId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId, nameof(PlanNodeDO)))
             {
                 return _target.Deactivate(curPlanId);
             }
@@ -94,7 +99,7 @@ namespace Hub.Security.ObjectDecorators
 
         public async Task Delete(Guid id)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.DeleteObject, id.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.DeleteObject, id, nameof(PlanNodeDO)))
             {
                await _target.Delete(id);
             }
@@ -106,7 +111,7 @@ namespace Hub.Security.ObjectDecorators
         
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId, nameof(PlanNodeDO)))
             {
                 _target.Enqueue(curPlanId, curEventReport);
             }
@@ -133,7 +138,7 @@ namespace Hub.Security.ObjectDecorators
 
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planActivityId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planActivityId, nameof(PlanNodeDO)))
             {
                 return _target.GetPlanByActivityId(uow, planActivityId);
             }
@@ -150,7 +155,7 @@ namespace Hub.Security.ObjectDecorators
         
         public Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, planId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, planId, nameof(PlanNodeDO)))
             {
                 return _target.Run(planId, payload, containerId);
             }

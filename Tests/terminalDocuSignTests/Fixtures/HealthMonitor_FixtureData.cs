@@ -35,45 +35,37 @@ namespace terminalDocuSignTests.Fixtures
             return DocuSignToken;
         }
 
-        public static ActivityTemplateDTO Monitor_DocuSign_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Monitor_DocuSign_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_DocuSign_Envelope_Activity_TEST",
-                Version = "1",
-                Terminal = new TerminalDTO()
-                {
-                    AuthenticationType = AuthenticationType.Internal
-                }
+                Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Query_DocuSign_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Query_DocuSign_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Query_DocuSign_TEST",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Receive_DocuSign_Envelope_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Receive_DocuSign_Envelope_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Receive_DocuSign_Envelope_TEST",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Send_DocuSign_Envelope_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Send_DocuSign_Envelope_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_DocuSign_Envelope_TEST",
                 Version = "1"
             };
@@ -138,17 +130,12 @@ namespace terminalDocuSignTests.Fixtures
             return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityTemplateDTO Record_DocuSign_Envelope_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Record_DocuSign_Envelope_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Prepare_DocuSign_Events_For_Storage_TEST",
-                Version = "1",
-                Terminal = new TerminalDTO()
-                {
-                    AuthenticationType = AuthenticationType.Internal
-                }
+                Version = "1"
             };
         }
 
@@ -167,11 +154,10 @@ namespace terminalDocuSignTests.Fixtures
             return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityTemplateDTO Mail_Merge_Into_DocuSign_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Mail_Merge_Into_DocuSign_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Mail_Merge_Into_DocuSign_TEST",
                 Version = "1",
             };
@@ -192,11 +178,10 @@ namespace terminalDocuSignTests.Fixtures
             return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityTemplateDTO Track_DocuSign_Recipients_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Track_DocuSign_Recipients_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Track_DocuSign_Recipients_TEST",
                 Version = "1"
             };
@@ -217,11 +202,10 @@ namespace terminalDocuSignTests.Fixtures
             return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityTemplateDTO Extract_Data_From_Envelopes_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Extract_Data_From_Envelopes_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Extract_Data_From_Envelopes_TEST",
                 Version = "1"
             };
@@ -249,7 +233,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
-                Category = ActivityCategory.Forwarders,
                 Categories = new[] { ActivityCategories.Forward }
             };
         }
@@ -262,7 +245,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
                 Categories = new [] { ActivityCategories.Forward }
             };
         }

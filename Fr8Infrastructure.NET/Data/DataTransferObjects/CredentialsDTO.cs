@@ -6,7 +6,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     public class CredentialsDTO
     {
         [JsonProperty("terminal")]
-        public TerminalDTO Terminal { get; set; }
+        public TerminalSummaryDTO Terminal { get; set; }
 
         [JsonProperty("username")]
         public string Username { get; set; }

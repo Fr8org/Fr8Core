@@ -403,16 +403,6 @@ namespace Data.Infrastructure
             }
         }
 
-	    private WebServiceRepository _webServiceRepository;
-
-        public IWebServiceRepository WebServiceRepository
-	    {
-		    get
-		    {
-			    return _webServiceRepository ?? (_webServiceRepository = new WebServiceRepository(this));
-		    }
-	    }
-
         private TagRepository _tagRepository;
 
         public ITagRepository TagRepository
@@ -447,15 +437,6 @@ namespace Data.Infrastructure
 
         public IPageDefinitionRepository PageDefinitionRepository => 
             _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
-
-        private TerminalRegistrationRepository _terminalRegistrationRepository;
-        public TerminalRegistrationRepository TerminalRegistrationRepository
-        {
-            get
-            {
-                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
-            }
-        }
 
         private IActivityCategoryRepository _activityCategoryRepository;
         public IActivityCategoryRepository ActivityCategoryRepository

@@ -50,8 +50,8 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 throw new ArgumentOutOfRangeException(nameof(dataDTO.ActivityDTO), "ActivityTemplate must be specified explicitly");
             }
 
-            var terminalDTO = dataDTO.ActivityDTO.ActivityTemplate.Terminal;
-            var terminal = ObjectFactory.GetInstance<ITerminal>().GetByNameAndVersion(terminalDTO.Name, terminalDTO.Version);
+            var activityTemplate = dataDTO.ActivityDTO.ActivityTemplate;
+            var terminal = ObjectFactory.GetInstance<ITerminal>().GetByNameAndVersion(activityTemplate.TerminalName, activityTemplate.TerminalVersion);
 
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_").ToLower();
             string queryString = string.Empty;

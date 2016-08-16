@@ -47,6 +47,7 @@ namespace terminalAtlassian
         {
             ActivityStore.RegisterActivity<Get_Jira_Issue_v1>(Get_Jira_Issue_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_Jira_Issue_v1>(Save_Jira_Issue_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Jira_Changes_v1>(Monitor_Jira_Changes_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
@@ -54,7 +55,8 @@ namespace terminalAtlassian
             return new Type[] {
                 typeof(Controllers.ActivityController),
                 typeof(Controllers.TerminalController),
-                typeof(Controllers.AuthenticationController)
+                typeof(Controllers.AuthenticationController),
+                typeof(Controllers.EventController)
             };
         }
     }

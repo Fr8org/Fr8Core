@@ -23,16 +23,14 @@ namespace terminalDocuSign.Activities
             Version = "1",
             Name = "Use_DocuSign_Template_With_New_Document",
             Label = "Use DocuSign Template With New Document",
-            Category = ActivityCategory.Forwarders,
             Tags = Tags.EmailDeliverer,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

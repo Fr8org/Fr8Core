@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
@@ -41,7 +42,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
         {
             var activityName = "Save_To_Google_Sheet";
 
-            var saveToGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Save_To_Google_Sheet_v1_InitialConfiguration(), plan, ordering, ActivityCategory.Forwarders, activityName);
+            var saveToGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Save_To_Google_Sheet_v1_InitialConfiguration(), plan, ordering, ActivityCategories.ForwardId, activityName);
             //Activity won't be able to run if there is no upstream data
 
             var upstreamCrateDescriptions = await _baseHubITest.GetRuntimeCrateDescriptionsFromUpstreamActivities(saveToGoogleSheetActivityDTO.Id);
@@ -73,7 +74,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
 
         public async Task<ActivityDTO> CreateMonitorGmailInbox(PlanDTO plan, int ordering)
         {
-            return await AddGoogleActivityToPlan(FixtureData.Monitor_Gmail_Inbox_v1_InitialConfiguration(), plan, ordering, ActivityCategory.Monitors, "Monitor_Gmail_Inbox", false);
+            return await AddGoogleActivityToPlan(FixtureData.Monitor_Gmail_Inbox_v1_InitialConfiguration(), plan, ordering, ActivityCategories.MonitorId, "Monitor_Gmail_Inbox", false);
         }
 
         public async Task<ActivityDTO> SaveActivity(ActivityDTO activity)
@@ -99,7 +100,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
         {
             var activityName = "Get_Google_Sheet_Data";
 
-            var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration(), plan, ordering, ActivityCategory.Receivers, activityName);
+            var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration(), plan, ordering, ActivityCategories.ReceiveId, activityName);
 
             return await ConfigureGetFromGoogleSheetActivity(getFromGoogleSheetActivityDTO, spreadsheetName, includeFixtureAuthToken);
         }
@@ -171,13 +172,22 @@ namespace Fr8.Testing.Integration.Tools.Activities
         /// <param name="activityCategory"></param>
         /// <param name="activityName"></param>
         /// <returns></returns>
-        private async Task<ActivityDTO> AddGoogleActivityToPlan(ActivityDTO activity, PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName, bool checkAuthentication = true)
+        private async Task<ActivityDTO> AddGoogleActivityToPlan(ActivityDTO activity, PlanDTO plan, int ordering, Guid activityCategory, string activityName, bool checkAuthentication = true)
         {
             var googleActivityDTO = activity;
-            var activityCategoryParam = (int)activityCategory;
+            var activityCategoryParam = activityCategory.ToString();
             var activityTemplates = await _baseHubITest
                 .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan

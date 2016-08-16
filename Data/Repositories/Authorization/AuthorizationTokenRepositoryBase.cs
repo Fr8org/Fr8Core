@@ -88,7 +88,7 @@ namespace Data.Repositories
         
         /*********************************************************************************/
 
-        public AuthorizationTokenDO FindToken(string userId, int terminalId, int? state)
+        public AuthorizationTokenDO FindToken(string userId, Guid terminalId, int? state)
         {
             AuthorizationTokenDO token;
 
@@ -106,7 +106,7 @@ namespace Data.Repositories
         
         /*********************************************************************************/
 
-        public AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId, int terminalId, string userId)
+        public AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId, Guid terminalId, string userId)
         {
             return SyncAndLoadSecretData(_storageProvider.GetQuery()
                                                                       .FirstOrDefault(x => x.ExternalAccountId == externalAccountId
@@ -116,7 +116,7 @@ namespace Data.Repositories
 
         /*********************************************************************************/
 
-        public AuthorizationTokenDO FindTokenByExternalState(string externalStateToken, int terminalId)
+        public AuthorizationTokenDO FindTokenByExternalState(string externalStateToken, Guid terminalId)
         {
             return SyncAndLoadSecretData(_storageProvider.GetQuery()
                                                                       .FirstOrDefault(x => x.TerminalID == terminalId

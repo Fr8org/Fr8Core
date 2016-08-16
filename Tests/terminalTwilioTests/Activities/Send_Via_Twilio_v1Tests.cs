@@ -16,6 +16,7 @@ using Fr8.TerminalBase.Interfaces;
 using terminalTwilio;
 using terminalUtilities.Twilio;
 using IActivity = Hub.Interfaces.IActivity;
+using System.Configuration;
 
 namespace terminalTwilioTests.Activities
 {
@@ -39,7 +40,7 @@ namespace terminalTwilioTests.Activities
             var twilioService = new Mock<ITwilioService>();
             twilioService
                 .Setup(c => c.GetRegisteredSenderNumbers())
-                .Returns(new List<string> { "+15005550006" });
+                .Returns(new List<string> { ConfigurationManager.AppSettings["TestPhoneNumber"] });
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(twilioService.Object));
 
             var activityDO = FixtureData.ConfigureTwilioActivity();
@@ -108,7 +109,7 @@ namespace terminalTwilioTests.Activities
             _twilioActivity = new Send_Via_Twilio_v1();
             var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
            var smsINfo = _twilioActivity.ParseSMSNumberAndMsg();
-            Assert.AreEqual("+15005550006", smsINfo.Key);
+            Assert.AreEqual(ConfigurationManager.AppSettings["TestPhoneNumber"], smsINfo.Key);
             Assert.AreEqual("Unit Test Message", smsINfo.Value);
         }*/
     }

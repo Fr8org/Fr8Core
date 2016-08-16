@@ -25,6 +25,9 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("fr8UserId")]
         public string Fr8UserId { get; set; }
 
+        [JsonProperty("title")]
+        public string Title { get; set; }
+
         [JsonProperty("message")]
         public string Message { get; set; }
     }

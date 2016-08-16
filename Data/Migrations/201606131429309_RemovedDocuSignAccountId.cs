@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class RemovedDocuSignAccountId : DbMigration
+    public partial class RemovedDocuSignAccountId : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

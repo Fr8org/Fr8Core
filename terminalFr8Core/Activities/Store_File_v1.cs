@@ -20,16 +20,14 @@ namespace terminalFr8Core.Activities
             Id = new Guid("1c4f979d-bc1c-4a4a-b370-049dbacd3678"),
             Name = "Store_File",
             Label = "Store File",
-            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             Type = ActivityType.Standard,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -65,7 +63,7 @@ namespace terminalFr8Core.Activities
         {
             var textSourceControl = GetControl<TextSource>("File Crate label");
             var fileNameField = GetControl<TextBox>("File_Name");
-            var fileCrateLabel = textSourceControl.TextValue;
+            var fileCrateLabel = string.IsNullOrEmpty(textSourceControl.TextValue) ? textSourceControl.Value : textSourceControl.TextValue;
             if (string.IsNullOrEmpty(fileCrateLabel))
             {
                 RaiseError("No Label was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);

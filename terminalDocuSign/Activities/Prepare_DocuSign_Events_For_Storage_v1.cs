@@ -22,16 +22,14 @@ namespace terminalDocuSign.Activities
             Name = "Prepare_DocuSign_Events_For_Storage",
             Label = "Prepare DocuSign Events For Storage",
             Version = "1",
-            Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             Tags = Tags.Internal,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

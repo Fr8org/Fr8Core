@@ -53,7 +53,7 @@ namespace terminalGoogle.Services
             {
                 Name = "MonitorSubmissionTerminalForm",
                 Description = "MonitorSubmissionTerminalForm",
-                PlanState = PlanState.Running,
+                PlanState = "Active",
                 Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
@@ -171,9 +171,9 @@ namespace terminalGoogle.Services
                     }
                 }
 
-                foreach (var slack in planMTSF.Activities.Where(term => term.ActivityTemplate.Terminal.Name == "terminalSlack"))
+                foreach (var slack in planMTSF.Activities.Where(term => term.ActivityTemplate.TerminalName == "terminalSlack"))
                 {
-                    var curentSToken = slackTokens.AuthTokens.Where(t => t.Id == slack.AuthTokenId).FirstOrDefault();
+                    var curentSToken = slackTokens.AuthTokens.FirstOrDefault(t => t.Id == slack.AuthTokenId);
                     if (curentSToken == null)
                     {
                         var sToken = slackTokens.AuthTokens.FirstOrDefault();
@@ -239,6 +239,7 @@ namespace terminalGoogle.Services
             var field = data.AvailableCrates.Where(c => c.Fields.Where(f => f.Name == fieldKey).FirstOrDefault() != null).FirstOrDefault().Fields.Where(f => f.Name == fieldKey).FirstOrDefault();
             nameTextBox.ValueSource = "upstream";
             nameTextBox.SelectedItem = field;
+            nameTextBox.selectedKey = field.Name;
         }
 
         private void SetDDL(ActivityPayload payload, string name, string key)

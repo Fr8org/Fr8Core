@@ -144,6 +144,9 @@ namespace Fr8.Infrastructure.Data.Constants
 
         [Display(Name = "Asana tasks list")]
         AsanaTaskList = 48,
+
+        [Display(Name = "Atlassian Issue Event")]
+        AtlassianIssueEvent = 49,
     }
 }
 
