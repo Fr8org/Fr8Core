@@ -27,14 +27,12 @@ namespace Fr8.TerminalBase.Services
         private readonly string _apiUrl;
         private string _userId;
         protected string TerminalToken { get; set; }
-        public string UserId => _userId;
 
-        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token, string userId)
+        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token)
         {
             TerminalToken = token;
             _restfulServiceClient = restfulServiceClient;
             _apiUrl = apiUrl?.TrimEnd('/', '\\');
-            _userId = userId;
         }
 
         public async Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)

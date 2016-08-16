@@ -4,11 +4,11 @@ namespace Hub.Infrastructure
 {
     public class Fr8Principal : GenericPrincipal
     {
-        private string TerminalId { get; set; }
+        private string TerminalKey { get; set; }
 
-        public Fr8Principal(string terminalId, IIdentity identity, string[] roles = null) : base(identity, roles)
+        public Fr8Principal(string terminalKey, IIdentity identity, string[] roles = null) : base(identity, roles)
         {
-            TerminalId = terminalId;
+            TerminalKey = terminalKey;
         }
     }
 }

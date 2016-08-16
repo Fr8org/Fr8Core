@@ -79,8 +79,8 @@ namespace Fr8.TerminalBase.Services
             }
             
             var secret = await setSecretTask.Task;
-            var restfulServiceClient = _restfulServiceClientFactory.Create(new HubAuthenticationHeaderSignature(secret, null));
-            return new DefaultHubCommunicator(restfulServiceClient, string.Concat(hubUrl, _apiSuffix), secret, null);
+            var restfulServiceClient = _restfulServiceClientFactory.Create(new HubAuthenticationHeaderSignature(secret));
+            return new DefaultHubCommunicator(restfulServiceClient, string.Concat(hubUrl, _apiSuffix), secret);
         }
 
         /**********************************************************************************/

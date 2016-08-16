@@ -8,14 +8,14 @@ namespace Fr8.TerminalBase.Infrastructure
     public class HubAuthenticationHeaderSignature : IRequestSignature
     {
         private readonly string _fr8Token;
-        public HubAuthenticationHeaderSignature(string token, string userId)
+        public HubAuthenticationHeaderSignature(string token)
         {
-            _fr8Token = $"key={token}" + (string.IsNullOrEmpty(userId) ? "" : $", user={userId}");
+            _fr8Token = $"FR8 terminal_key={token}";
         }
 
         public void SignRequest(HttpRequestMessage request)
         {
-            request.Headers.Add(System.Net.HttpRequestHeader.Authorization.ToString(), $"FR8-TOKEN {_fr8Token}");
+            request.Headers.Add(System.Net.HttpRequestHeader.Authorization.ToString(), _fr8Token);
         }
     }
 }
