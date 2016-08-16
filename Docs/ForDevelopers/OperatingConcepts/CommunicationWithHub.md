@@ -41,7 +41,7 @@ Internal plans are hidden from users plan list. They are generally used to creat
 
 ### 2. RunPlan
 
-This endpoint is used to trigger a plan run from a terminal.
+This endpoint is used to trigger a plan run from a terminal. You might pass a payload to this endpoint to start plan execution with a predefined payload.
 
 ***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Run
 
@@ -54,23 +54,45 @@ This endpoint loads specified plan from the hub.
 
 Note: it seems this endpoint's purpose was changed to load a plan template. Currently it is not in use by any .net terminals. i removed this from HubCommunicator. We probably need to close this endpoint to terminals.
 
-### 4. GetPlansByName
+### 4. GetPlans
 
-This endpoint loads plans by given name. Generally used to check if an auto created plan already exists in the Hub.
+This endpoint loads plans by given name or by given activity id. Generally used to check if an auto created plan already exists in the Hub or to get owner plan of an activity.
 
-***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Load
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Get
 
-Note: This endpoint is confusing and we probably should refactor our codes to use GetPlansByQuery endpoint.
+Note: This endpoint is confusing and we probably should refactor our codes to use GetPlansByQuery endpoint. There 2 different get plans endpoints. we should DRY it
 
 
 ### DeletePlan
 
-### GetPlansByActivity
+This endpoint deletes given plan by id.
 
-### UpdatePlan
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Delete
+
+### UpdateCreatePlan
+
+This endpoints updates given plan or it creates a new plan. If you pass a solutionName to this endpoint, it creates a solution.
+
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Post
+
+Note: we should update this endpoint. it should just create the given plan. We should have a different endpoint for updating the plan.
+Multi purpose endpoints are confusing.
+
+And we shouldn't make users post LastUpdated property. This is for our internal usage. we should simplify API dtos
+
+#### Available Categories
+
+    "Solutions",
+    ""
+
+#### Available Visibility Values
+
+
 
 
 ### GetActivityTemplates
+
+
 
 
 ### ConfigureActivity
