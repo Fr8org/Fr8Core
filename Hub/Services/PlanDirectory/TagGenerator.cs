@@ -6,7 +6,9 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Data.Entities;
 using Hub.Interfaces;
+using AutoMapper;
 using StructureMap;
 
 namespace Hub.Services.PlanDirectory
@@ -14,10 +16,12 @@ namespace Hub.Services.PlanDirectory
     public class TagGenerator : ITagGenerator
     {
         private readonly IPlanNode _activity;
+        private readonly IActivityCategory _activityCategory;
 
-        public TagGenerator(IPlanNode activity)
+        public TagGenerator(IPlanNode activity, IActivityCategory activityCategory)
         {
             _activity = activity;
+            _activityCategory = activityCategory;
         }
 
         /// <summary>
@@ -100,6 +104,24 @@ namespace Hub.Services.PlanDirectory
             );
 
             return result;
+        }
+
+        public Task<WebServiceTemplateTag> GetWebServiceTemplateTag(PageDefinitionDO pageDefinition)
+        {
+            var activityCategories = new List<ActivityCategoryDTO>();
+
+            foreach (var tag in pageDefinition.Tags)
+            {
+                var activityCategoryDO = _activityCategory.GetByName(tag, false);
+                if (activityCategoryDO == null)
+                {
+                    continue;
+                }
+
+                activityCategories.Add(Mapper.Map<ActivityCategoryDTO>(activityCategoryDO));
+            }
+
+            return Task.FromResult(new WebServiceTemplateTag(activityCategories));
         }
 
         private void CollectActivityTemplateIds(FullSubplanDto subplan, HashSet<string> ids)
