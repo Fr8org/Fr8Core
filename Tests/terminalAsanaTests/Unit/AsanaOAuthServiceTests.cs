@@ -18,34 +18,14 @@ using terminalAsanaTests.Fixtures;
 
 namespace terminalAsanaTests.Unit
 {
-    class AsanaOAuthServiceTests
+
+    [Category("asanaSDK")]
+    class AsanaOAuthServiceTests :BaseAsanaTest
     {
-        private IHubCommunicator _hubCommunicator;
-        private IRestfulServiceClient _restClient;
-        private IAsanaParameters _parameters;
-        private Mock<IRestfulServiceClient> _restClientMock;
-        private Mock<IHubCommunicator> _hubCommunicatorMock;
-        private Mock<IAsanaParameters> _parametersMock;
-
-        [SetUp]
-        public void Startup()
-        {
-            _restClientMock = new Mock<IRestfulServiceClient>();
-            _restClient = _restClientMock.Object;
-
-            _hubCommunicatorMock = new Mock<IHubCommunicator>();
-            _hubCommunicator = _hubCommunicatorMock.Object;
-
-            _parametersMock = new Mock<IAsanaParameters>();
-            _parameters = _parametersMock.Object;
-        }
-
         [Test]
         public async Task Should_Initialize_Itself()
         {
-            var tokenData = FixtureData.SampleAuthorizationToken();
-
-            var asanaOAuth = await new AsanaOAuthService(_restClient, _parameters).InitializeAsync(new OAuthToken());
+            var asanaOAuth = await new AsanaOAuthService(this._restClient, this._parameters).InitializeAsync(new OAuthToken());
 
             Assert.IsTrue(asanaOAuth.OAuthToken.ExpirationDate > DateTime.UtcNow && asanaOAuth.OAuthToken.ExpirationDate < DateTime.UtcNow.AddSeconds(3601));
             Assert.IsNotEmpty(asanaOAuth.OAuthToken.AccessToken);
@@ -53,22 +33,15 @@ namespace terminalAsanaTests.Unit
         }
 
         [Test]
-        public async Task Should_Refresh_Token_If_It_Expired()
+        public async Task Should_Refresh_Token_If_It_Expired_With_Call_To_Asana_Server()
         {
-            _restClientMock.Setup(
-                x => x.PostAsync<JObject>(  It.IsAny<Uri>(), 
-                                            It.IsAny<HttpContent>(),
-                                            It.IsAny<string>(),
-                                            It.IsAny<Dictionary<string, string>>()))
-
-                       .ReturnsAsync(JObject.Parse(FixtureData.SampleAsanaOauthTokenResponse()));
-
             var tokenData = FixtureData.SampleAuthorizationToken();
             tokenData.AdditionalAttributes = DateTime.Parse(tokenData.AdditionalAttributes).AddHours(-12).ToString("O");
 
             var asanaOAuth = await new AsanaOAuthService(_restClient, _parameters).InitializeAsync(new OAuthToken());
 
-            _restClientMock.Verify(x => x.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            // Assertion
+            _restClientMock.Verify(x => x.PostAsync<JObject>(It.IsAny<Uri>(),It.IsAny<HttpContent>(),null,null));
 
             Assert.IsTrue(asanaOAuth.OAuthToken.ExpirationDate > DateTime.UtcNow && asanaOAuth.OAuthToken.ExpirationDate < DateTime.UtcNow.AddSeconds(3601));
             Assert.IsNotEmpty(asanaOAuth.OAuthToken.AccessToken);

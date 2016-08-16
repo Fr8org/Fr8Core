@@ -182,6 +182,7 @@ namespace HubWeb.Controllers
                 if (existingCategory != null)
                 {
                     existingCategory.IconPath = category.IconPath;
+                    existingCategory.Type = category.Type;
                     model = Mapper.Map<ActivityCategoryDTO>(existingCategory);
                 }
                 else

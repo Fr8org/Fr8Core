@@ -88,7 +88,8 @@ namespace Data.Infrastructure.AutoMapper
                             {
                                 Id = y.ActivityCategory.Id,
                                 Name = y.ActivityCategory.Name,
-                                IconPath = y.ActivityCategory.IconPath
+                                IconPath = y.ActivityCategory.IconPath,
+                                Type=y.ActivityCategory.Type
                             })
                         : new List<ActivityCategoryDTO>()
                     )
@@ -120,7 +121,8 @@ namespace Data.Infrastructure.AutoMapper
                                 {
                                     Id = y.Id,
                                     Name = y.Name,
-                                    IconPath = y.IconPath
+                                    IconPath = y.IconPath,
+                                    Type=y.Type
                                 }
                             })
                             .ToList()
