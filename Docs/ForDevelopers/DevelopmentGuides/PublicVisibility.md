@@ -42,10 +42,13 @@ When you click save, the Hub will _immediately_ attempt to call that endpoint wi
 
 If the terminal is available and can be successfully discovered, it will be registered with the Hub in an Unapproved state. This just means you haven't been approved for production deployment. You should be able to immediately use an account on the development server at dev.fr8.co and see any Activities that you've provide ActivityTemplates for in your /discover response.
 
- However, other Fr8.co users won't be able to use the terminal (or even see it), even on the dev server until it is approved by the Fr8 team.
+However, other Fr8.co users won't be able to use the terminal (or even see it), even on the dev server until it is approved by the Fr8 team.
  
- In order to get your terminal approved, contact Fr8 Support and provide the production URL for the terminal (it can be the same as the development URL). The terminal should propertly respond to the basic requests from the Hub according to the Fr8 specifications. 
+In order to get your terminal approved, contact Fr8 Support and provide the production URL for the terminal (it can be the same as the development URL). The terminal should propertly respond to the basic requests from the Hub according to the Fr8 specifications. 
 
 As soon as your terminal is approved, it becomes accessible for all Fr8 users.
 
+
+For Local Hub Administrators
+========================
 If you're running the Hub locally and logged in as Fr8 Administrator, you can approve your terminal by clicking on the newly added terminal on the **My Terminal page** and checking the **Approve terminal** checkbox. You will need to confirm approval when you click on Save. 
