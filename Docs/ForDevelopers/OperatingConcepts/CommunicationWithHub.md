@@ -42,20 +42,25 @@ Internal plans are hidden from users plan list. They are generally used to creat
 ### 2. RunPlan
 
 This endpoint is used to trigger a plan run from a terminal.
+
 ***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Run
 
 
 ### 3. LoadPlan
 
 This endpoint loads specified plan from the hub.
+
 ***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Load
 
 Note: it seems this endpoint's purpose was changed to load a plan template. Currently it is not in use by any .net terminals. i removed this from HubCommunicator. We probably need to close this endpoint to terminals.
 
 ### 4. GetPlansByName
 
-Note: This endpoint is confusing
+This endpoint loads plans by given name. Generally used to check if an auto created plan already exists in the Hub.
 
+***API Definition:*** https://fr8.co/swagger/ui/index#!/Plans/Plans_Load
+
+Note: This endpoint is confusing and we probably should refactor our codes to use GetPlansByQuery endpoint.
 
 
 ### DeletePlan
