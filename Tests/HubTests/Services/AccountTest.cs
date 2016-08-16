@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -7,6 +8,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Services;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
@@ -228,7 +230,7 @@ namespace HubTests.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _fr8Account.GetExisting(null, "alexlucre1@gmail.com");
+                _fr8Account.GetExisting(null, CloudConfigurationManager.GetSetting("TestUserAccountName");
             }
         }
         #endregion

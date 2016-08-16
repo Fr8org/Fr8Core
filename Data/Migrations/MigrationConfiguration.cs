@@ -390,8 +390,6 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)
         {
-            CreateFr8Account("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
-            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
         /// <summary>
@@ -519,26 +517,6 @@ namespace Data.Migrations
                     });
                 } 
             } 
-
-            uow.SaveChanges();
-        }
-
-        private void AddTestUser(IUnitOfWork uow)
-        {
-            const string email = "integration_test_runner@fr8.company";
-            const string password = "fr8#s@lt!";
-
-            //check if we know this email address
-
-            var existingEmailAddressDO = uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
-            if (existingEmailAddressDO != null)
-            {
-                RegisterTestUser(uow, email, password, Roles.StandardUser);
-            }
-            else
-            {
-                RegisterTestUser(uow, email, password, Roles.StandardUser);
-            }
 
             uow.SaveChanges();
         }

@@ -19,9 +19,9 @@ namespace Fr8.Testing.Integration
     {
         private readonly HttpClient _httpClient;
 
-        protected virtual string TestUserEmail => "integration_test_runner@fr8.company";
+        protected virtual string TestUserEmail => ConfigurationManager.AppSettings["TestUserAccountName"];
 
-        protected virtual string TestUserPassword => "fr8#s@lt!";
+        protected virtual string TestUserPassword => ConfigurationManager.AppSettings["TestUserPassword"];
 
         protected string TestEmail;
         protected string TestEmailName;
