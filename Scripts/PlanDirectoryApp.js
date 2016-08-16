@@ -41,7 +41,6 @@
                                 $scope.pages.push(i + 1);
                             }
 
-                            $scope.searched = !!$scope.searchForm.searchText;
                             resolve();
                         })
                         .catch(function (err) {
@@ -126,6 +125,7 @@
 
             $scope.submitSearch = function (pageStart) {
                 doSearch(pageStart);
+                $scope.searched = true;
             };
 
             $scope.createPlan = function (planTemplate) {
@@ -215,7 +215,7 @@
             $scope.showCategoryPage = function () {
                 var categories = $scope.selectedCategories.map(function (it) { return it.name; });
 
-                $http.post(urlPrefix + '/api/v1/page_definitions/by_tags', categories)
+                $http.post(urlPrefix + '/api/v1/page_definitions/get_category_page', categories)
                     .then(function (res) {
                         if (res.data) {
                             $window.location.href = res.data.url;
@@ -234,7 +234,7 @@
                     $scope.privileged = privileged;
                 });
             extractActivityCategories();
-            // doSearch(1);
+            doSearch(1);
         }
     ])
     .controller('AuthenticateDialogController', [

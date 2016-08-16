@@ -67,12 +67,18 @@
                     <div class="search-bar-container">
                             <h2>Plan Directory</h2>
                             <form ng-submit="submitSearch(1)">
+                                <div class="btn-group mode-switch-panel">
+                                    <span>View by: </span>
+                                    <button type="button" class="btn" ng-class="{'green': searched, 'btn-default': !searched}" ng-click="searched=true">List</button>
+                                    <button type="button" class="btn" ng-class="{'green': !searched, 'btn-default': searched}" ng-click="searched=false">Category</button>
+                                </div>
+
                                 <div class="input-group">
                                     <input type="text" class="form-control" ng-model="searchForm.searchText" placeholder="Search for Plans" />
-                                    <span class="input-group-btn">
+                                    <div class="input-group-btn">
                                         <button type="submit" class="btn btn-primary">Search</button>
                                         <button type="button" class="btn btn-primary" style="margin-left: 1em" ng-if="privileged" ng-click="generatePages()">Generate Pages</button>
-                                    </span>
+                                    </div>
                                 </div>
                             </form>
                         <hr />
