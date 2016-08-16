@@ -59,7 +59,7 @@ namespace terminalDocuSign.Activities
             public DropDownList NotifierSelector { get; set; }
 
             public Button BuildSolutionButton { get; set; }
-            
+
             public ActivityUi()
             {
                 SpecificRecipientEmailText = new TextBox { Name = nameof(SpecificRecipientEmailText) };
@@ -151,8 +151,8 @@ namespace terminalDocuSign.Activities
         private readonly IConfigRepository _configRepository;
 
         public Track_DocuSign_Recipients_v2(
-            ICrateManager crateManager, 
-            IDocuSignManager docuSignManager, 
+            ICrateManager crateManager,
+            IDocuSignManager docuSignManager,
             IUnitOfWorkFactory uowFactory,
             IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
@@ -306,23 +306,21 @@ namespace terminalDocuSign.Activities
             radioButtonGroup.Radios[0].Selected = false;
             radioButtonGroup.Radios[1].Selected = true;
             var objectList = (DropDownList)radioButtonGroup.Radios[1].Controls.First(x => x.Name == "AvailableObjects");
-            var selectedObject = GetMtType(ActivityUI.BasedOnTemplateOption.Selected ? typeof(DocuSignEnvelopeCM_v2) : typeof(DocuSignRecipientStatus));
+            var selectedObject = objectList.ListItems.Where(a => a.Key == (ActivityUI.BasedOnTemplateOption.Selected ? MT.DocuSignEnvelope_v2.GetEnumDisplayName() : MT.DocuSignRecipient.GetEnumDisplayName())).FirstOrDefault();
             if (selectedObject == null)
             {
                 return activity;
             }
-            objectList.Value = selectedObject.Id.ToString("N");
-            objectList.selectedKey = selectedObject.Alias;
+            objectList.SelectByKey(selectedObject.Key);
             var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
             var conditions = new List<FilterConditionDTO>();
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
-                conditions.Add(new FilterConditionDTO { Field = "Email", Operator = "eq", Value = ActivityUI.SpecificRecipientEmailText.Value });
+                conditions.Add(new FilterConditionDTO { Field = "RecipientEmail", Operator = "eq", Value = ActivityUI.SpecificRecipientEmailText.Value });
             }
-            else
-            {
-                conditions.Add(new FilterConditionDTO { Field = "EnvelopeId", Operator = "eq", Value = "FromPayload" });
-            }
+
+            conditions.Add(new FilterConditionDTO { Field = "EnvelopeId", Operator = "eq", Value = "FromPayload" });
+
             filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
             {
                 ExecutionType = FilterExecutionType.WithFilter,
@@ -330,18 +328,10 @@ namespace terminalDocuSign.Activities
             });
             using (var uow = _uowFactory.Create())
             {
-                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, Guid.Parse(selectedObject.Value))));
                 crateStorage.Add(queryCriteria);
             }
             return await HubCommunicator.ConfigureActivity(activity);
-        }
-
-        private MtTypeReference GetMtType(Type clrType)
-        {
-            using (var uow = _uowFactory.Create())
-            {
-                return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
-            }
         }
 
         private async Task ConfigureSetDelayActivity(List<ActivityTemplateDTO> activityTemplates)
@@ -359,10 +349,14 @@ namespace terminalDocuSign.Activities
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
                 ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient.RecipientValue", ActivityUI.SpecificRecipientEmailText.Value);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient", true);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template", false);
             }
             else if (ActivityUI.BasedOnTemplateOption.Selected)
             {
                 ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template.UpstreamCrate", ActivityUI.TemplateSelector.ListItems.Single(x => x.Key == ActivityUI.TemplateSelector.selectedKey));
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient", false);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template", true);
             }
             return await HubCommunicator.ConfigureActivity(activity);
         }

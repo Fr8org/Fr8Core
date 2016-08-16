@@ -85,7 +85,7 @@ namespace terminalDocuSign.Activities
                         RecipientEmail = recipient.Email,
                         RecipientId = recipient.RecipientId,
                         RecipientUserName = recipient.Name,
-                        Status = recipient.Status
+                        RecipientStatus = recipient.Status
                     };
                     Payload.Add(Crate.FromContent("DocuSign Recipient " + recManifest.RecipientEmail, recManifest));
                 }

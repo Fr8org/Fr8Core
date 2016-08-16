@@ -9,7 +9,7 @@ namespace Fr8.Infrastructure.Data.Manifests
 {
     public class DocuSignRecipientCM : Manifest
     {
-        public string Status { get; set; }
+        public string RecipientStatus { get; set; }
         public string DocuSignAccountId { get; set; }
         [MtPrimaryKey]
         public string RecipientId { get; set; }
