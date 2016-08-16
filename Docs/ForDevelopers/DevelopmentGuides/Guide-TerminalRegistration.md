@@ -1,6 +1,5 @@
 ## Registering your Terminal with a Hub
 
-
 Before your terminal can be used with any Hub, it has to be registered.Registering your Terminal with a Hub causes the Hub to:
 1) send a /discover request to your Terminal immediately, and each time its starts up thereafter
 2) use the response to that /discover request to add your Terminal's Activitiees to the set of Activities made available to client users of that Hub.
@@ -14,7 +13,7 @@ Example endpoints:
 
 myterminal.mydomain.com:2940
 
-http://inconshreveable.ngrok.io
+inconshreveable.ngrok.io
 
 When you click save, the Hub will _immediately_ attempt to call that endpoint with /discover, and will expect to get a proper [discovery response.](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md), so don't bother trying to register your Terminal until you've verified locally that you can shoot it a discover request. Our [Swagger tools](http://dev-terminals.fr8.co:25923/swagger/ui/index#!/Terminal/Terminal_Get) might help here.
 
