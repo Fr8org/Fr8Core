@@ -163,6 +163,7 @@ namespace HubWeb.Controllers.Api
                 found_templates++;
                 var planTemplateCm = await _planTemplate.CreateOrUpdate(fr8AccountId, planTemplateDto);
                 await _searchProvider.CreateOrUpdate(planTemplateCm);
+                await _planTemplateDetailsGenerator.Generate(planTemplateDto);
                 await _webservicesPageGenerator.Generate(planTemplateCm, fr8AccountId);
             }
             watch.Stop();
