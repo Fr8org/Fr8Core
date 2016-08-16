@@ -14,7 +14,6 @@ using System.Net;
 using System.Web.Http.Description;
 using Data.Entities;
 using Swashbuckle.Swagger.Annotations;
-using System;
 using log4net;
 using Microsoft.AspNet.Identity;
 using System.Threading;
@@ -131,32 +130,42 @@ namespace HubWeb.Controllers
         //[Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Terminal has been registered and discovery process has been successfully performed.")]
         [SwaggerResponseRemoveDefaults]
-        public async Task<IHttpActionResult> Post([FromBody]TerminalDTO terminal)
+        public async Task<IHttpActionResult> Post(TerminalDTO terminal)
         {
+            var username = Thread.CurrentPrincipal.Identity.GetUserName();
+            var message = "An exception of type {0} has occurred while saving a terminal with id: {1}, Dev URL: {2}, Prod URL: {3}, current user: " + username + ", error message: {4}. Call stack: {5}";
             try
             {
                 await _terminalDiscovery.SaveOrRegister(terminal);
             }
-            catch (ArgumentNullException)
+            catch (Fr8ArgumentException ex)
             {
+                Logger.WarnFormat(message, ex.GetType().Name, terminal.InternalId, terminal.DevUrl, terminal.ProdUrl, ex.Message, ex.StackTrace);
+                return BadRequest(ex.UserMessage);
+            }
+            catch (Fr8ArgumentNullException ex)
+            {
+                Logger.WarnFormat(message, ex.GetType().Name, terminal.InternalId, terminal.DevUrl, terminal.ProdUrl, ex.Message, ex.StackTrace);
                 return BadRequest("An error has occurred while validating terminal data. Please make sure that the form fields are filled out correctly.");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (Fr8NotFoundException ex)
             {
+                Logger.WarnFormat(message, ex.GetType().Name, terminal.InternalId, terminal.DevUrl, terminal.ProdUrl, ex.Message, ex.StackTrace);
                 return NotFound();
             }
-            catch (InvalidOperationException)
+            catch (Fr8InsifficientPermissionsException ex)
             {
-                return BadRequest("Terminal URL cannot contain the string 'localhost'. Please correct your terminal URL and try again.");
+                Logger.WarnFormat(message, ex.GetType().Name, terminal.InternalId, terminal.DevUrl, terminal.ProdUrl, ex.Message, ex.StackTrace);
+                return BadRequest(ex.UserMessage);
             }
-            catch (ConflictException)
+            catch (Fr8ConflictException ex)
             {
+                Logger.WarnFormat(message, ex.GetType().Name, terminal.InternalId, terminal.DevUrl, terminal.ProdUrl, ex.Message, ex.StackTrace);
                 return Conflict();
             }
-            catch (Exception ex)
+            catch (Fr8Exception ex)
             {
-                var username = Thread.CurrentPrincipal.Identity.GetUserName();
-                Logger.Error($"An error has occurred while adding user's terminal on the Terminal's page. Terminal DevURL: {terminal.DevUrl}, ProdURL: {terminal.ProdUrl}, Username: {username}");
+                Logger.ErrorFormat(message, ex.GetType().Name, terminal.InternalId, terminal.DevUrl, terminal.ProdUrl, ex.Message, ex.StackTrace);
                 return InternalServerError();
             }
             return Ok();
