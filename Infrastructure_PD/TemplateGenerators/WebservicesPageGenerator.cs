@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -112,6 +113,12 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                 ["Tags"] = tag.TagsWithIcons,
                 ["RelatedPlans"] = relatedPlans
             });
+        }
+
+        public Task<bool> HasGeneratedPage(PageDefinitionDO pageDefinition)
+        {
+            var pageName = pageDefinition.UrlString.Substring(pageDefinition.UrlString.LastIndexOf("/") + 1);
+            return Task.FromResult(File.Exists(Path.Combine(_templateGenerator.OutputFolder, pageName)));
         }
 
         /// <summary>
