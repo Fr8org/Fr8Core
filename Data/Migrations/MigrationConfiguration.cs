@@ -90,29 +90,29 @@ namespace Data.Migrations
             // you need to set the Fr8OwnTerminal argument to true. For details see FR-4945.
             var securityObjectStorage = new SecurityObjectsStorage(uow, container.GetInstance<ISecurityObjectsCache>(), container.GetInstance<ISecurityObjectsStorageProvider>());
 
-            RegisterFr8OwnTerminal(uow, securityObjectStorage,  "localhost:10109", "https://terminalInstagram.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:56785", "https://terminalAsana.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:46281", "https://terminalAzure.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:61121", "https://terminalBasecamp2.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:54642", "https://terminalBox.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:39504", "https://terminalSlack.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:53234", "https://terminalDocuSign.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:30700", "https://terminalNotifier.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:51234", "https://terminalSalesforce.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:50705", "https://terminalFr8Core.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:10601", "https://terminalSendGrid.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:30699", "https://terminalTwilio.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:25923", "https://terminalGoogle.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:47011", "https://terminalExcel.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:19760", "https://terminalDropbox.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:30701", "https://terminalPapertrail.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:39768", "https://terminalAtlassian.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:48317", "https://terminalQuickBooks.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:39555", "https://terminalYammer.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:50479", "https://terminalTutorial.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:48675", "https://terminalStatX.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:22666", "https://terminalFacebook.fr8.co");
-            RegisterFr8OwnTerminal(uow, securityObjectStorage, "localhost:59022", "https://terminalTelegram.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:10109", "https://terminalInstagram.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:56785", "https://terminalAsana.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:46281", "https://terminalAzure.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:61121", "https://terminalBasecamp2.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:54642", "https://terminalBox.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:39504", "https://terminalSlack.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:53234", "https://terminalDocuSign.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:30700", "https://terminalNotifier.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:51234", "https://terminalSalesforce.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:50705", "https://terminalFr8Core.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:10601", "https://terminalSendGrid.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:30699", "https://terminalTwilio.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:25923", "https://terminalGoogle.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:47011", "https://terminalExcel.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:19760", "https://terminalDropbox.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:30701", "https://terminalPapertrail.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:39768", "https://terminalAtlassian.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:48317", "https://terminalQuickBooks.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:39555", "https://terminalYammer.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:50479", "https://terminalTutorial.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:48675", "https://terminalStatX.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:22666", "https://terminalFacebook.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:59022", "https://terminalTelegram.fr8.co");
             RegisterFr8OwnTerminal(uow, securityObjectStorage, "https://terminalTwitter.fr8.co", "https://terminalTwitter.fr8.co", false);
         }
 
