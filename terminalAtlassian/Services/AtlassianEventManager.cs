@@ -34,35 +34,39 @@ namespace terminalAtlassian.Services
 
         public async Task<Crate> ProcessExternalEvents(string curExternalEventPayload)
         {
-            var issue = JsonConvert.DeserializeObject<JiraIssueEvent>(curExternalEventPayload);
-            var atlassianEventCM = new AtlassianIssueEventCM
+            var issue = JsonConvert.DeserializeObject<Models.JiraIssueEvent>(curExternalEventPayload);
+            var atlassianEventCM = new JiraIssueWithCustomFieldsCM
             {
-                IssueKey = issue.Issue.Key,
-                IssueId = issue.Issue.Id,
-                UserId = issue.User.Email,
-                Time = issue.Timestamp,
-                ChangedAspect = issue.Issue.Fields.Project.Name,
-                IssueEvent = new JiraIssueEventCM
-                {
-                    IssueAssigneeName = issue.Issue.Fields.Assignee.DisplayName,
-                    IssueType = issue.Issue.Fields.IssueType.Name,
-                    IssueAssigneeEmailAddress = issue.Issue.Fields.Assignee.EmailAddress,
-                    IssuePriority = issue.Issue.Fields.Priority.Name,
-                    IssueResolution = issue.Issue.Fields.Resolution,
-                    IssueStatus = issue.Issue.Fields.Status.Name,
-                    IssueSummary = issue.Issue.Fields.Summary,
-                    ProjectName = issue.Issue.Fields.Project.Name,
-                    Timestamp = issue.Timestamp,
-                    UserName = issue.User.DisplayName,
-                    WebhookEvent = issue.WebhookEvent,
-                    Description = issue.Issue.Fields.Description
-                }
-                
+               JiraIssue = new AtlassianIssueEvent
+               {
+                    IssueKey = issue.Issue.Key,
+                    IssueId = issue.Issue.Id,
+                    UserId = issue.User.Email,
+                    Time = issue.Timestamp,
+                    ChangedAspect = issue.Issue.Fields.Project.Name,
+                    EventType = issue.IssueEventTypeName,
+                    IssueEvent = new Fr8.Infrastructure.Data.Manifests.JiraIssueEvent
+                    {
+                        IssueAssigneeName = issue.Issue.Fields.Assignee.DisplayName,
+                        IssueType = issue.Issue.Fields.IssueType.Name,
+                        IssueAssigneeEmailAddress = issue.Issue.Fields.Assignee.EmailAddress,
+                        IssuePriority = issue.Issue.Fields.Priority.Name,
+                        IssueResolution = issue.Issue.Fields.Resolution,
+                        IssueStatus = issue.Issue.Fields.Status.Name,
+                        IssueSummary = issue.Issue.Fields.Summary,
+                        ProjectName = issue.Issue.Fields.Project.Name,
+                        Timestamp = issue.Timestamp,
+                        UserName = issue.User.DisplayName,
+                        WebhookEvent = issue.WebhookEvent,
+                        Description = issue.Issue.Fields.Description
+                    }
+                },
+                CustomFields = null
             };
             var eventReportContent = new EventReportCM
             {
-                EventNames = string.Join(",", atlassianEventCM.ChangedAspect),
-                ExternalAccountId = atlassianEventCM.UserId,
+                EventNames = string.Join(",", atlassianEventCM.JiraIssue.ChangedAspect),
+                ExternalAccountId = atlassianEventCM.JiraIssue.UserId,
                 EventPayload = new CrateStorage(Crate.FromContent("Atlassian Issue Event", atlassianEventCM)),
                 Manufacturer = "Atlassian"
             };
