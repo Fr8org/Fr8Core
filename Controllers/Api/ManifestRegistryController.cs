@@ -32,12 +32,11 @@ namespace HubWeb.Controllers.Api
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IPusherNotifier _pusher;
         private readonly ISecurityServices _securityServices;
-        private readonly string _systemUserAccountId;
         private readonly IFr8Account _fr8Account;
 
         public ManifestRegistryController(
             IManifestRegistryMonitor manifestRegistryMonitor,
-            IConfigRepository configRepository,
+            IFr8Account fr8Account,
             IRestfulServiceClient restfulServiceClient,
             IUnitOfWorkFactory uowFactory,
             IPusherNotifier pusher,
@@ -66,7 +65,7 @@ namespace HubWeb.Controllers.Api
             using (var uow = _uowFactory.Create())
             {
                 var systemUserAccount = _fr8Account.GetSystemUser();
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccount.UserName);
                 var list = manifestDescriptions.Select(m => new ManifestDescriptionDTO
                 {
                     Id = m.Id,

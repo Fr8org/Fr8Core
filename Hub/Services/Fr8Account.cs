@@ -217,8 +217,9 @@ namespace Hub.Services
                 {
                     var systemAccount = uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
 
-                    if (systemAccount != null)
+                    if (systemAccount == null)
                     {
+                        //if the system doesn't have a default system account, create one
                         var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                         string userEmail = configRepository.Get("SystemUserEmail");
                         string curPassword = configRepository.Get("SystemUserPassword");
@@ -626,7 +627,8 @@ namespace Hub.Services
                 uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, newFr8Account.Id);
                 uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, newFr8Account.Id);
                 uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, newFr8Account.Id);
-
+                //this master admin account will also be system account
+                newFr8Account.SystemAccount = true;
                 if (newFr8Account != null)
                 {
                     AssignProfileToUser(uow, newFr8Account, DefaultProfiles.Fr8Administrator);
