@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanDirectory;
@@ -162,6 +164,10 @@ namespace HubWeb.Controllers.Api
                 }
                 found_templates++;
                 var planTemplateCm = await _planTemplate.CreateOrUpdate(fr8AccountId, planTemplateDto);
+
+                //if ownerId will be the last admin id who pushed the button. it therefore possible bugs 
+                planTemplateCm.OwnerName = searchItemDto.Owner;
+                
                 await _searchProvider.CreateOrUpdate(planTemplateCm);
                 await _planTemplateDetailsGenerator.Generate(planTemplateDto);
                 await _webservicesPageGenerator.Generate(planTemplateCm, fr8AccountId);
@@ -170,8 +176,8 @@ namespace HubWeb.Controllers.Api
             var elapsed = watch.Elapsed;
             var message = $"Page generator: templates found: {found_templates}, templates missed: {missed_templates}";
             var message2 = $"Page Generator elapsed time: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds";
-            Logger.Info(message);
-            Logger.Info(message2);
+            Logger.Warn(message);
+            Logger.Warn(message2);
 
             return Ok(message + "\n\r" + message2);
         }
