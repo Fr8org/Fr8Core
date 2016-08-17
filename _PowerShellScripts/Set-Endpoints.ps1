@@ -23,10 +23,15 @@ param(
 	[string]$serviceName
 )
 
+if (-Not $newHostname.StartsWith("http://"))
+{
+	$newHostname = "http://{newHostName}"
+}
+
 $ErrorActionPreference = 'Stop'
 $commandTextTmpl = "
 	UPDATE Terminals SET [Endpoint] = 
-	('http://{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
+	('{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
 	WHERE CHARINDEX (':', REVERSE ([DevUrl])) <= 6 AND IsFr8OwnTerminal = 1"
 
 
