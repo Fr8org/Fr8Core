@@ -6,5 +6,6 @@ namespace Hub.Interfaces
     public interface IPlanTemplateDetailsGenerator
     {
         Task Generate(PublishPlanTemplateDTO publishPlanTemplateDto);
+        Task<bool> HasGeneratedPage(PublishPlanTemplateDTO planTemplate);
     }
 }

@@ -37,12 +37,6 @@ namespace Fr8.TerminalBase.Services
             _userId = userId;
         }
 
-        public async Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
-        {
-            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plans/load");
-            return await _restfulServiceClient.PostAsync<PlanDTO, PlanNoChildrenDTO>(uri, planContents);
-        }
-
         public async Task<PayloadDTO> GetPayload(Guid containerId)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/containers/payload?id={containerId.ToString("D")}", UriKind.Absolute);

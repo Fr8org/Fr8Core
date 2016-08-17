@@ -97,6 +97,13 @@
 }
 
 /* Route Builder */
+.no-text-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 .designer-header {
     background: transparent;
     width: 100%;
