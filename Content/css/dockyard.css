@@ -1566,7 +1566,17 @@ md-radio-button .md-on{
     border-radius:50% !important;
 }
 
+md-radio-button.md-default-theme .md-on, md-radio-button .md-on {
+    background-color: rgb(38, 166, 154);
+}
 
+md-radio-group.md-default-theme .md-checked .md-ink-ripple, md-radio-group .md-checked .md-ink-ripple {
+    color: rgba(38, 166, 154,0.26);
+}
+
+md-radio-button.md-default-theme.md-checked .md-off, md-radio-button.md-checked .md-off {
+    border-color: rgba(38, 166, 154,0.87);
+}
 
 .black-radio.md-checked .md-off, .black-radio .md-off {
     border-color: rgba(0,0,0,0.87) !important;
