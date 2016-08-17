@@ -22,65 +22,64 @@ namespace Hub.Services
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-        public HistoryResultDTO<IncidentDTO> GetIncidents(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO)
+        public PagedResultDTO<IncidentDTO> GetIncidents(IUnitOfWork uow, PagedQueryDTO pagedQueryDto)
         {
-            return GetHistory<IncidentDTO, IncidentDO>(uow, historyQueryDTO, uow.IncidentRepository.GetQuery());
+            return GetHistory<IncidentDTO, IncidentDO>(uow, pagedQueryDto, uow.IncidentRepository.GetQuery());
         }
 
-        public HistoryResultDTO<FactDTO> GetFacts(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO)
+        public PagedResultDTO<FactDTO> GetFacts(IUnitOfWork uow, PagedQueryDTO pagedQueryDto)
         {
-            return GetHistory<FactDTO, FactDO>(uow, historyQueryDTO, uow.FactRepository.GetQuery());
+            return GetHistory<FactDTO, FactDO>(uow, pagedQueryDto, uow.FactRepository.GetQuery());
         }
 
-        public HistoryResultDTO<T> GetHistory<T, TS>(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO, IQueryable<TS> historyQuery) where T : HistoryItemDTO where TS : HistoryItemDO
+        public PagedResultDTO<T> GetHistory<T, TS>(IUnitOfWork uow, PagedQueryDTO pagedQueryDto, IQueryable<TS> historyQuery) where T : HistoryItemDTO where TS : HistoryItemDO
         {
-            ValidateInputQuery(ref historyQueryDTO);
+            ValidateInputQuery(ref pagedQueryDto);
             //get the current account
             var curAccount = _security.GetCurrentAccount(uow);
 
-            var filteredResult = FilterHistoryItems(historyQuery, historyQueryDTO, curAccount);
+            var filteredResult = FilterHistoryItems(historyQuery, pagedQueryDto, curAccount);
 
             var totalItemCountForCurrentCriterias = filteredResult.Count();
 
-            filteredResult = filteredResult.Page(historyQueryDTO.Page.Value, historyQueryDTO.ItemPerPage.Value);
+            filteredResult = filteredResult.Page(pagedQueryDto.Page.Value, pagedQueryDto.ItemPerPage.Value);
 
-            return new HistoryResultDTO<T>()
+            return new PagedResultDTO<T>()
             {
                 Items = filteredResult.ToList().Select(Mapper.Map<T>).ToList(),
-                CurrentPage = historyQueryDTO.Page.Value,
+                CurrentPage = pagedQueryDto.Page.Value,
                 TotalItemCount = totalItemCountForCurrentCriterias
             };
         }
 
-        private void ValidateInputQuery(ref HistoryQueryDTO historyQueryDTO)
+        private void ValidateInputQuery(ref PagedQueryDTO pagedQueryDto)
         {
             //lets make sure our inputs are correct
-            historyQueryDTO = historyQueryDTO ?? new HistoryQueryDTO();
-            historyQueryDTO.Page = historyQueryDTO.Page ?? 1;
-            historyQueryDTO.Page = historyQueryDTO.Page < 1 ? 1 : historyQueryDTO.Page;
-            historyQueryDTO.ItemPerPage = historyQueryDTO.ItemPerPage ?? DEFAULT_HISTORY_PAGE_SIZE;
-            historyQueryDTO.ItemPerPage = historyQueryDTO.ItemPerPage < MIN_HISTORY_PAGE_SIZE ? MIN_HISTORY_PAGE_SIZE : historyQueryDTO.ItemPerPage;
-            historyQueryDTO.IsDescending = historyQueryDTO.IsDescending ?? true;
+            pagedQueryDto = pagedQueryDto ?? new PagedQueryDTO();
+            pagedQueryDto.Page = pagedQueryDto.Page ?? 1;
+            pagedQueryDto.Page = pagedQueryDto.Page < 1 ? 1 : pagedQueryDto.Page;
+            pagedQueryDto.ItemPerPage = pagedQueryDto.ItemPerPage ?? DEFAULT_HISTORY_PAGE_SIZE;
+            pagedQueryDto.ItemPerPage = pagedQueryDto.ItemPerPage < MIN_HISTORY_PAGE_SIZE ? MIN_HISTORY_PAGE_SIZE : pagedQueryDto.ItemPerPage;
         }
 
-        private IQueryable<T> FilterHistoryItems<T>(IQueryable<T> historyQuery, HistoryQueryDTO historyQueryDTO, Fr8AccountDO curAccount) where T : HistoryItemDO
+        private IQueryable<T> FilterHistoryItems<T>(IQueryable<T> historyQuery, PagedQueryDTO pagedQueryDto, Fr8AccountDO curAccount) where T : HistoryItemDO
         {
-            if (historyQueryDTO.IsCurrentUser)
+            if (pagedQueryDto.IsCurrentUser)
             {
                 historyQuery = historyQuery.Where(i => i.Fr8UserId == curAccount.Id);
             }
 
-            if (!string.IsNullOrEmpty(historyQueryDTO.Filter))
+            if (!string.IsNullOrEmpty(pagedQueryDto.Filter))
             {
-                historyQuery = historyQuery.Where(c => c.Data.Contains(historyQueryDTO.Filter)
-                                                    || c.ObjectId.Contains(historyQueryDTO.Filter)
-                                                    || c.Activity.Contains(historyQueryDTO.Filter)
-                                                    || c.Component.Contains(historyQueryDTO.Filter)
-                                                    || c.Fr8UserId.Contains(historyQueryDTO.Filter)
+                historyQuery = historyQuery.Where(c => c.Data.Contains(pagedQueryDto.Filter)
+                                                    || c.ObjectId.Contains(pagedQueryDto.Filter)
+                                                    || c.Activity.Contains(pagedQueryDto.Filter)
+                                                    || c.Component.Contains(pagedQueryDto.Filter)
+                                                    || c.Fr8UserId.Contains(pagedQueryDto.Filter)
                                                 );
             }
-
-            historyQuery = historyQueryDTO.IsDescending.Value
+            var isDescending = pagedQueryDto.OrderBy?.StartsWith("-") ?? false;
+            historyQuery = isDescending
                 ? historyQuery.OrderByDescending(p => p.CreateDate)
                 : historyQuery.OrderBy(p => p.CreateDate);
 

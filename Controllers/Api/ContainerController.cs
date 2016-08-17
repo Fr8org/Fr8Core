@@ -122,7 +122,26 @@ namespace HubWeb.Controllers
                 return Ok();
             }
         }
-      
+
+        /// <summary>
+        /// Retrieves all containers belong to plans of current user that satisfy specified critiera. Pagination is applied to the result set
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        [Fr8ApiAuthorize]
+        [HttpGet]
+        [ActionName("query")]
+        [ResponseType(typeof(IEnumerable<ContainerDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, "Subset of containers satisfying specified query", typeof(PagedResultDTO<ContainerDTO>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        public IHttpActionResult GetByQuery([FromUri]PagedQueryDTO pagedQuery)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var results = _containerService.GetByQuery(_security.GetCurrentAccount(uow), pagedQuery);
+                return Ok(results);
+            }
+        }
+
         //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
         //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.
     }
