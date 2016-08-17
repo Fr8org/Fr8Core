@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -60,18 +59,14 @@ namespace HubWeb.Controllers.Api
         /// <param name="tags">Tags set</param>
         /// <returns>Page defintion with specified tags</returns>
         [ResponseType(typeof(PageDefinitionDTO))]
-        [ActionName("get_category_page")]
+        [ActionName("category_page")]
         [HttpPost]
-        public async Task<PageDefinitionDTO> GetCategoryPage(IEnumerable<string> tags)
+        public async Task<PageDefinitionDTO> CategoryPage(IEnumerable<string> tags)
         {
-            var serverPath = HostingEnvironment.MapPath("~");
-            var categoryPath = $"{serverPath}\\category";
-
             var pageDefinition = _pageDefinition.Get(tags);
             if (pageDefinition != null)
             {
-                var pageName = pageDefinition.UrlString.Substring(pageDefinition.UrlString.LastIndexOf("/") + 1);
-                if (!File.Exists(Path.Combine(categoryPath, pageName)))
+                if (!await _webServicesPageGenerator.HasGeneratedPage(pageDefinition))
                 {
                     var fr8AccountId = User.Identity.GetUserId();
                     await _webServicesPageGenerator.Generate(pageDefinition, fr8AccountId);
