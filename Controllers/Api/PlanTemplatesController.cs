@@ -133,6 +133,26 @@ namespace HubWeb.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [ActionName("details_page")]
+        public async Task<IHttpActionResult> DetailsPage(Guid id)
+        {
+            var fr8AccountId = User.Identity.GetUserId();
+            var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, id);
+            if (planTemplateDTO == null)
+            {
+                return Ok();
+            }
+
+            if (!await _planTemplateDetailsGenerator.HasGeneratedPage(planTemplateDTO))
+            {
+                await _planTemplateDetailsGenerator.Generate(planTemplateDTO);
+            }
+
+            return Ok($"details/{planTemplateDTO.Name}-{planTemplateDTO.ParentPlanId.ToString()}.html");
+        }
+
         [HttpPost]
         [DockyardAuthorize(Roles = Roles.Admin)]
         public async Task<IHttpActionResult> GeneratePages()
