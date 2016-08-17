@@ -26,7 +26,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $commandTextTmpl = "
 	UPDATE Terminals SET [Endpoint] = 
-	('{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
+	('http://{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
 	WHERE CHARINDEX (':', REVERSE ([DevUrl])) <= 6 AND IsFr8OwnTerminal = 1"
 
 
