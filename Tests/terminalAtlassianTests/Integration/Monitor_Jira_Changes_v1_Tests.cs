@@ -44,7 +44,7 @@ namespace terminalAtlassianTests.Integration
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
             var fieldDescriptions = crateStorage.CratesOfType<CrateDescriptionCM>().Single();
             Assert.AreEqual("Runtime Available Crates", fieldDescriptions.Label, "Monitor Atlassian Runtime Fields labeled FieldDescriptionsCM was not found");
-            Assert.AreEqual(1, fieldDescriptions.Content.CrateDescriptions.Count(), "CrateDescriptions count is not 1");
+            Assert.AreEqual(2, fieldDescriptions.Content.CrateDescriptions.Count(), "CrateDescriptions count is not 2");
             var fields = fieldDescriptions.Content.CrateDescriptions.Single().Fields;
 
             Assert.AreEqual("Monitor Atlassian Runtime Fields", fieldDescriptions.Content.CrateDescriptions.Single().Label, "Monitor Atlassian Runtime Fields labeled CrateDescription was not found");
