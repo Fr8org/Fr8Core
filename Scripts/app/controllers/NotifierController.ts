@@ -32,7 +32,7 @@ module dockyard.controllers.NotifierController {
         constructor(
             private UserService: services.IUserService,
             private PusherNotifierService: services.IPusherNotifierService,
-            private uiNotificationService: services.IUINotificationService,
+            private uiNotificationService: interfaces.IUINotificationService,
             private $mdSidenav: any,
             private $scope: INotifierControllerScope,
             private $stateParams: ng.ui.IStateParamsService) {

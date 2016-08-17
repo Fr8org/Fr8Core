@@ -3,7 +3,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Fr8.Infrastructure.Documentation.Swagger
 {
-    public class HistoryResultIcidentSampleFactory : ISwaggerSampleFactory<HistoryResultDTO<IncidentDTO>>
+    public class HistoryResultIcidentSampleFactory : ISwaggerSampleFactory<PagedResultDTO<IncidentDTO>>
     {
         private readonly ISwaggerSampleFactory<IncidentDTO> _incidentSampleFactory;
 
@@ -12,9 +12,9 @@ namespace Fr8.Infrastructure.Documentation.Swagger
             _incidentSampleFactory = incidentSampleFactory;
         }
 
-        public HistoryResultDTO<IncidentDTO> GetSampleData()
+        public PagedResultDTO<IncidentDTO> GetSampleData()
         {
-            return new HistoryResultDTO<IncidentDTO>
+            return new PagedResultDTO<IncidentDTO>
             {
                 CurrentPage = 1,
                 Items = new List<IncidentDTO> { _incidentSampleFactory.GetSampleData() },
@@ -28,7 +28,7 @@ namespace Fr8.Infrastructure.Documentation.Swagger
         }
     }
 
-    public class HistoryResultFactSampleFactory : ISwaggerSampleFactory<HistoryResultDTO<FactDTO>>
+    public class HistoryResultFactSampleFactory : ISwaggerSampleFactory<PagedResultDTO<FactDTO>>
     {
         private readonly ISwaggerSampleFactory<FactDTO> _factSampleFactory;
 
@@ -37,9 +37,9 @@ namespace Fr8.Infrastructure.Documentation.Swagger
             _factSampleFactory = factSampleFactory;
         }
 
-        public HistoryResultDTO<FactDTO> GetSampleData()
+        public PagedResultDTO<FactDTO> GetSampleData()
         {
-            return new HistoryResultDTO<FactDTO>
+            return new PagedResultDTO<FactDTO>
             {
                 CurrentPage = 1,
                 Items = new List<FactDTO> { _factSampleFactory.GetSampleData() },

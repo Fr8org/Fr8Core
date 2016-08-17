@@ -116,7 +116,7 @@ namespace terminalFacebook.Activities
                 RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
-            var fbPost = await _fbIntegration.GetPostByTime(AuthorizationToken.Token, facebookEventPayload.Time);
+            var fbPost = await _fbIntegration.GetPostById(AuthorizationToken.Token, facebookEventPayload.Id);
 
             if (fbPost == null)
             {

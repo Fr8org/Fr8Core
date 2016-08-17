@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
@@ -8,8 +9,10 @@ using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
+using System.Web.Hosting;
 using System.Web.Http.Description;
 using Swashbuckle.Swagger.Annotations;
 
@@ -19,11 +22,13 @@ namespace HubWeb.Controllers.Api
     {
         private readonly IPageDefinition _pageDefinition;
         private readonly ISecurityServices _securityServices;
+        private readonly IWebservicesPageGenerator _webServicesPageGenerator;
 
         public PageDefinitionsController()
         {
             _pageDefinition = ObjectFactory.GetInstance<IPageDefinition>();
             _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+            _webServicesPageGenerator = ObjectFactory.GetInstance<IWebservicesPageGenerator>();
         }
         /// <summary>
         /// Retrieves a collection of all page definitions
@@ -49,15 +54,25 @@ namespace HubWeb.Controllers.Api
             return Mapper.Map<PageDefinitionDTO>(pageDefinition);
         }
         /// <summary>
-        /// Retrieves a page defintion with specified tags set.
+        /// Retrieves a page defintion with specified tags set, rebuilds page if page is not currently generated on server.
         /// </summary>
         /// <param name="tags">Tags set</param>
         /// <returns>Page defintion with specified tags</returns>
         [ResponseType(typeof(PageDefinitionDTO))]
-        [ActionName("by_tags")]
-        public PageDefinitionDTO ByTags(IEnumerable<string> tags)
+        [ActionName("category_page")]
+        [HttpPost]
+        public async Task<PageDefinitionDTO> CategoryPage(IEnumerable<string> tags)
         {
             var pageDefinition = _pageDefinition.Get(tags);
+            if (pageDefinition != null)
+            {
+                if (!await _webServicesPageGenerator.HasGeneratedPage(pageDefinition))
+                {
+                    var fr8AccountId = User.Identity.GetUserId();
+                    await _webServicesPageGenerator.Generate(pageDefinition, fr8AccountId);
+                }
+            }
+            
             return Mapper.Map<PageDefinitionDTO>(pageDefinition);
         }
 

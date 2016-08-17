@@ -41,7 +41,6 @@
                                 $scope.pages.push(i + 1);
                             }
 
-                            $scope.searched = !!$scope.searchForm.searchText;
                             resolve();
                         })
                         .catch(function (err) {
@@ -126,6 +125,7 @@
 
             $scope.submitSearch = function (pageStart) {
                 doSearch(pageStart);
+                $scope.searched = true;
             };
 
             $scope.createPlan = function (planTemplate) {
@@ -169,9 +169,22 @@
                             Metronic.unblockUI();
                         }
                         else {
-                            var url = urlPrefix + '/details/' + planTemplate.name + '-' + planTemplate.parentPlanId + '.html';
-                            window.open(url, '_blank');
-                            Metronic.unblockUI();
+                            var url = urlPrefix + '/api/v1/plan_templates/details_page?id=' + planTemplate.parentPlanId;
+                            $http.get(url)
+                                .then(function (res) {
+                                    if (!res.data) {
+                                        $uibModal.open({
+                                            templateUrl: '/NoDetailsPageDialog.html',
+                                            controller: 'NoDetailsPageDialogController'
+                                        });
+                                    }
+                                    else {
+                                        window.open(urlPrefix + '/' + res.data, '_blank');
+                                    }
+                                })
+                                .finally(function () {
+                                    Metronic.unblockUI();
+                                });
                         }
                     })
                     .finally(function () {
@@ -189,11 +202,6 @@
                         doSearch($scope.currentPage);
                     });
             };
-
-            $scope.generatePages = function () {
-                var url = urlPrefix + '/api/v1/plan_templates/generatepages';
-                $http.post(url, null);
-            }
 
             $scope.toggleCategorySelection = function (ac) {
                 if (isCategorySelected(ac)) {
@@ -215,7 +223,7 @@
             $scope.showCategoryPage = function () {
                 var categories = $scope.selectedCategories.map(function (it) { return it.name; });
 
-                $http.post(urlPrefix + '/api/v1/page_definitions/by_tags', categories)
+                $http.post(urlPrefix + '/api/v1/page_definitions/category_page', categories)
                     .then(function (res) {
                         if (res.data) {
                             $window.location.href = res.data.url;
@@ -234,7 +242,7 @@
                     $scope.privileged = privileged;
                 });
             extractActivityCategories();
-            // doSearch(1);
+            doSearch(1);
         }
     ])
     .controller('AuthenticateDialogController', [
@@ -243,6 +251,11 @@
         }
     ])
     .controller('NoPageDefinitionDialogController', [
+        '$scope',
+        function ($scope) {
+        }
+    ])
+    .controller('NoDetailsPageDialogController', [
         '$scope',
         function ($scope) {
         }

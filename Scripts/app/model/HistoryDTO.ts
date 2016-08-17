@@ -13,15 +13,15 @@
         status: string;
     }
 
-    export class HistoryQueryDTO {
+    export class PagedQueryDTO {
         page: number;
         itemPerPage: number;
-        isDescending: boolean;
         filter: string;
         isCurrentUser: boolean;
+        orderBy: string;
     }
 
-    export class HistoryResultDTO<T> {
+    export class PagedResultDTO<T> {
         items: Array<T>;
         currentPage: number;
         totalItemCount: number;

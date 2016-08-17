@@ -3,13 +3,12 @@
 
     export interface IReportFactListScope extends ng.IScope {
         filter: any;
-        query: model.HistoryQueryDTO;
-        promise: ng.IPromise<model.HistoryResultDTO<model.FactDTO>>;
-        result: model.HistoryResultDTO<model.FactDTO>;
+        query: model.PagedQueryDTO;
+        promise: ng.IPromise<model.PagedResultDTO<model.FactDTO>>;
+        result: model.PagedResultDTO<model.FactDTO>;
         getHistory: () => void;
         removeFilter: () => void;
         expandItem: (historyItem: model.HistoryItemDTO) => void;
-        orderBy: string;
         selected: any;
         canSeeOtherUserIncidents: boolean;
         isAllowedToSeeResults: boolean;
@@ -30,10 +29,10 @@
                 });
             $scope.selected = [];
 
-            $scope.query = new model.HistoryQueryDTO();
+            $scope.query = new model.PagedQueryDTO();
             $scope.query.itemPerPage = 10;
             $scope.query.page = 1;
-            $scope.orderBy = "-createdDate";
+            $scope.query.orderBy = "-createdDate";
             $scope.query.isCurrentUser = true;
 
             $scope.isAllowedToSeeResults = true;
@@ -80,13 +79,8 @@
         }
 
         private getHistory() {
-            if (this.$scope.orderBy && this.$scope.orderBy.charAt(0) === '-') {
-                this.$scope.query.isDescending = true;
-            } else {
-                this.$scope.query.isDescending = false;
-            }
             this.$scope.promise = this.ReportService.getFactsByQuery(this.$scope.query).$promise;
-            this.$scope.promise.then((data: model.HistoryResultDTO<model.FactDTO>) => {
+            this.$scope.promise.then((data: model.PagedResultDTO<model.FactDTO>) => {
                 this.$scope.isAllowedToSeeResults = true;
                 this.$scope.result = data;
             }, (reason) => {

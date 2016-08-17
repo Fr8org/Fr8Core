@@ -1,4 +1,5 @@
-﻿<ul class="page-breadcrumb breadcrumb hide"> <!-- BEGIN PAGE BREADCRUMB -->
+﻿<ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
     </li>
@@ -12,59 +13,59 @@
 <div ng-controller="ContainerListController" class="margin-top-10">
     <div class="row">
         <div class="col-md-12 col-sm-12">
-            <!-- BEGIN PORTLET-->
-            <div class="portlet light ">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Containers</span>
-                        <!--<span class="caption-helper hide">weekly stats...</span>-->
-                    </div>
+            <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showFilter" style="margin-top: 30px;">
+                <div class="md-toolbar-tools">
+                    <h2 class="md-title font-green-haze uppercase">Containers</h2>
+                    <div flex></div>
+                    <md-button class="md-icon-button" ng-click="filter.showFilter = true">
+                        <md-tooltip md-direction="top">Filter</md-tooltip>
+                        <md-icon md-font-icon="fa fa-filter material-fa-icon"></md-icon>
+                    </md-button>
                 </div>
+            </md-toolbar>
 
-                <div class="portlet-body">
-                    <div ng-show="currentAccountContainers.length == 0">You have no container yet.</div>
-                    <div class="table-scrollable table-scrollable-borderless">
-                        <!--Note:: reused the class table-process-templates-->
-                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Plan Id</th>
-                                    <th>Create Date</th>
-                                    <th>Last Updated</th>
-                                    <th>Name</th>
-                                    <th>State</th>
-                                    <!--<th>Current Plan Node Id</th>-->
-                                    <!--<th style="text-align:right">Actions</th>-->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="container in currentAccountContainers" ng-click="goToContainerDetailsPage(container.id)">
-                                    <td>{{ container.id }}</td>
-                                    <td>{{ container.planId }}</td>
-                                    <td>{{ container.createDate | datetime }}</td>
-                                    <td>{{ container.lastUpdated | datetime }}</td>
-                                    <td>{{ container.name }}</td>
-                                    <td>
-                                       <span>{{ container.state | State }}</span>
-                                    </td>
-                                    <!--<td>
-                                        <div>
-                                            <button type="button" class="btn btn-sm red">Execute</button>
-                                            <button type="button" class="btn btn-sm red">Delete</button>
-                                            <button type="button" class="btn btn-sm green">Edit</button>
-                                        </div>
-                                    </td>-->
-                                </tr>
-                            </tbody>
-                        </table>
+            <md-toolbar class="md-table-toolbar md-default" ng-show="filter.showFilter" style="margin-top: 30px;">
+                <div class="md-toolbar-tools">
+                    <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
+                    <div flex name="filter.form">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <input flex type="text" ng-model="query.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0, 0, 0, .12) !important">
+                        </md-input-container>
                     </div>
+                    <md-button class="md-icon-button" ng-click="removeFilter()">
+                        <md-icon md-font-icon="fa fa-times material-fa-icon"></md-icon>
+                    </md-button>
                 </div>
-            </div>
-            <!-- END PORTLET-->
+            </md-toolbar>
+
+            <md-table-container>
+                <table md-table md-progress="promise">
+                    <thead md-head md-order="query.orderBy" md-on-reorder="loadContainers">
+                        <tr md-row>
+                            <th md-column style="width: 25%;">Id</th>
+                            <th md-column style="width: 25%;">Plan Id</th>
+                            <th md-column md-order-by="createDate" style="width: 10%;">Create Date</th>
+                            <th md-column md-order-by="lastUpdated" style="width: 10%;">Last Updated</th>
+                            <th md-column md-order-by="name" style="width: 20%; text-align:center;">Name</th>
+                            <th md-column md-order-by="state" style="width: 10%;">State</th>
+                        </tr>
+                    </thead>
+                    <tbody md-body>
+                        <tr md-row md-auto-select ng-repeat="container in result.items" ng-click="goToContainerDetailsPage(container.id)">
+                            <td md-cell class="column-spacer">{{ container.id }}</td>
+                            <td md-cell class="column-spacer">{{ container.planId }}</td>
+                            <td md-cell class="column-spacer">{{ container.createDate | datetime }}</td>
+                            <td md-cell class="column-spacer">{{ container.lastUpdated | datetime }}</td>
+                            <td md-cell class="column-spacer">{{ container.name }}</td>
+                            <td md-cell class="column-spacer">{{ container.state | State }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+
+            <md-table-pagination md-limit="query.itemPerPage" md-limit-options="[5, 10, 15, 20, 50, 100]" md-page="query.page" md-total="{{(result.totalItemCount || result.totalItemCount === 0) ? result.totalItemCount : 'NaN'}}" md-on-paginate="loadContainers" md-page-select></md-table-pagination>
+
         </div>
     </div>
-
 </div>
 <!-- END MAIN CONTENT -->

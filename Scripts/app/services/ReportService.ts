@@ -1,8 +1,8 @@
 ﻿module dockyard.services {
 
     export interface IReportService extends ng.resource.IResourceClass<interfaces.IHistoryItemDTO> {
-        getIncidentsByQuery: (query: model.HistoryQueryDTO) => interfaces.IHistoryResultDTO<model.IncidentDTO>;
-        getFactsByQuery: (query: model.HistoryQueryDTO) => interfaces.IHistoryResultDTO<model.FactDTO>;
+        getIncidentsByQuery: (query: model.PagedQueryDTO) => interfaces.IHistoryResultDTO<model.IncidentDTO>;
+        getFactsByQuery: (query: model.PagedQueryDTO) => interfaces.IHistoryResultDTO<model.FactDTO>;
         canSeeOtherUserHistory: () => any;
     }
 

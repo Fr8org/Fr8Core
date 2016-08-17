@@ -3,10 +3,12 @@
 
 
 
-Operational Security
+Security for Developers
 ------------------
 
 [Authorization and Authentication Overview](./AuthOverview.md)
+
+[Fr8's Internal Permissions Model](/Docs/ForDevelopers/DevelopmentGuides/SecuritySystemWalkthrough.md)
 
 [Fr8's OAuth Mechanisms](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md)
 
@@ -16,7 +18,7 @@ Operational Security
 
 
 
-Administrative Security
+Security for Administrators
 ------------------
 [Administrative Security Home](/Docs/SecurityHome.md)
 

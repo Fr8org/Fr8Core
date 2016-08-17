@@ -27,12 +27,9 @@ namespace terminalFacebook.Services
             _rsc = rsc;
         }
 
-        public async Task<FacebookPost> GetPostByTime(string oauthToken, string time)
+        public async Task<FacebookPost> GetPostById(string oauthToken, string postId)
         {
-            //let's do some dirty hacks here
-            var realTime = int.Parse(time);
-            //we are trying to get exact feed that was generated on time
-            var postData = await _rsc.GetAsync<GraphApiPostReply>(GetAbsoluteUri($"me/feed?since={realTime-1}&until={realTime}&limit=1", oauthToken));
+            var postData = await _rsc.GetAsync<GraphApiPostReply>(GetAbsoluteUri($"me/feed?id={postId}", oauthToken));
             return postData?.data.FirstOrDefault();
         }
 

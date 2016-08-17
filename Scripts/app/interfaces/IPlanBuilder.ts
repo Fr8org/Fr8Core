@@ -11,7 +11,7 @@ module dockyard.interfaces {
 
     export interface IPlanResultDTO extends ng.resource.IResource<model.PlanResultDTO>, model.PlanResultDTO { }
 
-    export interface IHistoryResultDTO<T> extends ng.resource.IResource<model.HistoryResultDTO<T>>, model.HistoryResultDTO<T> { }
+    export interface IHistoryResultDTO<T> extends ng.resource.IResource<model.PagedResultDTO<T>>, model.PagedResultDTO<T> { }
 
     export interface IReportFactVM extends ng.resource.IResource<model.FactDTO>, model.FactDTO { }
 
