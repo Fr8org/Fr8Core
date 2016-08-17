@@ -19,6 +19,7 @@ using terminalAsana.Activities;
 namespace terminalAsanaTests.Integration
 {
     [Explicit]    
+    [Ignore]// because asana don`t allow use tokens that were issued for different domains (i.e. i can`t use token for localhost in dev)
     class Get_Taks_v1_Tests: BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
