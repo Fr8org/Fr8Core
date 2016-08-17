@@ -227,7 +227,6 @@ namespace Hub.Services
                         systemAccount = uow.UserRepository.GetOrCreateUser(userEmail);
                         uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
                         uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, systemAccount.Id);
-
                         systemAccount.SystemAccount = true;
 
                         uow.SaveChanges();

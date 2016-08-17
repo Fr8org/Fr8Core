@@ -191,5 +191,3 @@ namespace HubWeb.Controllers.Api
         }
     }
 }
-
-}
