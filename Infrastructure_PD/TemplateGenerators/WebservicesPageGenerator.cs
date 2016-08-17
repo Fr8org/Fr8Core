@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -70,8 +71,8 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                         Tuple<string, string, string>(
                         publishPlanTemplateDTO.Name,
                         publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
-                        CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                        + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+                        CloudConfigurationManager.GetSetting("HubApiUrl") +
+                                    "plan_templates/createplan/?id=" + publishPlanTemplateDTO.ParentPlanId));
                 }
                 await _templateGenerator.Generate(new PlanCategoryTemplate(), pageName, new Dictionary<string, object>
                 {
@@ -112,6 +113,12 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                 ["Tags"] = tag.TagsWithIcons,
                 ["RelatedPlans"] = relatedPlans
             });
+        }
+
+        public Task<bool> HasGeneratedPage(PageDefinitionDO pageDefinition)
+        {
+            var pageName = pageDefinition.UrlString.Substring(pageDefinition.UrlString.LastIndexOf("/") + 1);
+            return Task.FromResult(File.Exists(Path.Combine(_templateGenerator.OutputFolder, pageName)));
         }
 
         /// <summary>
