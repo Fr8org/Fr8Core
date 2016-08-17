@@ -66,9 +66,11 @@ exclude them from .gitignore.
   <!-- Realtime notifications using Pusher -->
   <!-- Fr8 uses Pusher to send realtime notifications to users. 
   Specify your Pusher account details in the section below. -->
-  <add key="pusherAppId" value="" />
-  <add key="pusherAppKey" value="" />
-  <add key="pusherAppSecret" value="" />
+  <!-- Note that below Pusher account is provided to you as a courtesy of Fr8 so you won't need to register your own account.
+  You'll share it with other opensource developers so please do not abuse it and please don't use it for purposes other than Fr8-related development-->
+  <add key="pusherAppId" value="235777" />
+  <add key="pusherAppKey" value="3f148922467c453bd06f" />
+  <add key="pusherAppSecret" value="a7e979ab8dc76459b67f" />
   
   <!-- Details of the Google form which is used to submit new crate manifests. -->
   <add key="ManifestSubmissionFormUrl" value="" />
