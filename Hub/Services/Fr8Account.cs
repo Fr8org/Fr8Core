@@ -607,13 +607,17 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string userEmail = configRepository.Get("SystemUserEmail");
+                var systemUser = uow.UserRepository.GetOrCreateUser(userEmail);
+
                 var adminRoleId = uow.AspNetUserRolesRepository.GetRoleID(Roles.Admin);
-                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.RoleId == adminRoleId);
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x => x.RoleId == adminRoleId && x.UserId != systemUser.Id);
             }
         }
 
         /// <summary>
-        /// Create new Admin Account 
+        /// Create new Master Admin Account from the Wizard page
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
@@ -634,6 +638,10 @@ namespace Hub.Services
                     AssignProfileToUser(uow, newFr8Account, DefaultProfiles.Fr8Administrator);
                 }
 
+                //change default system account to our current master account
+                var defaultSystemUser = _configRepository.Get("SystemUserEmail");
+                var defaultSystemUserAccount = uow.UserRepository.GetOrCreateUser(defaultSystemUser);
+                defaultSystemUserAccount.SystemAccount = false;
                 uow.SaveChanges();
 
                 if (newFr8Account != null)

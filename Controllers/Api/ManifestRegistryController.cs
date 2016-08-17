@@ -32,11 +32,11 @@ namespace HubWeb.Controllers.Api
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IPusherNotifier _pusher;
         private readonly ISecurityServices _securityServices;
-        private readonly IFr8Account _fr8Account;
+        private readonly string _systemUserAccountId;
 
         public ManifestRegistryController(
             IManifestRegistryMonitor manifestRegistryMonitor,
-            IFr8Account fr8Account,
+            IConfigRepository configRepository,
             IRestfulServiceClient restfulServiceClient,
             IUnitOfWorkFactory uowFactory,
             IPusherNotifier pusher,
@@ -46,7 +46,11 @@ namespace HubWeb.Controllers.Api
             {
                 throw new ArgumentNullException(nameof(manifestRegistryMonitor));
             }
-            _fr8Account = fr8Account;
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+            _systemUserAccountId = configRepository.Get("SystemUserEmail");
             _manifestRegistryMonitor = manifestRegistryMonitor;
             _restfulServiceClient = restfulServiceClient;
             _uowFactory = uowFactory;
@@ -64,8 +68,8 @@ namespace HubWeb.Controllers.Api
         {
             using (var uow = _uowFactory.Create())
             {
-                var systemUserAccount = _fr8Account.GetSystemUser();
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccount.UserName);
+
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                 var list = manifestDescriptions.Select(m => new ManifestDescriptionDTO
                 {
                     Id = m.Id,
@@ -116,8 +120,7 @@ namespace HubWeb.Controllers.Api
 
             using (var uow = _uowFactory.Create())
             {
-                var systemUserAccount = _fr8Account.GetSystemUser();
-                uow.MultiTenantObjectRepository.Add(manifestDescription, systemUserAccount.UserName);
+                uow.MultiTenantObjectRepository.Add(manifestDescription, _systemUserAccountId);
 
                 uow.SaveChanges();
             }
@@ -177,8 +180,7 @@ namespace HubWeb.Controllers.Api
             int result = 1;
             using (var uow = _uowFactory.Create())
             {
-                var systemUserAccount = _fr8Account.GetSystemUser();
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccount.UserName);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                 if (!manifestDescriptions.Any())
                 {
                     return result.ToString();
@@ -188,4 +190,6 @@ namespace HubWeb.Controllers.Api
             return result.ToString();
         }
     }
+}
+
 }
