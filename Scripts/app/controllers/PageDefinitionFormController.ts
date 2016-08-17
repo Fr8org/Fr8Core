@@ -39,8 +39,6 @@ module dockyard.controllers {
 
             $scope.submit = isValid => {
                 if (isValid) {
-                    console.log('save page definition');
-                    console.log(this.$scope.pageDefinition);
                     this.PageDefinitionService.save(this.$scope.pageDefinition)
                         .$promise.then(pageDefinition => {
                             this.$modalInstance.close(pageDefinition);

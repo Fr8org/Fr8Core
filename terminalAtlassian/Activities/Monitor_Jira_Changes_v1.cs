@@ -13,6 +13,8 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalAtlassian.Interfaces;
+using terminalAtlassian.Helpers;
+using Atlassian.Jira;
 
 namespace terminalAtlassian.Actions
 {
@@ -45,6 +47,7 @@ namespace terminalAtlassian.Actions
         private const string IssueSummary = "Issue Summary";
         private const string IssueStatus = "Issue Status";
         private const string IssueDescription = "Issue Description";
+        private const string EventType = "Event Type";
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -100,17 +103,20 @@ namespace terminalAtlassian.Actions
             ActivityUI.ProjectSelector.ListItems = _atlassianService
             .GetProjects(AuthorizationToken)
             .ToListItems()
-            .ToList(); 
-            
+            .ToList();
+
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
-                                            .AddField(ProjectName)
-                                            .AddField(IssueResolution)
-                                            .AddField(IssuePriority)
-                                            .AddField(IssueAssignee)
-                                            .AddField(IssueSummary)
-                                            .AddField(IssueStatus)
-                                            .AddField(IssueDescription)
-                                            .AddField(IssueKey);
+                                .AddField(ProjectName)
+                                .AddField(IssueResolution)
+                                .AddField(IssuePriority)
+                                .AddField(IssueAssignee)
+                                .AddField(IssueSummary)
+                                .AddField(IssueStatus)
+                                .AddField(IssueDescription)
+                                .AddField(IssueKey)
+                                .AddField(EventType);
+
+            CrateSignaller.MarkAvailableAtRuntime<JiraIssueWithCustomFieldsCM>(RuntimeCrateLabel);
         }
         public override Task Activate()
         {
@@ -136,26 +142,86 @@ namespace terminalAtlassian.Actions
                 return;
             }
 
-            var atlassianEventPayload = eventCrate.EventPayload.CrateContentsOfType<AtlassianIssueEventCM>()
-                    .FirstOrDefault(e => e.ChangedAspect.Contains(ActivityUI.ProjectSelector.selectedKey));
+            var atlassianEventPayload = eventCrate.EventPayload.CrateContentsOfType<JiraIssueWithCustomFieldsCM>()
+                    .FirstOrDefault(e => e.JiraIssue.ChangedAspect.Contains(ActivityUI.ProjectSelector.selectedKey));
 
             if (atlassianEventPayload == null)
             {
                 RequestPlanExecutionTermination("Atlassian event payload was not found");
                 return;
             }
-            var jiraIssue = atlassianEventPayload;
-            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
-                                                                    new KeyValueDTO(IssueKey, jiraIssue.IssueKey),
-                                                                    new KeyValueDTO(ProjectName, jiraIssue.IssueEvent.ProjectName),
-                                                                    new KeyValueDTO(IssueResolution, jiraIssue.IssueEvent.IssueResolution),
-                                                                    new KeyValueDTO(IssuePriority, jiraIssue.IssueEvent.IssuePriority),
-                                                                    new KeyValueDTO(IssueAssignee, jiraIssue.IssueEvent.IssueAssigneeName),
-                                                                    new KeyValueDTO(IssueSummary, jiraIssue.IssueEvent.IssueSummary),
-                                                                    new KeyValueDTO(IssueStatus, jiraIssue.IssueEvent.IssueStatus),
-                                                                    new KeyValueDTO(IssueDescription, jiraIssue.IssueEvent.Description),
-                                                                    new KeyValueDTO(IssueKey, jiraIssue.IssueKey)
-                                                                    )));
+            var jiraIssueWithCustomFields = atlassianEventPayload;
+            JiraIssueWithCustomFieldsCM jiraIssueWithCustomFieldsCM = new JiraIssueWithCustomFieldsCM();
+            jiraIssueWithCustomFieldsCM.JiraIssue = jiraIssueWithCustomFields.JiraIssue;
+            var jira = CreateJiraRestClient();
+            var issue = jira.GetIssue(jiraIssueWithCustomFields.JiraIssue.IssueKey);
+
+            var jiraComments = issue.GetComments();
+
+            // add custom fields to the manifest
+            var customFields = new JiraCustomField[issue.CustomFields.Count];
+            for(var i = 0; i < issue.CustomFields.Count; i++)
+            {
+                var customField = new JiraCustomField();
+                customField.Key = issue.CustomFields[i].Name;
+                for(var j = 0; j < issue.CustomFields[i].Values.Length; j++)
+                {
+                    customField.Values = new string[issue.CustomFields[i].Values.Length];
+                    customField.Values[j] = issue.CustomFields[i].Values[j];
+                }
+                customFields[i] = customField;
             }
+
+            // add comments to the manifest
+            var comments = new JiraComment[jiraComments.Count];
+            for(var i = 0; i < jiraComments.Count; i++)
+            {
+                var comment = new JiraComment();
+                comment.Author = jiraComments[i].Author;
+                comment.Body = jiraComments[i].Body;
+                comment.CreatedDate = jiraComments[i].CreatedDate;
+                comment.GroupLevel = jiraComments[i].GroupLevel;
+                comment.Id = jiraComments[i].Id;
+                comment.RoleLevel = jiraComments[i].RoleLevel;
+                comment.UpdateAuthor = jiraComments[i].UpdateAuthor;
+                comment.UpdatedDate = jiraComments[i].UpdatedDate;
+                comments[i] = comment;
+
+            }
+            jiraIssueWithCustomFieldsCM.CustomFields = customFields;
+            jiraIssueWithCustomFieldsCM.Comments = comments;
+
+            // payload in the type of JiraIssueWithCustomFieldsCM (that includes custom fields of the issue and comments)
+            Payload.Add(Crate<JiraIssueWithCustomFieldsCM>.FromContent(RuntimeCrateLabel,jiraIssueWithCustomFieldsCM));
+
+            // payload in the type of StandardPayloadDataCM (does not include custom fields and comments)
+            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
+                                                                  new KeyValueDTO(IssueKey, jiraIssueWithCustomFields.JiraIssue.IssueKey),
+                                                                  new KeyValueDTO(ProjectName, jiraIssueWithCustomFields.JiraIssue.IssueEvent.ProjectName),
+                                                                  new KeyValueDTO(IssueResolution, jiraIssueWithCustomFields.JiraIssue.IssueEvent.IssueResolution),
+                                                                  new KeyValueDTO(IssuePriority, jiraIssueWithCustomFields.JiraIssue.IssueEvent.IssuePriority),
+                                                                  new KeyValueDTO(IssueAssignee, jiraIssueWithCustomFields.JiraIssue.IssueEvent.IssueAssigneeName),
+                                                                  new KeyValueDTO(IssueSummary, jiraIssueWithCustomFields.JiraIssue.IssueEvent.IssueSummary),
+                                                                  new KeyValueDTO(IssueStatus, jiraIssueWithCustomFields.JiraIssue.IssueEvent.IssueStatus),
+                                                                  new KeyValueDTO(IssueDescription, jiraIssueWithCustomFields.JiraIssue.IssueEvent.Description),
+                                                                  new KeyValueDTO(IssueKey, jiraIssueWithCustomFields.JiraIssue.IssueKey),
+                                                                  new KeyValueDTO(EventType, jiraIssueWithCustomFields.JiraIssue.EventType)
+                                                                  )));
+        }
+        public IEnumerable<CustomField> GetCustomFields()
+        {
+            var jira = CreateJiraRestClient();
+            var customFields = jira.GetCustomFields();
+            return customFields;
+        }
+
+        public Jira CreateJiraRestClient()
+        {
+            var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token).EnforceDomainSchema();
+            Jira jira = Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
+            return jira;
+        }
+
     }
+    
 }
