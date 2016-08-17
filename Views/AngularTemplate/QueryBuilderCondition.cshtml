@@ -15,7 +15,8 @@
                 class="form-control"
                 ng-options="op.value as op.text for op in operators"
                 ng-model="condition.operator"
-                ng-disabled="!condition.field">
+                ng-disabled="!condition.field"
+                ng-required="condition.field != null"    >
             </select>
         </div>
     </td>

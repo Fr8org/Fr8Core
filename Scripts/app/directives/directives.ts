@@ -18,6 +18,17 @@ app.directive('autoFocus', ['$timeout', function ($timeout) {
     };
 }]);
 
+app.directive('delayedAutoFocus', ['$timeout', function ($timeout) {
+    return {
+        restrict: 'AC',
+        link: function (_scope, _element) {
+            $timeout(function () {
+                _element[0].focus();
+            }, 500);
+        }
+    };
+}]);
+
 app.filter('parseUrl', () => {
     var urls = /(\b(https?|ftp):\/\/[A-Z0-9+&@#\/%?=~_|!:,.;-]*[-A-Z0-9+&@#\/%=~_|])/gim;
 

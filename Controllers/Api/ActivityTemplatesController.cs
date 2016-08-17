@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using Hub.Interfaces;
 using Data.Entities;
 using System.Linq;
+using System.Net;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -24,9 +26,9 @@ namespace HubWeb.Controllers
         /// Retreives activity template with specified Id
         /// </summary>
         /// <param name="id">Id of activity template to retrieve</param>
-        /// <response code="200">Retrieved activity template</response>
         [HttpGet]
-        [ResponseType(typeof(ActivityTemplateDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Retrieved activity template", typeof(ActivityTemplateDTO))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "Activity template doesn't exist", typeof(DetailedMessageDTO))]
         public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -35,30 +37,16 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<ActivityTemplateDTO>(activityTemplate));
             }
         }
+
+
         /// <summary>
         /// Retreives all available activity templates grouped by category
         /// </summary>
         /// <response code="200">Collection of activity templates grouped by category</response>
-        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         public IHttpActionResult Get()
-        {
-            var categoriesWithActivities = _activity.GetAvailableActivityGroups();
-            return Ok(categoriesWithActivities);
-        }
-
-
-        //TODO inspect this - why do we have 2 different methods returning different responses by similar names?
-        /// <summary>
-        /// Retreives all available activity templates grouped by category
-        /// </summary>
-        /// <response code="200">Collection of activity templates grouped by category</response>
-        [AllowAnonymous]
-        [HttpGet]
-        [ActionName("by_categories")]
-        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
-        public IHttpActionResult GetByCategories()
         {
             var categoriesWithActivities = _activity.GetActivityTemplatesGroupedByCategories();
             return Ok(categoriesWithActivities);

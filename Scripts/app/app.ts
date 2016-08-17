@@ -389,7 +389,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             url: "/page_definitions",
             templateUrl: "/AngularTemplate/PageDefinitionList",
             data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
+        })
+        .state("adminTools",
+        {
+            url: "/admin_tools",
+            templateUrl: "/AngularTemplate/AdminTools",
+            data: { pageTitle: "Admin tools", pageSubTitle: "" }
         });
+
 }]);
 
 /* Init global settings and run the app */
@@ -430,7 +437,7 @@ bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpS
     return {
         bootstrap: (appName) => {
             var deferred = $q.defer();
-            $http.get('/api/v1/activity_templates')
+            $http.get('/api/v1/activity_templates/')
                 .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
                     // set all returned values as constants on the app
                     var myApp = angular.module(appName);

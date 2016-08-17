@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using Data.Infrastructure.StructureMap;
 using StructureMap.Configuration.DSL;
 using Data.Interfaces;
 using Data.Repositories;
@@ -10,7 +11,9 @@ using Data.Repositories.Encryption.Impl;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.Plan;
+using Data.Repositories.Security;
 using Data.Repositories.Security.StorageImpl.Cache;
+using Data.Repositories.Security.StorageImpl.SqlBased;
 using Data.Repositories.SqlBased;
 
 namespace Data.Infrastructure
@@ -40,6 +43,9 @@ namespace Data.Infrastructure
             For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
             For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
             For<PlanStorage>().Use<PlanStorage>();
+            For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
+            For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
+            For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
         }
     }
 }

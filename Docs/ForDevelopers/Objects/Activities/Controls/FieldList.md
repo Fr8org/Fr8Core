@@ -1,25 +1,25 @@
 #FieldList Control
 
-<img src="images/FieldList.PNG" width="200" alt="FieldList UI"/>
+![Field List](images/field_list.PNG)
 
 ##Example Control Payload
-```javascript
+```json
 {
-      "type": "FieldList",      
-      "name": "Selected_Fields",
-      "required": true,
+      "fieldLabel": null,
+      "valueLabel": null,
+      "name": "FieldList4",
+      "required": false,
+      "value": "[ {\"Key\":\"\",\"Value\":\"\"},
+                  {\"Key\":\"\",\"Value\":\"\"}
+                  ]",
+      "label": "FieldList",
+      "type": "FieldList",
       "selected": false,
-      "value": [
-          {"Key":"",
-           "Value":""
-          }
-       ],
-      "label": "Fill the values for other actions",
-      "events": [
-        {
-          "name": "onSelect",
-          "handler": "requestConfig"
-        }
-      ]
+      "events": [],
+      "source": null,
+      "showDocumentation": null,
+      "isHidden": false,
+      "isCollapsed": false,
+      "errorMessage": null
 }
 ```

@@ -186,22 +186,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TransformOnBuild>true</TransformOnBuild>
     </Content>
-    <Content Include="..\Config\log4net.terminals.config">
-      <Link>log4net.terminals.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Config\log4net.terminals.Demo.config">
-      <Link>log4net.terminals.Demo.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Config\log4net.terminals.Dev.config">
-      <Link>log4net.terminals.Dev.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Config\log4net.terminals.Release.config">
-      <Link>log4net.terminals.Release.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -215,8 +199,12 @@
       <IsTransformFile>True</IsTransformFile>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
-    <Content Include="Config\terminalStatX\Settings.config.readme" />
+    <Content Include="Config\Settings.config.readme" />
     <Content Include="LICENSE" />
+    <Content Include="Config\log4net.terminals.config.readme" />
+    <Content Include="Config\log4net.terminals.Demo.config.readme" />
+    <Content Include="Config\log4net.terminals.Dev.config.readme" />
+    <Content Include="Config\log4net.terminals.Release.config.readme" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -314,22 +302,13 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.228.5\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.228.5\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
-  <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
-  </ItemGroup>
-  <Target Name="BeforeCompile">
-    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
-  </Target>
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.228.5\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.228.5\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

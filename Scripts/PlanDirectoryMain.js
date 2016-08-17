@@ -11,19 +11,20 @@
 
     function setNavbarLight() {
         $('.navbar').addClass('navbar-light');
-        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo.png');
+        $('.navbar-brand img').attr('src', '../Content/img/dockyard_logo.png');
     }
 
     function setNavbarTransparent() {
         $('.navbar').removeClass('navbar-light');
-        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_white.png');
+        $('.navbar-brand img').attr('src', '../Content/img/dockyard_logo_white.png');
     }
 
     function resizePageComponents() {
         var windowHeight = $(window).height(),
             headerHeight = $('header#site-header .navbar').innerHeight(),
             footerHeight = $('#site-footer').outerHeight(),
-            contentInnerHeight = $(".inner-wrap.centered").height();
+            contentInnerHeight = $(".inner-wrap.centered").height(),
+            searchBarHeight = $('.search-bar-container').height();
 
         // Helps the background setting for footer
         $("section.full-height-block").css({

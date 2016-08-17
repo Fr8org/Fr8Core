@@ -120,7 +120,8 @@ namespace Hub.Services
                             {
                                 Id = activityCategory.Id,
                                 Name = activityCategory.Name,
-                                IconPath = activityCategory.IconPath
+                                IconPath = activityCategory.IconPath,
+                                Type = activityCategory.Type
                             };
 
                             uow.ActivityCategoryRepository.Add(activityCategoryById);
@@ -128,6 +129,7 @@ namespace Hub.Services
                         else
                         {
                             activityCategoryById.IconPath = activityCategory.IconPath;
+                            activityCategoryById.Type = activityCategory.Type;
                         }
 
                         foreach (var assignedActivityTemplate in activityTemplateAssignments)
@@ -158,7 +160,8 @@ namespace Hub.Services
                             {
                                 Id = Guid.NewGuid(),
                                 Name = activityCategory.Name,
-                                IconPath = activityCategory.IconPath
+                                IconPath = activityCategory.IconPath,
+                                Type = activityCategory.Type
                             };
 
                             uow.ActivityCategoryRepository.Add(activityCategoryByName);
@@ -166,6 +169,7 @@ namespace Hub.Services
                         else
                         {
                             activityCategoryByName.IconPath = activityCategory.IconPath;
+                            activityCategoryByName.Type = activityCategory.Type;
                         }
 
                         _activityCategories[activityCategoryByName.Id] = Clone(activityCategoryByName);
@@ -195,14 +199,14 @@ namespace Hub.Services
             }
         }
 
-        public ActivityCategoryDO GetByName(string name)
+        public ActivityCategoryDO GetByName(string name, bool throwIfNotFound = true)
         {
             Initialize();
 
             lock (_activityCategories)
             {
                 var category = _activityCategories.Values.Where(x => x.Name == name).FirstOrDefault();
-                if (category == null)
+                if (category == null && throwIfNotFound)
                 {
                     throw new KeyNotFoundException(string.Format("Can't find activity category with name {0}", name));
                 }

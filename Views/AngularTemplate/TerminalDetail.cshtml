@@ -22,9 +22,9 @@
                     </div>
                 </div>
                 <div class="portlet-body">
-                    <!-- PROCESS FORM -->
+                    <!-- TERMINAL DETAIL FORM -->
                     <div class="tab-pane active" id="tab_1_1">
-                        <form role="form" ng-submit="submit($event, form.$valid)" name="form" novalidate>
+                        <form role="form" ng-submit="submit($event, form.$valid)" ng-cloak name="form" novalidate>
                             <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
                                 Some fields do not contain correct data. Please check below.
                             </div>
@@ -51,7 +51,7 @@
                                 <label class="control-label">Production URL</label>
                                 <div class="input-icon right">
                                     <i class="fa fa-warning" ng-show="form.prodUrl.$error.required && form.$submitted"></i>
-                                    <input type="text" name="prodUrl" ng-required="approved && canEditAllTerminals" placeholder="https://" ng-disabled="!canEditAllTerminals" ng-keyup="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                    <input type="text" name="prodUrl" ng-required="approved && canEditAllTerminals" placeholder="https://" ng-disabled="!canEditAllTerminals" ng-change="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
                                 </div>
                                 <span ng-show="!canEditAllTerminals">Please contact Support to get the Production URL updated.</span>
                             </div>
@@ -75,7 +75,7 @@
                                 <span ng-show="!approved">Your terminal is <strong>not yet approved</strong> and is available to you only.</span>
                             </div>
                             <div class="margin-top-10">
-                                <button type="submit" class="btn green-haze">Save</button>
+                                <button type="submit" class="btn green-haze" ng-disabled="!form.$dirty">Save and Rediscover</button>
                                 <a ui-sref="terminals" class="btn default">Return</a>
                             </div>
                             <div class="margin-top-10">You can also
@@ -93,8 +93,7 @@
                             </div>
                         </form>
                     </div>
-                    <!-- END PROCESS FORM -->
-
+                    <!-- END TERMINAL DETAIL FORM -->
                 </div>
             </div>
             <!-- END PORTLET-->
