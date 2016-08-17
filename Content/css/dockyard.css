@@ -1575,9 +1575,12 @@ md-radio-button .md-on{
     background-color: rgba(0,0,0,0.87) !important;
 }
 
-
 md-checkbox.md-checked.green .md-icon {
  background-color: rgb(38, 166, 154);
+}
+
+md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-icon {
+    background-color: rgb(66, 139, 202);
 }
 
 .text-block {
