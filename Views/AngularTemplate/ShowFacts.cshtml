@@ -36,7 +36,7 @@
 
         <md-table-container ng-show="isAllowedToSeeResults">
             <table md-row-select ng-model="selected" md-table md-progress="promise">
-                <thead md-head md-order="orderBy" md-on-reorder="getHistory">
+                <thead md-head md-order="query.orderBy" md-on-reorder="getHistory">
                     <tr md-row>
                         <th md-column md-order-by="createdDate" style="width: 10%;"><span>Created Date</span></th>
                         <th md-column style="width: 10%;"><span>Primary Category</span></th>

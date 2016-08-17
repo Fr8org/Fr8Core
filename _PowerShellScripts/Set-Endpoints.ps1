@@ -23,6 +23,11 @@ param(
 	[string]$serviceName
 )
 
+if (-Not $newHostname.StartsWith("http://"))
+{
+	$newHostname = "http://{newHostName}"
+}
+
 $ErrorActionPreference = 'Stop'
 $commandTextTmpl = "
 	UPDATE Terminals SET [Endpoint] = 

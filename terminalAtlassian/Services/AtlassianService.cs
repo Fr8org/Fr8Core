@@ -299,14 +299,40 @@ namespace terminalAtlassian.Services
         
         private async Task<List<KeyValueDTO>> CreateKeyValuePairList(Issue curIssue, Jira jira)
         {
-            List<KeyValueDTO> returnList = new List<KeyValueDTO>();
+            var returnList = new List<KeyValueDTO>();
             returnList.Add(new KeyValueDTO("Key", curIssue.Key.Value));
             returnList.Add(new KeyValueDTO("Summary", curIssue.Summary));
             returnList.Add(new KeyValueDTO("ReporterUserName", curIssue.Reporter));
+            returnList.Add(new KeyValueDTO("Priority", curIssue.Priority != null ? curIssue.Priority.Name : ""));
+            returnList.Add(new KeyValueDTO("Type", curIssue.Type != null ? curIssue.Type.Name : ""));
+            returnList.Add(new KeyValueDTO("Status", curIssue.Status != null ? curIssue.Status.Name : ""));
+            returnList.Add(new KeyValueDTO("Resolution", curIssue.Resolution != null ? curIssue.Resolution.Name : ""));
+            returnList.Add(new KeyValueDTO("Created", curIssue.Created.HasValue ? curIssue.Created.Value.ToString("dd-MM-yyyy") : ""));
+            returnList.Add(new KeyValueDTO("Updated", curIssue.Updated.HasValue ? curIssue.Updated.Value.ToString("dd-MM-yyyy") : ""));
+            returnList.Add(new KeyValueDTO("Resolved", curIssue.ResolutionDate.HasValue ? curIssue.ResolutionDate.Value.ToString("dd-MM-yyyy") : ""));
+
+            if (curIssue.Components != null && curIssue.Components.Any())
+            {
+                returnList.Add(new KeyValueDTO("Component", curIssue.Components.First().Name));
+            }
+            else
+            {
+                returnList.Add(new KeyValueDTO("Component", ""));
+            }
+
+            if (!string.IsNullOrEmpty(curIssue.Assignee))
+            {
+                var assigneeDisplayName = (await jira.GetUserAsync(curIssue.Assignee)).DisplayName;
+                returnList.Add(new KeyValueDTO("Assignee", assigneeDisplayName));
+            }
+            else
+            {
+                returnList.Add(new KeyValueDTO("Assignee", ""));
+            }
 
             var reporterDisplayName = (await jira.GetUserAsync(curIssue.Reporter)).DisplayName;
-
             returnList.Add(new KeyValueDTO("ReporterFullname", reporterDisplayName));
+
             return returnList;
         }
 
