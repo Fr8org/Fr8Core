@@ -7,14 +7,17 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-
 namespace HubWeb.Templates
 {
+    using HubWeb.ViewModels;
+    using System.Globalization;
+    using System;
+    
     /// <summary>
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+    #line 1 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
     public partial class PlanCategoryTemplate : PlanCategoryTemplateBase
     {
@@ -24,139 +27,331 @@ namespace HubWeb.Templates
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"<!DOCTYPE html>
+            this.Write(@"
+<!DOCTYPE html>
 <html>
 <head>
-    <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css""/>
-    <link rel=""stylesheet"" href=""../Content/metronic/components.css""/>
-
+	<link href=""../Content/css/additionalcss/font-awesome/css/font-awesome.css"" rel=""stylesheet"" type=""text/css"" />
+    <link href=""../Content/css/additionalcss/font-awesome/css/style.css"" rel=""stylesheet"" type=""text/css"" />
     <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
-
-    <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
-	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
-
-    <title></title>
-    <meta charset=""utf-8""/>
-</head>
-<body
-	 <div class=""header-container"">
-        <div class=""header"">
-            <div class=""logo""></div>                        
-        </div>
-    </div>
-    <div class=""container"">        
-        <p style=""font-size: 30px"">Plan Directory - ");
+    <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css"" />
+    <link rel=""stylesheet"" href=""../Content/metronic/components.css"" />
+    <link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
+    <link rel=""stylesheet"" href=""../Content/css/shared/PlanDirectoryMain.css"" />
+    <script src=""../bower_components/jquery/dist/jquery.min.js""></script>
+    <script src=""../Content/metronic/jquery.blockui.min.js""></script>
+    <script src=""../bower_components/bootstrap/dist/js/bootstrap.min.js""></script>
+    <script src=""../Content/metronic/ui.js""></script>
+    <script src=""../Scripts/PlanDirectoryMain.js""></script>
+    <title>Fr8 | Plan Category :
+        ");
             
-            #line 27 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 26 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("</p>\r\n        <div class=\"icons\">\r\n\t\t\t");
+            this.Write(@"
+    </title>    
+</head>
+<body>
+	<div id=""wrap"">
+        <!-- NAVIGATION BAR-->
+        <header id=""site-header"" class=""header container-fluid"">
+            <nav class=""navbar navbar-fixed-top"">
+                <div class=""container"">
+                    <!-- NAVIGATION BAR LOGO -->
+                    <div class=""navbar-header"">
+                        <a href=""");
             
-            #line 29 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
- int i = 0;
-			foreach (var tag in Tags)
-			{ 
+            #line 37 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
             #line hidden
-            this.Write("\t\t\t<img class=\"web-service-icon\" src=\"..");
+            this.Write(@""" class=""navbar-brand"">
+                            <img src=""../Content/img/dockyard_logo_white.png"" alt=""FR8"">
+                            <h1 class=""hide"">FR8 Company</h1>
+                        </a>
+                    </div>
+                    <!-- NAVIGATION BAR CONTENT -->
+                    <div class=""navbar-collapse collapse"" id=""main-nav"" role=""navigation"">
+                        <!-- SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE -->
+                        <!-- MENU -->
+                        <ul class=""nav navbar-nav navbar-right"">
+                            <!--How It Works-->
+                            <li><a href=""");
             
-            #line 32 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 48 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write(@"/#about"">How it Works</a></li>
+                            <!--Services-->
+                            <li data-scroll=""scrolling"" class=""dropdown"">
+                                <a data-target=""#"" href=""/"" class=""dropdown-toggle"" data-toggle=""dropdown"" role=""button"" aria-haspopup=""true"" aria-expanded=""false"" title=""Services"">Services <span class=""caret""></span></a>
+                                <ul class=""dropdown-menu"">
+                                    <li><a href=""");
+            
+            #line 53 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Services/DocuSign\">DocuSign</a></li>\r\n                                    <li><a" +
+                    " href=\"");
+            
+            #line 54 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Services/Salesforce\">Salesforce.com</a></li>\r\n                                  " +
+                    "  <li><a href=\"");
+            
+            #line 55 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.PlanDirectory));
+            
+            #line default
+            #line hidden
+            this.Write(@""">Plan Directory</a></li>
+                                </ul>
+                            </li>
+                            <!--Developers-->
+                            <li><a href=""https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md"">Developers</a></li>
+                            <!--Company-->
+                            <li data-scroll=""scrolling"" class=""dropdown"">
+                                <a href=""/"" class=""dropdown-toggle"" data-toggle=""dropdown"" role=""button"" aria-haspopup=""true"" aria-expanded=""false"" title=""Company"">Company <span class=""caret""></span></a>
+                                <ul class=""dropdown-menu"">
+                                    <li data-scroll=""scrolling""><a href=""");
+            
+            #line 64 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Company/#vision\">Vision</a></li>\r\n                                    <li data-s" +
+                    "croll=\"scrolling\"><a href=\"");
+            
+            #line 65 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Company/#team\">Team</a></li>\r\n                                    <li data-scrol" +
+                    "l=\"scrolling\"><a href=\"");
+            
+            #line 66 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Company/#press\">Press Releases</a></li>\r\n                                    <li" +
+                    " data-scroll=\"scrolling\"><a href=\"");
+            
+            #line 67 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Company/#location\">Location</a></li>\r\n                                    <li da" +
+                    "ta-scroll=\"scrolling\"><a href=\"");
+            
+            #line 68 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Company/#jobs\">Jobs</a></li>\r\n                                </ul>\r\n           " +
+                    "                 </li>\r\n                            <!--Contact-->\r\n            " +
+                    "                <li><a href=\"");
+            
+            #line 72 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
+            
+            #line default
+            #line hidden
+            this.Write("/Support\" title=\"Contact\">Contact</a></li>\r\n                            <!--Blog-" +
+                    "->\r\n                            <li><a href=\"");
+            
+            #line 74 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.Blog));
+            
+            #line default
+            #line hidden
+            this.Write(@""" target=""_blank"">Blog</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section id=""planDirectory"" class=""plan-directory-background full-height-block text-block"" data-section=""support"">
+            <div class=""inner-bg full-size-bg""></div>
+            <div class=""container full-height-block"">
+                <div class=""inner-wrap centered base-block-white"">
+                    <!-- SEARCH BAR-->
+                    <div class=""search-bar-container"">
+                        <div style=""float:left;margin: 20px;height: 40px;"">
+                            <h3>Plan Category: <em>
+								");
+            
+            #line 88 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+ int j = 0;
+								string seoStr = "";
+								seoStr = Name;
+								seoStr = seoStr.Substring(0, seoStr.IndexOf(".html"));								
+								
+								seoStr = seoStr.Replace("-", " and ");
+
+								TextInfo myTI = new CultureInfo("en-US",false).TextInfo;
+								seoStr = myTI.ToTitleCase( seoStr );
+								seoStr = seoStr.Replace("And", "and");
+								Write(seoStr);
+								seoStr = "Fr8 plans involving " + seoStr + " take advantage of " + seoStr + "'s visulalization capabilities";
+								
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t\t\t\t\t</em></h2>\r\n                        </div>\r\n\t\t\t\t\t\t<div class=\"icons\" sty" +
+                    "le=\"margin: 10px\">\r\n\t\t\t\t\t\t\t");
+            
+            #line 105 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+ int i = 0;
+							foreach (var tag in Tags)
+							{ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\t\t\t\t\t<img class=\"web-service-icon\" src=\"..");
+            
+            #line 108 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(tag.Value));
             
             #line default
             #line hidden
-            this.Write("\"/>\t\t\r\n\t\t\t\t");
+            this.Write("\"/>\t\t\r\n\t\t\t\t\t\t\t\t");
             
-            #line 33 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 109 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
  if (i < Tags.Count - 1)
-				{ 
+								{ 
             
             #line default
             #line hidden
-            this.Write("\t\t\t\t<img src=\"../Content/icons/plus.png\"/>\r\n\t\t\t\t");
+            this.Write("\t\t\t\t\t\t\t\t<img src=\"../Content/icons/plus.png\" style=\"height: 30px;\"/>\r\n\t\t\t\t\t\t\t\t");
             
-            #line 36 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 112 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
  i++;
-				} 
+								} 
             
             #line default
             #line hidden
-            this.Write("                        \r\n\t\t");
+            this.Write("                        \r\n\t\t\t\t\t\t");
             
-            #line 38 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 114 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write(@"        </div>
-        <br/>
-        <p style=""font-size: 15px"">Plan Definition Description</p>
-        <p style=""font-size: 22px"">Related Plans</p>
-            <table class=""table""> 
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Plan Name</th>
-                        <th>Plan Description</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ");
+            this.Write(@"						</div>
+                        <hr/>
+                    </div>
+                    <!-- SEARCH RESULTS-->
+                    <div class=""result-container"" style=""background-color: white"">
+                        <div class=""item"" style=""border: 0px"">
+                            <p style=""font-size: 22px"">Related Plans</p>
+							<table class=""table""> 
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>Plan Name</th>
+										<th>Plan Description</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									");
             
-            #line 53 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 132 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
  int number = 1;
-                    foreach (var plan in RelatedPlans) 
-                    {
+									foreach (var plan in RelatedPlans) 
+									{
             
             #line default
             #line hidden
-            this.Write("                    <tr>\r\n                        <th scope=\"row\">");
+            this.Write("\t\t\t\t\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">");
             
-            #line 57 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 136 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(number++));
             
             #line default
             #line hidden
-            this.Write("</th>\r\n                        <td>");
+            this.Write("</th>\r\n\t\t\t\t\t\t\t\t\t\t<td>");
             
-            #line 58 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 137 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item1));
             
             #line default
             #line hidden
-            this.Write("</td>\r\n                        <td>");
+            this.Write("</td>\r\n\t\t\t\t\t\t\t\t\t\t<td>");
             
-            #line 59 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 138 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item2));
             
             #line default
             #line hidden
-            this.Write("</td>\r\n                        <td><a href=\"");
+            this.Write("</td>\r\n\t\t\t\t\t\t\t\t\t\t<td><a href=\"");
             
-            #line 60 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 139 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item3));
             
             #line default
             #line hidden
-            this.Write("\">Create</a></td>\r\n                    </tr>                   \r\n                " +
-                    "    ");
+            this.Write("\">Create</a></td>\r\n\t\t\t\t\t\t\t\t\t</tr>                   \r\n\t\t\t\t\t\t\t\t\t");
             
-            #line 62 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 141 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("                    \r\n                </tbody>\r\n            </table>\r\n</div>\r\n</b" +
-                    "ody>\r\n</html>\r\n");
+            this.Write(@"                    
+								</tbody>
+							</table>
+                        </div>             
+                    </div>
+					<div style=""width: 100%;color: black;background-color: white;text-align: left;padding-left: 50px;padding-bottom: 20px;font-size: 15pt;"">
+						");
+            
+            #line 148 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(seoStr));
+            
+            #line default
+            #line hidden
+            this.Write(@"
+					</div>
+                </div>
+            </div>
+        </section>
+        <div class=""clear clear-footer-spacer""></div>
+    </div>
+    <!-- FOOTER -->
+    <footer id=""site-footer"" class=""section"">
+        <div class=""container"">
+            <p class=""copyright"">
+                ");
+            
+            #line 159 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.Year));
+            
+            #line default
+            #line hidden
+            this.Write(" © The Fr8 Company. All Rights Reserved.</p>\r\n        </div>\r\n    </footer>\r\n    " +
+                    "<!-- END FOOTER -->\t    \r\n</div>\r\n</body>\r\n</html>\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+        #line 1 "E:\Project\7-29\Fr8Core\Templates\PlanCategoryTemplate.tt"
 
 private string _NameField;
 

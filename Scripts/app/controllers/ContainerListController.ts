@@ -43,6 +43,7 @@ module dockyard.controllers {
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withOption('order', [[3, 'desc']]).withPaginationType('full_numbers').withDisplayLength(10);   
             $scope.dtColumnDefs = this.getColumnDefs(); 
             $scope.currentAccountContainers = ContainerService.getAll({ id: null });
+            console.log($scope.currentAccountContainers);
             $scope.goToContainerDetailsPage = <(container: interfaces.IContainerVM) => void> angular.bind(this, this.goToContainerDetailsPage);
         }
 
