@@ -119,15 +119,27 @@ header#site-header:after {
     font-weight: bold;
     font-size: 32px;
     color: #697882;
-    float: left;
-    width: 45%;
+    width: 35%;
     padding-left: 20px;
+    float: left;
 }
 
 .search-bar-container form {
     margin-top: 25px;
     margin-bottom: 10px;
     padding-right: 2em;
+}
+
+.search-bar-container form .mode-switch-panel {
+    margin-right: 48px !important;
+    float: left;
+}
+
+.search-bar-container form .mode-switch-panel span {
+    float: left;
+    display: inline-block;
+    margin-top: 7px;
+    margin-right: 10px;
 }
 
 .search-bar-container .base-block-white {
