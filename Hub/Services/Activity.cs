@@ -427,7 +427,7 @@ namespace Hub.Services
                 //This might mean that this plan's parent was changed
                 if (originalAction == null && !isNewActivity)
                 {
-                    originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
+                    originalAction = uow.PlanRepository.GetById<PlanNodeDO>(submittedActiviy.Id);
                     if (originalAction != null) {
                         var originalActionsParent = uow.PlanRepository.Reload<PlanNodeDO>(originalAction.ParentPlanNodeId);
                         originalActionsParent.ChildNodes.Remove(originalAction);
