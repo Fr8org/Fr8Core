@@ -54,11 +54,6 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<PayloadDTO> GetPayload(Guid containerId)
         {
             var payload = new PayloadDTO(containerId)
