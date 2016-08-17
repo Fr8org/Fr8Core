@@ -154,17 +154,20 @@
                 }
             })
             .catch((result) => {
+                //If user cancelled authorization we should mark only those activities for which authorization was requested
                 angular.forEach(activities, function (a) {
-                    if (!self._canceledActivities[a.id]) {
+                    if (!self._canceledActivities[a.id] && (<any>a).authorizeIsRequested) {
                         self._canceledActivities[a.id] = true;
                     }
                 });
 
                 angular.forEach(activities, it => {
-                    self.$rootScope.$broadcast(
+                    if ((<any>it).authorizeIsRequested) {
+                        self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
                         new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
-                    );
+                        );
+                    }
                 });
             })
             .finally(() => {
