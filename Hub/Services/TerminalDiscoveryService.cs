@@ -22,7 +22,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using System.Linq.Expressions;
 using Hub.Exceptions;
 using StructureMap;
-
+using System.Net.Http;
+using System.Net.Http.Formatting;
 namespace Hub.Services
 {
     public class TerminalDiscoveryService : ITerminalDiscoveryService
@@ -103,18 +104,15 @@ namespace Hub.Services
                 }
                 curEndpoint = NormalizeUrl(terminal.ProdUrl);
             }
-            else if (terminal.ParticipationState == ParticipationState.Unapproved)
+            else
             {
                 if (string.IsNullOrWhiteSpace(terminal.DevUrl))
                 {
-                    throw new Fr8ArgumentNullException(nameof(terminal.DevUrl), "Development endpoint must be specified for the terminals in the Unapproved state.");
+                    throw new Fr8ArgumentNullException(nameof(terminal.DevUrl), "Development endpoint must be specified for the terminals in the Unapproved, Blocked or Deleted state.");
                 }
                 curEndpoint = NormalizeUrl(terminal.DevUrl);
             }
-            else
-            {
-                curEndpoint = string.Empty;
-            }
+
 #if DEBUG
             // Use local URL for Fr8 own terminals when in the local environment or during FBB tests.
             if (terminal.IsFr8OwnTerminal)
@@ -126,7 +124,7 @@ namespace Hub.Services
             if (curEndpoint.Contains("/discover", StringComparison.OrdinalIgnoreCase))
             {
                 throw new Fr8ArgumentException(nameof(terminal.Endpoint), "Invalid terminal URL", "Terminal URL should not contain 'discover'. Please correct the URL and try again.");
-            }   
+            }
 
             if (!UserHasTerminalAdministratorPermission())
             {
@@ -148,38 +146,50 @@ namespace Hub.Services
             }
 
             // Validating discovery response 
-            if (!curEndpoint.Contains("://localhost"))
+            if (terminal.ParticipationState == ParticipationState.Approved ||
+                terminal.ParticipationState == ParticipationState.Unapproved)
             {
-                string errorMessage = "Terminal at the specified URL did not return a valid response to the discovery request.";
-                try
+                if (!curEndpoint.Contains("://localhost"))
                 {
-                    var terminalRegistrationInfo = await SendDiscoveryRequest(curEndpoint, null);
-                    if (terminalRegistrationInfo == null)
+                    string errorMessage = "Terminal at the specified URL did not return a valid response to the discovery request.";
+                    try
+                    {
+                        var terminalRegistrationInfo = await SendDiscoveryRequest(curEndpoint, null);
+                        if (terminalRegistrationInfo == null)
+                        {
+                            Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
+                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessage, errorMessage);
+                        }
+                        if (string.IsNullOrEmpty(terminalRegistrationInfo.Definition.Name))
+                        {
+                            string validationErrorMessage = $"Validation of terminal at '{curEndpoint}' failed: Terminal Name is empty.";
+                            Logger.Info(validationErrorMessage);
+                            throw new Fr8ArgumentException(nameof(terminal.Endpoint), validationErrorMessage, validationErrorMessage);
+                        }
+                    }
+                    catch (TaskCanceledException ex)
+                    {
+                        string errorMessase = $"Terminal at '{curEndpoint}' did not respond to a /discovery request within 10 sec.";
+                        Logger.Info(errorMessase);
+                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessase, "The terminal did not respond to a discovery request within 10 seconds.");
+                    }
+                    catch (Exception ex)
                     {
                         Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
-                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), errorMessage, errorMessage);
+                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), ex.ToString(), errorMessage);
                     }
-                    if (string.IsNullOrEmpty(terminalRegistrationInfo.Definition.Name))
-                    {
-                        string validationErrorMessage = $"Validation of terminal at '{curEndpoint}' failed: Terminal Name is empty.";
-                        Logger.Info(validationErrorMessage);
-                        throw new Fr8ArgumentException(nameof(terminal.Endpoint), validationErrorMessage, validationErrorMessage);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Info($"Terminal at '{curEndpoint}' returned an invalid response.");
-                    throw new Fr8ArgumentException(nameof(terminal.Endpoint), ex.ToString(), errorMessage);
                 }
             }
 
-            Logger.Info($"Registration of terminal at '{curEndpoint}' is requested. ");
+
             var terminalDo = new TerminalDO();
             terminalDo.Endpoint = terminal.Endpoint = curEndpoint;
 
             //Check whether we save an existing terminal or register a new one
             if (terminal.InternalId == Guid.Empty)
             {
+                Logger.Info($"Registration of terminal at '{curEndpoint}' is requested. ");
+
                 // New terminal
                 if (IsExistingTerminal(curEndpoint))
                 {
@@ -237,11 +247,16 @@ namespace Hub.Services
 
             terminalDo = _terminal.RegisterOrUpdate(terminalDo, true);
 
-            Logger.Info($"Terminal at '{curEndpoint}' was successfully saved.");
+            Logger.Info($"Terminal at '{terminalDo.Endpoint}' (id: {terminalDo.Id}) was successfully saved.");
 
-            if (!await DiscoverInternal(terminalDo, true))
+            if (terminalDo.ParticipationState == ParticipationState.Approved ||
+                terminalDo.ParticipationState == ParticipationState.Unapproved)
             {
-                Logger.Info($"The terminal at {curEndpoint} has been registered but an error has occurred while carrying out discovery.");
+                bool discoveryResult = !await DiscoverInternal(terminalDo, true);
+                if (!discoveryResult)
+                {
+                    Logger.Info($"The terminal at {curEndpoint} has been registered but an error has occurred while carrying out discovery.");
+                }
             }
         }
 
@@ -252,8 +267,8 @@ namespace Hub.Services
                 string authority = new Uri(endpoint).Authority;
 
                 Func<TerminalDO, bool> predicate = x =>
-                    string.Equals((new Uri(x.DevUrl).Authority), authority, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals((new Uri(x.ProdUrl).Authority), authority, StringComparison.OrdinalIgnoreCase);
+                    (!string.IsNullOrEmpty(x.DevUrl) && string.Equals((new Uri(x.DevUrl).Authority), authority, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(x.ProdUrl) && string.Equals((new Uri(x.ProdUrl).Authority), authority, StringComparison.OrdinalIgnoreCase));
 
                 return uow.TerminalRepository.GetAll().Any(predicate);
             }
@@ -269,6 +284,11 @@ namespace Hub.Services
             var discoverTerminalsTasks = _terminal.GetAll().Select(x => DiscoverInternal(x, false)).ToArray();
 
             await Task.WhenAll(discoverTerminalsTasks);
+        }
+
+        private async Task<StandardFr8TerminalCM> SendDiscoveryRequest(string terminalUrl, Dictionary<string, string> headers = null)
+        {
+            return await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl + "/discover", UriKind.Absolute), null, headers);
         }
 
         public async Task<bool> Discover(TerminalDTO terminal, bool isUserInitiated)
@@ -319,10 +339,23 @@ namespace Hub.Services
             return terminalUrl.TrimEnd('/', '\\');
         }
 
-        private async Task<StandardFr8TerminalCM> SendDiscoveryRequest(string terminalUrl, Dictionary<string, string> headers = null)
-        {
-            return await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl + "/discover", UriKind.Absolute), null, headers);
-        }
+        //private async Task<StandardFr8TerminalCM> SendDiscoveryRequest(string terminalUrl, Dictionary<string, string> headers = null)
+        //{
+        //    // Use a custom HttpClient to query the terminal with a low timeout (10 sec)
+        //    var innerClient = new HttpClient();
+        //    innerClient.Timeout = new TimeSpan(0, 0, 10);
+        //    try
+        //    {
+        //        var response = await innerClient.GetAsync(new Uri(terminalUrl + "/discover", UriKind.Absolute));
+        //        response.EnsureSuccessStatusCode();
+        //        var responseContent = await response.Content.ReadAsStringAsync();
+        //        return JsonConvert.DeserializeObject<StandardFr8TerminalCM>(responseContent);
+        //    }
+        //    catch (Exception) // Expect an exception if the request failed
+        //    {
+        //        throw;
+        //    }
+        //}
 
         private async Task<bool> DiscoverInternal(TerminalDO terminalDo, bool isUserInitiated)
         {
