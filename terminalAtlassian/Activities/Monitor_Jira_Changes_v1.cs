@@ -116,7 +116,7 @@ namespace terminalAtlassian.Actions
                                 .AddField(IssueKey)
                                 .AddField(EventType);
 
-            CrateSignaller.MarkAvailableAtRuntime<JiraIssueWithCustomFieldsCM>(RuntimeCrateLabel + "2");
+            CrateSignaller.MarkAvailableAtRuntime<JiraIssueWithCustomFieldsCM>(RuntimeCrateLabel);
         }
         public override Task Activate()
         {
