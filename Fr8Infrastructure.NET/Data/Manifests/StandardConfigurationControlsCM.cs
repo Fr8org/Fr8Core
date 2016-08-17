@@ -338,6 +338,8 @@ namespace Fr8.Infrastructure.Data.Manifests
         // Find configuration control by name recursively.
         private object FindByNameRecurisve(object cd, string name)
         {
+            if (name == null)
+                return null;
             // Check if current control has the desired name
             if (CheckName(cd, name))
             {
