@@ -79,8 +79,6 @@ namespace terminalIntegrationTests.Integration
 
             try
             {
-                // TODO: use another test user
-                //await AuthenticateWebApi("IntegrationTestUser1", "fr8#s@lt!");
 
                 var createPlanResult = await HttpPostAsync<JToken>(
                     _baseUrl + "plan_templates/createplan?id=" + planTemplateDTO.ParentPlanId.ToString(), null);
