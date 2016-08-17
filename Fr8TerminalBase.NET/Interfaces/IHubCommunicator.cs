@@ -13,7 +13,6 @@ namespace Fr8.TerminalBase.Interfaces
 {
     public interface IHubCommunicator
     {
-        Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
         Task<UserDTO> GetCurrentUser();
