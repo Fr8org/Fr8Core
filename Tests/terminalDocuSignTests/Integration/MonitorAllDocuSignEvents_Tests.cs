@@ -114,6 +114,7 @@ namespace terminalDocuSignTests.Integration
                 var mtDataCountBefore = MtQueryableExtensions.Count(unitOfWork.MultiTenantObjectRepository
                     .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id))
                     ;
+                int mtDataCountAfter = mtDataCountBefore;
 
                 //Set up DS
                 var token = await Authenticate();
@@ -131,7 +132,7 @@ namespace terminalDocuSignTests.Integration
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                int mtDataCountAfter = mtDataCountBefore;
+
                 while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
                 {
                     await Task.Delay(SingleAwaitPeriod);
@@ -212,7 +213,7 @@ namespace terminalDocuSignTests.Integration
             return docuSignToken;
         }
 
-        private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
+        private void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
             var rolesList = new List<KeyValueDTO>()
             {
