@@ -38,7 +38,7 @@ namespace terminalDocuSign.Activities
         };
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            private const string TakenDeliveryEnvelopeOption = "Taken Delivery";
+            private const string TakenDeliveryEnvelopeOption = "Delivered";
 
             private const string EnvelopeSignedEnvelopeOption = "Signed";
 
@@ -266,7 +266,7 @@ namespace terminalDocuSign.Activities
             await HubCommunicator.ConfigureActivity(activity);
         }
 
-        private async Task ConfigureFilterDataActivity(List<ActivityTemplateDTO> activityTemplates)
+        private async Task<ActivityPayload> ConfigureFilterDataActivity(List<ActivityTemplateDTO> activityTemplates)
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Test_Incoming_Data" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 4);
@@ -275,44 +275,36 @@ namespace terminalDocuSign.Activities
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
                 .First();
             var filterPane = (FilterPane)configControlCM.Controls.First(x => x.Name == "Selected_Filter");
+
+            string field_name = ActivityUI.SentToSpecificRecipientOption.Selected ? "RecipientStatus" : "Status";
+
             var conditions = new List<FilterConditionDTO>
             {
-                new FilterConditionDTO{ Field = "Status", Operator = "neq", Value = ActivityUI.RecipientEventSelector.Value }
+                new FilterConditionDTO{ Field = field_name, Operator = "neq", Value = ActivityUI.RecipientEventSelector.Value }
             };
             filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
             {
                 ExecutionType = FilterExecutionType.WithFilter,
                 Conditions = conditions
             });
-            var queryableCriteria = new FieldDescriptionsCM(
-                new FieldDTO
-                {
-                    Name = "Status",
-                    Label = "Status",
-                    FieldType = FieldType.String
-                });
-            var queryFieldsCrate = Crate.FromContent("Queryable Criteria", queryableCriteria);
-            crateStorage.RemoveByLabel("Queryable Criteria");
-            crateStorage.Add(queryFieldsCrate);
+
+            return await HubCommunicator.ConfigureActivity(activity);
         }
 
         private async Task<ActivityPayload> ConfigureQueryFr8Activity(List<ActivityTemplateDTO> activityTemplates)
         {
-            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Query_Fr8_Warehouse" && x.Version == "1");
+            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Get_Data_From_Fr8_Warehouse" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 3);
             var crateStorage = activity.CrateStorage;
             var configControlCM = ActivityConfigurator.GetConfigurationControls(activity);
-            var radioButtonGroup = (RadioButtonGroup)configControlCM.Controls.First();
-            radioButtonGroup.Radios[0].Selected = false;
-            radioButtonGroup.Radios[1].Selected = true;
-            var objectList = (DropDownList)radioButtonGroup.Radios[1].Controls.First(x => x.Name == "AvailableObjects");
+            var objectList = (DropDownList)configControlCM.Controls.First(x => x.Name == "AvailableObjects");
             var selectedObject = objectList.ListItems.Where(a => a.Key == (ActivityUI.BasedOnTemplateOption.Selected ? MT.DocuSignEnvelope_v2.GetEnumDisplayName() : MT.DocuSignRecipient.GetEnumDisplayName())).FirstOrDefault();
             if (selectedObject == null)
             {
                 return activity;
             }
             objectList.SelectByKey(selectedObject.Key);
-            var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
+            var queryBuilder = (QueryBuilder)configControlCM.Controls.First(c => c.Name == "QueryBuilder");
             var conditions = new List<FilterConditionDTO>();
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
@@ -321,16 +313,8 @@ namespace terminalDocuSign.Activities
 
             conditions.Add(new FilterConditionDTO { Field = "EnvelopeId", Operator = "eq", Value = "FromPayload" });
 
-            filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
-            {
-                ExecutionType = FilterExecutionType.WithFilter,
-                Conditions = conditions
-            });
-            using (var uow = _uowFactory.Create())
-            {
-                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, Guid.Parse(selectedObject.Value))));
-                crateStorage.Add(queryCriteria);
-            }
+            queryBuilder.Value = JsonConvert.SerializeObject(conditions);
+
             return await HubCommunicator.ConfigureActivity(activity);
         }
 
