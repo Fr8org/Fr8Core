@@ -25,6 +25,7 @@ namespace terminalAtlassianTests.Integration
         private const string IssueSummary = "Issue Summary";
         private const string IssueStatus = "Issue Status";
         private const string IssueDescription = "Issue Description";
+        private const string EventType = "Event Type";
 
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
@@ -47,7 +48,7 @@ namespace terminalAtlassianTests.Integration
             var fields = fieldDescriptions.Content.CrateDescriptions.Single().Fields;
 
             Assert.AreEqual("Monitor Atlassian Runtime Fields", fieldDescriptions.Content.CrateDescriptions.Single().Label, "Monitor Atlassian Runtime Fields labeled CrateDescription was not found");
-            Assert.AreEqual(8, fieldDescriptions.Content.CrateDescriptions.Single().Fields.Count, "Published runtime field count is not 8");
+            Assert.AreEqual(9, fieldDescriptions.Content.CrateDescriptions.Single().Fields.Count, "Published runtime field count is not 9");
 
 
             Assert.IsTrue(fields.Exists(x => x.Name == IssueKey), "IssueKey is not signalled");
@@ -58,6 +59,7 @@ namespace terminalAtlassianTests.Integration
             Assert.IsTrue(fields.Exists(x => x.Name == IssueSummary), "IssueSummary is not signalled");
             Assert.IsTrue(fields.Exists(x => x.Name == IssueStatus), "IssueStatus is not signalled");
             Assert.IsTrue(fields.Exists(x => x.Name == IssueDescription), "IssueDescription is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Name == EventType), "EventType is not signalled");
         }
 
         private async Task<ActivityDTO> CompleteInitialConfiguration()
