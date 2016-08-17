@@ -1,3 +1,5 @@
+![Fr8 Logo](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Fr8Logo.png)
+
 #Fr8 for Developers
 
 [Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   ([video](https://vimeo.com/178394308))
