@@ -21,6 +21,17 @@
     cursor: pointer;
 }
 
+
+.before-submit.ng-touched.ng-invalid-required {
+    border-color: #ebccd1;
+}
+.before-submit.ng-dirty.ng-invalid {
+  border-color: #ebccd1;
+}
+.before-submit.ng-untouched.ng-invalid {
+    border-color: #ccc; 
+}
+
 .form-horizontal .control-label {
     text-align: left;
 }

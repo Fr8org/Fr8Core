@@ -6,7 +6,7 @@
         NewPassword: string;
         ConfirmNewPassword: string;
         Submit: (isValid: boolean) => void;
-        Message: string;
+        Message: any;
     }
 
     class ManageUserController {
@@ -27,9 +27,10 @@
             $scope.NewPassword = "";
             $scope.ConfirmNewPassword = "";
             $scope.CurrentPassword = "";
+            $scope.Message = new Object();
         }
 
-        private Submit(isValid) {
+        private Submit(isValid, sub) {
             if (isValid) {
                 this.UserService.update({
                     oldPassword: this.$scope.CurrentPassword,
@@ -37,13 +38,16 @@
                     confirmPassword: this.$scope.ConfirmNewPassword
                 }).$promise.then(
                     (result) => {
-                        this.$scope.Message = "Your password has been changed!";
+                        this.$scope.Message.text = "Your password has been changed!";
+                        this.$scope.Message.type = "info";
                     },
                     (failResponse) => {
-                        this.$scope.Message = failResponse.data.details.exception.Message;
+                        this.$scope.Message.text = failResponse.data.details.exception.Message;
+                        this.$scope.Message.type = "error";
                     });
             } else {
-                this.$scope.Message = "There are still invalid fields below";
+                this.$scope.Message.text = "There are still invalid fields below";
+                this.$scope.Message.type = "error";
             }
         };
     }
