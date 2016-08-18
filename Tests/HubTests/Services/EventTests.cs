@@ -16,6 +16,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Hub.Services;
+using Moq;
 using Event = Hub.Services.Event;
 
 namespace HubTests.Services
@@ -27,6 +29,13 @@ namespace HubTests.Services
         public async Task Events_Multiplefr8AccountsAssociatedWithSameExternalAccountId_ShouldCheckPlansForAllUsers()
         {
             //Arrange 
+            var container = ObjectFactory.Container.GetNestedContainer();
+
+            var fr8AccountMock = new Mock<Fr8Account>();
+            fr8AccountMock.Setup(x => x.GetSystemUser())
+                    .Returns<Fr8AccountDO>(x => null);
+            container.Inject(fr8AccountMock.Object);
+
             var externalAccountId = "docusign_developer@dockyard.company";
             var plan1 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDockyardAccount1());
             var plan2 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDeveloperAccount(), 23);
