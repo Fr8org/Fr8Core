@@ -182,7 +182,7 @@ namespace terminalDocuSign.Services
 
             var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
             Debug.WriteLine("Attemting to create a new MADSE plan");
-            var activityTemplates = await hubCommunicator.GetActivityTemplates(null);
+            var activityTemplates = await hubCommunicator.GetActivityTemplates();
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_All_Payload_To_Fr8_Warehouse");
             Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {authToken.UserId} {monitorDocusignPlan}");
