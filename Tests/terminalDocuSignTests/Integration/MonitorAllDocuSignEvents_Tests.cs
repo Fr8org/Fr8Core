@@ -113,6 +113,7 @@ namespace terminalDocuSignTests.Integration
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
                                                   .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).MtCount();
+                int mtDataCountAfter = mtDataCountBefore;
 
                 //Set up DS
                 var token = await Authenticate();
