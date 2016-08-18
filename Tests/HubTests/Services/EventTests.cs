@@ -32,7 +32,7 @@ namespace HubTests.Services
 
             var fr8AccountMock = new Mock<IFr8Account>();
             fr8AccountMock.Setup(x => x.GetSystemUser())
-                    .Returns<Fr8AccountDO>(x=> new Fr8AccountDO() {UserName = "test@test.com"});
+                    .Returns(() => new Fr8AccountDO() {UserName = "test@test.com", EmailAddress = new EmailAddressDO()});
             ObjectFactory.Container.Inject(typeof(IFr8Account),fr8AccountMock.Object);
 
             var externalAccountId = "docusign_developer@dockyard.company";
