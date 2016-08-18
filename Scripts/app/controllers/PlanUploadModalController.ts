@@ -15,7 +15,6 @@ module dockyard.controllers {
         fileChanged: (input: any)=>void;
     }
 
-
     class PlanUploadModalController {
     // $inject annotation.
     // It provides $injector with information about dependencies to be injected into constructor
@@ -43,34 +42,29 @@ module dockyard.controllers {
                 $scope.fileName = $scope.planFile.name;
             }
         }
-        
+
         $scope.loadPlan = (file) => {
-            
             if (file == null) { return }
 
             $scope.uploadFlag = true;
             Upload.upload({
                 url: '/api/plans/upload?planName=' + $scope.planName,
                 file: file 
-            }).then((response) => {
-                $scope.uploadFlag = false;
-                uiNotificationService.frontendSuccess("Plan in file "+ file.name +" uploaded");
-
-                if ($state.current.name === "planList") {
-                    $state.reload();
-                } else {
-                    $state.go("planList");
-                }
-  
+            }).then((response) =>
+                {
+                    $scope.uploadFlag = false;
+                    if ($state.current.name === "planList") {
+                        $state.reload();
+                    } else {
+                        $state.go("planList");
+                    }
                 }, (error) => {
-                    uiNotificationService.frontendFailure("Plan upload failed " + error);                    
                     $scope.uploadFlag = false;  
             });
             $modalInstance.close();
         };
-       
-        $scope.cancel = () => { $modalInstance.dismiss(); }
 
+        $scope.cancel = () => { $modalInstance.dismiss(); }
        }
     }
 

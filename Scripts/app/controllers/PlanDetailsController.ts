@@ -44,8 +44,9 @@ module dockyard.controllers {
 
             $scope.descriptionEditing = false;
             $scope.nameEditing = false;
-            //Load detailed information
+            // Load detailed information
             $scope.id = $stateParams.id;
+
             if (this.isValidGUID($scope.id)) {
                 PlanService.getFull({ id: $stateParams.id }).$promise.then(function (plan) {
                     $scope.current.plan = (<any>plan);
@@ -55,16 +56,12 @@ module dockyard.controllers {
             $scope.sharePlan = () => {
                 if (!$scope.current.plan.visibility.public) {
                     PlanService.share($stateParams.id)
-                        .then(() => {
-                            uiNotificationService.frontendSuccess("Plan " + $scope.current.plan.name + " shared");
-                        })
-                        .catch((exp) => {
-                            exp.data = exp.data ? exp.data : "";
-                            uiNotificationService.frontendFailure("Plan sharing faliure: " + exp.data);
-                        });
+                    .catch((exp) => {
+                        exp.data = exp.data ? exp.data : "";
+                    });
                 }
-
             };
+
             $scope.onTitleChange = () => {
                 $scope.descriptionEditing = false;
                 $scope.nameEditing = false;
@@ -72,20 +69,14 @@ module dockyard.controllers {
                 result.$promise.then(() => { });
             };
 
-
             $scope.unpublishPlan = () => {
                 //tony.yakovets: temporary crutch
                 if (!$scope.current.plan.visibility.hidden) {
-                    PlanService.unpublish($stateParams.id)
-                        .then(() => {
-                            uiNotificationService.frontendSuccess("Plan " + $scope.current.plan.name + " unpublished");
-                        })
-                        .catch((exp) => {
-                            exp.data = exp.data ? exp.data : "";
-                            uiNotificationService.frontendFailure("Plan unpublished faliure: " + exp.data);
-                        });
+                    PlanService.unpublish($stateParams.id).catch((exp) =>
+                    {
+                        exp.data = exp.data ? exp.data : "";
+                    });
                 }
-
             };
 
             $scope.download = ($event: Event) => {
@@ -106,11 +97,10 @@ module dockyard.controllers {
                                 (element as HTMLAnchorElement).click();
                                 $scope.digestFlag = false;
                                 (element as HTMLAnchorElement).removeAttribute("href");
-                            },
-                            100);
-
+                        }, 100);
                     });
                 }
+
                 $event.stopPropagation = null;
                 $event.preventDefault = () => { };
                 $event.cancelBubble = false;

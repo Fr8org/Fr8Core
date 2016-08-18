@@ -6,6 +6,7 @@
         notifyActivityStream: (subject: string, message: string, type: dockyard.enums.NotificationType, isCollapsed: boolean) => void;
 
         // Pusher related methods
+        bindEventFromFrontEnd(callback: Function): void;
         bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void;
         bindEventToClient(event: string, callback: Function, context?: any): void;
         removeEvent(channel: string, event: string): void;
