@@ -10,10 +10,13 @@ $commandText = "
 IF object_id('tempdb..#Nodes') IS NOT NULL
 	DROP TABLE #Nodes;
 
+DECLARE @integration_email VARCHAR(50);
+SET @integration_email = 'integration_test_runner@fr8.company';
+	
 WITH NodeTree1 AS (
 	SELECT seedNodes.Id
 	FROM PlanNodes seedNodes INNER JOIN [AspNetUsers] ON AspNetUsers.Id = seedNodes.Fr8AccountId 
-	WHERE UserName = 'integration_test_runner@fr8.company'
+	WHERE UserName = @integration_email
 	UNION ALL
 	SELECT r.Id
 	FROM PlanNodes r
@@ -51,11 +54,11 @@ DELETE derived FROM PlanNodes derived INNER JOIN #Nodes cp ON cp.Id = derived.Id
 DELETE orp FROM ObjectRolePermissions orp 
 INNER JOIN [MTData] m ON orp.[Type] = 'Plan Template' AND CONVERT(nvarchar(50), m.Id) = orp.ObjectId
 INNER JOIN [AspNetUsers] ON AspNetUsers.Id = m.Fr8AccountId 
-WHERE UserName = 'integration_test_runner@fr8.company';
+WHERE UserName = @integration_email;
 
-DELETE m FROM MTData m INNER JOIN [AspNetUsers] ON AspNetUsers.Id = m.Fr8AccountId WHERE UserName = 'integration_test_runner@fr8.company';
+DELETE m FROM MTData m INNER JOIN [AspNetUsers] ON AspNetUsers.Id = m.Fr8AccountId WHERE UserName = @integration_email;
 
-DELETE m FROM History m INNER JOIN [AspNetUsers] ON AspNetUsers.Id = m.Fr8UserId WHERE UserName = 'integration_test_runner@fr8.company';
+DELETE m FROM History m INNER JOIN [AspNetUsers] ON AspNetUsers.Id = m.Fr8UserId WHERE UserName = @integration_email;
 	
 DELETE m FROM History m INNER JOIN #Nodes cp ON CONVERT(nvarchar(50),cp.Id) = m.ObjectId;
 
