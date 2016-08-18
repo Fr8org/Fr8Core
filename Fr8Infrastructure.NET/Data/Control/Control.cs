@@ -797,6 +797,9 @@ namespace Fr8.Infrastructure.Data.Control
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
 
+        [JsonProperty("allowedManifestTypes")]
+        public string[] AllowedManifestTypes { get; set; }
+
         [JsonIgnore]
         public bool HasValue
         {
