@@ -407,7 +407,7 @@ Please register first.");
                     //for security reasons check if already has been created 
                     if (!fr8Account.CheckForExistingAdminUsers())
                     {
-                        _account.CreateAdminAccount(submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
+                        await _account.CreateAdminAccount(submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
                     }
                 }
             }

@@ -37,9 +37,9 @@ namespace terminalIntegrationTests.Integration
                                     .Returns(systemUserEmail);
             _container.Inject(configRepositoryMock.Object);
 
-            var fr8AccountMock = new Mock<Fr8Account>();
+            var fr8AccountMock = new Mock<IFr8Account>();
             fr8AccountMock.Setup(x => x.GetSystemUser())
-                    .Returns<Fr8AccountDO>(x=> null);
+                    .Returns(() => null);
             _container.Inject(fr8AccountMock.Object);
 
             var target = _container.GetInstance<ManifestRegistryMonitor>();
