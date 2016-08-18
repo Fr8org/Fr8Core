@@ -18,6 +18,9 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Hub.Services;
 using Hub.Services.MT;
+using Fr8.Infrastructure.Data.Constants;
+using Hub.Services.UpstreamValueExtractors;
+using Fr8.Infrastructure.Data.Helpers;
 
 namespace terminalFr8Core.Actions
 {
@@ -107,6 +110,8 @@ namespace terminalFr8Core.Actions
         {
             var selectedObject = ActivityUI.AvailableObjects.Value;
             var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
+
+            var properties = new List<FieldDTO>();
             if (hasSelectedObject)
             {
                 Guid selectedObjectId;
@@ -114,15 +119,24 @@ namespace terminalFr8Core.Actions
                 {
                     using (var uow = _container.GetInstance<IUnitOfWork>())
                     {
+                        properties = MTTypesHelper.GetFieldsByTypeId(uow, selectedObjectId, AvailabilityType.RunTime).ToList();
                         Storage.ReplaceByLabel(
-                            Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObjectId, AvailabilityType.RunTime))));
+                            Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(properties)));
                     }
                 }
             }
 
             ActivityUI.QueryBuilder.IsHidden = !hasSelectedObject;
             ActivityUI.SelectObjectLabel.IsHidden = hasSelectedObject;
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            if (!string.IsNullOrEmpty(selectedObject))
+            {
+                using (var uow = _container.GetInstance<IUnitOfWork>())
+                {
+                    CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields(properties);
+                }
+
+
+            }
 
             await Task.Yield();
         }
@@ -141,6 +155,36 @@ namespace terminalFr8Core.Actions
                 var conditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
                     ActivityUI.QueryBuilder.Value
                 );
+
+                //////////DIRTY DIRTY NASTY HACK////////////
+                //cause we can't select upstream value on //
+                //these controls yet                      //
+
+                foreach (var condition in conditions)
+                {
+                    if (condition.Value == "FromPayload")
+                    {
+                        foreach (var crate in Payload)
+                        {
+                            // skip system crates
+                            if (crate.IsOfType<OperationalStateCM>() || crate.IsOfType<CrateDescriptionCM>() || crate.IsOfType<ValidationResultsCM>())
+                            {
+                                continue;
+                            }
+
+                            //GetValue() method is a copy of UpstreamValueExtractorBase<T>.GetValue
+                            var foundValue = GetValue(crate, condition.Field);
+
+                            if (foundValue != null)
+                            {
+                                condition.Value = Convert.ToString(foundValue);
+                            }
+                        }
+                    }
+                }
+
+                ////////////END OF HACK/////////////////////
+
 
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
@@ -191,13 +235,74 @@ namespace terminalFr8Core.Actions
             await Task.Yield();
         }
 
+        private static object GetValue(Crate crate, string fieldKey)
+        {
+            if (crate.IsOfType<StandardTableDataCM>())
+            {
+                var tableCrate = crate.Get<StandardTableDataCM>();
+                if (tableCrate.FirstRowHeaders && tableCrate.Table.Count > 1)
+                {
+                    return tableCrate.Table[1].Row.FirstOrDefault(a => a.Cell.Key == fieldKey)?.Cell?.Value;
+                }
+            }
+
+            if (crate.IsKnownManifest)
+            {
+                var data = crate.Get();
+                object value = null;
+
+                Fr8ReflectionHelper.VisitPropertiesRecursive(data, (instance, member) =>
+                {
+                    if (!member.CanRead)
+                    {
+                        return Fr8ReflectionHelper.PropertiesVisitorOp.Continue;
+                    }
+
+                    var manifestAttr = member.GetCustomAttribute<ManifestFieldAttribute>();
+
+                    if (manifestAttr != null && manifestAttr.IsHidden)
+                    {
+                        return Fr8ReflectionHelper.PropertiesVisitorOp.Continue;
+                    }
+
+                    var tempValue = member.GetValue(instance);
+
+                    if (member.Name == fieldKey)
+                    {
+                        value = tempValue;
+                        return Fr8ReflectionHelper.PropertiesVisitorOp.Terminate;
+                    }
+
+                    var keyValuePair = tempValue as KeyValueDTO;
+                    if (keyValuePair != null)
+                    {
+                        if (keyValuePair.Key == fieldKey)
+                        {
+                            value = keyValuePair.Value;
+                            return Fr8ReflectionHelper.PropertiesVisitorOp.Terminate;
+                        }
+
+                        return Fr8ReflectionHelper.PropertiesVisitorOp.SkipBranch;
+
+                    }
+
+                    return Fr8ReflectionHelper.PropertiesVisitorOp.Continue;
+                });
+
+                return value;
+            }
+
+            // do nothing for uknown manifests
+            return null;
+        }
+
         private Func<object, TableRowDTO> CrateManifestToRowConverter(Type manifestType)
         {
-            var accessors = new List<KeyValuePair<string, IMemberAccessor>>();
+            var accessors = new List<KeyValuePair<string, AutoMapper.IMemberAccessor>>();
 
             foreach (var member in manifestType.GetMembers(BindingFlags.Instance | BindingFlags.Public).OrderBy(x => x.Name))
             {
-                IMemberAccessor accessor;
+                AutoMapper.IMemberAccessor accessor;
 
                 if (member is FieldInfo)
                 {
@@ -212,7 +317,7 @@ namespace terminalFr8Core.Actions
                     continue;
                 }
 
-                accessors.Add(new KeyValuePair<string, IMemberAccessor>(member.Name, accessor));
+                accessors.Add(new KeyValuePair<string, AutoMapper.IMemberAccessor>(member.Name, accessor));
             }
 
             return x =>
