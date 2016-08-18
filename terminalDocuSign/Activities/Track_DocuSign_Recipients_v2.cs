@@ -224,7 +224,7 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.First(x => x.Id == NotifierActivityTemplateId);
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload.RootPlanNodeId.Value, template, order: previousNotifierOrdering);
-            if (activity.ActivityTemplate.Name == "SendEmailViaSendGrid" && activity.ActivityTemplate.Version == "1")
+            if (activity.ActivityTemplate.Name == "Send_Email_Via_SendGrid" && activity.ActivityTemplate.Version == "1")
             {
                 //var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
                 var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "EmailBody", ControlTypes.TextSource);
@@ -234,26 +234,28 @@ namespace terminalDocuSign.Activities
                 var emailSubjectField = ActivityConfigurator.GetControl<TextSource>(activity, "EmailSubject", ControlTypes.TextSource);
                 emailSubjectField.ValueSource = "specific";
                 emailSubjectField.TextValue = "Fr8 Notification Message";
+
+                await HubCommunicator.ConfigureActivity(activity);
             }
-            else if (activity.ActivityTemplate.Name == "Send_Via_Twilio" && activity.ActivityTemplate.Version == "1")
-            {
-                var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "SMS_Body", ControlTypes.TextSource);
-                emailBodyField.ValueSource = "upstream";
-                emailBodyField.Value = NotificationMessageLabel;
-                emailBodyField.selectedKey = NotificationMessageLabel;
-            }
-            else if (activity.ActivityTemplate.Name == "Publish_To_Slack" && activity.ActivityTemplate.Version == "2")
-            {
-                if (activity.CrateStorage.FirstCrateOrDefault<StandardAuthenticationCM>() == null)
-                {
-                    var messageField = ActivityConfigurator.GetControl<TextSource>(activity, "MessageSource", ControlTypes.TextSource);
-                    messageField.ValueSource = "upstream";
-                    messageField.Value = NotificationMessageLabel;
-                    messageField.selectedKey = NotificationMessageLabel;
-                    messageField.SelectedItem = new FieldDTO { Name = NotificationMessageLabel };
-                    activity = await HubCommunicator.ConfigureActivity(activity);
-                }
-            }
+            //else if (activity.ActivityTemplate.Name == "Send_Via_Twilio" && activity.ActivityTemplate.Version == "1")
+            //{
+            //    var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "SMS_Body", ControlTypes.TextSource);
+            //    emailBodyField.ValueSource = "upstream";
+            //    emailBodyField.Value = NotificationMessageLabel;
+            //    emailBodyField.selectedKey = NotificationMessageLabel;
+            //}
+            //else if (activity.ActivityTemplate.Name == "Publish_To_Slack" && activity.ActivityTemplate.Version == "2")
+            //{
+            //    if (activity.CrateStorage.FirstCrateOrDefault<StandardAuthenticationCM>() == null)
+            //    {
+            //        var messageField = ActivityConfigurator.GetControl<TextSource>(activity, "MessageSource", ControlTypes.TextSource);
+            //        messageField.ValueSource = "upstream";
+            //        messageField.Value = NotificationMessageLabel;
+            //        messageField.selectedKey = NotificationMessageLabel;
+            //        messageField.SelectedItem = new FieldDTO { Name = NotificationMessageLabel };
+            //        activity = await HubCommunicator.ConfigureActivity(activity);
+            //    }
+            //}
             return activity.Id;
         }
 
