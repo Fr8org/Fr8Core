@@ -80,6 +80,7 @@
     <Compile Include="Integration\Post_To_Timeline_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\PostToTimeline_v1Tests.cs" />
     <Compile Include="Unit\MonitorFeedPosts_v1Tests.cs" />
   </ItemGroup>
   <ItemGroup />
