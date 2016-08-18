@@ -95,7 +95,7 @@ namespace Hub.Services
             {
                 _currentRun = new TaskCompletionSource<ManifestRegistryMonitorResult>();
                 Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Retrieving system user");
-                var systemUser = _fr8Account.GetSystemUser();
+                var systemUser = _fr8Account.GetSystemUser(true);
                 if (systemUser == null)
                 {
                     Logger.GetLogger().Error($"{ManifestMonitoringPrefix}System user doesn't exists");

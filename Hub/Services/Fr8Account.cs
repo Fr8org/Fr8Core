@@ -209,18 +209,34 @@ namespace Hub.Services
             }
         }
 
-        public Fr8AccountDO GetSystemUser()
+        /// <summary>
+        /// Get System User. If user defined their own system user, use that one, in other case use the default defined by the configuration
+        /// </summary>
+        /// <param name="useDefaultConfigDefined"></param>
+        /// <returns></returns>
+        public Fr8AccountDO GetSystemUser(bool useDefaultConfigDefined = false)
         {
             try
             {
                 using (var uow = _uowFactory.Create())
                 {
-                    var systemAccount = uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
+                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    var systemAccountQuery = uow.UserRepository.GetQuery().Include(x => x.EmailAddress);
 
+                    Fr8AccountDO systemAccount;
+                    if (useDefaultConfigDefined)
+                    {
+                        string userEmail = configRepository.Get("SystemUserEmail");
+                        systemAccount = systemAccountQuery.FirstOrDefault(x => x.UserName == userEmail);
+                    }
+                    else
+                    {
+                        systemAccount = systemAccountQuery.FirstOrDefault(x => x.SystemAccount);;
+                    }  
+                    
                     if (systemAccount == null)
                     {
                         //if the system doesn't have a default system account, create one
-                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                         string userEmail = configRepository.Get("SystemUserEmail");
                         string curPassword = configRepository.Get("SystemUserPassword");
 
