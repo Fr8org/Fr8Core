@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
@@ -14,5 +15,6 @@ namespace Hub.Interfaces
         Task Continue(IUnitOfWork uow, ContainerDO container);
         List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan);
         IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null);
+        PagedResultDTO<ContainerDTO> GetByQuery(Fr8AccountDO account, PagedQueryDTO query);
     }
 }

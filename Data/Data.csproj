@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -809,6 +809,14 @@
     <Compile Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.Designer.cs">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.cs" />
+    <Compile Include="Migrations\201608121505031_RemoveInactualAdminUsers.Designer.cs">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.cs" />
+    <Compile Include="Migrations\201608130142161_AddTypeToActivityCategory.Designer.cs">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1490,6 +1498,12 @@
     <EmbeddedResource Include="Migrations\201608102004444_LinkRolePermissionsToStandardUserRole.resx">
       <DependentUpon>201608102004444_LinkRolePermissionsToStandardUserRole.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608121505031_RemoveInactualAdminUsers.resx">
+      <DependentUpon>201608121505031_RemoveInactualAdminUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608130142161_AddTypeToActivityCategory.resx">
+      <DependentUpon>201608130142161_AddTypeToActivityCategory.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
@@ -1509,8 +1523,6 @@
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
-  <Target Name="BeforeBuild">
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -12,7 +12,10 @@
                     </div>
                 </div>
                 <div class="portlet-body">
-                    <div ng-show="terminals.length == 0" class="ng-hide">There are no Terminals in this view</div>
+                    <div ng-show="terminals.length == 0" class="ng-hide">
+                        You have built no Terminals. Learn about Terminal Development 
+                        <a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md" target="_blank">here</a>
+                    </div>
                     <div ng-show="terminals.length > 0">
                         <table datatable="ng" class="row-border hover">
                             <thead>

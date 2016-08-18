@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
+using OfficeOpenXml;
 using StructureMap;
 using RestSharp.Extensions;
 
@@ -418,18 +419,70 @@ namespace terminalUtilities.Excel
             StandardTableDataCM tableCM,
             string sheetName)
         {
-            var dataTable = ToDataTable(tableCM);
-            dataTable.TableName = sheetName;
 
-            var writer = new ExcelWriter();
+            using (var memoryStream = new MemoryStream(existingFile))
+            using (var excelPackage = new ExcelPackage(memoryStream))
+            { 
+                var workSheet = excelPackage.Workbook.Worksheets[sheetName];
+                if (workSheet == null)
+                {
+                    workSheet = excelPackage.Workbook.Worksheets.Add(sheetName);
+                }
+                else
+                {
+                    var targetIndex = workSheet.Index;
+                    excelPackage.Workbook.Worksheets.Delete(workSheet);
+                    workSheet = excelPackage.Workbook.Worksheets.Add(sheetName);
+                    excelPackage.Workbook.Worksheets.MoveBefore(workSheet.Index, targetIndex);
+                }
+                WriteTableDataToWorksheet(workSheet, tableCM);
+                FixPackageStyles(excelPackage);
+                return excelPackage.GetAsByteArray();
+            }
 
-            using (var stream = new MemoryStream())
+
+            //var dataTable = ToDataTable(tableCM);
+            //dataTable.TableName = sheetName;
+
+            //var writer = new ExcelWriter();
+
+            //using (var stream = new MemoryStream())
+            //{
+            //    stream.Write(existingFile, 0, existingFile.Length);
+            //    stream.Position = 0;
+
+            //    writer.RewriteSheetForFile(stream, dataTable);
+            //    return stream.ToArray();
+            //}
+        }
+
+        private static void FixPackageStyles(ExcelPackage excelPackage)
+        {
+            //This is for cases where Styles property is corrupted
+            try
             {
-                stream.Write(existingFile, 0, existingFile.Length);
-                stream.Position = 0;
+                var _ = excelPackage.Workbook.Styles;
+            }
+            catch (NullReferenceException)
+            {
+                using (var fakePackage = new ExcelPackage())
+                {
+                    excelPackage.Workbook.StylesXml = fakePackage.Workbook.StylesXml;
+                }
+            }
+        }
 
-                writer.RewriteSheetForFile(stream, dataTable);
-                return stream.ToArray();
+        private static void WriteTableDataToWorksheet(ExcelWorksheet workSheet, StandardTableDataCM tableCm)
+        {
+            var table = tableCm.Table;
+            for (var row = 0; row < table.Count; row++)
+            {
+                var currentRow = table[row].Row;
+                for (var col = 0; col < currentRow.Count; col++)
+                {
+                    //CellRange enumerate rows and columns from index 1
+                    workSheet.Cells[row + 1, col + 1].Value = currentRow[col].Cell.Value;
+                }
             }
         }
     }

@@ -15,6 +15,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using System.Text.RegularExpressions;
 using Data.Infrastructure.StructureMap;
+using Data.Repositories.Security;
+using Data.Repositories.Security.StorageImpl.Cache;
 using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
@@ -69,13 +71,12 @@ namespace Data.Migrations
                 uow.SaveChanges();
 
                 AddPredefinedActivityCategories(uow);
-                AddTestUser(uow);
                 RenameActivity(uow);
-                RegisterTerminals(uow);
+                RegisterTerminals(uow, migrationContainer);
             }
         }
 
-        private void RegisterTerminals(UnitOfWork uow)
+        private void RegisterTerminals(UnitOfWork uow, IContainer container)
         {
             // IMPORTANT: After the migrations have worked out and after you've made sure that 
             // your terminal works fine on the target environment, you need to go to the Terminals page 
@@ -86,30 +87,32 @@ namespace Data.Migrations
             // If you're adding a 3rd party terminal, one created by an external developer
             // or just one which is not deployed by Fr8, it may have any URL but 
             // you need to set the Fr8OwnTerminal argument to true. For details see FR-4945.
-            RegisterFr8OwnTerminal(uow, "localhost:10109", "https://terminalInstagram.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:56785", "https://terminalAsana.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:46281", "https://terminalAzure.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:61121", "https://terminalBasecamp2.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:54642", "https://terminalBox.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:39504", "https://terminalSlack.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:53234", "https://terminalDocuSign.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:30700", "https://terminalNotifier.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:51234", "https://terminalSalesforce.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:50705", "https://terminalFr8Core.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:10601", "https://terminalSendGrid.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:30699", "https://terminalTwilio.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:25923", "https://terminalGoogle.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:47011", "https://terminalExcel.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:19760", "https://terminalDropbox.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:30701", "https://terminalPapertrail.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:39768", "https://terminalAtlassian.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:48317", "https://terminalQuickBooks.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:39555", "https://terminalYammer.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:50479", "https://terminalTutorial.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:48675", "https://terminalStatX.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:22666", "https://terminalFacebook.fr8.co");
-            RegisterFr8OwnTerminal(uow, "localhost:59022", "https://terminalTelegram.fr8.co");
-            RegisterFr8OwnTerminal(uow, "https://terminalTwitter.fr8.co", "https://terminalTwitter.fr8.co", false);
+            var securityObjectStorage = new SecurityObjectsStorage(uow, container.GetInstance<ISecurityObjectsCache>(), container.GetInstance<ISecurityObjectsStorageProvider>());
+
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:10109", "https://terminalInstagram.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:56785", "https://terminalAsana.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:46281", "https://terminalAzure.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:61121", "https://terminalBasecamp2.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:54642", "https://terminalBox.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:39504", "https://terminalSlack.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:53234", "https://terminalDocuSign.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:30700", "https://terminalNotifier.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:51234", "https://terminalSalesforce.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:50705", "https://terminalFr8Core.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:10601", "https://terminalSendGrid.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:30699", "https://terminalTwilio.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:25923", "https://terminalGoogle.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:47011", "https://terminalExcel.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:19760", "https://terminalDropbox.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:30701", "https://terminalPapertrail.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:39768", "https://terminalAtlassian.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:48317", "https://terminalQuickBooks.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:39555", "https://terminalYammer.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:50479", "https://terminalTutorial.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:48675", "https://terminalStatX.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:22666", "https://terminalFacebook.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:59022", "https://terminalTelegram.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "https://terminalTwitter.fr8.co", "https://terminalTwitter.fr8.co", false);
         }
 
         private string ExtractPort(string url)
@@ -129,7 +132,7 @@ namespace Data.Migrations
         }
 
         // ReSharper disable once UnusedMember.Local
-        private void RegisterFr8OwnTerminal(UnitOfWork uow, string devUrl, string prodUrl = null, bool isFr8OwnTerminal = true)
+        private void RegisterFr8OwnTerminal(UnitOfWork uow, SecurityObjectsStorage securityObjectStorage,string devUrl, string prodUrl = null, bool isFr8OwnTerminal = true)
         {
             var terminalRegistration = new TerminalDO();
             string terminalPort = ExtractPort(devUrl);
@@ -145,6 +148,10 @@ namespace Data.Migrations
 
             if (existingTerminal != null)
             {
+                //in order to avoid problems, check if permissions for terminal is already applied. If not, create those permissions 
+                securityObjectStorage.SetDefaultRecordBasedSecurityForObject(string.Empty, Roles.StandardUser, existingTerminal.Id, nameof(TerminalDO),Guid.Empty,null, new List<PermissionType>() { PermissionType.UseTerminal });
+                securityObjectStorage.SetDefaultRecordBasedSecurityForObject(string.Empty, Roles.Guest, existingTerminal.Id, nameof(TerminalDO), Guid.Empty, null, new List<PermissionType>() { PermissionType.UseTerminal });
+
                 return;
             }
 
@@ -161,9 +168,8 @@ namespace Data.Migrations
             uow.SaveChanges();
 
             //make the terminal visible for all users
-            var security = ObjectFactory.GetInstance<ISecurityServices>();
-            security.SetDefaultRecordBasedSecurityForObject(Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
-            security.SetDefaultRecordBasedSecurityForObject(Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+            securityObjectStorage.SetDefaultRecordBasedSecurityForObject(string.Empty, Roles.StandardUser, terminalRegistration.Id, nameof(TerminalDO), Guid.Empty, null, new List<PermissionType>() { PermissionType.UseTerminal });
+            securityObjectStorage.SetDefaultRecordBasedSecurityForObject(string.Empty, Roles.Guest, terminalRegistration.Id, nameof(TerminalDO), Guid.Empty, null, new List<PermissionType>() { PermissionType.UseTerminal });
         }
 
         private static string NormalizeUrl(string terminalUrl)
@@ -373,7 +379,7 @@ namespace Data.Migrations
 
         public static void AddAdmins(IUnitOfWork uow)
         {
-            //TODO: add your own admin accounts here
+            //you can programmatically add Admin accounts here. Now that Fr8 has a Configuration Wizard that is used to create a system administrator account, this is only really used for testing
             //CreateAdmin("test_foo@mail.com", "foobar",uow);
         }
 
@@ -383,8 +389,6 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)
         {
-            CreateFr8Account("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
-            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
         /// <summary>
@@ -486,7 +490,8 @@ namespace Data.Migrations
                 {
                     Id = id,
                     Name = name,
-                    IconPath = iconPath
+                    IconPath = iconPath,
+                    Type = null
                 };
 
                 uow.ActivityCategoryRepository.Add(activityCategory);
@@ -511,26 +516,6 @@ namespace Data.Migrations
                     });
                 } 
             } 
-
-            uow.SaveChanges();
-        }
-
-        private void AddTestUser(IUnitOfWork uow)
-        {
-            const string email = "integration_test_runner@fr8.company";
-            const string password = "fr8#s@lt!";
-
-            //check if we know this email address
-
-            var existingEmailAddressDO = uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
-            if (existingEmailAddressDO != null)
-            {
-                RegisterTestUser(uow, email, password, Roles.StandardUser);
-            }
-            else
-            {
-                RegisterTestUser(uow, email, password, Roles.StandardUser);
-            }
 
             uow.SaveChanges();
         }

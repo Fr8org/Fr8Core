@@ -97,6 +97,13 @@
 }
 
 /* Route Builder */
+.no-text-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 .designer-header {
     background: transparent;
     width: 100%;
@@ -1066,12 +1073,21 @@ div[dnd-list] > div {
  * sense to hide it to give the user the feeling
  * that he's actually moving it.
  */
-div[dnd-list] .dndDraggingSource {
+div[dnd-list].dndDragover {
+    border: 1px solid;
+}
+
+.disable-drag-placeholder {
     display: none;
 }
 
-div[dnd-list].dndDragover {
-    border: 1px solid;
+.dndDraggingSource + div {
+    opacity: 0.3;
+}
+
+div.ap-resize div.dndDraggingSource {
+    opacity: 0.3;
+    display: block !important;
 }
 
 /**
@@ -1295,16 +1311,6 @@ div.activity-list::after {
 
 .float-right {
     float: right;
-}
-
-
-.dndDraggingSource + div {
-    opacity: 0.3;
-}
-
-div.ap-resize div.dndDraggingSource {
-    opacity: 0.3;
-    display: block !important;
 }
 
 .register-container {
@@ -1560,7 +1566,17 @@ md-radio-button .md-on{
     border-radius:50% !important;
 }
 
+md-radio-button.md-default-theme .md-on, md-radio-button .md-on {
+    background-color: rgb(38, 166, 154);
+}
 
+md-radio-group.md-default-theme .md-checked .md-ink-ripple, md-radio-group .md-checked .md-ink-ripple {
+    color: rgba(38, 166, 154,0.26);
+}
+
+md-radio-button.md-default-theme.md-checked .md-off, md-radio-button.md-checked .md-off {
+    border-color: rgba(38, 166, 154,0.87);
+}
 
 .black-radio.md-checked .md-off, .black-radio .md-off {
     border-color: rgba(0,0,0,0.87) !important;
@@ -1569,9 +1585,12 @@ md-radio-button .md-on{
     background-color: rgba(0,0,0,0.87) !important;
 }
 
-
 md-checkbox.md-checked.green .md-icon {
  background-color: rgb(38, 166, 154);
+}
+
+md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-icon {
+    background-color: rgb(66, 139, 202);
 }
 
 .text-block {

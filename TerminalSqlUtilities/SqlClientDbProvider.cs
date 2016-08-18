@@ -170,6 +170,124 @@ namespace TerminalSqlUtilities
         }
 
         /// <summary>
+        /// Gets All Columns in Table
+        /// </summary>
+        public IEnumerable<ColumnInfo> ListTableColumns(IDbTransaction tx, string tablename)
+        {
+            using (var cmd = tx.Connection.CreateCommand())
+            {
+                cmd.CommandText =
+                    @"SELECT
+	                    [c].[TABLE_SCHEMA],
+	                    [c].[TABLE_NAME],
+	                    [c].[COLUMN_NAME],
+                        [c].[DATA_TYPE],
+                        [c].[IS_NULLABLE]
+                    FROM [INFORMATION_SCHEMA].[COLUMNS] [c]
+                    WHERE [c].[TABLE_NAME] = '"+ tablename + @"'";
+
+                cmd.Transaction = tx;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var columns = new List<ColumnInfo>();
+
+                    while (reader.Read())
+                    {
+                        var schemaName = reader.GetString(0);
+                        var tableName = reader.GetString(1);
+                        var columnName = reader.GetString(2);
+                        var isNullable = reader.GetString(4);
+                        DbType dbType;
+
+                        if (TryMapDbType(reader.GetString(3), out dbType))
+                        {
+                            var nullable = isNullable =="NO" ? false:true;
+                            columns.Add(
+                                new ColumnInfo(
+                                    new TableInfo(schemaName, tableName),
+                                    columnName,
+                                    dbType,
+                                    nullable
+                                    )
+                                );
+                        }
+                    }
+
+                    return columns;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets List of All Tables in DB
+        /// </summary>
+        public IEnumerable<TableInfo> ListAllTables(IDbTransaction tx)
+        {
+            using (var cmd = tx.Connection.CreateCommand())
+            {
+                cmd.CommandText =
+                    @"SELECT
+                        [c].[TABLE_CATALOG],
+	                    [c].[TABLE_SCHEMA],
+	                    [c].[TABLE_NAME],
+                        [c].[TABLE_TYPE]
+                    FROM [INFORMATION_SCHEMA].[Tables] [c]";
+
+                cmd.Transaction = tx;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var columns = new List<TableInfo>();
+
+                    while (reader.Read())
+                    {
+                        var tableCatalog = reader.GetString(0);
+                        var schemaName = reader.GetString(1);
+                        var tableName = reader.GetString(2);
+                        var tableType = reader.GetString(3);
+
+                            columns.Add(
+                                new TableInfo(schemaName, tableName) 
+                                );
+                        
+                    }
+
+                    return columns;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets Identity Column of Table
+        /// </summary>
+        public string GetIdentityColumn(IDbTransaction tx, string tableName)
+        {
+            using (var cmd = tx.Connection.CreateCommand())
+            {
+                cmd.CommandText =
+                    @"SELECT COLUMN_NAME
+                      FROM INFORMATION_SCHEMA.COLUMNS
+                      WHERE TABLE_NAME = '"+ tableName + @"' AND
+                      COLUMNPROPERTY(object_id(TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1";
+
+                cmd.Transaction = tx;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var columns = new List<TableInfo>();
+                    string identityColumn = null;
+                    while (reader.Read())
+                    {
+                         identityColumn = reader.GetString(0);
+                    }
+
+                    return identityColumn;
+                }
+            }
+        }
+
+        /// <summary>
         /// Map string data-type name to System.Data.DbType.
         /// </summary>
         private bool TryMapDbType(string dataType, out DbType dbType)
