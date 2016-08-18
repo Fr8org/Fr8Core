@@ -45,7 +45,7 @@ namespace Hub.Services
             ICrateManager crateManager,
             IPlan plan,
             IUnitOfWorkFactory unitOfWorkFactory,
-            Fr8Account fr8Account,
+            IFr8Account fr8Account,
             IConfigRepository configRepository)
         {
             if (activity == null)
