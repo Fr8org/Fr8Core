@@ -20,7 +20,7 @@ namespace Hub.Interfaces
         string GetDisplayName(Fr8AccountDO curDockyardAccount);
         Fr8AccountDO GetExisting(IUnitOfWork uow, string emailAddress);
         CommunicationMode GetMode(Fr8AccountDO dockyardAccountDO);
-        Fr8AccountDO GetSystemUser();
+        Fr8AccountDO GetSystemUser(bool useDefaultConfigDefined = false);
         string GetUserId(string emailAddress);
         string GetUserRole(string userName);
         bool IsCurrentUserInAdminRole();
