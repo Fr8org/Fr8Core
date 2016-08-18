@@ -56,8 +56,6 @@ namespace terminalFr8Core.Activities
                 }
 
                 uow.SaveChanges();
-
-                var result = uow.MultiTenantObjectRepository.Query<DocuSignRecipientCM>(CurrentUserId, a => a.EnvelopeId == "1033A4E0-26C7-418E-BEF3-EC2B34CE7EDE").ToList();
                 Success();
             }
 
