@@ -30,7 +30,7 @@ namespace PlanDirectoryTests.Infrastructure
             _templateGeneratorMock = new Mock<ITemplateGenerator>();
             _pageDefinitionServiceMock = new Mock<IPageDefinition>();
             _fr8AccountServiceMock = new Mock<IFr8Account>();
-            _fr8AccountServiceMock.Setup(x => x.GetSystemUser()).Returns(new Fr8AccountDO(new EmailAddressDO("xx@xx.xx")));
+            _fr8AccountServiceMock.Setup(x => x.GetSystemUser(true)).Returns(new Fr8AccountDO(new EmailAddressDO("xx@xx.xx")));
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _unitOfWorkFactoryMock = new Mock<IUnitOfWorkFactory>();
             _unitOfWorkFactoryMock.Setup(x => x.Create()).Returns(_unitOfWorkMock.Object);
@@ -70,7 +70,7 @@ namespace PlanDirectoryTests.Infrastructure
         [ExpectedException(typeof(ManifestGenerationException), UserMessage = "Exception is not thrown when system user doesn't exist")]
         public async Task Generate_WhenSystemUserDoesntExist_ThrowsException()
         {
-            _fr8AccountServiceMock.Setup(x => x.GetSystemUser()).Returns((Fr8AccountDO)null);
+            _fr8AccountServiceMock.Setup(x => x.GetSystemUser(true)).Returns((Fr8AccountDO)null);
             _pageDefinitionServiceMock.Setup(x => x.Get(It.IsAny<Expression<Func<PageDefinitionDO, bool>>>()))
                 .Returns(new List<PageDefinitionDO>(0));
             var target = CreateTarget();
