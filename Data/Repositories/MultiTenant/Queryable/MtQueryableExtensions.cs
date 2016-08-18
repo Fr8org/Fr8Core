@@ -12,13 +12,13 @@ namespace Data.Repositories.MultiTenant.Queryable
             return new MtWhere<T>(that, condition);
         }
 
-        public static int Count<T>(this IMtQueryable<T> that)
+        public static int MtCount<T>(this IMtQueryable<T> that)
             where T : Manifest
         {
             return that.Executor.Count(that);
         }
 
-        public static int Count<T>(this IMtQueryable<T> that, Expression<Func<T, bool>> condition)
+        public static int MtCount<T>(this IMtQueryable<T> that, Expression<Func<T, bool>> condition)
           where T : Manifest
         {
             var where = new MtWhere<T>(that, condition);
