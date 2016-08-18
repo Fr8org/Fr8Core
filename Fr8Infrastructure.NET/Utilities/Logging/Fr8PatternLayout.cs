@@ -20,7 +20,9 @@ namespace Fr8.Infrastructure.Utilities.Logging
         {
             base.ActivateOptions();
             
-            IgnoresException = false;
+            //whether we should add full exception to journal -> false = we do not add them / true = add rendered exceptions 
+            IgnoresException = true;
+
             InfoColor = InfoColor.IsNullOrEmpty() ? "\x1b[36m" : "\x1b[" + InfoColor;
             WarnColor = WarnColor.IsNullOrEmpty() ? "\x1b[33m" : "\x1b[" + WarnColor;
             ErrorColor = ErrorColor.IsNullOrEmpty() ? "\x1b[31m" : "\x1b[" + ErrorColor;
