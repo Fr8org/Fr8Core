@@ -29,12 +29,11 @@ namespace HubTests.Services
         public async Task Events_Multiplefr8AccountsAssociatedWithSameExternalAccountId_ShouldCheckPlansForAllUsers()
         {
             //Arrange 
-            var container = ObjectFactory.Container.GetNestedContainer();
 
-            var fr8AccountMock = new Mock<Fr8Account>();
+            var fr8AccountMock = new Mock<IFr8Account>();
             fr8AccountMock.Setup(x => x.GetSystemUser())
-                    .Returns<Fr8AccountDO>(x => null);
-            container.Inject(fr8AccountMock.Object);
+                    .Returns<Fr8AccountDO>(x=> new Fr8AccountDO() {UserName = "test@test.com"});
+            ObjectFactory.Container.Inject(typeof(IFr8Account),fr8AccountMock.Object);
 
             var externalAccountId = "docusign_developer@dockyard.company";
             var plan1 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDockyardAccount1());

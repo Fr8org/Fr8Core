@@ -213,16 +213,9 @@ namespace Hub.Services
 
         public Fr8AccountDO GetSystemUser()
         {
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                using (var uow = _uowFactory.Create())
-                {
-                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
+                return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
             }
         }
 
