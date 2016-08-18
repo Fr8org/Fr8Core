@@ -13,6 +13,20 @@
         $close: () => void;
     }
 
+    export class AuthenticationPopupBlockedDialogController {
+        public static $inject = [
+            '$scope',
+            '$window'
+        ];
+
+        constructor(
+            private $scope: ng.IScope,
+            private $window: ng.IWindowService
+        ) {
+            (<any>$scope).hostname = $window.location.host || $window.location.hostname;
+        }
+    }
+
     export class AuthenticationDialogController {
         public static $inject = [
             '$scope',
@@ -212,7 +226,7 @@
                         window.addEventListener('message', messageListener);
 
                         var isClosedHandler = function () {
-                            if (childWindow.closed) {
+                            if (childWindow && childWindow.closed) {
                                 window.removeEventListener('message', messageListener);
                                 $scope.isWaitingForResponse = false;
                                 $scope.$apply();
@@ -222,6 +236,22 @@
                             }
                         };
                         setTimeout(isClosedHandler, 500);
+
+                        var isBlockedHandler = function () {
+                            if (!childWindow || childWindow.outerHeight === 0) {
+                                $scope.isWaitingForResponse = false;
+                                $scope.$apply();
+
+                                $modal.open({
+                                    animation: true,
+                                    backdrop: 'static',
+                                    keyboard: false,
+                                    templateUrl: '/AngularTemplate/AuthenticationPopupBlockedDialog',
+                                    controller: 'AuthenticationPopupBlockedDialogController'
+                                });
+                            }
+                        };
+                        setTimeout(isBlockedHandler, 500);
                     });
             };
 
@@ -367,4 +397,5 @@
     }
 
     app.controller('AuthenticationDialogController', AuthenticationDialogController);
+    app.controller('AuthenticationPopupBlockedDialogController', AuthenticationPopupBlockedDialogController);
 } 
