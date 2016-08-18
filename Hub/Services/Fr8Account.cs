@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Hub.Managers.APIManagers.Packagers;
@@ -627,9 +628,16 @@ namespace Hub.Services
                 }
 
                 uow.SaveChanges();
-
+                
                 var generateTasks = uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(newFr8Account.UserName, x => true).Select(x => x.Name).Distinct().Select(manifestName => generator.Generate(manifestName, GenerateMode.GenerateAlways)).Cast<Task>().ToList();
                 await Task.WhenAll(generateTasks);
+                //EnsureMThasaDocuSignRecipientCMTypeStored
+                var type = uow.MultiTenantObjectRepository.FindTypeReference(typeof(DocuSignRecipientCM));
+                if (type == null)
+                {
+                    uow.MultiTenantObjectRepository.Add(new DocuSignRecipientCM() { RecipientId = Guid.NewGuid().ToString() }, newFr8Account.Id);
+                    uow.SaveChanges();
+                }
             }
         }
     }

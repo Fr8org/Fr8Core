@@ -109,8 +109,11 @@ namespace HubWeb
                 if (type == null)
                 {
                     var user = uow.UserRepository.GetQuery().FirstOrDefault();
-                    uow.MultiTenantObjectRepository.Add(new DocuSignRecipientCM() { RecipientId = Guid.NewGuid().ToString() }, user.Id);
-                    uow.SaveChanges();
+                    if (user != null)
+                    {
+                        uow.MultiTenantObjectRepository.Add(new DocuSignRecipientCM() { RecipientId = Guid.NewGuid().ToString() }, user.Id);
+                        uow.SaveChanges();
+                    }
                 }
             }
         }
