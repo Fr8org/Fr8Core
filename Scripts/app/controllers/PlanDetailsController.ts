@@ -30,8 +30,8 @@ module dockyard.controllers {
             '$scope',
             'PlanService',
             '$stateParams',
-            "$filter",
-            "PusherNotifierService"
+            '$filter',
+            'UINotificationSservice'
         ];
 
         constructor(
@@ -40,7 +40,7 @@ module dockyard.controllers {
             private PlanService: services.IPlanService,
             private $stateParams: any,
             private $filter: ng.IFilterService,
-            private PusherNotifierService: dockyard.services.IPusherNotifierService) {
+            private uiNotificationService: dockyard.interfaces.IUINotificationService) {
 
             $scope.descriptionEditing = false;
             $scope.nameEditing = false;
@@ -56,11 +56,11 @@ module dockyard.controllers {
                 if (!$scope.current.plan.visibility.public) {
                     PlanService.share($stateParams.id)
                         .then(() => {
-                            PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " shared");
+                            uiNotificationService.frontendSuccess("Plan " + $scope.current.plan.name + " shared");
                         })
                         .catch((exp) => {
                             exp.data = exp.data ? exp.data : "";
-                            PusherNotifierService.frontendFailure("Plan sharing faliure: " + exp.data);
+                            uiNotificationService.frontendFailure("Plan sharing faliure: " + exp.data);
                         });
                 }
 
@@ -78,11 +78,11 @@ module dockyard.controllers {
                 if (!$scope.current.plan.visibility.hidden) {
                     PlanService.unpublish($stateParams.id)
                         .then(() => {
-                            PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " unpublished");
+                            uiNotificationService.frontendSuccess("Plan " + $scope.current.plan.name + " unpublished");
                         })
                         .catch((exp) => {
                             exp.data = exp.data ? exp.data : "";
-                            PusherNotifierService.frontendFailure("Plan unpublished faliure: " + exp.data);
+                            uiNotificationService.frontendFailure("Plan unpublished faliure: " + exp.data);
                         });
                 }
 

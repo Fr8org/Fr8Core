@@ -26,7 +26,7 @@ module dockyard.controllers {
         '$modalInstance',
         'Upload',
         '$state',
-        "PusherNotifierService"
+        'UINotificationService'
     ];
 
     constructor(
@@ -34,7 +34,7 @@ module dockyard.controllers {
         private $modalInstance: ng.ui.bootstrap.IModalServiceInstance,
         private Upload,
         private $state: ng.ui.IStateService,
-        private PusherNotifierService: services.IPusherNotifierService
+        private uiNotificationService: interfaces.IUINotificationService
     ) {
 
         $scope.fileChanged = () => {
@@ -54,7 +54,7 @@ module dockyard.controllers {
                 file: file 
             }).then((response) => {
                 $scope.uploadFlag = false;
-                PusherNotifierService.frontendSuccess("Plan in file "+ file.name +" uploaded");
+                uiNotificationService.frontendSuccess("Plan in file "+ file.name +" uploaded");
 
                 if ($state.current.name === "planList") {
                     $state.reload();
@@ -63,7 +63,7 @@ module dockyard.controllers {
                 }
   
                 }, (error) => {
-                    PusherNotifierService.frontendFailure("Plan upload failed " + error);                    
+                    uiNotificationService.frontendFailure("Plan upload failed " + error);                    
                     $scope.uploadFlag = false;  
             });
             $modalInstance.close();
