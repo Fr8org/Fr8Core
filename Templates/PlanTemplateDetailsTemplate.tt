@@ -93,7 +93,7 @@
                     <div class="result-container">
                         <div class="item">
                             <a onClick="createPlan()" style="text-decoration: none;color: #FFFFFF;">
-							<button class="btn green create-plan-btn">Create</button>                            
+							<button class="btn green plan-btn">Create</button>
 							</a>
                             <div class="info-row first">
                                 <div class="label">Name:</div> <#=planTemplate.Name#>
