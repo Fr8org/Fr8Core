@@ -140,10 +140,13 @@ namespace terminalDocuSignTests.Integration
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
                     .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).MtCount();
 
+                int mtDataCountAfter = mtDataCountBefore;
+
 
                 Debug.WriteLine("Waiting for MADSE plan to be created");
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
                 await Task.Delay(MadseCreationPeriod);
+
 
                 Debug.WriteLine("Sending test event");
                 string response = 
@@ -154,7 +157,7 @@ namespace terminalDocuSignTests.Integration
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                int mtDataCountAfter = mtDataCountBefore;
+                
                 while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
                 {
                     await Task.Delay(SingleAwaitPeriod);

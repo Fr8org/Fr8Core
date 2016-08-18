@@ -7,7 +7,7 @@ Development Topics
 
 [Fr8 Plans: The Heart of the System](https://vimeo.com/173975037)
 
-[Fr8 Crates: How Data Gets Stored](https://vimeo.com/173832189)
+[Fr8 Crates: How Data Gets Stored](https://vimeo.com/173839744)
 
 [Fr8 Branching and Flow Control](http://blog.fr8.co/2016/08/03/fr8-branching-and-flow-control-a-video-demo/)
 
