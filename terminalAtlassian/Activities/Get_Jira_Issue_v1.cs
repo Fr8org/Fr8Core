@@ -67,6 +67,30 @@ namespace terminalAtlassian.Actions
             _atlassianService = atlassianService;
         }
 
+        protected override async Task Validate()
+        {
+            var issueKey = ActivityUI.IssueNumber.TextValue;
+            if (string.IsNullOrEmpty(issueKey))
+            {
+                ValidationManager.SetError("Issue number must be specified", ActivityUI.IssueNumber);
+            }
+            else
+            {
+                try
+                {
+                    var curJiraIssue = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                }
+                catch (Exception e)
+                {
+                    var m = "Response Content:";
+                    var message = e.Message.Substring(e.Message.IndexOf(m) + m.Length, e.Message.Length - m.Length);
+                    var j = Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(message, new { errorMessages = new string[1], errors = new { } });
+
+                    ValidationManager.SetError(j.errorMessages[0], ActivityUI.IssueNumber);
+                }
+            }
+        }
+
         public override async Task Initialize()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
