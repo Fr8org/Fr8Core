@@ -110,7 +110,6 @@ namespace terminalFacebook.Activities
 
             var facebookEventPayload = eventCrate.EventPayload.CrateContentsOfType<FacebookUserEventCM>()
                     .FirstOrDefault(e => e.ChangedFields.Contains(FacebookFeed));
-
             if (facebookEventPayload == null)
             {
                 RequestPlanExecutionTermination("Facebook event payload was not found");

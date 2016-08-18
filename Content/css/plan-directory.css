@@ -184,32 +184,11 @@ header#site-header:after {
     padding: 0;
 }
 
-.result-container .item .create-plan-btn {
-    position: absolute;
-    right: 10px;
-    top: 10px;
+.result-container .item button.plan-btn {
+    float: right;
+    margin-right: 6px;
+    margin-top: 5px;
 }
-
-.result-container .item .create-plan-btn.privileged {
-    right: 170px;
-}
-
-.result-container .item .plan-details-btn {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-}
-
-.result-container .item .plan-details-btn.privileged {
-    right: 90px;
-}
-
-.result-container .item .remove-plan-btn {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-}
-
 
 /* Category container */
 .web-services-container {

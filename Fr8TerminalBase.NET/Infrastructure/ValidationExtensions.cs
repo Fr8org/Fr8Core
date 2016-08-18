@@ -56,26 +56,24 @@ namespace Fr8.TerminalBase.Infrastructure
             }
         }
 
-        public static bool ValidatePhoneNumber(this ValidationManager validationManager, string number, TextSource control)
+        public static bool ValidatePhoneNumber(this ValidationManager validationManager, string number, TextSource control, string errorMessage = null)
         {
             try
             {
-                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-
-                bool isAlphaNumber = phoneUtil.IsAlphaNumber(number);
-                PhoneNumber phoneNumber = phoneUtil.Parse(number, "");
+                var phoneUtil = PhoneNumberUtil.GetInstance();
+                var isAlphaNumber = phoneUtil.IsAlphaNumber(number);
+                var phoneNumber = phoneUtil.Parse(number, "");
                 if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
                 {
-                    validationManager.SetError(control.InitialLabel + " Is Invalid", control);
+                    validationManager.SetError(string.IsNullOrWhiteSpace(errorMessage) ? $"{control.InitialLabel} is invalid" : errorMessage, control);
                     return false;
                 }
             }
             catch (NumberParseException npe)
             {
-                validationManager.SetError("Failed to parse " + control.InitialLabel + " " + npe.Message, control);
+                validationManager.SetError(string.IsNullOrWhiteSpace(errorMessage) ? $"Failed to parse {control.InitialLabel} {npe.Message}" : errorMessage, control);
                 return false;
             }
-
             return true;
         }
 
