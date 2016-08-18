@@ -366,7 +366,7 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <param name="planId">Id of plan to execute</param>
         /// <param name="payload">Payload to provide to plan during execution</param>
-        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal", "Guest")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Container creating during successful plan execution", typeof(ContainerDTO))]

@@ -58,3 +58,12 @@
     <button class="btn btn-default pull-right" style="width: 100px;" ng-click="$dismiss()">Cancel</button>
     <button class="btn btn-primary pull-right" style="width: 100px;" ng-click="apply()" ng-disabled="!isAllSelected()">Ok</button>
 </div>
+
+<script type="text/ng-template" id="/AngularTemplate/AuthenticationPopupBlockedDialog">
+    <div class="modal-body">
+        <div><strong>Authentication popup is blocked</strong> by browser, please go to browser settings and unblock popups for <strong>{{hostname}}</strong> hostname.</div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+    </div>
+</script>

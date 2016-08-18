@@ -138,8 +138,7 @@ namespace terminalDocuSignTests.Integration
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id)
-                    .Count();
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).MtCount();
 
                 int mtDataCountAfter = mtDataCountBefore;
 
@@ -166,7 +165,7 @@ namespace terminalDocuSignTests.Integration
                     Debug.WriteLine($"Querying MT objects...");
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).MtCount();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {

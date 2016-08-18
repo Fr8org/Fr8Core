@@ -9,7 +9,7 @@
         '$window',
         function ($scope, $http, $q, $uibModal, urlPrefix, $location, $window) {
             $scope.searchForm = {
-                searchText: $location.search().planSearch ? $location.search().planSearch : ''
+                searchText: ''
             };
 
             $scope.searched = false;
@@ -242,6 +242,12 @@
                     $scope.privileged = privileged;
                 });
             extractActivityCategories();
+
+            if ($location.search().planSearch) {
+                $scope.searchForm.searchText = $location.search().planSearch;
+                $scope.searched = true;
+            }
+
             doSearch(1);
         }
     ])
