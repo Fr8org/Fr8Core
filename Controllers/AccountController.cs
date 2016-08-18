@@ -385,9 +385,8 @@ Please register first.");
             return RedirectToAction("Index", "Welcome");
         }
 
-#if DEBUG
         /// <summary>
-        /// Page shown to users when they first start the solution locally. Used to create a master administrator account for the developer local db
+        /// Page shown to users when they first start the solution. Used to create a master administrator account for the developer local db
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
@@ -404,7 +403,12 @@ Please register first.");
             {
                 if (ModelState.IsValid)
                 {
-                     _account.CreateAdminAccount( submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
+                    var fr8Account = ObjectFactory.GetInstance<IFr8Account>();
+                    //for security reasons check if already has been created 
+                    if (!fr8Account.CheckForExistingAdminUsers())
+                    {
+                        await _account.CreateAdminAccount(submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
+                    }
                 }
             }
             catch (ApplicationException appEx)
@@ -423,7 +427,6 @@ Please register first.");
                 RememberMe = false
             }, string.Empty).Result;
         }
-#endif
     }
 
 }

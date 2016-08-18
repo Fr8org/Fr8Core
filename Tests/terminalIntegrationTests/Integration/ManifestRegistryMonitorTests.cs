@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Entities;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Testing.Integration;
+using Hub.Interfaces;
 using Hub.Services;
 using Moq;
 using NUnit.Framework;
@@ -18,6 +20,7 @@ namespace terminalIntegrationTests.Integration
         public override string TerminalName => "terminalGoogle";
 
         private IConfigRepository _originalConfigRepository;
+        private IFr8Account _fr8Account;
         private IContainer _container;
 
         [SetUp]
@@ -33,6 +36,11 @@ namespace terminalIntegrationTests.Integration
                 configRepositoryMock.Setup(x => x.Get("SystemUserEmail"))
                                     .Returns(systemUserEmail);
             _container.Inject(configRepositoryMock.Object);
+
+            var fr8AccountMock = new Mock<IFr8Account>();
+            fr8AccountMock.Setup(x => x.GetSystemUser())
+                    .Returns(() => null);
+            _container.Inject(fr8AccountMock.Object);
 
             var target = _container.GetInstance<ManifestRegistryMonitor>();
             return target;

@@ -35,6 +35,6 @@ namespace Hub.Interfaces
         void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password);
         bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow);
         bool CheckForExistingAdminUsers();
-        Fr8AccountDO CreateAdminAccount(string userEmail, string curPassword);
+        Task CreateAdminAccount(string userEmail, string curPassword);
     }
 }

@@ -821,6 +821,10 @@
     <Compile Include="Migrations\201608151440095_DeleteObsoleteManifestFromMT.Designer.cs">
       <DependentUpon>201608151440095_DeleteObsoleteManifestFromMT.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608161608296_AddSystemAccountIdentifier.cs" />
+    <Compile Include="Migrations\201608161608296_AddSystemAccountIdentifier.Designer.cs">
+      <DependentUpon>201608161608296_AddSystemAccountIdentifier.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1510,6 +1514,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608151440095_DeleteObsoleteManifestFromMT.resx">
       <DependentUpon>201608151440095_DeleteObsoleteManifestFromMT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608161608296_AddSystemAccountIdentifier.resx">
+      <DependentUpon>201608161608296_AddSystemAccountIdentifier.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
