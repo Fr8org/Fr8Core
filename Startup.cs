@@ -101,7 +101,10 @@ namespace HubWeb
 
         private async Task GenerateManifestPages()
         {
-            var systemUser = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser()?.EmailAddress?.Address;
+            var systemUserAccount = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser();
+            if(systemUserAccount == null) return;
+
+            var systemUser = systemUserAccount.EmailAddress?.Address;
             var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
             {

@@ -20,7 +20,7 @@ namespace Hub.Interfaces
         string GetDisplayName(Fr8AccountDO curDockyardAccount);
         Fr8AccountDO GetExisting(IUnitOfWork uow, string emailAddress);
         CommunicationMode GetMode(Fr8AccountDO dockyardAccountDO);
-        Fr8AccountDO GetSystemUser(bool useDefaultConfigDefined = false);
+        Fr8AccountDO GetSystemUser();
         string GetUserId(string emailAddress);
         string GetUserRole(string userName);
         bool IsCurrentUserInAdminRole();
@@ -35,6 +35,6 @@ namespace Hub.Interfaces
         void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password);
         bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow);
         bool CheckForExistingAdminUsers();
-        Fr8AccountDO CreateAdminAccount(string userEmail, string curPassword);
+        Task CreateAdminAccount(string userEmail, string curPassword);
     }
 }

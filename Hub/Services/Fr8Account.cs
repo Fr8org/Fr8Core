@@ -14,9 +14,11 @@ using Data.States;
 using Hub.Security;
 using System.Web;
 using System.Net.Http;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Fr8.Infrastructure.Data.States;
+using Hub.Enums;
 
 namespace Hub.Services
 {
@@ -209,49 +211,16 @@ namespace Hub.Services
             }
         }
 
-        /// <summary>
-        /// Get System User. If user defined their own system user, use that one, in other case use the default defined by the configuration
-        /// </summary>
-        /// <param name="useDefaultConfigDefined"></param>
-        /// <returns></returns>
-        public Fr8AccountDO GetSystemUser(bool useDefaultConfigDefined = false)
+        public Fr8AccountDO GetSystemUser()
         {
             try
             {
                 using (var uow = _uowFactory.Create())
                 {
-                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    var systemAccountQuery = uow.UserRepository.GetQuery().Include(x => x.EmailAddress);
-
-                    Fr8AccountDO systemAccount;
-                    if (useDefaultConfigDefined)
-                    {
-                        string userEmail = configRepository.Get("SystemUserEmail");
-                        systemAccount = systemAccountQuery.FirstOrDefault(x => x.UserName == userEmail);
-                    }
-                    else
-                    {
-                        systemAccount = systemAccountQuery.FirstOrDefault(x => x.SystemAccount);;
-                    }  
-                    
-                    if (systemAccount == null)
-                    {
-                        //if the system doesn't have a default system account, create one
-                        string userEmail = configRepository.Get("SystemUserEmail");
-                        string curPassword = configRepository.Get("SystemUserPassword");
-
-                        systemAccount = uow.UserRepository.GetOrCreateUser(userEmail);
-                        uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-                        uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, systemAccount.Id);
-                        systemAccount.SystemAccount = true;
-
-                        uow.SaveChanges();
-                    }
-
-                    return systemAccount;
+                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
                 }
             }
-            catch (ConfigurationException)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -622,12 +591,8 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string userEmail = configRepository.Get("SystemUserEmail");
-                var systemUser = uow.UserRepository.GetOrCreateUser(userEmail);
-
                 var adminRoleId = uow.AspNetUserRolesRepository.GetRoleID(Roles.Admin);
-                return uow.AspNetUserRolesRepository.GetQuery().Any(x => x.RoleId == adminRoleId && x.UserId != systemUser.Id);
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x => x.RoleId == adminRoleId);
             }
         }
 
@@ -637,7 +602,7 @@ namespace Hub.Services
         /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
         /// <returns></returns>
-        public Fr8AccountDO CreateAdminAccount(string userEmail, string curPassword)
+        public async Task CreateAdminAccount(string userEmail, string curPassword)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -653,18 +618,25 @@ namespace Hub.Services
                     AssignProfileToUser(uow, newFr8Account, DefaultProfiles.Fr8Administrator);
                 }
 
-                //change default system account to our current master account
-                var defaultSystemUser = _configRepository.Get("SystemUserEmail");
-                var defaultSystemUserAccount = uow.UserRepository.GetOrCreateUser(defaultSystemUser);
-                defaultSystemUserAccount.SystemAccount = false;
                 uow.SaveChanges();
 
                 if (newFr8Account != null)
                 {
                     EventManager.UserRegistration(newFr8Account);
                 }
-                
-                return newFr8Account;
+
+                // need to generate ManifestDescription under new System User Account
+                var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
+                var existingManifestDescriptions = uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>("system1@fr8.co", x => true);
+                foreach (var item in existingManifestDescriptions)
+                {
+                    uow.MultiTenantObjectRepository.AddOrUpdate(newFr8Account.UserName, item);
+                }
+
+                uow.SaveChanges();
+
+                var generateTasks = uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(newFr8Account.UserName, x => true).Select(x => x.Name).Distinct().Select(manifestName => generator.Generate(manifestName, GenerateMode.GenerateAlways)).Cast<Task>().ToList();
+                await Task.WhenAll(generateTasks);
             }
         }
     }

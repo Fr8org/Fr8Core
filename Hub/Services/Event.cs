@@ -72,11 +72,9 @@ namespace Hub.Services
             }
 
             var systemUser = _fr8Account.GetSystemUser();
-            string systemUserEmail = "system1@fr8.co";
-            if (systemUser != null)
-            {
-                systemUserEmail = systemUser.UserName;
-            }
+            if (systemUser == null)
+                throw new ApplicationException("System User Account is Missing");
+            string systemUserEmail = systemUser.UserName;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

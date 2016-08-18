@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Entities;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Testing.Integration;
@@ -37,8 +38,8 @@ namespace terminalIntegrationTests.Integration
             _container.Inject(configRepositoryMock.Object);
 
             var fr8AccountMock = new Mock<Fr8Account>();
-            fr8AccountMock.Setup(x => x.GetSystemUser(true))
-                    .Returns<Fr8Account>(x => null);
+            fr8AccountMock.Setup(x => x.GetSystemUser())
+                    .Returns<Fr8AccountDO>(x=> null);
             
             var target = _container.GetInstance<ManifestRegistryMonitor>();
             return target;
