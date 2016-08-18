@@ -28,7 +28,7 @@ namespace terminalDropbox.Services
 
             var result = await client.Files.ListFolderAsync(Path);
 
-            return result.Entries.Select(x => x.PathLower).ToList();
+            return result.Entries.Where(x => x.IsFile).Select(x => x.PathLower).ToList();
         }
 
         public async Task<StandardFileDescriptionCM> GetFile(AuthorizationToken authorizationToken, string path)
