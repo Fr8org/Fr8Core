@@ -8,6 +8,7 @@ module dockyard.services {
         getSingle: (id: { id: string; }) => interfaces.IContainerVM;
         getPayload: (id: { id: string; }) => any;
         getFacts: (objectId: { objectId: string; }) => any;
+        getByQuery: (query: model.PagedQueryDTO) => interfaces.IHistoryResultDTO<interfaces.IContainerVM>;
     }
 
     // Container Read service
@@ -37,6 +38,11 @@ module dockyard.services {
                     params: {
                         objectId: '@id'
                     }
+                },
+                'getByQuery' : {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/containers/query'
                 }
             })
     ]);

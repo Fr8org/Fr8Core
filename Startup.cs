@@ -63,7 +63,7 @@ namespace HubWeb
         {
             ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            
+
             //For PlanDirectory merge
             ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 
@@ -72,14 +72,13 @@ namespace HubWeb
 
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
-            
+
             EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
             curReporter.SubscribeToAlerts();
 
             IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
             incidentReporter.SubscribeToAlerts();
-            
-            StartupMigration.CreateSystemUser();
+
             StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();
@@ -98,11 +97,33 @@ namespace HubWeb
 #pragma warning restore 4014
 
             await GenerateManifestPages();
+
+            EnsureMThasaDocuSignRecipientCMTypeStored();
+        }
+
+        private void EnsureMThasaDocuSignRecipientCMTypeStored()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
+            {
+                var type = uow.MultiTenantObjectRepository.FindTypeReference(typeof(DocuSignRecipientCM));
+                if (type == null)
+                {
+                    var user = uow.UserRepository.GetQuery().FirstOrDefault();
+                    if (user != null)
+                    {
+                        uow.MultiTenantObjectRepository.Add(new DocuSignRecipientCM() { RecipientId = Guid.NewGuid().ToString() }, user.Id);
+                        uow.SaveChanges();
+                    }
+                }
+            }
         }
 
         private async Task GenerateManifestPages()
         {
-            var systemUser = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser()?.EmailAddress?.Address;
+            var systemUserAccount = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser();
+            if(systemUserAccount == null) return;
+
+            var systemUser = systemUserAccount.EmailAddress?.Address;
             var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
             {
@@ -234,7 +255,7 @@ namespace HubWeb
         //        }
         //    }
         //}
-        
+
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
             return ObjectFactory.GetInstance(controllerType) as IHttpController;

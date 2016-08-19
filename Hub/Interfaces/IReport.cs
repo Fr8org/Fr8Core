@@ -5,7 +5,7 @@ namespace Hub.Interfaces
 {
     public interface IReport
     {
-        HistoryResultDTO<IncidentDTO> GetIncidents(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
-        HistoryResultDTO<FactDTO> GetFacts(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
+        PagedResultDTO<IncidentDTO> GetIncidents(IUnitOfWork uow, PagedQueryDTO pagedQueryDto);
+        PagedResultDTO<FactDTO> GetFacts(IUnitOfWork uow, PagedQueryDTO pagedQueryDto);
     }
 }

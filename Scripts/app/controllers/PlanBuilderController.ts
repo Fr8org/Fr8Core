@@ -206,9 +206,9 @@ module dockyard.controllers {
 
                 // TODO Check parent action change with a more solid method
                 // Check whether this action is moved to a different parent
-                if (realAction.parentPlanNodeId !== group.envelopes[0].activity.parentPlanNodeId) {
+                if (realAction.parentPlanNodeId !== group.parentId) {
                     // Set new parent
-                    realAction.parentPlanNodeId = group.envelopes[0].activity.parentPlanNodeId;
+                    realAction.parentPlanNodeId = group.parentId;
                 } else {
                     // This action is moved to same parent and our index calculation might have been wrong
                     // While dragging an action, we don't delete that action. Instead, we just make it hidden
