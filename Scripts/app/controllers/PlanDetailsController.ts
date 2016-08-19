@@ -31,7 +31,7 @@ module dockyard.controllers {
             'PlanService',
             '$stateParams',
             '$filter',
-            'UINotificationSservice'
+            'UINotificationService'
         ];
 
         constructor(
