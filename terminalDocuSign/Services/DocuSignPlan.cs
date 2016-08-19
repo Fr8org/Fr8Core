@@ -164,36 +164,44 @@ namespace terminalDocuSign.Services
                     {
                         await hubCommunicator.DeletePlan(plan.Id);
                     }
+
+                    Logger.Info($"Removed {plansForRemoval.Count} obsolete MADSE plan");
                 }
             }
-            // if anything bad happens we would like not to create a new MADSE plan and fail loudly
-            catch (Exception exc) { throw new ApplicationException("Couldn't update an existing Monitor_All_DocuSign_Events plan", exc); };
+            catch (Exception exc) { Logger.Info("Failed to remove obsolete MADSE plan"); }
         }
 
         private async Task CreateAndActivateNewMADSEPlan(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            var emptyMonitorPlan = new PlanNoChildrenDTO
+            try
             {
-                Name = "MonitorAllDocuSignEvents",
-                Description = "MonitorAllDocuSignEvents",
-                PlanState = "Active",
-                Visibility = new PlanVisibilityDTO() { Hidden = true }
-            };
+                var emptyMonitorPlan = new PlanNoChildrenDTO
+                {
+                    Name = "MonitorAllDocuSignEvents",
+                    Description = "MonitorAllDocuSignEvents",
+                    PlanState = "Active",
+                    Visibility = new PlanVisibilityDTO() { Hidden = true }
+                };
 
-            var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
-            Debug.WriteLine("Attemting to create a new MADSE plan");
-            var activityTemplates = await hubCommunicator.GetActivityTemplates();
-            var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
-            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_All_Payload_To_Fr8_Warehouse");
-            Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {authToken.UserId} {monitorDocusignPlan}");
-            await hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record DocuSign Events", 1, monitorDocusignPlan.StartingSubPlanId, false, new Guid(authToken.Id));
-            var storeMTDataActivity = await hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.StartingSubPlanId);
+                var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
+                Debug.WriteLine("Attemting to create a new MADSE plan");
+                var activityTemplates = await hubCommunicator.GetActivityTemplates();
+                var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
+                var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_All_Payload_To_Fr8_Warehouse");
+                Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {authToken.UserId} {monitorDocusignPlan}");
+                await hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record DocuSign Events", 1, monitorDocusignPlan.StartingSubPlanId, false, new Guid(authToken.Id));
+                var storeMTDataActivity = await hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.StartingSubPlanId);
 
-            //save this
-            await hubCommunicator.ConfigureActivity(storeMTDataActivity);
-            await hubCommunicator.RunPlan(monitorDocusignPlan.Id, null);
+                //save this
+                await hubCommunicator.ConfigureActivity(storeMTDataActivity);
+                await hubCommunicator.RunPlan(monitorDocusignPlan.Id, null);
+                Logger.Info($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Id}");
+            }
+            catch (Exception exc)
+            {
+                Logger.Error($"#### Failed to create MADSE plan for {authToken.ExternalAccountId} Exception:{exc.Message} {exc.StackTrace.Substring(255)}");
+            }
 
-            Logger.Info($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Id}");
         }
 
 
