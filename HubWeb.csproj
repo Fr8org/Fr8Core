@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -1126,7 +1126,6 @@
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\LayoutService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
-    <TypeScriptCompile Include="Scripts\app\services\PusherNotifierService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
@@ -4382,7 +4381,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-    <ItemGroup>
+  <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="category\" />
