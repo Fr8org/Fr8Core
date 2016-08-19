@@ -169,13 +169,13 @@ namespace terminalAzureTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             //There will be no DesignTimeCrate only Configuration crate
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             AssertConfigureControls(controls);
             //Check that Error message is shown
             var connStringTextBox = (TextBox)controls.Controls[0];
-            Assert.AreEqual("Incorrect Connection String", connStringTextBox.Value);
+            Assert.AreEqual("This is incorrect database connection string!", connStringTextBox.Value);
         }
 
         /// <summary>

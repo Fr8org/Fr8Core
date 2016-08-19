@@ -247,29 +247,35 @@ namespace terminalAzure.Activities
         protected override Task Validate()
         {
 
-            var connStringField = ConfigurationControls.Controls.First();
-            if (string.IsNullOrEmpty(connStringField?.Value))
+            var connStringField = ConfigurationControls.Controls.FirstOrDefault();
+            if(connStringField != null)
             {
-                ValidationManager.SetError("Connection string can't be empty", connStringField);
-            }
-            else
-            {
-                try
+                if (string.IsNullOrEmpty(connStringField.Value))
                 {
-                    var columns = GetTables();
+                    ValidationManager.SetError("Connection string can't be empty", connStringField);
                 }
-                catch (Exception e)
+                else
                 {
-                    ValidationManager.SetError(e.Message, connStringField);
+                    try
+                    {
+                        var columns = GetTables();
+                    }
+                    catch (Exception e)
+                    {
+                        ValidationManager.SetError(e.Message, connStringField);
+                    }
                 }
             }
+           
 
             var dropDownControl = ConfigurationControls.Controls.OfType<DropDownList>().FirstOrDefault();
-            if (string.IsNullOrEmpty(dropDownControl?.Value) && dropDownControl.ListItems.Count > 0)
+            if(dropDownControl != null)
             {
-                ValidationManager.SetError("Table must be selected", dropDownControl);
+                if (string.IsNullOrEmpty(dropDownControl?.Value) && dropDownControl.ListItems.Count > 0)
+                {
+                    ValidationManager.SetError("Table must be selected", dropDownControl);
+                }
             }
-
 
             var textSourceControls = ConfigurationControls.Controls.OfType<TextSource>();
             foreach (var control in textSourceControls)
