@@ -69,9 +69,14 @@ namespace terminalFr8Core.Activities
             {
                 return values;
             }
+
+
             EventManager.CriteriaEvaluationStarted(processId);
-            return filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values)).Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
+            var criterias = filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values));
+            var some_magic = criterias.Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
+            return some_magic;
         }
+
         public static int Compare(object left, object right)
         {
             if (left == null && right == null)
@@ -220,7 +225,7 @@ namespace terminalFr8Core.Activities
             {
                 RaiseError("No control found with Type == \"filterPane\"");
             }
-            
+
             // Prepare envelope data.
             // Evaluate criteria using Contents json body of found Crate.
             bool result = false;

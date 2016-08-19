@@ -16,23 +16,6 @@ namespace HubWeb.App_Start
 {
     public class StartupMigration
     {
-        public static void CreateSystemUser()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string userEmail = configRepository.Get("SystemUserEmail");
-                string curPassword = configRepository.Get("SystemUserPassword");
-
-                var user = uow.UserRepository.GetOrCreateUser(userEmail);
-                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-                user.TestAccount = false;
-
-                uow.SaveChanges();
-            }
-        }
-
         //TODO: this method is a one-time update of transitions inside ContainerTransition control and should be removed after it is deployed to prod
         public static void UpdateTransitionNames()
         {

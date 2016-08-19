@@ -32,11 +32,11 @@ namespace HubWeb.Controllers.Api
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IPusherNotifier _pusher;
         private readonly ISecurityServices _securityServices;
-        private readonly string _systemUserAccountId;
+        private readonly IFr8Account _fr8Account;
 
         public ManifestRegistryController(
             IManifestRegistryMonitor manifestRegistryMonitor,
-            IConfigRepository configRepository,
+            IFr8Account fr8Account,
             IRestfulServiceClient restfulServiceClient,
             IUnitOfWorkFactory uowFactory,
             IPusherNotifier pusher,
@@ -46,12 +46,9 @@ namespace HubWeb.Controllers.Api
             {
                 throw new ArgumentNullException(nameof(manifestRegistryMonitor));
             }
-            if (configRepository == null)
-            {
-                throw new ArgumentNullException(nameof(configRepository));
-            }
-            _systemUserAccountId = configRepository.Get("SystemUserEmail");
+
             _manifestRegistryMonitor = manifestRegistryMonitor;
+            _fr8Account = fr8Account;
             _restfulServiceClient = restfulServiceClient;
             _uowFactory = uowFactory;
             _pusher = pusher;
@@ -68,8 +65,11 @@ namespace HubWeb.Controllers.Api
         {
             using (var uow = _uowFactory.Create())
             {
+                var systemUserAccount = _fr8Account.GetSystemUser();
+                if (systemUserAccount == null)
+                    return BadRequest("System Account is missing");
 
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccount.UserName);
                 var list = manifestDescriptions.Select(m => new ManifestDescriptionDTO
                 {
                     Id = m.Id,
@@ -117,10 +117,13 @@ namespace HubWeb.Controllers.Api
         {
             ManifestDescriptionCM manifestDescription = Mapper.Map<ManifestDescriptionCM>(description);
             manifestDescription.Id = NextId();
+            var systemUserAccount = _fr8Account.GetSystemUser();
+            if (systemUserAccount == null)
+                return BadRequest("System Account is Missing");
 
             using (var uow = _uowFactory.Create())
             {
-                uow.MultiTenantObjectRepository.Add(manifestDescription, _systemUserAccountId);
+                uow.MultiTenantObjectRepository.Add(manifestDescription, systemUserAccount.UserName);
 
                 uow.SaveChanges();
             }
@@ -180,7 +183,11 @@ namespace HubWeb.Controllers.Api
             int result = 1;
             using (var uow = _uowFactory.Create())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
+                var systemUserAccount = _fr8Account.GetSystemUser();
+                if (systemUserAccount == null)
+                    throw new ApplicationException("System Account is Missing");
+
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccount.UserName);
                 if (!manifestDescriptions.Any())
                 {
                     return result.ToString();

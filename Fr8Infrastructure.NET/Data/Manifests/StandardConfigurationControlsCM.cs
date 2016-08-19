@@ -7,6 +7,8 @@ using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Data.Control;
 
 namespace Fr8.Infrastructure.Data.Manifests
 {
@@ -73,7 +75,7 @@ namespace Fr8.Infrastructure.Data.Manifests
     /// 
     /// </summary>
 
-    [CrateManifestSerializer(typeof (StandardConfigurationControlsSerializer))]
+    [CrateManifestSerializer(typeof(StandardConfigurationControlsSerializer))]
     public class StandardConfigurationControlsCM : Manifest
     {
         // Members of the StandardConfigurationControlsCM type that must be excluded during synchornization
@@ -86,13 +88,13 @@ namespace Fr8.Infrastructure.Data.Manifests
             MembersToIgnore = new HashSet<string>();
 
             // Exclude all public properties of StandardConfigurationControlsCM 
-            foreach (var member in typeof (StandardConfigurationControlsCM).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            foreach (var member in typeof(StandardConfigurationControlsCM).GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
                 MembersToIgnore.Add(member.Name);
             }
 
             // Exclude all public fields of StandardConfigurationControlsCM 
-            foreach (var member in typeof (StandardConfigurationControlsCM).GetFields(BindingFlags.Instance | BindingFlags.Public))
+            foreach (var member in typeof(StandardConfigurationControlsCM).GetFields(BindingFlags.Instance | BindingFlags.Public))
             {
                 MembersToIgnore.Add(member.Name);
             }
@@ -127,7 +129,7 @@ namespace Fr8.Infrastructure.Data.Manifests
 
         public T FindByName<T>(string name) where T : ControlDefinitionDTO
         {
-            return (T) Controls.SingleOrDefault(x => x.Name == name);
+            return (T)Controls.SingleOrDefault(x => x.Name == name);
         }
 
         // Find control of type T recusively.
@@ -138,7 +140,7 @@ namespace Fr8.Infrastructure.Data.Manifests
                 var result = FindByNameRecurisve(controlDefinitionDto, name);
                 if (result != null)
                 {
-                    return (T) result;
+                    return (T)result;
                 }
             }
 
@@ -186,7 +188,7 @@ namespace Fr8.Infrastructure.Data.Manifests
                 }
             }
         }
-        
+
         public void SyncWith(StandardConfigurationControlsCM configurationControls)
         {
             var targetNamedControls = EnumerateControlsDefinitions();
@@ -246,7 +248,7 @@ namespace Fr8.Infrastructure.Data.Manifests
             }
 
             // if we have property of the type derived from IControlDefinition it 
-            if (typeof (IControlDefinition).IsAssignableFrom(propertyInfo.MemberType))
+            if (typeof(IControlDefinition).IsAssignableFrom(propertyInfo.MemberType))
             {
                 return false;
             }
@@ -263,14 +265,14 @@ namespace Fr8.Infrastructure.Data.Manifests
                     return false;
                 }
             }
-            
+
             return true;
         }
 
         private static IEnumerable<IMemberAccessor> GetMembers(Type type)
         {
-            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x =>  (IMemberAccessor) new PropertyMemberAccessor(x))
-                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor) new FieldMemberAccessor(x)));
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
+                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
         }
 
         // Clone properties from object 'source' to object 'target'
@@ -285,7 +287,7 @@ namespace Fr8.Infrastructure.Data.Manifests
 
                 if (sourceTypeProp.TryGetValue(member.Name, out sourceMember) && member.MemberType.IsAssignableFrom(sourceMember.MemberType))
                 {
-                    if (typeof (IList).IsAssignableFrom(sourceMember.MemberType))
+                    if (typeof(IList).IsAssignableFrom(sourceMember.MemberType))
                     {
                         if (!member.CanWrite)
                         {
@@ -332,26 +334,34 @@ namespace Fr8.Infrastructure.Data.Manifests
 
             return false;
         }
-        
+
         // Find configuration control by name recursively.
         private object FindByNameRecurisve(object cd, string name)
         {
+            if (name == null)
+                return null;
             // Check if current control has the desired name
             if (CheckName(cd, name))
             {
                 return cd;
             }
 
-            var conatinerControl = cd as IContainerControl;
+            var containerControl = cd as IContainerControl;
 
-            if (conatinerControl != null)
+            if (containerControl != null)
             {
-                foreach (var child in conatinerControl.EnumerateChildren())
+                string new_name = name;
+                var control = containerControl as IControlDefinition;
+                if (name.StartsWith(control.Name, StringComparison.InvariantCultureIgnoreCase))
+                    new_name = string.Join(".", name.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Skip(1));
+
+                foreach (var child in containerControl.EnumerateChildren())
                 {
-                    var result = FindByNameRecurisve(child, name);
+                    var result = FindByNameRecurisve(child, new_name);
 
                     if (result != null)
                     {
+
                         return result;
                     }
                 }
