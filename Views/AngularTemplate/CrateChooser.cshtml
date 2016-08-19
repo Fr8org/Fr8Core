@@ -26,7 +26,7 @@
             <div ivh-treeview="crateDescriptions" ivh-treeview-node-tpl="tpl" ivh-treeview-expand-to-depth="-1"></div>
         </div>
         <div ng-if="crateDescriptions.length == 0">
-            No RunTime-Available Upstream Crate was found
+            No RunTime-Available Upstream Crate was found<span ng-if="allowedManifestTypes && allowedManifestTypes.length > 0"> that can be used by this activity</span>
         </div>
     </div>
     <div class="modal-footer">

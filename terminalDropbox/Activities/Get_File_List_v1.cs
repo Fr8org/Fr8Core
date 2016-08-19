@@ -78,7 +78,7 @@ namespace terminalDropbox.Actions
             var fileList = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileList
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
-            var file = await _dropboxService.GetFile(AuthorizationToken,"/" + ActivityUI.Controls.Where(s => s.Label == "Select a file").FirstOrDefault().Value);
+            var file = await _dropboxService.GetFile(AuthorizationToken,"/" + ActivityUI.FileList.ListItems.Where(s => s.Key == ActivityUI.FileList.selectedKey).FirstOrDefault().Key);
 
             CrateSignaller.MarkAvailableAtDesignTime<Manifest>("Dropbox File Crate Label").AddField("Dropbox selected file");
 
