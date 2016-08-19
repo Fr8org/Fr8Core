@@ -131,19 +131,20 @@
                 scope: modalScope
             })
             .result
-            .then(() => {
+            .then((result) => {
                 if (!this.isSolutionBasedPlan()) {
                     angular.forEach(activities, it => {
+                        if (result.indexOf(it.id) === -1) { return; }
                         self.$rootScope.$broadcast(
-                            dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                            new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
+                            directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                            new directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
                         );
                     });
                 }
                 else {
                     self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
+                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                        new directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
                     );
 
                     console.log(
@@ -162,8 +163,8 @@
 
                 angular.forEach(activities, it => {
                     self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
-                        new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
+                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
+                        new directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
                     );
                 });
             })
