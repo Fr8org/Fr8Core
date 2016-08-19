@@ -35,7 +35,7 @@ namespace terminalAzure.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        public Write_To_Sql_Server_v1(ICrateManager crateManager, IDbProvider dbProvider) 
+        public Write_To_Sql_Server_v1(ICrateManager crateManager, IDbProvider dbProvider)
             : base(crateManager)
         {
             _dbProvider = dbProvider;
@@ -52,8 +52,6 @@ namespace terminalAzure.Activities
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
         public override Task FollowUp()
         {
-            //Verify controls, make sure that TextBox with value exists
-            ValidateControls();
             //In all followup calls, update data fields of the configuration store          
             try
             {
@@ -71,16 +69,16 @@ namespace terminalAzure.Activities
                     var textSourceControls = ConfigurationControls.Controls.OfType<TextSource>();
                     foreach (var control in textSourceControls.ToList())
                     {
-                            RemoveControl<TextSource>(control.Name);
+                        RemoveControl<TextSource>(control.Name);
                     }
                     var columns = GetTableColumns(dropDownControl.Value);
 
                     foreach (var column in columns)
                     {
-                        if(identityColumn != column.ColumnName)
+                        if (identityColumn != column.ColumnName)
                         {
                             var textSource = UiBuilder.CreateSpecificOrUpstreamValueChooser(column.ColumnName, column.ColumnName);
-                            
+
                             if (column.isNullable == false)
                             {
                                 textSource.Required = true;
@@ -94,7 +92,7 @@ namespace terminalAzure.Activities
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 // Storage.Add("Sql Table Columns", new KeyValueListCM(contentsList.Select(col => new KeyValueDTO { Key = col, Value = col })));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 AddErrorToControl();
             }
@@ -224,7 +222,7 @@ namespace terminalAzure.Activities
         //public List<string> GetFieldMappings()
         //{
         //    var connStringField = ConfigurationControls.Controls.First();
-            
+
         //    return (List<string>)_dbProvider.ConnectToSql(connStringField.Value, (command) =>
         //    {
         //        command.CommandText = FieldMappingQuery;
@@ -246,24 +244,44 @@ namespace terminalAzure.Activities
         //    });
         //}
 
-        private void ValidateControls()
+        protected override Task Validate()
         {
-            if (Storage.Count == 0)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
-            if (ConfigurationControls == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
 
             var connStringField = ConfigurationControls.Controls.First();
             if (string.IsNullOrEmpty(connStringField?.Value))
             {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                ValidationManager.SetError("Connection string can't be empty", connStringField);
             }
+            else
+            {
+                try
+                {
+                    var columns = GetTables();
+                }
+                catch (Exception e)
+                {
+                    ValidationManager.SetError(e.Message, connStringField);
+                }
+            }
+
+            var dropDownControl = ConfigurationControls.Controls.OfType<DropDownList>().FirstOrDefault();
+            if (string.IsNullOrEmpty(dropDownControl?.Value) && dropDownControl.ListItems.Count > 0)
+            {
+                ValidationManager.SetError("Table must be selected", dropDownControl);
+            }
+
+
+            var textSourceControls = ConfigurationControls.Controls.OfType<TextSource>();
+            foreach (var control in textSourceControls)
+            {
+                if (control.Required == true && string.IsNullOrEmpty(control.TextValue))
+                {
+                    ValidationManager.SetError("Column is not nullable", control);
+                }
+            }
+            return Task.FromResult(0);
         }
+
         private void AddErrorToControl()
         {
             var connStringTextBox = GetControl<TextBox>("connection_string");
@@ -361,7 +379,7 @@ namespace terminalAzure.Activities
             var values = new List<FieldValue>();
             foreach (var control in textSourceControls)
             {
-                if(!string.IsNullOrEmpty(control.TextValue))
+                if (!string.IsNullOrEmpty(control.TextValue))
                 {
                     values.Add(new FieldValue(control.Name, control.TextValue));
                 }
