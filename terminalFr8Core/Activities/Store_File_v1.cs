@@ -10,10 +10,13 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using System;
+using Fr8.TerminalBase.Services;
+using System.Collections.Generic;
+using Fr8.Infrastructure.Utilities;
 
 namespace terminalFr8Core.Activities
 {
-    public class Store_File_v1 : ExplicitTerminalActivity
+    public class Store_File_v1 : TerminalActivity<Store_File_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -40,18 +43,38 @@ namespace terminalFr8Core.Activities
             stream.Position = 0;
             return stream;
         }
-        
-        private void CreateControls()
+
+        public class ActivityUi : StandardConfigurationControlsCM
         {
-            var fileNameTextBox = new TextBox
+            public CrateChooser UpstreamCrateChooser { get; set; }
+
+            public TextBox FileNameTextBox { get; set; }
+
+            public ActivityUi(UiBuilder builder)
             {
-                Label = "Name of file",
-                Name = "File_Name"
-            };
+                UpstreamCrateChooser = new CrateChooser
+                {
+                    Label = "Select a File",
+                    Name = "file_selector",
+                    Events = new List<ControlEvent>
+                    {
+                        ControlEvent.RequestConfig
+                    },
+                    Required = true,
+                    AllowedManifestTypes= new[] { MT.StandardFileHandle.GetEnumDisplayName() },
+                    SingleManifestOnly = true,
+                    RequestUpstream = true
+                };
 
-            var textSource = new TextSource("File Crate Label", null, "File Crate label");
+                Controls.Add(UpstreamCrateChooser);
 
-            AddControls(fileNameTextBox, textSource);
+                FileNameTextBox = new TextBox
+                {
+                    Label = "Name of file",
+                    Name = "File_Name"
+                };
+                Controls.Add(FileNameTextBox);
+            }
         }
 
         public Store_File_v1(ICrateManager crateManager)
@@ -61,46 +84,33 @@ namespace terminalFr8Core.Activities
 
         public override async Task Run()
         {
-            var textSourceControl = GetControl<TextSource>("File Crate label");
-            var fileNameField = GetControl<TextBox>("File_Name");
-            var fileCrateLabel = string.IsNullOrEmpty(textSourceControl.TextValue) ? textSourceControl.Value : textSourceControl.TextValue;
-            if (string.IsNullOrEmpty(fileCrateLabel))
-            {
-                RaiseError("No Label was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-                return;
-            }
-            if (string.IsNullOrEmpty(fileNameField.Value))
+            if (string.IsNullOrEmpty(ActivityUI.FileNameTextBox.Value))
             {
                 RaiseError("No file name was given on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                 return;
             }
 
-
             //we should upload this file to our file storage
-            var userSelectedFileManifest = Payload.CrateContentsOfType<StandardFileDescriptionCM>(f => f.Label == fileCrateLabel).FirstOrDefault();
+            var userSelectedFileManifest = Payload.CrateContentsOfType<StandardFileDescriptionCM>().FirstOrDefault();
             if (userSelectedFileManifest == null)
             {
-                RaiseError("No StandardFileDescriptionCM Crate was found with label " + fileCrateLabel, ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                RaiseError("No StandardFileDescriptionCM Crate was found", ActivityErrorCode.PAYLOAD_DATA_MISSING);
             }
-
 
             var fileContents = userSelectedFileManifest.TextRepresentation;
 
             using (var stream = GenerateStreamFromString(fileContents))
             {
                 //TODO what to do with this fileDO??
-                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream);
+                var fileDO = await HubCommunicator.SaveFile(ActivityUI.FileNameTextBox.Value, stream);
             }
-
-
             Success();
         }
 
-        public override async Task Initialize()
+        public override Task Initialize()
         {
             //build a controls crate to render the pane
-            CreateControls();
-           // await UpdateUpstreamFileCrates();
+            return Task.FromResult(0);
         }
 
         public override Task FollowUp()
