@@ -244,7 +244,7 @@ namespace HubWeb.Controllers
             return users.Select(user =>
             {
                 var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
+                //dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
                 return dto;
             }).ToList();
         }
