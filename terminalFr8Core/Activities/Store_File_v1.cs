@@ -12,6 +12,7 @@ using Fr8.TerminalBase.BaseClasses;
 using System;
 using Fr8.TerminalBase.Services;
 using System.Collections.Generic;
+using Fr8.Infrastructure.Utilities;
 
 namespace terminalFr8Core.Activities
 {
@@ -60,7 +61,7 @@ namespace terminalFr8Core.Activities
                         ControlEvent.RequestConfig
                     },
                     Required = true,
-                    allowedManifestTypes: new[] { MT.StandardFileHandle.GetEnumDisplayName() },
+                    AllowedManifestTypes= new[] { MT.StandardFileHandle.GetEnumDisplayName() },
                     SingleManifestOnly = true,
                     RequestUpstream = true
                 };
