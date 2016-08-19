@@ -92,7 +92,7 @@ namespace terminalDropbox.Actions
 
         protected override Task Validate()
         {
-            if (string.IsNullOrEmpty(ActivityUI.FileList.Value))
+            if (string.IsNullOrEmpty(ActivityPayload.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content.Controls.FirstOrDefault().Value))
             {
                 ValidationManager.SetError("File must be selected", ActivityUI.FileList);
             }

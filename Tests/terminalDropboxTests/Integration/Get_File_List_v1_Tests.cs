@@ -7,6 +7,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using terminalDropboxTests.Fixtures;
+using Fr8.Infrastructure.Data.Control;
 
 namespace terminalDropboxTests.Integration
 {
@@ -50,6 +51,7 @@ namespace terminalDropboxTests.Integration
             using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
             {
                 crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
+                crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>().Content.Controls.Add(new DropDownList() { Name = "Test_Name", Label = "Test Label", Value = "test" });
             }
 
             //Act
@@ -75,6 +77,7 @@ namespace terminalDropboxTests.Integration
             using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
             {
                 crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
+                crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>().Content.Controls.Add(new DropDownList() { Name = "Test_Name", Label = "Test Label", Value = "test" });
             }
             // Add operational state crate
             AddOperationalStateCrate(dataDto, new OperationalStateCM());
