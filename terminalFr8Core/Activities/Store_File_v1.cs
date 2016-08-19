@@ -54,8 +54,8 @@ namespace terminalFr8Core.Activities
             {
                 UpstreamCrateChooser = new CrateChooser
                 {
-                    Label = "Use new document",
-                    Name = "document_selector",
+                    Label = "Select a File",
+                    Name = "file_selector",
                     Events = new List<ControlEvent>
                     {
                         ControlEvent.RequestConfig
