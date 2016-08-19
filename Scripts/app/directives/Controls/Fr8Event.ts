@@ -1,7 +1,9 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives {
     'use strict';
+
     import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
+
     export interface IFr8EventScope extends ng.IScope {
         color: string;
         event: any;

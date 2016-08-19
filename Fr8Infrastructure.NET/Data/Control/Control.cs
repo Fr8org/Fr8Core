@@ -33,6 +33,11 @@ namespace Fr8.Infrastructure.Data.Control
         void Reset(List<string> fieldNames = null);
     }
 
+    public interface ISelectable
+    {
+        bool Selected { get; set; }
+    }
+
     public class ControlTypes
     {
         public const string TextBox = "TextBox";
@@ -480,7 +485,7 @@ namespace Fr8.Infrastructure.Data.Control
                 ManifestType = CrateManifestTypes.StandardDesignTimeFields
             };
         }
-        
+
         public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
         public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && (!string.IsNullOrEmpty(Value) || !string.IsNullOrEmpty(selectedKey));
         public bool HasSpecificValue => ValueSource == SpecificValueSource && !string.IsNullOrEmpty(TextValue);
@@ -645,7 +650,7 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
-    public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition
+    public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition, ISelectable
     {
         public RadioButtonOption()
         {
@@ -711,7 +716,8 @@ namespace Fr8.Infrastructure.Data.Control
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("targetNodeId")] public Guid? TargetNodeId;
+        [JsonProperty("targetNodeId")]
+        public Guid? TargetNodeId;
     }
 
     public class FilterPaneField
@@ -723,7 +729,7 @@ namespace Fr8.Infrastructure.Data.Control
         public string Name { get; set; }
     }
 
-    public class ListItem
+    public class ListItem : ISelectable
     {
         [JsonProperty("selected")]
         public bool Selected { get; set; }
@@ -790,6 +796,9 @@ namespace Fr8.Infrastructure.Data.Control
 
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
+
+        [JsonProperty("allowedManifestTypes")]
+        public string[] AllowedManifestTypes { get; set; }
 
         [JsonIgnore]
         public bool HasValue

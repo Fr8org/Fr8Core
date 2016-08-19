@@ -49,7 +49,8 @@ namespace terminalBox
 
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<Generate_Table_Activity_v1>(Generate_Table_Activity_v1.ActivityTemplateDTO);
+            //We no longer should use this activity
+            //ActivityStore.RegisterActivity<Generate_Table_Activity_v1>(Generate_Table_Activity_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_File_v1>(Save_To_File_v1.ActivityTemplateDTO);
         }
 

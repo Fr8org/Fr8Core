@@ -7,6 +7,7 @@ namespace Data.Migrations
     {
         public override void Up()
         {
+
             Sql(@"
 DECLARE @StringTypeId uniqueidentifier;
 

@@ -29,7 +29,7 @@ namespace Hub.Services
         private readonly ICrateManager _crateManager;
         private readonly IPlan _plan;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-        private readonly Fr8Account _fr8Account;
+        private readonly IFr8Account _fr8Account;
         private readonly IConfigRepository _configRepository;
 
         private const string MonitoringPlanName = "Monitoring Manifest Submissions";
@@ -45,7 +45,7 @@ namespace Hub.Services
             ICrateManager crateManager,
             IPlan plan,
             IUnitOfWorkFactory unitOfWorkFactory,
-            Fr8Account fr8Account,
+            IFr8Account fr8Account,
             IConfigRepository configRepository)
         {
             if (activity == null)

@@ -24,13 +24,10 @@ namespace terminalDocuSignTests.Integration
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
 
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
-            Assert.IsNotNullOrEmpty(crateStorage.CratesOfType<StandardPayloadDataCM>()
-                .FirstOrDefault(a => a.Label == "DocuSignUserCrate").Content.GetValueOrDefault("DocuSignUserEmail"));
         }
 
         private void AssertControls(StandardConfigurationControlsCM control)

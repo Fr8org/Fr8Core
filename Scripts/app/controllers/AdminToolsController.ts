@@ -30,11 +30,11 @@ module dockyard.controllers {
                 var url = '/api/plan_templates/generatepages';
                 let success = (response) => {
                     $scope.generatePagesInProgress = false;
-                    uiNotifications.notify(response.data, dockyard.enums.UINotificationStatus.Success, null);
+                    uiNotifications.notifyToast(response.data, dockyard.enums.UINotificationStatus.Success, null);
                 };
                 let fail = (data) => {
                     $scope.generatePagesInProgress = false;
-                    uiNotifications.notify(data, dockyard.enums.UINotificationStatus.Error, null);
+                    uiNotifications.notifyToast(data, dockyard.enums.UINotificationStatus.Error, null);
                 };
 
                 $scope.generatePagesInProgress = true;

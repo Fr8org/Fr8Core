@@ -34,7 +34,7 @@ namespace Fr8.TerminalBase.Helpers
             _activity = activity;
         }
 
-        public T GetControl<T>(string name, string controlType = null) 
+        public T GetControl<T>(string name, string controlType = null)
             where T : ControlDefinitionDTO
         {
             Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
@@ -52,49 +52,56 @@ namespace Fr8.TerminalBase.Helpers
         /// </summary>
         public void SetControlValue(string controlFullName, object value)
         {
-            var control = ConfigurationControls?.FindByNameNested(controlFullName) as ControlDefinitionDTO;
 
-            if (control == null)
+            var result = ConfigurationControls?.FindByNameNested(controlFullName);
+
+            var control = result as ControlDefinitionDTO;
+
+            if (control != null)
+                switch (control.Type)
+                {
+                    case "TextBlock":
+                    case "TextBox":
+                    case "BuildMessageAppender":
+                    case ControlTypes.TextArea:
+                        control.Value = (string)value;
+                        break;
+
+                    case "CheckBox":
+                        control.Selected = Convert.ToBoolean(value);
+                        break;
+
+                    case "DropDownList":
+                        var ddlb = control as DropDownList;
+                        var val = value as ListItem;
+
+                        ddlb.selectedKey = val.Key;
+                        ddlb.Value = val.Value;
+                        //ddlb.ListItems are not loaded yet
+                        break;
+
+                    case "Duration":
+                        var duration = control as Duration;
+                        var timespan = (TimeSpan)value;
+
+                        duration.Days = timespan.Days;
+                        duration.Hours = timespan.Hours;
+                        duration.Minutes = timespan.Minutes;
+                        break;
+
+                    default:
+                        throw new NotSupportedException($"Unsupported control type {control.Type}");
+                }
+            else if (result is ISelectable)
             {
-                return;
+                (result as ISelectable).Selected = Convert.ToBoolean(value);
             }
+            else
+                throw new ApplicationException();
 
-            switch (control.Type)
-            {
-                case "TextBlock":
-                case "TextBox":
-                case "BuildMessageAppender":
-                case ControlTypes.TextArea:
-                    control.Value = (string) value;
-                    break;
 
-                case "CheckBox":
-                    control.Selected = true;
-                    break;
-
-                case "DropDownList":
-                    var ddlb = control as DropDownList;
-                    var val = value as ListItem;
-
-                    ddlb.selectedKey = val.Key;
-                    ddlb.Value = val.Value;
-                    //ddlb.ListItems are not loaded yet
-                    break;
-
-                case "Duration":
-                    var duration = control as Duration;
-                    var timespan = (TimeSpan) value;
-
-                    duration.Days = timespan.Days;
-                    duration.Hours = timespan.Hours;
-                    duration.Minutes = timespan.Minutes;
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Unsupported control type {control.Type}");
-            }
         }
-        
+
         public static void SetControlValue(ActivityPayload activity, string controlFullName, object value)
         {
             new ActivityConfigurator(activity).SetControlValue(controlFullName, value);

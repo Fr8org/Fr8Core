@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
@@ -14,18 +15,21 @@ namespace Fr8.TerminalBase.Services
         /// <param name="name"></param>
         /// <param name="singleManifest"></param>
         /// <param name="requestConfig"></param>
+        /// <param name="allowedManifestTypes"></param>
         /// <returns></returns>
         public CrateChooser CreateCrateChooser(string name,
                                                string label,
-                                               bool singleManifest,
-                                               bool requestConfig = false)
+                                               bool singleManifest = true,
+                                               bool requestConfig = false,
+                                               IEnumerable<string> allowedManifestTypes = null)
         {
             var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
                 SingleManifestOnly = singleManifest,
-                RequestUpstream = true
+                RequestUpstream = true,
+                AllowedManifestTypes = allowedManifestTypes?.ToArray() ?? new string[0]
             };
 
             if (requestConfig)
