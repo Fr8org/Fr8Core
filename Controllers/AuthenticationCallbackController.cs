@@ -31,8 +31,10 @@ namespace HubWeb.Controllers
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
             string terminalName,
-            string terminalVersion)
+            string terminalVersion,
+            string state = null)
         {
+            //Here state is optional and is designed to pass auth token external state for OAuth 1.0 (e.g. QuickBooks) as it doesn't return unknown parameters contained in URL back
             if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 throw new ApplicationException("TerminalName or TerminalVersion is not specified.");

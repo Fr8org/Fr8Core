@@ -53,7 +53,6 @@ namespace Hub.Services
         /// </summary>
         public void PrepareAuthToken(IUnitOfWork uow, ActivityDTO activityDTO)
         {
-
             // Fetch Action.
             var activity = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
             if (activity == null)
@@ -225,9 +224,7 @@ namespace Hub.Services
         }
 
 
-        public async Task<AuthenticateResponse> GetOAuthToken(
-            TerminalDO terminal,
-            ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthenticateResponse> GetOAuthToken(TerminalDO terminal, ExternalAuthenticationDTO externalAuthDTO)
         {
             var hasAuthentication = _activityTemplate.GetQuery().Any(x => x.Terminal.Id == terminal.Id);
 
@@ -276,8 +273,10 @@ namespace Hub.Services
                     authTokenByExternalAccountId.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
                     authTokenByExternalState.ExpiresAt = authTokenDTO.ExpiresAt;
-
-                    uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+                    if (authTokenByExternalState != null)
+                    {
+                        uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+                    }
 
                     EventManager.AuthTokenCreated(authTokenByExternalAccountId);
                 }
