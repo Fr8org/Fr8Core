@@ -90,7 +90,17 @@ namespace terminalDropbox.Actions
             Storage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
         }
 
-      
+        protected override Task Validate()
+        {
+            if (string.IsNullOrEmpty(ActivityUI.FileList.Value))
+            {
+                ValidationManager.SetError("File must be selected", ActivityUI.FileList);
+            }
+
+            return Task.FromResult(0);
+        }
+
+
 
         public override async Task Run()
         {
