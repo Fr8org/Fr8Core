@@ -111,7 +111,6 @@ namespace terminalFr8Core.Activities
         {
             //build a controls crate to render the pane
             return Task.FromResult(0);
-            // await UpdateUpstreamFileCrates();
         }
 
         public override Task FollowUp()
