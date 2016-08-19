@@ -525,6 +525,10 @@ header#site-header:after {
     color: #444d58;
 }
 
+.contact-form textarea {
+    max-height: 250px;
+}
+
 .inner-pages .inner-wrap {
     margin-top: -30px;
 }
