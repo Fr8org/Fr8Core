@@ -10,7 +10,7 @@
         isAllSelected: () => boolean;
         linkAccount: (terminal: model.AuthenticationTokenTerminalDTO) => void;
         apply: () => void;
-        $close: () => void;
+        $close: (result: any) => void;
     }
 
     export class AuthenticationPopupBlockedDialogController {
@@ -75,7 +75,7 @@
                 }
 
                 var data = [];
-
+                var authorizedActivities = [];
                 var i, j;
                 var terminalName;
                 for (i = 0; i < _activities.length; ++i) {
@@ -83,21 +83,23 @@
                     terminalName = activity.activityTemplate.terminalName;
                     for (j = 0; j < $scope.terminals.length; ++j) {
                         var terminal = $scope.terminals[j];
-                        if (terminal.name === terminalName && ((<any>terminal).useForAllActivities || (<any>activity).authorizeIsRequested)) {
+                        if (terminal.name === terminalName
+                            && ((<any>terminal).useForAllActivities || (<any>activity).authorizeIsRequested)
+                            && terminal.selectedAuthTokenId.toString() != activity.authTokenId) {
                             data.push({
                                 actionId: activity.id,
                                 authTokenId: terminal.selectedAuthTokenId,
                                 isMain: (<any>terminal).isMain
                             });
+                            authorizedActivities.push(activity.id);
                             break;
                         }
                     }
                 }
                 _loading = true;
-
                 $http.post(urlPrefix + '/authentication/tokens/grant', data)
                     .then((res) => {
-                        $scope.$close();
+                        $scope.$close(authorizedActivities);
                     })
                     .finally(() => {
                         _loading = false;
