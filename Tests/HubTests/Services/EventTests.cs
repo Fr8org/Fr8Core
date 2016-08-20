@@ -73,7 +73,7 @@ namespace HubTests.Services
             return _activity.SaveOrUpdateActivity(currentActivityDo);
         }
 
-        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
+        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, IEnumerable<KeyValuePair<string,string>> parameters)
         {
             return _activity.Configure(uow, userId, curActivityDO);
         }

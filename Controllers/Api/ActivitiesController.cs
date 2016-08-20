@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
@@ -91,7 +92,8 @@ namespace HubWeb.Controllers
                 {
                     return new LockedHttpActionResult();
                 }
-                var configuredActivity = await _activityService.Configure(uow, userId, curActivityDO);
+                var parameters = Request.GetQueryNameValuePairs();
+                var configuredActivity = await _activityService.Configure(uow, userId, curActivityDO, parameters);
                 return Ok(configuredActivity);
             }
         }

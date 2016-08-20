@@ -13,17 +13,17 @@ namespace Hub.Interfaces
     public interface IActivity
     {
         Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO currentActivityDo);
-        Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO);
+        Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, IEnumerable<KeyValuePair<string, string>> parameters = null);
         ActivityDO GetById(IUnitOfWork uow, Guid id);
 
-        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, 
-            string userId, 
+        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow,
+            string userId,
             Guid activityTemplateId,
-            string label = null, 
-            string name = null, 
-            int? order = null, 
-            Guid? parentNodeId = null, 
-            bool createPlan = false, 
+            string label = null,
+            string name = null,
+            int? order = null,
+            Guid? parentNodeId = null,
+            bool createPlan = false,
             Guid? authorizationTokenId = null,
             PlanVisibility newPlanVisibility = PlanVisibility.Standard);
 

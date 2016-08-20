@@ -4,31 +4,34 @@ module dockyard.services {
 
     export interface IActivityService {
         save: (activity: interfaces.IActivityDTO) => ng.IPromise<interfaces.IActivityDTO>;
-        configure: (activity: interfaces.IActivityDTO) => ng.IPromise<interfaces.IActivityDTO>;
+        configure: (activity: interfaces.IActivityDTO, type: string) => ng.IPromise<interfaces.IActivityDTO>;
         getAllActivities: (activityContainer: any) => Array<model.ActivityDTO>;
     }
 
     interface IActivityFunction {
-        (activityDTO: interfaces.IActivityDTO): ng.IPromise<interfaces.IActivityDTO>;
+        (activityDTO: interfaces.IActivityDTO, type: string): ng.IPromise<interfaces.IActivityDTO>;
     }
 
     class ActivityRequestQueue {
-        constructor(deferred: ng.IDeferred<interfaces.IActivityDTO>, opFunction: IActivityFunction, activityDTO: interfaces.IActivityDTO) {
+        constructor(deferred: ng.IDeferred<interfaces.IActivityDTO>, opFunction: IActivityFunction, activityDTO: interfaces.IActivityDTO, type: string) {
             this.deferred = deferred;
             this.opFunction = opFunction;
             this.activityDTO = activityDTO;
+            this.type = type;
         }
         public deferred: ng.IDeferred<interfaces.IActivityDTO>;
         public opFunction: IActivityFunction;
         public activityDTO: interfaces.IActivityDTO;
+        public type: string;
+
     }
-    
+
     ///This service queues request for same activity
     //therefore no concurrent request of the same activity can be made
     class ActivityService implements IActivityService {
 
         private activityRequestMap: { [id: string]: Array<ActivityRequestQueue>; } = {};
-        
+
         constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
 
         }
@@ -39,7 +42,7 @@ module dockyard.services {
                 return;
             }
             var queueElement = this.activityRequestMap[id][0];
-            var operationPromise = <ng.IPromise<interfaces.IActivityDTO>>queueElement.opFunction.call(this, queueElement.activityDTO);
+            var operationPromise = <ng.IPromise<interfaces.IActivityDTO>>queueElement.opFunction.call(this, queueElement.activityDTO, queueElement.type);
             operationPromise.then((activityDTO: interfaces.IActivityDTO) => {
                 queueElement.deferred.resolve(activityDTO);
             }, (err) => {
@@ -51,14 +54,14 @@ module dockyard.services {
             });
         }
 
-        private queueRequest(opFunction: IActivityFunction, activityDTO: interfaces.IActivityDTO): ng.IPromise<interfaces.IActivityDTO> {
+        private queueRequest(opFunction: IActivityFunction, activityDTO: interfaces.IActivityDTO, type: string = null): ng.IPromise<interfaces.IActivityDTO> {
             var deferred = this.$q.defer<interfaces.IActivityDTO>();
 
             if (!this.activityRequestMap[activityDTO.id]) {
                 this.activityRequestMap[activityDTO.id] = [];
             }
             //push this operation to queue
-            this.activityRequestMap[activityDTO.id].push(new ActivityRequestQueue(deferred, opFunction, activityDTO));
+            this.activityRequestMap[activityDTO.id].push(new ActivityRequestQueue(deferred, opFunction, activityDTO, type));
             //process this immediately
             if (this.activityRequestMap[activityDTO.id].length === 1) {
                 this.processNext(activityDTO.id);
@@ -70,30 +73,34 @@ module dockyard.services {
             return this.$http.post('/api/activities/save', activityDTO).then((resp) => resp.data);
         }
 
-        private configureInternal(activityDTO: interfaces.IActivityDTO): ng.IPromise<interfaces.IActivityDTO> {
-            return this.$http.post('/api/activities/configure', activityDTO).then((resp) => resp.data);
+        private configureInternal(activityDTO: interfaces.IActivityDTO, type: string): ng.IPromise<interfaces.IActivityDTO> {
+            if (type == null) {
+                return this.$http.post('/api/activities/configure', activityDTO).then((resp) => resp.data);
+            } else {
+                return this.$http.post('/api/activities/configure?type=' + type, activityDTO).then((resp) => resp.data);
+            }
         }
 
         public save(activityDTO: model.ActivityDTO): ng.IPromise<interfaces.IActivityDTO> {
             return this.queueRequest(this.saveInternal, activityDTO);
         }
 
-        public configure(activityDTO: model.ActivityDTO): ng.IPromise<interfaces.IActivityDTO> {
-            return this.queueRequest(this.configureInternal, activityDTO);
+        public configure(activityDTO: model.ActivityDTO, type: string): ng.IPromise<interfaces.IActivityDTO> {
+            return this.queueRequest(this.configureInternal, activityDTO, type);
         }
 
         getAllActivities(activityContainer): dockyard.model.ActivityDTO[] {
-             if (activityContainer === null || activityContainer === undefined) {
-                 return [];
+            if (activityContainer === null || activityContainer === undefined) {
+                return [];
             }
-             var result = [];
+            var result = [];
             //This is activity - return itself and its children
             if (activityContainer.childrenActivities !== undefined && activityContainer.childrenActivities !== null) {
                 result.push(activityContainer);
                 activityContainer.childrenActivities.forEach(childActivity => {
                     this.getAllActivities(childActivity).forEach(x => { result.push(x); });
                 });
-             }
+            }
             //This is subplan - return its child activities
             else if (activityContainer.activities !== undefined && activityContainer.activities != null) {
                 activityContainer.activities.forEach(activity => {
@@ -105,7 +112,7 @@ module dockyard.services {
                 activityContainer.subPlans.forEach(subplan => {
                     this.getAllActivities(subplan).forEach(x => { result.push(x); });
                 });
-             }
+            }
             return result;
         }
     }

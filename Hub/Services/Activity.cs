@@ -54,7 +54,7 @@ namespace Hub.Services
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
             }
-            
+
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
@@ -132,7 +132,7 @@ namespace Hub.Services
 
             uow.SaveChanges();
 
-            var configuredActivity = await CallActivityConfigure(uow, userId, activity);
+            var configuredActivity = await CallActivityConfigure(uow, userId, activity, null);
 
             UpdateActivityProperties(uow, configuredActivity);
 
@@ -145,7 +145,7 @@ namespace Hub.Services
         }
 
         [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
-        public async Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO submittedActivity)
+        public async Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO submittedActivity, IEnumerable<KeyValuePair<string, string>> parameters = null)
         {
             if (submittedActivity == null)
             {
@@ -156,7 +156,7 @@ namespace Hub.Services
             {
                 await DeactivateActivity(uow, submittedActivity.Id);
 
-                var configuredActivity = await CallActivityConfigure(uow, userId, submittedActivity);
+                var configuredActivity = await CallActivityConfigure(uow, userId, submittedActivity, parameters);
 
                 SaveAndUpdateActivity(uow, configuredActivity);
 
@@ -315,7 +315,7 @@ namespace Hub.Services
                     EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
                 }
 
-                var activtiyClone = (ActivityDO) curActivityDO.Clone();
+                var activtiyClone = (ActivityDO)curActivityDO.Clone();
 
                 using (var storage = _crateManager.UpdateStorage(() => activtiyClone.CrateStorage))
                 {
@@ -329,7 +329,7 @@ namespace Hub.Services
                 }
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, activtiyClone, curContainerDO.Id);
-                
+
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
@@ -393,7 +393,8 @@ namespace Hub.Services
             {
                 if (x.Id == Guid.Empty)
                 {
-                    if (Object.ReferenceEquals(x, submittedActiviy)) {
+                    if (Object.ReferenceEquals(x, submittedActiviy))
+                    {
                         isNewActivity = true;
                     }
                     x.Id = Guid.NewGuid();
@@ -405,7 +406,7 @@ namespace Hub.Services
                     activityDO.ActivityTemplate = uow
                         .ActivityTemplateRepository
                         .GetQuery()
-                        .Single(y => y.Name == activityTemplate.Name 
+                        .Single(y => y.Name == activityTemplate.Name
                                   && y.Version == activityTemplate.Version
                                   && y.Terminal.Name == activityTemplate.Terminal.Name
                                   && y.Terminal.Version == activityTemplate.Terminal.Version);
@@ -423,12 +424,13 @@ namespace Hub.Services
                     throw new MissingObjectException($"Parent plan with Id {submittedActiviy.ParentPlanNodeId} doesn't exist");
                 }
                 originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
-                
+
                 //This might mean that this plan's parent was changed
                 if (originalAction == null && !isNewActivity)
                 {
                     originalAction = uow.PlanRepository.GetById<PlanNodeDO>(submittedActiviy.Id);
-                    if (originalAction != null) {
+                    if (originalAction != null)
+                    {
                         var originalActionsParent = uow.PlanRepository.Reload<PlanNodeDO>(originalAction.ParentPlanNodeId);
                         originalActionsParent.ChildNodes.Remove(originalAction);
                         originalAction.ParentPlanNodeId = plan.Id;
@@ -581,7 +583,7 @@ namespace Hub.Services
             exisiting.ActivationState = ActivationState.Deactivated;
         }
 
-        private async Task<ActivityDO> CallActivityConfigure(IUnitOfWork uow, string userId, ActivityDO submittedActivity)
+        private async Task<ActivityDO> CallActivityConfigure(IUnitOfWork uow, string userId, ActivityDO submittedActivity, IEnumerable<KeyValuePair<string, string>> parameters)
         {
             var tempActionDTO = Mapper.Map<ActivityDTO>(submittedActivity);
 
@@ -591,7 +593,7 @@ namespace Hub.Services
 
                 try
                 {
-                    tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", null, submittedActivity, Guid.Empty);
+                    tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", parameters, submittedActivity, Guid.Empty);
                     _authorizationToken.RevokeTokenIfNeeded(uow, tempActionDTO);
                 }
                 catch (RestfulServiceException e)

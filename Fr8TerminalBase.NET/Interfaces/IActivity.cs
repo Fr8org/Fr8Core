@@ -12,7 +12,7 @@ namespace Fr8.TerminalBase.Interfaces
     {
         Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext);
         Task RunChildActivities(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext);
-        Task Configure(ActivityContext activityContext);
+        Task Configure(ActivityContext activityContext, string type);
         Task Activate(ActivityContext activityContext);
         Task Deactivate(ActivityContext activityContext);
         Task<DocumentationResponseDTO> GetDocumentation(ActivityContext activityContext, string documentationType);
