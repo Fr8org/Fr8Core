@@ -80,8 +80,6 @@ namespace terminalDropbox.Actions
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
             var file = await _dropboxService.GetFile(AuthorizationToken,"/" + ActivityUI.FileList.ListItems.Where(s => s.Key == ActivityUI.FileList.selectedKey).FirstOrDefault().Key);
 
-            CrateSignaller.MarkAvailableAtDesignTime<Manifest>("Dropbox File Crate Label").AddField("Dropbox selected file");
-
             CrateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("Dropbox selected file");
             Storage.ReplaceByLabel(Crate<StandardFileDescriptionCM>.FromContent("Dropbox selected file", file));
             

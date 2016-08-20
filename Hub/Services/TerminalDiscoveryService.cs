@@ -24,6 +24,8 @@ using Hub.Exceptions;
 using StructureMap;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Web;
+
 namespace Hub.Services
 {
     public class TerminalDiscoveryService : ITerminalDiscoveryService
@@ -84,12 +86,19 @@ namespace Hub.Services
                     // We cannot trust user so get the value from the DB
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var terminalTempDo = uow.TerminalRepository.GetByKey(terminal.InternalId); //TODO: check user permissions here!!
-                        if (terminalTempDo == null)
+                        if(_securityService.AuthorizeActivity(PermissionType.UseTerminal, terminal.InternalId, nameof(TerminalDO)))
                         {
-                            throw new Fr8NotFoundException(nameof(terminal.InternalId), $"Terminal with the id {terminal.InternalId} is not found.");
+                            var terminalTempDo = uow.TerminalRepository.GetByKey(terminal.InternalId);
+                            if (terminalTempDo == null)
+                            {
+                                throw new Fr8NotFoundException(nameof(terminal.InternalId), $"Terminal with the id {terminal.InternalId} is not found.");
+                            }
+                            safeParticipationState = terminalTempDo.ParticipationState;
                         }
-                        safeParticipationState = terminalTempDo.ParticipationState;
+                        else
+                        {
+                            throw new HttpException(403, $"You are not authorized to use Terminal {terminal.Name}!");
+                        }
                     }
                 }
             }
