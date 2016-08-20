@@ -76,7 +76,7 @@ namespace Fr8.TerminalBase.BaseClasses
         protected bool IsRuntime => _containerExecutionContext != null;
         protected AuthenticationMode AuthenticationMode { get; set; } = AuthenticationMode.InternalMode;
         protected bool DisableValidationOnFollowup { get; set; }
-        protected ICrateManager CrateManager { get; private set;}
+        protected ICrateManager CrateManager { get; private set; }
         protected int LoopIndex => GetLoopIndex();
         protected ValidationManager ValidationManager { get; private set; }
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
@@ -88,7 +88,7 @@ namespace Fr8.TerminalBase.BaseClasses
         public CrateSignaller CrateSignaller { get; private set; }
 
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
-      
+
         /// <summary>
         /// Get or sets value of configuration field with the given key stored in current activity storage
         /// </summary>
@@ -151,7 +151,7 @@ namespace Fr8.TerminalBase.BaseClasses
                         _eventSubscriptions.Subscriptions = new List<string>();
                     }
                 }
-                
+
                 return _eventSubscriptions;
             }
             set
@@ -162,7 +162,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 Storage.Add(EventSubscriptionsCrateLabel, _eventSubscriptions);
             }
         }
-        
+
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
@@ -214,10 +214,10 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public async Task Configure(ActivityContext activityContext)
+        public async Task Configure(ActivityContext activityContext, string type = null)
         {
             InitializeInternalState(activityContext, null);
-            var configurationType = GetConfigurationRequestType();
+            var configurationType = GetConfigurationRequestType(type);
             bool afterConfigureFails = false;
 
             try
@@ -227,7 +227,7 @@ namespace Fr8.TerminalBase.BaseClasses
                     AddAuthenticationCrate(false);
                     return;
                 }
-                
+
                 if (!await BeforeConfigure(configurationType))
                 {
                     return;
@@ -394,7 +394,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     RaiseInvalidTokenError("Authorization token is invalid");
                 }
-                
+
                 return;
             }
 
@@ -480,8 +480,11 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual ConfigurationRequestType GetConfigurationRequestType()
+        protected virtual ConfigurationRequestType GetConfigurationRequestType(string type = null)
         {
+            if (type == "newAuth")
+                Storage.Clear();
+
             return Storage.Count == 0 ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
@@ -686,7 +689,7 @@ namespace Fr8.TerminalBase.BaseClasses
         {
             SetResponse(ActivityResponse.RequestTerminate, message);
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// returns success to hub
@@ -768,7 +771,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
             }
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// returns error to hub
@@ -784,7 +787,7 @@ namespace Fr8.TerminalBase.BaseClasses
             SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, MyTemplate.Name, MyTemplate.Terminal?.Name));
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// Returns authentication error to hub

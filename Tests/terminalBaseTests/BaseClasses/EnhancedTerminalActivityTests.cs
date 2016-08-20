@@ -41,7 +41,7 @@ namespace terminaBaselTests.BaseClasses
 
     class ExplicitTerminalActivityMock : ExplicitTerminalActivity
     {
-        public ExplicitTerminalActivityMock(ICrateManager crateManager) 
+        public ExplicitTerminalActivityMock(ICrateManager crateManager)
             : base(crateManager)
         {
         }
@@ -82,13 +82,13 @@ namespace terminaBaselTests.BaseClasses
 
         public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
-            Terminal = new TerminalDTO {Name = "TestTerminal"},
+            Terminal = new TerminalDTO { Name = "TestTerminal" },
             Name = "ActivityOverrideCheckMock"
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
 
-        protected override ConfigurationRequestType GetConfigurationRequestType()
+        protected override ConfigurationRequestType GetConfigurationRequestType(string type = null)
         {
             CheckBasicPropeties();
             return base.GetConfigurationRequestType();
@@ -189,7 +189,7 @@ namespace terminaBaselTests.BaseClasses
                     Name = "tb1",
                     Value = "tb1_v"
                 });
-                
+
 
                 Add(UpstreamUpstreamCrateChooser = new UpstreamCrateChooser
                 {
@@ -202,7 +202,7 @@ namespace terminaBaselTests.BaseClasses
         public Action<ActivityUi> OnInitialize;
 
 
-        public UiSyncDynamicActivityMock(ICrateManager crateManager) 
+        public UiSyncDynamicActivityMock(ICrateManager crateManager)
             : base(crateManager)
         {
         }
@@ -274,7 +274,7 @@ namespace terminaBaselTests.BaseClasses
                     Name = "tb1",
                     Value = "tb1_v"
                 });
-                
+
                 Add(new TextBox
                 {
                     Name = "textBox",
@@ -313,7 +313,7 @@ namespace terminaBaselTests.BaseClasses
         {
             return Task.FromResult(0);
         }
-       
+
     }
 
     class ActivityWithUiBuilder : TerminalActivity<ActivityWithUiBuilder.ActivityUi>
@@ -380,7 +380,7 @@ namespace terminaBaselTests.BaseClasses
         public override void SetUp()
         {
             base.SetUp();
-            
+
             TerminalBootstrapper.ConfigureTest();
 
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -392,7 +392,7 @@ namespace terminaBaselTests.BaseClasses
                 x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload, _crateManager)).Singleton();
             });
-            
+
             FixtureData.AddTestActivityTemplate();
         }
 
@@ -443,7 +443,7 @@ namespace terminaBaselTests.BaseClasses
             await activity.Deactivate(CreateActivityContext(Crate.FromContent(ExplicitTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Deactivate));
         }
-        
+
         [Test]
         public async Task CanRun()
         {
@@ -488,7 +488,7 @@ namespace terminaBaselTests.BaseClasses
             var storage = executionContext.PayloadStorage;
             var opState = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActivityResponse.Error.ToString(), opState.CurrentActivityResponse.Type); 
+            Assert.AreEqual(ActivityResponse.Error.ToString(), opState.CurrentActivityResponse.Type);
         }
 
         [Test]
@@ -532,7 +532,7 @@ namespace terminaBaselTests.BaseClasses
             var activityContext = CreateActivityContext(Crate.FromContent(ExplicitTerminalActivity.ConfigurationControlsLabel, refCC));
             await activity.Configure(activityContext);
             var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            
+
             AssertEquals(refCC, cc);
         }
 
@@ -606,7 +606,7 @@ namespace terminaBaselTests.BaseClasses
             var activityContext = CreateActivityContext();
             await activity.Configure(activityContext);
             var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            Assert.AreEqual(5, cc.Controls.Count,  "Failed to sync dynamic controls list: invalid count");
+            Assert.AreEqual(5, cc.Controls.Count, "Failed to sync dynamic controls list: invalid count");
             Assert.AreEqual("DynamicTextSources_ts1", cc.Controls[1].Name, "Failed to sync dynamic controls list: ts1 not found at [1]");
             Assert.AreEqual("DynamicTextSources_ts2", cc.Controls[2].Name, "Failed to sync dynamic controls list: ts2 not found at [2]");
             Assert.AreEqual("DynamicTextSources_ts3", cc.Controls[3].Name, "Failed to sync dynamic controls list: ts3 not found at [3]");

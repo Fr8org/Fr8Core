@@ -45,7 +45,7 @@ namespace terminalDocuSign.Actions
 
 
 
-        public Send_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Send_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
@@ -183,7 +183,7 @@ namespace terminalDocuSign.Actions
         }
 
 
-        protected override ConfigurationRequestType GetConfigurationRequestType()
+        protected override ConfigurationRequestType GetConfigurationRequestType(string type = null)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
             if (Storage.Count < 1) { return ConfigurationRequestType.Initial; }
@@ -201,7 +201,7 @@ namespace terminalDocuSign.Actions
             // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
             // Two crates are created
             // One to hold the ui controls
-            if (Storage.All(c => c.ManifestType.Id != (int) MT.FieldDescription))
+            if (Storage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
             {
                 Storage.Clear();
 
@@ -212,7 +212,7 @@ namespace terminalDocuSign.Actions
         }
 
         public override async Task FollowUp()
-            {
+        {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             await HandleFollowUpConfiguration();
         }
@@ -223,12 +223,12 @@ namespace terminalDocuSign.Actions
             {
                 return;
             }
-            
+
 
             //update docusign templates list to get if new templates were provided by DS
             FillDocuSignTemplateSource("target_docusign_template");
             // Try to find DocuSignTemplate drop-down.
-            
+
             var dropdownControlDTO = ConfigurationControls.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
             {
@@ -273,7 +273,7 @@ namespace terminalDocuSign.Actions
 
                 Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
             }
-            
+
             Storage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             Storage.Add("DocuSignTemplateUserDefinedFields", new KeyValueListCM(userDefinedFields.Concat(roles)));
 
@@ -305,11 +305,11 @@ namespace terminalDocuSign.Actions
                 //todo: migrate the string format for label into template
                 radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name,
                     $"For the <strong>{radioButtonGroupDTO.Name}</strong>, use:", radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
-                {
-                    Name = x.Value,
-                    Value = x.Value,
-                    Selected = x.Selected
-                }).ToList());
+                    {
+                        Name = x.Value,
+                        Value = x.Value,
+                        Selected = x.Selected
+                    }).ToList());
             }
 
             //create checkbox controls
@@ -380,7 +380,7 @@ namespace terminalDocuSign.Actions
                 },
                 Source = null
             };
-            
+
             AddControls(fieldSelectDocusignTemplateDTO);
         }
     }

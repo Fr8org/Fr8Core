@@ -151,7 +151,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
-        protected override ConfigurationRequestType GetConfigurationRequestType()
+        protected override ConfigurationRequestType GetConfigurationRequestType(string type = null)
         {
             if (Storage == null || !Storage.Any())
             {

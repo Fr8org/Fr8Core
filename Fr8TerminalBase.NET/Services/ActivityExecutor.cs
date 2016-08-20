@@ -90,10 +90,15 @@ namespace Fr8.TerminalBase.Services
                 ? parameters.First(x => x.Key == "scope").Value
                 : null;
 
+            var type = parameters != null && parameters.Any(x => x.Key == "type")
+                ? parameters.First(x => x.Key == "type").Value
+                : null;
+
             switch (curActionPath.ToLower())
             {
                 case "configure":
-                    await activity.Configure(activityContext);
+
+                    await activity.Configure(activityContext, type);
                     return SerializeResponse(activityContext);
 
                 case "activate":
