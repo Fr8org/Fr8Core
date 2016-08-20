@@ -33,7 +33,7 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
-    export class AuthenticationCompletedEventArgs extends ActionReconfigureEventArgs{
+    export class AuthenticationCompletedEventArgs extends ActionReconfigureEventArgs {
     }
 
     export class DownStreamReConfigureEventArgs extends ActionReconfigureEventArgs {
@@ -112,7 +112,7 @@ module dockyard.directives.paneConfigureAction {
             this.validationResults = validationResults;
         }
     }
-    
+
     export class ShowAdvisoryMessagesEventArgs {
         public id: string;
         public advisories: model.AdvisoryMessages;
@@ -149,7 +149,7 @@ module dockyard.directives.paneConfigureAction {
         showAdvisoryPopup: boolean;
         myActivityTemplate: interfaces.IActivityTemplateVM;
     }
-    
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {
@@ -196,21 +196,20 @@ module dockyard.directives.paneConfigureAction {
             private $timeout: ng.ITimeoutService, private $modal,
             private $window: ng.IWindowService, private $http: ng.IHttpService,
             private $q: ng.IQService, private LayoutService: services.ILayoutService,
-            private ActivityTemplateHelperService: services.IActivityTemplateHelperService)
-        {
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService) {
             $scope.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
             $scope.isConfigRequestQueued = false;
             $scope.configControlOperationQueue = {};
             $scope.configControlHandles = {};
-            
+
 
             $scope.$on("onChange", <() => void>angular.bind(this, this.onControlChange));
             $scope.$on("onClick", <() => void>angular.bind(this, this.onClickEvent));
 
             // These are exposed for unit testing.
-            $scope.onControlChange = <() => void> angular.bind(this, this.onControlChange);
+            $scope.onControlChange = <() => void>angular.bind(this, this.onControlChange);
             $scope.loadConfiguration = <() => void>angular.bind(this, this.loadConfiguration);
             $scope.reloadConfiguration = <() => void>angular.bind(this, this.reloadConfiguration);
             $scope.onConfigurationChanged = <() => void>angular.bind(this, this.onConfigurationChanged);
@@ -234,7 +233,7 @@ module dockyard.directives.paneConfigureAction {
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_AuthCompleted], (event: ng.IAngularEvent, authCompletedEventArgs: AuthenticationCompletedEventArgs) => {
                 if (authCompletedEventArgs.action.id === $scope.currentAction.id) {
-                    this.loadConfiguration().then(() => {
+                    this.loadConfiguration("newAuth").then(() => {
                         var authCrate = this.crateHelper.findByManifestType(
                             this.$scope.currentAction.crateStorage,
                             'Standard Authentication',
@@ -302,7 +301,7 @@ module dockyard.directives.paneConfigureAction {
                 }
             }
 
-            
+
         }
 
         public isThereOnGoingConfigRequest(): boolean {
@@ -316,7 +315,7 @@ module dockyard.directives.paneConfigureAction {
             this.$scope.configControlOperationQueue[controlName].push(operation);
         }
 
-        private reloadAction (reloadActionEventArgs: ReloadActionEventArgs): void {
+        private reloadAction(reloadActionEventArgs: ReloadActionEventArgs): void {
             // Checks whether this reload call for current action
             if (reloadActionEventArgs.action.id !== this.$scope.currentAction.id) {
                 return;
@@ -334,63 +333,63 @@ module dockyard.directives.paneConfigureAction {
         // The function compares two instances of a configuration control and 
         // determines if user's selection or entered value has changed 
         private controlValuesChanged(control1: model.ControlDefinitionDTO, control2: model.ControlDefinitionDTO) {
-                if (control1.name != control2.name) {
-                    throw Error("Control1 and control2 represent different controls.");
-                }
-
-                if (control1.value != undefined && control1.value != control2.value)
-                    return true;
-
-                if ((<model.CheckBox>control1).selected != undefined 
-                    && (<model.CheckBox>control1).selected != (<model.CheckBox>control2).selected)
-                    return true;
-
-                if ((<model.DropDownList>control1).selectedKey != undefined
-                    && (<model.DropDownList>control1).selectedKey != (<model.DropDownList>control2).selectedKey)
-                    return true;
-
-                if ((<model.TextSource>control1).valueSource != undefined
-                    && (<model.TextSource>control1).valueSource != (<model.TextSource>control2).valueSource)
-                    return true;
-
-                return false;
+            if (control1.name != control2.name) {
+                throw Error("Control1 and control2 represent different controls.");
             }
+
+            if (control1.value != undefined && control1.value != control2.value)
+                return true;
+
+            if ((<model.CheckBox>control1).selected != undefined
+                && (<model.CheckBox>control1).selected != (<model.CheckBox>control2).selected)
+                return true;
+
+            if ((<model.DropDownList>control1).selectedKey != undefined
+                && (<model.DropDownList>control1).selectedKey != (<model.DropDownList>control2).selectedKey)
+                return true;
+
+            if ((<model.TextSource>control1).valueSource != undefined
+                && (<model.TextSource>control1).valueSource != (<model.TextSource>control2).valueSource)
+                return true;
+
+            return false;
+        }
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
 
             if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
                 this.crateHelper.mergeControlListCrate(
-                this.$scope.currentAction.configurationControls,
-                this.$scope.currentAction.crateStorage,
-                this.$scope.view
+                    this.$scope.currentAction.configurationControls,
+                    this.$scope.currentAction.crateStorage,
+                    this.$scope.view
                 );
             }
 
-                this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+            this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
-                this.ActivityService.save(this.$scope.currentAction)
-                    .then(() => {
-                        
-                        if (this.$scope.currentAction.childrenActivities
-                            && this.$scope.currentAction.childrenActivities.length > 0) {
+            this.ActivityService.save(this.$scope.currentAction)
+                .then(() => {
 
-                            if (this.$scope.reconfigureChildrenActions) {
-                                this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs(this.$scope.currentAction.childrenActivities));
-                            }
+                    if (this.$scope.currentAction.childrenActivities
+                        && this.$scope.currentAction.childrenActivities.length > 0) {
+
+                        if (this.$scope.reconfigureChildrenActions) {
+                            this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs(this.$scope.currentAction.childrenActivities));
                         }
-                    });
-                
-                // save request will stop running plans, so FE should know that
-                // commented out because of FR-4352, now running plan locks activities configuration
-                //if (this.$scope.plan.planState === model.PlanState.Executing) {
-                //    this.$scope.plan.planState = model.PlanState.Inactive;
-                //}
+                    }
+                });
 
-                // the save request is sent, so we can run the plan
-                if (this.$scope.plan.planState === model.PlanState.Saving_Changes) {
-                    this.$scope.plan.planState = model.PlanState.Inactive;
-                }
+            // save request will stop running plans, so FE should know that
+            // commented out because of FR-4352, now running plan locks activities configuration
+            //if (this.$scope.plan.planState === model.PlanState.Executing) {
+            //    this.$scope.plan.planState = model.PlanState.Inactive;
+            //}
+
+            // the save request is sent, so we can run the plan
+            if (this.$scope.plan.planState === model.PlanState.Saving_Changes) {
+                this.$scope.plan.planState = model.PlanState.Inactive;
             }
+        }
 
         private getControlEventHandler(control: model.ControlDefinitionDTO, eventName: string) {
             if (control.events === null) return;
@@ -484,7 +483,7 @@ module dockyard.directives.paneConfigureAction {
 
         // Here we look for Crate with ManifestType == 'Standard UI Controls'.
         // We parse its contents and put it into currentAction.configurationControls structure.
-        private loadConfiguration() {
+        private loadConfiguration(type: string = null) {
 
             var deferred = this.$q.defer();
             // Block pane and show pane-level 'loading' spinner
@@ -493,107 +492,107 @@ module dockyard.directives.paneConfigureAction {
             if (this.$scope.configurationWatchUnregisterer) {
                 this.$scope.configurationWatchUnregisterer();
             }
-            
+
             this.ConfigureTrackerService.configureCallStarted(
                 this.$scope.currentAction.id,
                 this.$scope.myActivityTemplate.needsAuthentication
             );
 
             this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);
-    
-            this.ActivityService.configure(this.$scope.currentAction)
+
+            this.ActivityService.configure(this.$scope.currentAction, type)
                 .then((res: interfaces.IActionVM) => {
                     //lets reset config control handles
                     //they will re register themselves after initializing
                     this.$scope.configControlHandles = {};
-                var childActionsDetected = false;
+                    var childActionsDetected = false;
 
-                // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
-                if (this.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
-                    var operationalStatus = this.crateHelper.findByManifestType(res.crateStorage, 'Operational State');
-                    var contents = <any>operationalStatus.contents;
+                    // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
+                    if (this.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
+                        var operationalStatus = this.crateHelper.findByManifestType(res.crateStorage, 'Operational State');
+                        var contents = <any>operationalStatus.contents;
 
-                    if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity' 
-                        && (contents.CurrentActivityResponse.body === 'RunImmediately')) {
-                        this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
-                    }
-                }
-                
-                var oldAction = this.$scope.currentAction;
-                if (oldAction.label !== res.label) {
-                    this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], res);
-                }
-
-                if (res.childrenActivities && res.childrenActivities.length > 0
-                    && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
-                    // If the directive is used for configuring solutions, the SolutionController would listen to this event 
-                    // and redirect user to the RouteBuilder once if is received. It means that solution configuration is complete.
-                    // not needed in case of Loop action reconfigure
-
-                    this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
-                    childActionsDetected = true;
-                }
-
-                this.$scope.reconfigureChildrenActions = false;
-
-                if (this.$scope.currentAction.childrenActivities) {
-                    if (angular.toJson(this.$scope.currentAction.childrenActivities) != angular.toJson(res.childrenActivities)) {
-                        this.$scope.reconfigureChildrenActions = true;
-                        //in case of reconfiguring the solution check the child actions again
-
-                        //not needed in case of Loop action
-                        if (this.$scope.currentAction.activityTemplate.name !== "Loop") {
-                            this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                        if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity'
+                            && (contents.CurrentActivityResponse.body === 'RunImmediately')) {
+                            this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                         }
                     }
-                }
 
-                this.$scope.currentAction.crateStorage = res.crateStorage;
-                this.$scope.currentAction.childrenActivities = res.childrenActivities;
+                    var oldAction = this.$scope.currentAction;
+                    if (oldAction.label !== res.label) {
+                        this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], res);
+                    }
 
-                this.$scope.processConfiguration();
-                this.configLoadingError = false;
+                    if (res.childrenActivities && res.childrenActivities.length > 0
+                        && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
+                        // If the directive is used for configuring solutions, the SolutionController would listen to this event 
+                        // and redirect user to the RouteBuilder once if is received. It means that solution configuration is complete.
+                        // not needed in case of Loop action reconfigure
 
-                // Unblock pane.
-                if (!childActionsDetected) {
-                    this.$scope.processing = false;
-                }
+                        this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                        childActionsDetected = true;
+                    }
 
-                deferred.resolve(this.$scope.currentAction);
-                //lets wait for UI operations to end
-                this.$timeout(() => { this.processOperationQueue(); });
+                    this.$scope.reconfigureChildrenActions = false;
 
-            }).catch((result) => {
+                    if (this.$scope.currentAction.childrenActivities) {
+                        if (angular.toJson(this.$scope.currentAction.childrenActivities) != angular.toJson(res.childrenActivities)) {
+                            this.$scope.reconfigureChildrenActions = true;
+                            //in case of reconfiguring the solution check the child actions again
 
-                if (result.status == 423) {
+                            //not needed in case of Loop action
+                            if (this.$scope.currentAction.activityTemplate.name !== "Loop") {
+                                this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                            }
+                        }
+                    }
+
+                    this.$scope.currentAction.crateStorage = res.crateStorage;
+                    this.$scope.currentAction.childrenActivities = res.childrenActivities;
+
+                    this.$scope.processConfiguration();
+                    this.configLoadingError = false;
+
+                    // Unblock pane.
+                    if (!childActionsDetected) {
+                        this.$scope.processing = false;
+                    }
+
+                    deferred.resolve(this.$scope.currentAction);
+                    //lets wait for UI operations to end
+                    this.$timeout(() => { this.processOperationQueue(); });
+
+                }).catch((result) => {
+
+                    if (result.status == 423) {
+                        this.$scope.processing = false;
+                        deferred.reject(result);
+                        return;
+                    }
+
+                    var errorText = 'Something went wrong. Click to retry.';
+                    if (result.status && result.status >= 400) {
+                        // Bad http response
+                        errorText = 'Configuration loading error. Click to retry.';
+                    } else if (result.message) {
+                        // Exception was thrown in the code
+                        errorText = result.message;
+                    }
+                    var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
+                    this.$scope.currentAction.configurationControls = new model.ControlsList();
+                    this.$scope.currentAction.configurationControls.fields = [control];
+                    this.configLoadingError = true;
+
+                    // Unblock pane.
                     this.$scope.processing = false;
                     deferred.reject(result);
-                    return;
-                }
-
-                var errorText = 'Something went wrong. Click to retry.';
-                if (result.status && result.status >= 400) {
-                    // Bad http response
-                    errorText = 'Configuration loading error. Click to retry.';
-                } else if (result.message) {
-                    // Exception was thrown in the code
-                    errorText = result.message;
-                }
-                var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
-                this.$scope.currentAction.configurationControls = new model.ControlsList();
-                this.$scope.currentAction.configurationControls.fields = [control];
-                this.configLoadingError = true;
-
-                // Unblock pane.
-                this.$scope.processing = false;
-                deferred.reject(result);
 
                 }).finally(() => {
                     this.$scope.isConfigRequestQueued = false;
                     this.ConfigureTrackerService.configureCallFinished(this.$scope.currentAction.id);
                     // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
                     this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs(this.$scope.currentAction, this.$scope.currentActiveElement));
-            });
+                });
             return deferred.promise;
         };
 
@@ -629,7 +628,7 @@ module dockyard.directives.paneConfigureAction {
                 return;
             }
 
-            if (this.ignoreConfigurationChange || this.AuthService.isAuthenticationCanceled(this.$scope.currentAction.id) ) {
+            if (this.ignoreConfigurationChange || this.AuthService.isAuthenticationCanceled(this.$scope.currentAction.id)) {
                 this.ignoreConfigurationChange = false;
                 return;
             }
@@ -706,7 +705,7 @@ module dockyard.directives.paneConfigureAction {
                         this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage, this.$scope.view);
                 } else {
                     this.$scope.currentAction.configurationControls =
-                    this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage);
+                        this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage);
                 }
             }
 
@@ -734,11 +733,11 @@ module dockyard.directives.paneConfigureAction {
 
             this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
                 this.$scope.configurationWatchUnregisterer = this.$scope.$watch<model.ControlsList>(
-                () => this.$scope.currentAction.configurationControls,
-                <any>angular.bind(that, this.configControlChangeBuffer),
+                    () => this.$scope.currentAction.configurationControls,
+                    <any>angular.bind(that, this.configControlChangeBuffer),
                     true);
             }, 1000);
-        } 
+        }
 
         private setSolutionMode() {
             this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
