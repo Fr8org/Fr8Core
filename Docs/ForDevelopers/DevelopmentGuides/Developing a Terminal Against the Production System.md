@@ -11,16 +11,16 @@ We will build terminal with simple networking utilities.
 Create new project in Visual Studio.
 You can type fr8 in templates searchbox and see latest terminal template from online gallery.   
  
-![Create terminal project from template](Images\tdghub-1-CreateAProject.png) 
+![Create terminal project from template](Images/tdghub-1-CreateAProject.png) 
 
 After the project created you will see files structure like this, also try to rebuild the project to be sure that all packages have been restored and everything is good.  
 
-![Terminal project structure](Images\tdghub-2-ProjectStructure.png)
+![Terminal project structure](Images/tdghub-2-ProjectStructure.png)
 
 Check **Web.config** file, what we interested in - is an appSettings section:
 
 ```xml
-    <appSettings file="Config\Settings.config">
+    <appSettings file="Config/Settings.config">
         <!-- Hub settings -->
         <add key="DefaultHubUrl" value="https://fr8.co/" />
         <add key="HubApiVersion" value="v1" />
@@ -192,15 +192,15 @@ namespace terminalNetworking.Activities
 To avoid problems with hub interraction we have to run our terminal on Local IIS instead of IIS Express (because last one returns HTTP 400 Error in case your request pointed to another hostname).
 Configure site with bindings to all ip addresses:
 
-![Configure Local IIS](Images\tdghub-3-LocalIIS.png)
+![Configure Local IIS](Images/tdghub-3-LocalIIS.png)
 
 And project startup:
 
-![Configure Project Startup](Images\tdghub-3-ProjectStartupSettingsLocalIIS.png)
+![Configure Project Startup](Images/tdghub-3-ProjectStartupSettingsLocalIIS.png)
 
 That is how it should looks like in a browser: (also ensure that other address http://127.0.0.1 work)
 
-![Terminal in browser](Images\tdghub-4-ProjectPageAfterStart.png)
+![Terminal in browser](Images/tdghub-4-ProjectPageAfterStart.png)
 
 ## Step 2: Establish a publicly visible URL so that the dev Hub can see your terminal.
 Action on this step depends on your internet connection, in case you have publically avaliable IP address you may do nothing except allowing ports in your firewall settings and forward it from router in case you are using it.
@@ -210,7 +210,7 @@ Start *ngrok* with parameters:
     ngrok http 12345
 ```
 
-![ngrok connection](Images\tdghub-4-EstablishNgrokConnection.png)
+![ngrok connection](Images/tdghub-4-EstablishNgrokConnection.png)
 
 When you try access the ngrok Url you should see same respons as well as from localhost site.
 
@@ -225,34 +225,34 @@ Run your terminal project and ensure that IIS site is running.
 
 Log in to [https://fr8.co](https://fr8.co) with your account and turn on 'Developers menu'
 
-![Site developers menu](Images\tdghub-6-DevMenu.png)
+![Site developers menu](Images/tdghub-6-DevMenu.png)
 
 Go to 'My terminals' page and add your terminal by ngrok link:
 
- ![Add terminal](Images\tdghub-7-AddTerminal.png)
+ ![Add terminal](Images/tdghub-7-AddTerminal.png)
 
 If everything goes fine, you will see your terminal in list:
 
-![Terminals list](Images\tdghub-8-TerminalList.png)
+![Terminals list](Images/tdghub-8-TerminalList.png)
 
 ## Step 4: Build a plan using your terminal Activity.
 
 Ok, let's create a new plan, go to PlanBuilder page, find our terminal logo and add an Activity. (if you concerned about yellow triangle in address line, use only *https* content, in our case it is link to terminal logo supplied with http) 
 
-![Terminals list](Images\tdghub-9-PlanBuilder.png)
+![Terminals list](Images/tdghub-9-PlanBuilder.png)
 
 Add another one activity, 'Publish to Slack' will be fine, configure them  and try to run.
 
-![Failed plan](Images\tdghub-10-PlanFailed.png)
+![Failed plan](Images/tdghub-10-PlanFailed.png)
 
 Oops! The plan is failed, so we should set breakpoint in our code to find out what is wrong:
 
-![Terminal debugging](Images\tdghub-11-Debug.png)
+![Terminal debugging](Images/tdghub-11-Debug.png)
 
 Now when we know what was wrong (dns name of the host we want to ping) fix it and run the plan again
 
-![Plan successfully run](Images\tdghub-12-Success.png)
+![Plan successfully run](Images/tdghub-12-Success.png)
 
 So now, when it works, we can submit form to publish our terminal.
 
-![Publish your terminal](Images\tdghub-13-Publish.png) 
+![Publish your terminal](Images/tdghub-13-Publish.png) 
