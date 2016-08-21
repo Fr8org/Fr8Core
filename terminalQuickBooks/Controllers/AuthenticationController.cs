@@ -24,11 +24,12 @@ namespace terminalQuickBooks.Controllers
         [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
-            var url = _authenticator.CreateAuthUrl();
+            var state = Guid.NewGuid();
+            var url = _authenticator.CreateAuthUrl(state);
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
-                ExternalStateToken = null,
+                ExternalStateToken = state.ToString(),
                 Url = url
             };
 
@@ -37,8 +38,7 @@ namespace terminalQuickBooks.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
-            ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
@@ -46,6 +46,7 @@ namespace terminalQuickBooks.Controllers
                 var oAuthToken = query["oauth_token"];
                 var oAuthVerifier = query["oauth_verifier"];
                 var realmId = query["realmId"];
+                var state = query["state"];
                 var dataSource = query["dataSource"];
 
                 if (string.IsNullOrEmpty(oAuthToken) 
@@ -56,7 +57,7 @@ namespace terminalQuickBooks.Controllers
                     throw new ApplicationException("OAuth Token or OAuth Verifier or Realm ID or Data Source is empty.");
                 }
 
-                var authToken = await _authenticator.GetAuthToken(oAuthToken, oAuthVerifier, realmId);
+                var authToken = await _authenticator.GetAuthToken(oAuthToken, oAuthVerifier, realmId, state);
                 return authToken;
 
             }
