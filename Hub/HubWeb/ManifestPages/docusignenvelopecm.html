@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../Content/metronic/components.css"/>
+
+    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="../Content/css/plan-category.css" />
+	<link rel="stylesheet" href="../Content/css/plan-directory.css" />
+
+    <title>Fr8 - DocuSignEnvelopeCM</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header">
+            <div class="logo"></div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Manifest - <em>DocuSignEnvelopeCM</em></h1>
+		        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h3>V3 Registered By Fr8</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <em>Contains information about list of DocuSign envelopes</em>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <strong>Sample JSON</strong>
+            </div>
+        </div>
+		        <div class="row">
+            <div class="col-md-12">
+                <pre>
+{
+  "envelopes": [
+    {
+      "status": "Signed",
+      "description": "Description",
+      "createDate": "2016-01-01 10:00:00",
+      "sendDate": "2016-01-01 10:00:00",
+      "completedDate": "2016-01-01 10:00:00",
+      "envelopeId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+      "name": "Name",
+      "subject": "Some subject",
+      "ownerName": "Mr X",
+      "senderName": "Mr Y",
+      "senderEmail": "example@example.com",
+      "shared": "true",
+      "templateId": "0eb2f713-55d3-4d12-bb90-d6a32228205d"
+    }
+  ]
+}
+                </pre>
+            </div>
+        </div>
+		        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h3>V2 Registered By Fr8</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <em>Contains information about DocuSign envelope</em>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <strong>Sample JSON</strong>
+            </div>
+        </div>
+		        <div class="row">
+            <div class="col-md-12">
+                <pre>
+{
+  "envelopeId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+  "status": "Signed",
+  "subject": "Subject",
+  "statusChangedDateTime": "2016-01-01 10:00:00",
+  "currentRoutingOrderId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+  "recipients": [
+    {
+      "type": "Type",
+      "name": "Mr X",
+      "email": "example@example.com",
+      "recipientId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+      "routingOrderId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+      "status": "Pending"
+    }
+  ],
+  "templates": [
+    {
+      "templateId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+      "name": "Some Name",
+      "documentId": "0eb2f713-55d3-4d12-bb90-d6a32228205d"
+    }
+  ],
+  "externalAccountId": "example@example.com",
+  "createDate": "2016-01-01 10:00:00",
+  "sentDate": "2016-01-01 10:00:00"
+}
+                </pre>
+            </div>
+        </div>
+		        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h3>V1 Registered By Fr8</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <em>Contains information about DocuSign envelope</em>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <strong>Sample JSON</strong>
+            </div>
+        </div>
+		        <div class="row">
+            <div class="col-md-12">
+                <pre>
+{
+  "status": "Received",
+  "createDate": "2016-01-01 10:00:00",
+  "sendDate": "2016-01-01 10:00:00",
+  "deliveredDate": "2016-01-01 10:00:00",
+  "completedDate": "2016-01-01 10:00:00",
+  "envelopeId": "0eb2f713-55d3-4d12-bb90-d6a32228205d",
+  "externalAccountId": "example@example.com",
+  "name": "Envelope Name",
+  "subject": "Envelope Subject",
+  "ownerName": "Owner Name",
+  "senderName": "Sender Name",
+  "senderEmail": "Sender Email",
+  "shared": "true",
+  "statusChangeDateTime": "2016-01-01 10:00:00"
+}
+                </pre>
+            </div>
+        </div>
+		    </div>
+</body>
+</html>
