@@ -324,6 +324,7 @@
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IGoogleAppsScript.cs" />
+    <Compile Include="Interfaces\IGoogleGDrivePolling.cs" />
     <Compile Include="Interfaces\IGoogleGmail.cs" />
     <Compile Include="Interfaces\IGoogleGmailPolling.cs" />
     <Compile Include="Interfaces\IGoogleIntegration.cs" />
@@ -340,6 +341,7 @@
     <Compile Include="Services\GoogleAuthHelper.cs" />
     <Compile Include="Services\GoogleDrive.cs" />
     <Compile Include="Services\Authorization\GoogleIntegration.cs" />
+    <Compile Include="Services\GoogleGDrivePolling.cs" />
     <Compile Include="Services\GoogleGmail.cs" />
     <Compile Include="Services\GoogleGmailPolling.cs" />
     <Compile Include="Services\GoogleMTSFPlan.cs" />
