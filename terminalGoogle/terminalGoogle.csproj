@@ -307,6 +307,7 @@
     <Compile Include="Activities\Get_Google_Sheet_Data_v1.cs" />
     <Compile Include="Activities\Monitor_Form_Responses_v1.cs" />
     <Compile Include="Activities\Monitor_Gmail_Inbox_v1.cs" />
+    <Compile Include="Activities\Monitor_Google_Spreadsheet_Changes_v1.cs" />
     <Compile Include="Activities\Save_To_Google_Sheet_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
