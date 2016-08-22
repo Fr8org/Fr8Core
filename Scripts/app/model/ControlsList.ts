@@ -261,6 +261,7 @@
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
         requestUpstream: boolean;
+        allowedManifestTypes: string[];
         source: FieldSource;
     }
 

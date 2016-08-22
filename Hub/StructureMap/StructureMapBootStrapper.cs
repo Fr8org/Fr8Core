@@ -173,6 +173,7 @@ namespace Hub.StructureMap
                 For<IPlan>().Use<Hub.Services.Plan>();
 
                 For<ISubplan>().Use<Subplan>();
+                For<IFr8Account>().Use<Fr8Account>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);

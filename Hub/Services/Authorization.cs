@@ -28,7 +28,6 @@ namespace Hub.Services
         private readonly IActivityTemplate _activityTemplate;
         private readonly ITerminal _terminalService;
 
-
         public Authorization()
         {
             _terminalService = ObjectFactory.GetInstance<ITerminal>();
@@ -54,7 +53,6 @@ namespace Hub.Services
         /// </summary>
         public void PrepareAuthToken(IUnitOfWork uow, ActivityDTO activityDTO)
         {
-
             // Fetch Action.
             var activity = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
             if (activity == null)
@@ -140,8 +138,8 @@ namespace Hub.Services
 
             var terminalResponse = await restClient.PostAsync(
                 new Uri(terminal.Endpoint + "/authentication/token"),
-                credentialsDTO, 
-                null, 
+                credentialsDTO,
+                null,
                 _terminalService.GetRequestHeaders(terminal, account?.Id));
 
             var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
@@ -226,9 +224,7 @@ namespace Hub.Services
         }
 
 
-        public async Task<AuthenticateResponse> GetOAuthToken(
-            TerminalDO terminal,
-            ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthenticateResponse> GetOAuthToken(TerminalDO terminal, ExternalAuthenticationDTO externalAuthDTO)
         {
             var hasAuthentication = _activityTemplate.GetQuery().Any(x => x.Terminal.Id == terminal.Id);
 
@@ -277,8 +273,10 @@ namespace Hub.Services
                     authTokenByExternalAccountId.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
                     authTokenByExternalState.ExpiresAt = authTokenDTO.ExpiresAt;
-
-                    uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+                    if (authTokenByExternalState != null)
+                    {
+                        uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+                    }
 
                     EventManager.AuthTokenCreated(authTokenByExternalAccountId);
                 }
@@ -610,6 +608,7 @@ namespace Hub.Services
                 .Where(x => x.AuthorizationToken.Id == authToken.Id)
                 .ToList();
 
+
             foreach (var activity in activities)
             {
                 activity.AuthorizationToken = null;
@@ -621,6 +620,19 @@ namespace Hub.Services
             {
                 uow.AuthorizationTokenRepository.Remove(authToken);
             }
+
+            //Deactivating active related plans
+            var _plan = ObjectFactory.GetInstance<IPlan>();
+            var plans = new List<PlanDO>();
+            foreach (var activity in activities)
+            {
+                //if template has Monitor category
+                if (activity.ActivityTemplate.Categories.Where(a => a.ActivityCategoryId == ActivityCategories.MonitorId).FirstOrDefault() != null)
+                {
+                    _plan.Deactivate(activity.RootPlanNodeId.Value);
+                }
+            }
+
             uow.SaveChanges();
         }
 

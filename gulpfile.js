@@ -81,7 +81,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/UIHelperService.js',
         'Scripts/app/services/UINotificationService.js',
         'Scripts/app/services/LayoutService.js',
-        'Scripts/app/services/PusherNotifierService.js',
         'Scripts/app/services/UserService.js',
         'Scripts/app/services/WebServiceService.js',
         'Scripts/app/services/TerminalService.js',

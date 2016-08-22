@@ -321,20 +321,6 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
-
-            // Notify UI for stopped plan
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
-                _pusherNotifier.NotifyUser(new NotificationMessageDTO
-                {
-                    NotificationType = NotificationType.ExecutionStopped,
-                    Subject = "Plan Stopped",
-                    Message = $"\"{plan.Name}\" has been stopped.",
-                    Collapsed = false
-                }, plan.Fr8AccountId);
-            }
-
             return Ok();
         }
         /// <summary>

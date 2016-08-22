@@ -31,8 +31,10 @@ namespace HubWeb.Controllers
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
             string terminalName,
-            string terminalVersion)
+            string terminalVersion,
+            string state = null)
         {
+            //Here state is optional and is designed to pass auth token external state (to identify token in database) in case 3rd party service doesn't return unknown parameters contained in URL back
             if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 throw new ApplicationException("TerminalName or TerminalVersion is not specified.");
@@ -52,6 +54,10 @@ namespace HubWeb.Controllers
                     model.TerminalName = string.Empty;
 
                     return View(model);
+                }
+                if (!string.IsNullOrEmpty(state) && queryDictionary["state"] == null)
+                {
+                    requestQueryString = $"{requestQueryString}&state={state}";
                 }
             }
 

@@ -17,6 +17,8 @@ using Fr8.Infrastructure.Interfaces;
 using System.Web.Http.Description;
 using Fr8.Infrastructure.Utilities;
 using Swashbuckle.Swagger.Annotations;
+using Fr8.Infrastructure.Data.Constants;
+using Microsoft.AspNet.Identity;
 
 namespace HubWeb.Controllers
 {
@@ -52,14 +54,37 @@ namespace HubWeb.Controllers
                 var containerService = ObjectFactory.GetInstance<IContainerService>();
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+
+
+
+
                     var container = uow.ContainerRepository.GetByKey(alarmDTO.ContainerId);
                     if (container == null)
                     {
                         throw new Exception($"Container {alarmDTO.ContainerId} was not found.");
                     }
 
+                    var fr8AccountId = container.Plan.Fr8AccountId;
+
+                    ObjectFactory.GetInstance<IPusherNotifier>().NotifyUser(new NotificationMessageDTO
+                    {
+                        NotificationType = NotificationType.GenericSuccess,
+                        Subject = "Plan execution resumed",
+                        Collapsed = true
+                    }, fr8AccountId);
+
                     var continueTask = containerService.Continue(uow, container);
                     Task.WaitAll(continueTask);
+
+                    bool isMonitor = ObjectFactory.GetInstance<IPlan>().IsMonitoringPlan(uow, container.Plan);
+                    ObjectFactory.GetInstance<IPusherNotifier>().NotifyUser(new NotificationMessageDTO
+                    {
+                        NotificationType = NotificationType.GenericSuccess,
+                        Subject = "Plan execution complete",
+                        Message = "Plan execution complete. " + (isMonitor ? "Monitoring continues." : ""),
+                        Collapsed = false
+                    }, fr8AccountId);
+
                 }
             }
             catch (Exception ex)
@@ -109,7 +134,7 @@ namespace HubWeb.Controllers
                 var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetByToken(terminalToken);
                 if (terminalDO == null)
                 {
-                    throw new Exception("No terminal was found with token: "+terminalToken);
+                    throw new Exception("No terminal was found with token: " + terminalToken);
                 }
                 var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(pollingData.ExternalAccountId, terminalDO.Id, pollingData.Fr8AccountId);
                 if (token != null)
@@ -199,13 +224,13 @@ namespace HubWeb.Controllers
                     RecurringJob.RemoveIfExists(pollingData.JobId);
                 }
 
-                Logger.Error("Scheduled job failed", ex); 
+                Logger.Error("Scheduled job failed", ex);
             }
         }
 
         private static async Task<PollingDataDTO> RequestPolling(PollingDataDTO pollingData, string terminalToken, IRestfulServiceClient _client)
         {
-            
+
             try
             {
                 var terminalService = ObjectFactory.GetInstance<ITerminal>();
@@ -229,7 +254,7 @@ namespace HubWeb.Controllers
 
                             return response;
                         }
-                        catch(Exception exception)
+                        catch (Exception exception)
                         {
                             Logger.Info($"Polling: problem with terminal polling request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name}. Exception: {exception.Message}");
                             return null;
@@ -237,7 +262,7 @@ namespace HubWeb.Controllers
                     }
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Logger.Info($"Polling: problem with terminal polling request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal. Exception: {exception.Message}");
                 return null;

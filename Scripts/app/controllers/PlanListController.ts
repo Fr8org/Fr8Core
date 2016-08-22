@@ -63,7 +63,7 @@ module dockyard.controllers {
             '$state',
             'UIHelperService',
             'UserService',
-            'PusherNotifierService'
+            'UINotificationService'
         ];
 
         constructor(
@@ -74,7 +74,7 @@ module dockyard.controllers {
             private $state: ng.ui.IStateService,
             private uiHelperService: services.IUIHelperService,
             private UserService: services.IUserService,
-            private PusherNotifierService: services.IPusherNotifierService
+            private uiNotificationService: interfaces.IUINotificationService
             ) {
 
             $scope.$on('$viewContentLoaded', () => {
@@ -177,7 +177,7 @@ module dockyard.controllers {
             });      
 
             UserService.getCurrentUser().$promise.then(data => {
-                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericInfo], (data: any) => {
+                uiNotificationService.bindEventToChannel(data.emailAddress, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericInfo], (data: any) => {
                     this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
 

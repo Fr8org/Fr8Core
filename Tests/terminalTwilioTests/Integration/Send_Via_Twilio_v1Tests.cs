@@ -49,8 +49,6 @@ namespace terminalTwilioTests.Integration
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
             Assert.NotNull(controls.Controls[1] is TextSource);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
         }
         /// <summary>
@@ -76,8 +74,6 @@ namespace terminalTwilioTests.Integration
             operationalCrate.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("Activity was incorrectly configured. 1 validation error(s).\r\nGlobal: Configuration controls are missing.\r\n", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
-
         }
         /// <summary>
         /// Test Twilio Service. Preconfigure Crates with testing number.
@@ -122,8 +118,6 @@ namespace terminalTwilioTests.Integration
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
             Assert.NotNull(controls.Controls[1] is TextSource);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
             //After Run Test
             var payload = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().Single();
