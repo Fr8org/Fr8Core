@@ -115,10 +115,6 @@
       <Project>{0dcd9aae-f141-4fad-8e87-1c610f0582db}</Project>
       <Name>terminalAsana</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Tests\Fr8.Testing.Integration.Tools\Fr8.Testing.Integration.Tools.csproj">
-      <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
-      <Name>Fr8.Testing.Integration.Tools</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Tests\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>

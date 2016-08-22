@@ -446,10 +446,6 @@
       <Project>{d0bbf260-ad17-41bf-9e11-6ea0cc8308e1}</Project>
       <Name>terminalInstagramTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalIntegrationTests\terminalIntegrationTests.csproj">
-      <Project>{579ba25f-1df5-474a-8a3e-0447ff75711c}</Project>
-      <Name>terminalIntegrationTests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Terminals\Papertrail\terminalPapertrail\terminalPapertrail.csproj">
       <Project>{74d9bdc7-7b46-456f-b3c5-a4cdb5d74d7b}</Project>
       <Name>terminalPapertrail</Name>

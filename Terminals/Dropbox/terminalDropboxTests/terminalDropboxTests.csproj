@@ -222,6 +222,10 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Shared\Tests\Fr8.Testing.Integration.Tools\Fr8.Testing.Integration.Tools.csproj">
+      <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
+      <Name>Fr8.Testing.Integration.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\terminalDropbox\terminalDropbox.csproj">
       <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
       <Name>terminalDropbox</Name>
@@ -229,10 +233,6 @@
     <ProjectReference Include="..\..\..\Hub\HubWeb\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>HubWeb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Tests\Fr8.Testing.Integration.Tools\Fr8.Testing.Integration.Tools.csproj">
-      <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
-      <Name>Fr8.Testing.Integration.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Tests\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
