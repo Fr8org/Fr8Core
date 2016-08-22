@@ -334,6 +334,7 @@
     <Compile Include="Infrastructure\Fr8Principal.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
+    <Compile Include="Interfaces\DiscoveryResult.cs" />
     <Compile Include="Interfaces\IActivityCategory.cs" />
     <Compile Include="Interfaces\IManifestPageGenerator.cs" />
     <Compile Include="Interfaces\IManifestRegistryMonitor.cs" />
