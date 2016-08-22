@@ -419,7 +419,7 @@ namespace Hub.Services
 
         public bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO activityDTO)
         {
-            var activityTemplate = _activityTemplate.GetByNameAndVersion(activityDTO.ActivityTemplate.Name, activityDTO.ActivityTemplate.Version);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(activityDTO.ActivityTemplate);
 
             if (activityTemplate == null)
             {
@@ -502,7 +502,7 @@ namespace Hub.Services
 
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)
         {
-            var activityTemplate = _activityTemplate.GetByNameAndVersion(curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(curActivityDto.ActivityTemplate);
 
             if (activityTemplate == null)
             {
