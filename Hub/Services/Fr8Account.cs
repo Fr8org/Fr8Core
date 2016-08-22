@@ -563,6 +563,8 @@ namespace Hub.Services
             {
                 //get the current account
                 var curAccount = _security.GetCurrentAccount(uow);
+                if (curAccount == null)
+                    return false;
                 //get the roles to check if the account has admin role
                 var curAccountRoles = curAccount.Roles;
                 //get the role id
