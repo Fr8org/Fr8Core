@@ -200,11 +200,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+    <ProjectReference Include="..\..\..\SDK\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
       <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
       <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HubWeb.csproj">
+    <ProjectReference Include="..\..\..\Hub\HubWeb\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>HubWeb</Name>
     </ProjectReference>

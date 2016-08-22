@@ -365,11 +365,11 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+    <ProjectReference Include="..\..\..\SDK\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
       <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
       <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+    <ProjectReference Include="..\..\..\SDK\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
       <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
@@ -381,19 +381,19 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Azure\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>terminalAzure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Excel\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Fr8Core\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Shared\terminalUtilities\terminalUtilities.csproj">
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
       <Name>terminalUtilities</Name>
     </ProjectReference>

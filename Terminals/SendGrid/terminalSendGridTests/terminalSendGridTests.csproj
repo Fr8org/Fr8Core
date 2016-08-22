@@ -193,7 +193,7 @@
       <Project>{1e1ab01b-f6ab-4420-bf1d-5e6ef41d76bf}</Project>
       <Name>terminalSendGrid</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+    <ProjectReference Include="..\..\Shared\terminalUtilities\terminalUtilities.csproj">
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
       <Name>terminalUtilities</Name>
     </ProjectReference>

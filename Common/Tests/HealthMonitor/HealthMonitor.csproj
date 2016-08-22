@@ -342,43 +342,43 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Data\Data.csproj">
+    <ProjectReference Include="..\..\..\Hub\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+    <ProjectReference Include="..\..\..\SDK\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
       <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
       <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Hub\Hub.csproj">
+    <ProjectReference Include="..\..\..\Hub\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalAsana\terminalAsana.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Asana\terminalAsana\terminalAsana.csproj">
       <Project>{0dcd9aae-f141-4fad-8e87-1c610f0582db}</Project>
       <Name>terminalAsana</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalBasecamp2\terminalBasecamp2.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Basecamp\terminalBasecamp2\terminalBasecamp2.csproj">
       <Project>{19e2fda9-d7ac-4365-a25a-4bbcaf8be7fd}</Project>
       <Name>terminalBasecamp2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalBox\terminalBox.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Box\terminalBox\terminalBox.csproj">
       <Project>{84800565-b464-471d-8f02-1a93311c3388}</Project>
       <Name>terminalBox</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalFacebook\terminalFacebook.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Facebook\terminalFacebook\terminalFacebook.csproj">
       <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
       <Name>terminalFacebook</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalInstagram\terminalInstagram.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Instagram\terminalInstagram\terminalInstagram.csproj">
       <Project>{26c15dc0-73ca-46e3-aeba-17353c59c2f3}</Project>
       <Name>terminalInstagram</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalStatX\terminalStatX.csproj">
+    <ProjectReference Include="..\..\..\Terminals\StatX\terminalStatX\terminalStatX.csproj">
       <Project>{5fb0adc8-24c7-4b32-a4d2-afa31b0baaa7}</Project>
       <Name>terminalStatX</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalTelegram\terminalTelegram.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Telegram\terminalTelegram\terminalTelegram.csproj">
       <Project>{fba67d4e-d81a-4b6e-a6fd-464a2a5af9d5}</Project>
       <Name>terminalTelegram</Name>
     </ProjectReference>
@@ -386,63 +386,63 @@
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HubTests\HubTests.csproj">
+    <ProjectReference Include="..\..\..\Hub\Tests\HubTests\HubTests.csproj">
       <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
       <Name>HubTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalAtlassian\terminalAtlassian.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Atlassian\terminalAtlassian\terminalAtlassian.csproj">
       <Project>{89d763ed-3ea6-4303-ab29-3239095a4b06}</Project>
       <Name>terminalAtlassian</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Azure\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>terminalAzure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Docusign\terminalDocuSign\terminalDocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminalDocuSign</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalAsanaTests\terminalAsanaTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Asana\terminalAsanaTests\terminalAsanaTests.csproj">
       <Project>{3b0a3d34-d926-4356-be31-809055fe835a}</Project>
       <Name>terminalAsanaTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalAtlassianTests\terminalAtlassianTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Atlassian\terminalAtlassianTests\terminalAtlassianTests.csproj">
       <Project>{f39ea7be-25c2-45ed-91ac-29647effad2b}</Project>
       <Name>terminalAtlassianTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalDropboxTests\terminalDropboxTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Dropbox\terminalDropboxTests\terminalDropboxTests.csproj">
       <Project>{42f21ce5-c8d1-4083-937b-951b92c2f93c}</Project>
       <Name>terminalDropboxTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalDropbox\terminalDropbox.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Dropbox\terminalDropbox\terminalDropbox.csproj">
       <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
       <Name>terminalDropbox</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Excel\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalFacebookTests\terminalFacebookTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Facebook\terminalFacebookTests\terminalFacebookTests.csproj">
       <Project>{380c028e-2623-4207-b8af-f21b92183ed8}</Project>
       <Name>terminalFacebookTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalFr8CoreTests\terminalFr8CoreTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Fr8Core\terminalFr8CoreTests\terminalFr8CoreTests.csproj">
       <Project>{6c3090fc-50d2-4a7e-9b29-eab9d8802f42}</Project>
       <Name>terminalFr8CoreTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Fr8Core\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalGoogleTests\terminalGoogleTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Google\terminalGoogleTests\terminalGoogleTests.csproj">
       <Project>{62219aa6-9276-4935-b934-f0f50ecef6fb}</Project>
       <Name>terminalGoogleTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Google\terminalGoogle\terminalGoogle.csproj">
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalInstagramTests\terminalInstagramTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Instagram\terminalInstagramTests\terminalInstagramTests.csproj">
       <Project>{d0bbf260-ad17-41bf-9e11-6ea0cc8308e1}</Project>
       <Name>terminalInstagramTests</Name>
     </ProjectReference>
@@ -450,75 +450,75 @@
       <Project>{579ba25f-1df5-474a-8a3e-0447ff75711c}</Project>
       <Name>terminalIntegrationTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalPapertrail\terminalPapertrail.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Papertrail\terminalPapertrail\terminalPapertrail.csproj">
       <Project>{74d9bdc7-7b46-456f-b3c5-a4cdb5d74d7b}</Project>
       <Name>terminalPapertrail</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalQuickBooks\terminalQuickBooks.csproj">
+    <ProjectReference Include="..\..\..\Terminals\QuickBooks\terminalQuickBooks\terminalQuickBooks.csproj">
       <Project>{3d4116ce-63dd-406c-8235-0115a8fa90f1}</Project>
       <Name>terminalQuickBooks</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalSalesforceTests\terminalSalesforceTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Salesforce\terminalSalesforceTests\terminalSalesforceTests.csproj">
       <Project>{fda06158-a81e-46b4-9f25-5ab76dfd400a}</Project>
       <Name>terminalSalesforceTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalSalesforce\terminalSalesforce.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Salesforce\terminalSalesforce\terminalSalesforce.csproj">
       <Project>{85cb0215-96df-4c38-a022-1be6c952813b}</Project>
       <Name>terminalSalesforce</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalSendGridTests\terminalSendGridTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\SendGrid\terminalSendGridTests\terminalSendGridTests.csproj">
       <Project>{ee3e1e99-175f-4507-96da-421fcd0f6d9e}</Project>
       <Name>terminalSendGridTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalSendGrid\terminalSendGrid.csproj">
+    <ProjectReference Include="..\..\..\Terminals\SendGrid\terminalSendGrid\terminalSendGrid.csproj">
       <Project>{1e1ab01b-f6ab-4420-bf1d-5e6ef41d76bf}</Project>
       <Name>terminalSendGrid</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalSlackTests\terminalSlackTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Slack\terminalSlackTests\terminalSlackTests.csproj">
       <Project>{1246a6d6-fb9d-4564-8e86-a9f14a7ad177}</Project>
       <Name>terminalSlackTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalSlack\terminalSlack.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Slack\terminalSlack\terminalSlack.csproj">
       <Project>{990db8cb-aad6-42fe-940d-3a731df56abe}</Project>
       <Name>terminalSlack</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalStatXTests\terminalStatXTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\StatX\terminalStatXTests\terminalStatXTests.csproj">
       <Project>{e0e04964-f77e-435f-8b90-f4338c30ddad}</Project>
       <Name>terminalStatXTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalTwilioTests\terminalTwilioTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Twilio\terminalTwilioTests\terminalTwilioTests.csproj">
       <Project>{6b807ab1-f549-49cb-9f52-52bc33d23443}</Project>
       <Name>terminalTwilioTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalTwilio\terminalTwilio.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Twilio\terminalTwilio\terminalTwilio.csproj">
       <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
       <Name>terminalTwilio</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalYammerTests\terminalYammerTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Yammer\terminalYammerTests\terminalYammerTests.csproj">
       <Project>{d2638cb3-33d6-443f-bc87-e20260d3c9ef}</Project>
       <Name>terminalYammerTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalYammer\terminalYammer.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Yammer\terminalYammer\terminalYammer.csproj">
       <Project>{e8bf04ac-1a7d-4cbe-80b9-e20f53699f2d}</Project>
       <Name>terminalYammer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Azure\terminalAzureTests\terminalAzureTests.csproj">
       <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>
       <Name>terminalAzureTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalDocuSignTests\terminalDocuSignTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Docusign\terminalDocuSignTests\terminalDocuSignTests.csproj">
       <Project>{a6e317fa-2eb0-4447-8ecd-6725f6b78435}</Project>
       <Name>terminalDocuSignTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalExcelTests\terminalExcelTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Excel\terminalExcelTests\terminalExcelTests.csproj">
       <Project>{a854eb96-b28a-42fc-8209-3e5e9d6b208c}</Project>
       <Name>terminalExcelTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalPapertrailTests\terminalPapertrailTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\Papertrail\terminalPapertrailTests\terminalPapertrailTests.csproj">
       <Project>{8f5be349-6d11-44ad-a1cc-b5bb5eb4b179}</Project>
       <Name>terminalPapertrailTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalQuickBooksTests\terminalQuickBooksTests.csproj">
+    <ProjectReference Include="..\..\..\Terminals\QuickBooks\terminalQuickBooksTests\terminalQuickBooksTests.csproj">
       <Project>{6367b304-3e18-4da6-a7e7-0893da806953}</Project>
       <Name>terminalQuickBooksTests</Name>
     </ProjectReference>

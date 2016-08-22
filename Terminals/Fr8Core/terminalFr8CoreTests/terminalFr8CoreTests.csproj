@@ -246,7 +246,7 @@
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+    <ProjectReference Include="..\..\Shared\terminalUtilities\terminalUtilities.csproj">
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
       <Name>terminalUtilities</Name>
     </ProjectReference>
