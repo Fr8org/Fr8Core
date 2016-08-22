@@ -60,17 +60,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Atlassian.Jira, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\terminalAtlassian\Atlassian.Jira.dll</HintPath>
+    <Reference Include="Atlassian.Jira">
+      <HintPath>..\..\..\Terminals\Atlassian\terminalAtlassian\Atlassian.Jira.dll</HintPath>
     </Reference>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DocuSign.eSign, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Utilities\DocuSign.eSign.dll</HintPath>
+    <Reference Include="DocuSign.eSign">
+      <HintPath>..\..\..\Terminals\Docusign\terminalDocuSign\lib\DocuSign.eSign.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -389,12 +387,12 @@
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <PropertyGroup>
-    <SourceFile>$(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
-    <SourceFile>$(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config</SourceFile>
-    <SourceFile>$(SolutionDir)terminalAzure\bin\terminalAzure.dll.config</SourceFile>
-    <SourceFile>$(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
-    <SourceFile>$(SolutionDir)terminalExcel\bin\terminalExcel.dll.config</SourceFile>
-    <SourceFile>$(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Fr8Core\terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Docusign\terminalDocuSign\bin\terminalDocuSign.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Azure\terminalAzure\bin\terminalAzure.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Fr8Core\terminalFr8Core\bin\terminalFr8Core.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Excel\terminalExcel\bin\terminalExcel.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Google\terminalGoogle\bin\terminalGoogle.dll.config</SourceFile>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SourceFile)" DestinationFolder="$(TargetDir)" />

@@ -268,7 +268,7 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <SourceFile>$(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config</SourceFile>
+    <SourceFile>$(SolutionDir)Terminals\Google\terminalGoogle\bin\terminalGoogle.dll.config</SourceFile>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SourceFile)" DestinationFolder="$(TargetDir)" />

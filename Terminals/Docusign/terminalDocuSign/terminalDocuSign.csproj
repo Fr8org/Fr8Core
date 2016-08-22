@@ -49,7 +49,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DocuSign.eSign">
-      <HintPath>..\Utilities\DocuSign.eSign.dll</HintPath>
+      <HintPath>lib\DocuSign.eSign.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
