@@ -117,7 +117,7 @@ namespace Hub.StructureMap
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
                 For<IPageDefinition>().Use<PageDefinition>();
-
+                For<IFr8Account>().Use<Fr8Account>();
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
