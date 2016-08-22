@@ -160,18 +160,14 @@ namespace terminalStatX.Activities
                     Storage.RemoveByLabel("Advisories");
                 }
 
-                if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
-                {
-                    var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
-                    if (currentStat != null)
-                    {
-                        CrateSignaller.ClearAvailableCrates();
-                        CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
-                    }
-                }
-                SelectedStat= ActivityUI.ExistingGroupStats.Value;
+                var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
+
+                SelectedStat = ActivityUI.ExistingGroupStats.Value;
                 ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
                 ActivityUI.ExistingGroupStats.Value = SelectedStat;
+
+                CrateSignaller.ClearAvailableCrates();
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
 
                 EventSubscriptions.Subscriptions?.Clear();
                 EventSubscriptions.Manufacturer = "StatX";

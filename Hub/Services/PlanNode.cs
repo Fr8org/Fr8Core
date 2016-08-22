@@ -6,6 +6,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -52,15 +53,17 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ITerminal _terminal;
         private readonly IActivityTemplate _activityTemplate;
+        private readonly IFr8Account _fr8Account;
         private const string ValidationErrorsLabel = "Validation Errors";
 
         #endregion
 
-        public PlanNode(ICrateManager crateManager, IActivityTemplate activityTemplate, ITerminal terminal)
+        public PlanNode(ICrateManager crateManager, IActivityTemplate activityTemplate, ITerminal terminal, IFr8Account fr8Account)
         {
             _terminal = terminal;
             _activityTemplate = activityTemplate;
             _crate = crateManager;
+            _fr8Account = fr8Account;
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -418,6 +421,7 @@ namespace Hub.Services
                     IconPath = x.IconPath,
                     Activities = _activityTemplate.GetQuery()
                         .Where(y => y.Categories != null && y.Categories.Any(z => z.ActivityCategory.Name == x.Name))
+                        .Where(y => y.Tags == null || (!y.Tags.Contains(Tags.Internal) || _fr8Account.IsCurrentUserInAdminRole()))
                         .GroupBy(y => y.Name)
                         .Select(y => Mapper.Map<ActivityTemplateDTO>(y.OrderByDescending(z => Int32.Parse(z.Version)).First()))
                         .OrderBy(y => y.Label)
