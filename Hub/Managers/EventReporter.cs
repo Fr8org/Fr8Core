@@ -16,7 +16,7 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 
-//NOTES: Do NOT put Incidents here. Put them in IncidentReporter
+// NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 namespace Hub.Managers
 {
     public enum EventType
@@ -39,7 +39,7 @@ namespace Hub.Managers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-        //Register for interesting events
+        // Register for interesting events
         public void SubscribeToAlerts()
         {
             EventManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
@@ -144,8 +144,6 @@ namespace Hub.Managers
         {
             try
             {
-                Guid planId;
-                DateTimeOffset planLastUpdated;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
@@ -161,21 +159,16 @@ namespace Hub.Managers
                         CreatedByID = _security.GetCurrentUser(),
                         Data = string.Join(Environment.NewLine, "Activity Name: " + template?.Name)
                     };
-
-                    var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
-                    planId = planDO.Id;
-                    planLastUpdated = planDO.LastUpdated;
                     SaveAndLogFact(factDO);
-                    //create user notifications
+
+                    // Create user notifications about activity execution
                     var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-                    _pusherNotifier.NotifyUser(new NotificationPlanDTO
+                    _pusherNotifier.NotifyUser(new NotificationMessageDTO()
                     {
                         NotificationType = NotificationType.GenericInfo,
                         Subject = "Executing Activity",
                         Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
                         ActivityName = template.Label,
-                        PlanId = planId,
-                        PlanLastUpdated = planLastUpdated,
                         Collapsed = true,
                     }, activityDo.Fr8Account.Id);
                 }
@@ -355,7 +348,6 @@ namespace Hub.Managers
 
                 var fact = new FactDO
                 {
-                    //Fr8UserId = containerDO.Fr8AccountId,
                     Fr8UserId = plan.Fr8AccountId,
                     Data = containerDO.Id.ToStr(),
                     ObjectId = containerDO.Id.ToStr(),
@@ -879,7 +871,6 @@ namespace Hub.Managers
                     var activityTemplate = _activityTemplate.GetByKey(activityDO.ActivityTemplateId);
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
-                //LogFactInformation(curFact, curFact.Data);
 
                 SaveAndLogFact(curFact);
             }
