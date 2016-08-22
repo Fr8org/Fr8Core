@@ -42,15 +42,15 @@ namespace HubWeb.Controllers
         /// </remarks>
         [Fr8ApiAuthorize]
         [HttpGet]
-        [ResponseType(typeof(HistoryResultDTO<FactDTO>))]
-        [ResponseType(typeof(HistoryResultDTO<IncidentDTO>))]
-        [SwaggerResponse(HttpStatusCode.OK, "Collection of log records", typeof(HistoryResultDTO<IncidentDTO>))]
+        [ResponseType(typeof(PagedResultDTO<FactDTO>))]
+        [ResponseType(typeof(PagedResultDTO<IncidentDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, "Collection of log records", typeof(PagedResultDTO<IncidentDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Incorrect type is specified")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
-        public IHttpActionResult Get([FromUri] string type, [FromUri] HistoryQueryDTO historyQueryDTO)
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
+        public IHttpActionResult Get([FromUri] string type, [FromUri] PagedQueryDTO pagedQueryDto)
         {
             //Only admins can see logs of other users
-            if (!historyQueryDTO.IsCurrentUser && !HasManageUserPrivilege())
+            if (!pagedQueryDto.IsCurrentUser && !HasManageUserPrivilege())
             {
                 return new StatusCodeResult(HttpStatusCode.Forbidden, Request);
             }
@@ -59,12 +59,12 @@ namespace HubWeb.Controllers
             {
                 if (type == "incidents")
                 {
-                    var result = _report.GetIncidents(uow, historyQueryDTO);
+                    var result = _report.GetIncidents(uow, pagedQueryDto);
                     return Ok(result);
                 }
                 else if (type == "facts")
                 {
-                    var result = _report.GetFacts(uow, historyQueryDTO);
+                    var result = _report.GetFacts(uow, pagedQueryDto);
                     return Ok(result);
                 }
                 else

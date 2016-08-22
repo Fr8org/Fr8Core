@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using Data.Utility;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
+using Hangfire.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
 
@@ -19,9 +23,13 @@ namespace Hub.Services
 {
     public partial class ContainerService : IContainerService
     {
+        private const int DefaultPageSize = 10;
+        private const int MinPageSize = 5;
+
         private readonly IUtilizationMonitoringService _utilizationMonitoringService;
         private readonly IActivityExecutionRateLimitingService _activityRateLimiter;
         private readonly IPusherNotifier _pusherNotifier;
+        private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
 
@@ -29,11 +37,13 @@ namespace Hub.Services
                          ICrateManager crateManager, 
                          IUtilizationMonitoringService utilizationMonitoringService,
                          IActivityExecutionRateLimitingService activityRateLimiter,
-                         IPusherNotifier pusher)
+                         IPusherNotifier pusher,
+                         IUnitOfWorkFactory uowFactory)
         {
             _utilizationMonitoringService = utilizationMonitoringService;
             _activityRateLimiter = activityRateLimiter;
             _pusherNotifier = pusher;
+            _uowFactory = uowFactory;
             _activity = activity;
             _crate = crateManager;
         }
@@ -145,7 +155,7 @@ namespace Hub.Services
             catch (InvalidTokenRuntimeException ex)
             {
                 var user = uow.UserRepository.GetByKey(plan.Fr8AccountId);
-                ReportAuthError(user, ex);
+                ReportAuthError(uow, user, ex);
                 EventManager.ContainerFailed(plan, ex, container.Id.ToString());
                 throw;
             }
@@ -199,7 +209,8 @@ namespace Hub.Services
 
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO)node).Name;
+                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(((ActivityDO)node).ActivityTemplateId);
+                    nodeName = "Activity: " + activityTemplate.Name + " Version:" + activityTemplate.Version;
                 }
 
                 if (node is SubplanDO)
@@ -250,13 +261,84 @@ namespace Hub.Services
             var containerRepository = unitOfWork.ContainerRepository.GetQuery();
             return (id == null ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id) : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
         }
-        
-        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
-        {
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
 
-            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+        public PagedResultDTO<ContainerDTO> GetByQuery(Fr8AccountDO account, PagedQueryDTO query)
+        {
+            if (account.Id == null)
+            {
+                throw new ApplicationException("UserId must not be null");
+            }
+            query = ValidateInputQuery(query);
+            using (var uow = _uowFactory.Create())
+            {
+                var result = uow.ContainerRepository.GetQuery().Where(x => x.Plan.Fr8AccountId == account.Id);
+                result = ApplyFilter(result, query);
+                var totalItemCount = result.Count();
+                result = ApplySort(result, query);
+                result = result.Page(query.Page.Value, query.ItemPerPage.Value);
+                return new PagedResultDTO<ContainerDTO>
+                {
+                    CurrentPage = query.Page.Value,
+                    Items = result.AsEnumerable().Select(Mapper.Map<ContainerDTO>).ToList(),
+                    TotalItemCount = totalItemCount
+                };
+            }
+
+        }
+
+        private IQueryable<ContainerDO> ApplySort(IQueryable<ContainerDO> resultQuery, PagedQueryDTO queryParameters)
+        {
+            if (string.IsNullOrWhiteSpace(queryParameters.OrderBy))
+            {
+                return resultQuery;
+            }
+            var isDescending = queryParameters.OrderBy.StartsWith("-");
+            if (queryParameters.OrderBy.StartsWith("-") || queryParameters.OrderBy.StartsWith("+"))
+            {
+                queryParameters.OrderBy = queryParameters.OrderBy.Remove(0, 1);
+            }
+            queryParameters.OrderBy = queryParameters.OrderBy.ToLower();
+            switch (queryParameters.OrderBy)
+            {
+                case "createDate":
+                    return isDescending ? resultQuery.OrderByDescending(x => x.CreateDate) : resultQuery.OrderBy(x => x.CreateDate);
+                case "name":
+                    return isDescending ? resultQuery.OrderByDescending(x => x.Name) : resultQuery.OrderBy(x => x.Name);
+                case "state":
+                    return isDescending ? resultQuery.OrderByDescending(x => x.ContainerStateTemplate.Name) : resultQuery.OrderBy(x => x.ContainerStateTemplate.Name);
+                default:
+                    return isDescending ? resultQuery.OrderByDescending(x => x.LastUpdated) : resultQuery.OrderBy(x => x.LastUpdated);
+            }
+        }
+
+        private IQueryable<ContainerDO> ApplyFilter(IQueryable<ContainerDO> resultQuery, PagedQueryDTO queryParameters)
+        {
+            if (string.IsNullOrWhiteSpace(queryParameters.Filter))
+            {
+                return resultQuery;
+            }
+            return resultQuery.Where(x => x.Name.Contains(queryParameters.Filter)
+                                          || x.Plan.Name.Contains(queryParameters.Filter)
+                                          || x.ContainerStateTemplate.Name.Contains(queryParameters.Filter));
+        }
+
+        private PagedQueryDTO ValidateInputQuery(PagedQueryDTO pagedQueryDto)
+        {
+            //lets make sure our inputs are correct
+            pagedQueryDto = pagedQueryDto ?? new PagedQueryDTO();
+            pagedQueryDto.Page = pagedQueryDto.Page ?? 1;
+            pagedQueryDto.Page = pagedQueryDto.Page < 1 ? 1 : pagedQueryDto.Page;
+            pagedQueryDto.ItemPerPage = pagedQueryDto.ItemPerPage ?? DefaultPageSize;
+            pagedQueryDto.ItemPerPage = pagedQueryDto.ItemPerPage < MinPageSize ? MinPageSize : pagedQueryDto.ItemPerPage;
+            return pagedQueryDto;
+        }
+
+        private void ReportAuthError(IUnitOfWork uow, Fr8AccountDO user, InvalidTokenRuntimeException ex)
+        {
+            var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
+
+            var errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with remote web-service.";
+            errorMessage += $"Please re-authorize {ex?.FailedActivityDTO.Label} activity " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 
@@ -270,7 +352,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);

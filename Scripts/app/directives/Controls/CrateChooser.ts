@@ -35,7 +35,8 @@ module dockyard.directives.crateChooser {
                         size: 'm',
                         resolve: {
                             'crateDescriptions': () => $scope.field.crateDescriptions,
-                            'singleSelection': () => $scope.field.singleManifestOnly
+                            'singleSelection': () => $scope.field.singleManifestOnly,
+                            'allowedManifestTypes': () => $scope.field.allowedManifestTypes
                         }
                     });
 
@@ -45,9 +46,19 @@ module dockyard.directives.crateChooser {
                 if ($scope.field.requestUpstream) {
                     UpstreamExtractor.getAvailableData($scope.currentAction.id, 'NotSet')
                         .then((data: model.IncomingCratesDTO) => {
+                            var availableManifests = [];
+                            if ($scope.field.allowedManifestTypes) {
+                                availableManifests = $scope.field.allowedManifestTypes;
+                                for (var i = 0; i < availableManifests.length; i++) {
+                                    availableManifests[i] = availableManifests[i].toLowerCase();
+                                }
+                            }
                             var descriptions = <Array<model.CrateDescriptionDTO>>[];
                             angular.forEach(data.availableCrates, (cd) => {
-                                descriptions.push(cd);
+                                if (availableManifests.length === 0 ||
+                                    availableManifests.indexOf(cd.manifestType.toLowerCase()) >= 0) {
+                                    descriptions.push(cd);
+                                }
                             });
 
                             $scope.field.crateDescriptions = descriptions;

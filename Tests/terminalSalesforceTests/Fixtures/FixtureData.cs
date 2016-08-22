@@ -16,11 +16,6 @@ namespace terminalSalesforceTests.Fixtures
         public static async Task<AuthorizationToken>  Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
-            await auth.UsernamePasswordAsync(
-                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
-                "611998545425677937",
-                "alex@dockyard.company",
-                "thales@123");
 
             return new AuthorizationToken()
             {
@@ -29,25 +24,21 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO GetDataActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO GetDataActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
                 Version = "1",
-                Name = "Get_Data",
-                Label = "Get Data from Salesforce.com",
-                NeedsAuthentication = true
+                Name = "Get_Data"
             };
         }
 
-        public static ActivityTemplateDTO SaveToSalesforceActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO SaveToSalesforceActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
                 Version = "1",
-                Name = "Save_To_SalesforceDotCom",
-                Label = "Save To Salesforce.Com",
-                NeedsAuthentication = true
+                Name = "Save_To_SalesforceDotCom"
             };
         }
 

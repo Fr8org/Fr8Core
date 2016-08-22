@@ -51,8 +51,14 @@ namespace terminalBaseTests.BaseClasses
             CrateManagerHelper = new CrateManager();
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
             _activityStore = ObjectFactory.GetInstance<IActivityStore>();
-
-            if (_activityStore.GetFactory(ExplicitTerminalActivityMock.ActivityTemplate) == null)
+            var activityTemplateSummary = new ActivityTemplateSummaryDTO
+            {
+                Name = ExplicitTerminalActivityMock.ActivityTemplate.Name,
+                Version = ExplicitTerminalActivityMock.ActivityTemplate.Version,
+                TerminalName = ExplicitTerminalActivityMock.ActivityTemplate.Terminal.Name,
+                TerminalVersion = ExplicitTerminalActivityMock.ActivityTemplate.Terminal.Version
+            };
+            if (_activityStore.GetFactory(activityTemplateSummary.Name, activityTemplateSummary.Version) == null)
             {
                 _activityStore.RegisterActivity<ExplicitTerminalActivityMock>(ExplicitTerminalActivityMock.ActivityTemplate);
             }
@@ -80,7 +86,7 @@ namespace terminalBaseTests.BaseClasses
         public async Task HandleFr8Request_TerminalNotExist_ThrowsException()
         {
             ActivityDTO activityDTO = new ActivityDTO();
-            activityDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
+            activityDTO.ActivityTemplate = new ActivityTemplateSummaryDTO() { Name = "terminalDummy", Version = "1.1" };
             var fr8Data = new Fr8DataDTO { ActivityDTO = activityDTO };
             await _activityExecutor.HandleFr8Request("", null, fr8Data);
         }

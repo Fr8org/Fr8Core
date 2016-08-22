@@ -91,11 +91,10 @@ namespace terminalFr8CoreTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityTemplateDTO ConnectToSql_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO ConnectToSql_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Connect_To_Sql_TEST",
                 Version = "1"
             };
@@ -115,11 +114,10 @@ namespace terminalFr8CoreTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityTemplateDTO ExecuteSql_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO ExecuteSql_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Execute_Sql_TEST",
                 Version = "1"
             };
@@ -139,21 +137,19 @@ namespace terminalFr8CoreTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityTemplateDTO SaveToFr8Wareouse_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO SaveToFr8Wareouse_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Save_To_Fr8_Warehouse_TEST",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO MonitorFr8Event_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO MonitorFr8Event_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Fr8_Events_TEST",
                 Version = "1"
             };
@@ -184,11 +180,10 @@ namespace terminalFr8CoreTests.Fixtures
             return new Fr8DataDTO() { ActivityDTO = activityDTO };
         }
 
-        private static ActivityTemplateDTO Loop_ActivityTemplate()
+        private static ActivityTemplateSummaryDTO Loop_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Loop_TEST",
                 Version = "1"
             };

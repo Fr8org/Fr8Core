@@ -35,5 +35,20 @@ namespace TerminalSqlUtilities
         /// Execute query against database, and return table result.
         /// </summary>
         Table ExecuteQuery(SelectQuery query);
+
+        /// <summary>
+        /// Gets List of All Tables in DB
+        /// </summary>
+        IEnumerable<TableInfo> ListAllTables(IDbTransaction tx);
+        
+        /// <summary>
+        /// Gets Identity Column of Table
+        /// </summary>
+        string GetIdentityColumn(IDbTransaction tx, string tableName);
+
+        /// <summary>
+        /// Gets All Columns in Table
+        /// </summary>
+        IEnumerable<ColumnInfo> ListTableColumns(IDbTransaction tx, string tablename);
     }
 }

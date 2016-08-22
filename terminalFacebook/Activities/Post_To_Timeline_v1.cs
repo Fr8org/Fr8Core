@@ -26,16 +26,14 @@ namespace terminalFacebook.Activities
             Id = new Guid("9710de37-7f5a-471a-9e94-c1ade0f71474"),
             Name = "Post_To_Timeline",
             Label = "Post To Timeline",
-            Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -85,10 +83,9 @@ namespace terminalFacebook.Activities
             return Task.FromResult(0);
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
-            _fbIntegration.PostToTimeline(AuthorizationToken.Token, ActivityUI.Message.GetValue(Payload));
-            return Task.FromResult(0);
+            await _fbIntegration.PostToTimeline(AuthorizationToken.Token, ActivityUI.Message.TextValue);
         }
     }
 }

@@ -3,11 +3,14 @@
 
 These special activities are part of the core Fr8 set:
 
-## Collect Data
 
-### ACTIVITY – COLLECT DATA
+NEEDS UPDATING
 
-This special and powerful activity allows the generation of Fr8lets, miniature applications that can be distributed to others, allowing them to run the application without dealing with the Fr8 Plan Builder complexity.
+## App Builder
+
+### ACTIVITY – App Builder
+
+This special and powerful activity allows the generation of Fr8 Apps, miniature applications that can be distributed to others, allowing them to run the application without dealing with the Fr8 Plan Builder complexity.
 
 Collect Data makes use of Views, the ability of Activities to show different sets of UI depending on circumstances. The first View corresponds to Builder Mode, and allows the Power User to assemble a form from a set of form metacontrols:
 

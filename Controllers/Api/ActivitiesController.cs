@@ -12,8 +12,6 @@ using Hub.Interfaces;
 using HubWeb.Controllers.Api;
 using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
-using System.Web.Http.Description;
-using System.Web.Http.Results;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -22,14 +20,16 @@ namespace HubWeb.Controllers
     public class ActivitiesController : ApiController
     {
         private readonly IActivity _activityService;
+        private readonly IActivityTemplate _activityTemplateService;
         private readonly IPlan _planService;
         private readonly IUnitOfWorkFactory _uowFactory;
 
-        public ActivitiesController(IActivity activityService, IPlan planService, IUnitOfWorkFactory uowFactory)
+        public ActivitiesController(IActivity activityService, IActivityTemplate activityTemplateService, IPlan planService, IUnitOfWorkFactory uowFactory)
         {
             _planService = planService;
             _uowFactory = uowFactory;
             _activityService = activityService;
+            _activityTemplateService = activityTemplateService;
         }
         /// <summary>
         /// Creates an instance of activity from activity template optionally providing necessary authorization
@@ -46,16 +46,21 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was succesfully created", typeof(ActivityDTO))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Activity template doesn't exist", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and activity can't be added to it")]
         public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
         {
             using (var uow = _uowFactory.Create())
             {
-                if (parentNodeId != null && _planService.GetPlanState(uow, parentNodeId.Value) == PlanState.Running)
+                if (parentNodeId != null && _planService.IsPlanActiveOrExecuting(parentNodeId.Value))
                 {
                     return new LockedHttpActionResult();
                 }
+                if (!_activityTemplateService.Exists(activityTemplateId))
+                {
+                    return BadRequest("Activity template doesn't exist");
+                };
                 var userId = User.Identity.GetUserId();
                 var result = await _activityService.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, !parentNodeId.HasValue, authorizationTokenId) as ActivityDO;
                 return Ok(Mapper.Map<ActivityDTO>(result));
@@ -73,23 +78,21 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully configured", typeof(ActivityDTO))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Specifieid activity, activity template or parent plan doesn't exist", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and 'force' flag is not set so activity can't be configured")]
         public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
-            curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
             var userId = User.Identity.GetUserId();
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running && !force)
+                if (_planService.IsPlanActiveOrExecuting(curActionDesignDTO.Id) && !force)
                 {
                     return new LockedHttpActionResult();
                 }
-
-                ActivityDTO activityDTO = await _activityService.Configure(uow, userId, curActivityDO);
-
-                return Ok(activityDTO);
+                var configuredActivity = await _activityService.Configure(uow, userId, curActivityDO);
+                return Ok(configuredActivity);
             }
         }
 
@@ -100,12 +103,12 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, "Activity with specified Id", typeof(ActivityDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "Activity with specified Id doesn't exist")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "Activity with specified Id doesn't exist", typeof(DetailedMessageDTO))]
         public IHttpActionResult Get(Guid id)
         {
             if (!_activityService.Exists(id))
             {
-                return BadRequest("Activity doesn't exist");
+                return NotFound();
             }
             using (var uow = _uowFactory.Create())
             {
@@ -125,17 +128,15 @@ namespace HubWeb.Controllers
         [HttpDelete]
         [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully deleted")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "Activity doesn't exist", typeof(DetailedMessageDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state so activity can\'t be deleted")]
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
-            using (var uow = _uowFactory.Create())
+            if (_planService.IsPlanActiveOrExecuting(id))
             {
-                if (_planService.GetPlanState(uow, id) == PlanState.Running)
-                {
-                    return new LockedHttpActionResult();
-                }
+                return new LockedHttpActionResult();
             }
             if (deleteChildNodes)
             {
@@ -156,23 +157,21 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully created or updated")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Activity template or parent plan don't exist", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state and 'force' flag is not set so activity can\'t be changed or added to plan")]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running && !force)
+                if (_planService.IsPlanActiveOrExecuting(curActionDTO.Id) && !force)
                 {
                     return new LockedHttpActionResult();
                 }
             }
-
-            var submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-
-            var resultActionDTO = await _activityService.SaveOrUpdateActivity(submittedActivityDO);
-
-            return Ok(resultActionDTO);
+            var submittedActivity = Mapper.Map<ActivityDO>(curActionDTO);
+            var savedActivity = await _activityService.SaveOrUpdateActivity(submittedActivity);
+            return Ok(savedActivity);
         }
     }
 }

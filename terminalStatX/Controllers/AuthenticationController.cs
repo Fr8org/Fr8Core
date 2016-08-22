@@ -36,8 +36,8 @@ namespace terminalStatX.Controllers
                 }
                
                 credentialsDTO.ClientId = statXAuthResponse.ClientId;
-
-                credentialsDTO.Message = "* NOTE: Make sure you look in the 'Pending Authorizations' section of your StatX app and NOT in your SMS.";
+                credentialsDTO.Title = "Enter the verification code from your StatX App: ";
+                credentialsDTO.Message = "* To find your verification code, go to your StatX App (download if necessary from an App store), then tap \"Settings\", \"Additional Authorizations\", and finally \"Get Code\". Note: the code is NOT in your SMS messages.";
 
                 return credentialsDTO;
             }

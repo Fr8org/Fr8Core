@@ -6,10 +6,11 @@ namespace terminalFr8Core
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Built-In Services",
-            IconPath = "/Content/icons/web_services/fr8-core-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/fr8-core-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

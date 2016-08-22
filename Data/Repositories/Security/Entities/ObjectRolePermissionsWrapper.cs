@@ -19,7 +19,7 @@ namespace Data.Repositories.Security.Entities
         /// <summary>
         /// Identifier of Secured Object. In general Primary Key(GUID) of Data Object. 
         /// </summary>
-        public string ObjectId { get; set; }
+        public Guid ObjectId { get; set; }
 
         /// <summary>
         /// Type of the object
@@ -27,7 +27,7 @@ namespace Data.Repositories.Security.Entities
         public string Type { get; set; }
 
         /// <summary>
-        /// Fr8 Account that created this. Used in combination with OwnerOfObject Role
+        /// Fr8 Account that created this object. Used in combination with OwnerOfObject Role
         /// </summary>
         public string Fr8AccountId { get; set; }
 

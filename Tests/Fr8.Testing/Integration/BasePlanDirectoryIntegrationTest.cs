@@ -15,8 +15,10 @@ namespace Fr8.Testing.Integration
     {
         private HttpClient _httpClient;
 
-        protected virtual string TestUserEmail => "integration_test_runner@fr8.company";
-        protected virtual string TestUserPassword => "fr8#s@lt!";
+        protected virtual string TestUserEmail => ConfigurationManager.AppSettings["TestUserAccountName"];
+
+        protected virtual string TestUserPassword => ConfigurationManager.AppSettings["TestUserPassword"];
+
         public override string TerminalName => "PlanDirectory";
 
         public BasePlanDirectoryIntegrationTest()
@@ -41,7 +43,7 @@ namespace Fr8.Testing.Integration
 
         private string GetPlanDirectoryBaseApiUrl()
         {
-            return ConfigurationManager.AppSettings["PlanDirectoryBaseApiUrl"];
+            return ConfigurationManager.AppSettings["HubApiBaseUrl"];            
         }
 
         private Uri GetPlanDirectoryBaseUri()

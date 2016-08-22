@@ -1,4 +1,5 @@
-﻿@model HubWeb.ViewModels.HomeVM
+﻿@using Org.BouncyCastle.Asn1.Ocsp
+@model HubWeb.ViewModels.HomeVM
 
 
 <!DOCTYPE html>
@@ -11,7 +12,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>fr8</title>
+    <title>The Fr8 Company: Open iPaaS</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -51,18 +52,18 @@
         <div class="hero-content text-center">
             <div id="slidecaption" class="slide-caption">
                 <div class="hero-text">
-                    <h2 class="hero-heading">Connect Your Cloud Services</h2>
-                    <p>The most powerful Integration-as-a-Service solution.</p>
+                    <h2 class="hero-heading">The Open Cloud Integration Service</h2>
+                    <p>Distributed. Extensible. Powerful. Open-Source.</p>
                 </div>
             </div>
             <div class="hero-buttons">
-                <a href="/Services/HowItWorks" id="btn-about" class="btn btn-danger btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
+                <a href="#about" id="btn-about" class="btn btn-danger btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
                 @if (Request.IsAuthenticated)
                 {
                     <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
                 }
                 else {
-                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                    <a href="/Account/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
                 }
             </div>
 
@@ -106,7 +107,7 @@
             <div class="container">
                 <div class="section-heading">
                     <h2>HOW IT WORKS</h2>
-                    <p>Automate Your Work with Cloud Service Workflows </p>
+                    <p>Automate Your Work with Cloud Workflows and Apps </p>
                     <hr />
                 </div>
                 <div class="row">
@@ -161,12 +162,31 @@
                     <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
                 }
                 else {
-                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                    <a href="/Account/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
                 }
                 <p style="color: #F2F4F5; padding-top: 10px;">`</p>
             </div>
         </div>
         <!-- END FULL-WIDTH PARALLAX -->
+        <!-- VIDEO SECTION -->
+        <div id="video" class="section darker videos" style="padding-bottom: 0">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Watch an Introduction to FR8</h2>
+                    <a href="http://documentation.fr8.co/developers/fr8-videos/" target="_blank"><h4 style="color: darkblue;">Go to the Video Gallery</h4></a>
+                </div>
+                <div class="section-content" style="padding-bottom: 0">
+                    <div class="row">
+                        <div class="col-sm-10 col-lg-8 col-xs-8 col-sm-offset-1 col-xs-offset-2 col-lg-offset-2">
+                            <div class="video-container" style="margin: 0 auto; width: 640px; margin-left: auto; margin-right: auto">
+                                <iframe src="https://player.vimeo.com/video/178394308" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+        <!-- END VIDEO SECTION -->
         <!-- SERVICES -->
         <div id="services" class="section darker services">
             <div class="container">

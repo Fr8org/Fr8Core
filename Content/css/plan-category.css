@@ -1,0 +1,38 @@
+﻿html, body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: 'Didact Gothic', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Francois One', sans-serif;
+    font-weight: 200;
+    color: #646464;
+    margin-top: 0;
+}
+
+.icons {
+    background: lightcoral;
+    padding: 10px;
+    text-align: center;
+}
+
+    .icons img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .icons .web-service-icon {
+        width: 64px;
+        height: 64px;
+        background-color: white;
+        -ms-border-radius: 8px !important;
+        border-radius: 8px !important;
+    }
+
+.table th {
+    text-align: left;
+}

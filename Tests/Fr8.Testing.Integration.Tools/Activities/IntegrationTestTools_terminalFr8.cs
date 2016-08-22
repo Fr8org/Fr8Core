@@ -35,16 +35,25 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var activityName = "Build_Message";
             var buildMessageActivityDTO = FixtureData.Build_Message_v1_InitialConfiguration();
 
-            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityCategoryParam = ActivityCategories.ProcessId.ToString();
             var activityTemplates = await _baseHubITest.HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .Single(a => a.Name == activityName);
 
             buildMessageActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             buildMessageActivityDTO.ParentPlanNodeId = subPlan.SubPlanId;
-            buildMessageActivityDTO.RootPlanNodeId = plan.Plan.Id;
+            buildMessageActivityDTO.RootPlanNodeId = plan.Id;
             buildMessageActivityDTO.Ordering = ordering;
 
             //call initial configuration to server
@@ -104,16 +113,25 @@ namespace Fr8.Testing.Integration.Tools.Activities
         {
             var activityName = "Save_To_Fr8_Warehouse";
             var saveToFr8WarehouseActivity = FixtureData.Save_To_Fr8_Warehouse_InitialConfiguration();
-            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityCategoryParam = ActivityCategories.ProcessId.ToString();
             var activityTemplates = await _baseHubITest.HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .Single(a => a.Name == activityName);
 
             saveToFr8WarehouseActivity.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             saveToFr8WarehouseActivity.ParentPlanNodeId = subPlan.SubPlanId;
-            saveToFr8WarehouseActivity.RootPlanNodeId = plan.Plan.Id;
+            saveToFr8WarehouseActivity.RootPlanNodeId = plan.Id;
             saveToFr8WarehouseActivity.Ordering = ordering;
 
             //call initial configuration to server

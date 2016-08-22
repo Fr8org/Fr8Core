@@ -28,6 +28,12 @@ using Hangfire.StructureMap;
 using Hub.StructureMap;
 using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
+using System.Globalization;
+using System.Threading;
+using Fr8.Infrastructure.Data.Manifests;
+using Hub.Enums;
+using Hub.Services;
+using HubWeb.Infrastructure_PD;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -37,6 +43,19 @@ namespace HubWeb
     {
         public void Configuration(IAppBuilder app)
         {
+            //fix to IIS hanging on MemoryCache initialization
+            //taken from here https://www.zpqrtbnk.net/posts/appdomains-threads-cultureinfos-and-paracetamol
+            var currentCulture = CultureInfo.CurrentCulture;
+            var invariantCulture = currentCulture;
+            while (invariantCulture.Equals(CultureInfo.InvariantCulture) == false)
+                invariantCulture = invariantCulture.Parent;
+            if (!(ReferenceEquals(invariantCulture, CultureInfo.InvariantCulture)))
+            {
+                var thread = Thread.CurrentThread;
+                thread.CurrentCulture = CultureInfo.GetCultureInfo(thread.CurrentCulture.Name);
+                thread.CurrentUICulture = CultureInfo.GetCultureInfo(thread.CurrentUICulture.Name);
+            }
+
             Configuration(app, false);
         }
 
@@ -44,34 +63,77 @@ namespace HubWeb
         {
             ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+
+            //For PlanDirectory merge
+            ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
+
+
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
-            
+
             EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
             curReporter.SubscribeToAlerts();
 
             IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
             incidentReporter.SubscribeToAlerts();
-            
-            StartupMigration.CreateSystemUser();
-            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+
+            StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();
 
-            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
+            OwinInitializer.ConfigureAuth(app, "/Account/Index");
 
             if (!selfHostMode)
             {
                 System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
             }
 
-            ConfigureHangfire(app, "DockyardDB");
+            ConfigureHangfire(app, "Fr8LocalDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
 #pragma warning restore 4014
+
+            await GenerateManifestPages();
+
+            EnsureMThasaDocuSignRecipientCMTypeStored();
+        }
+
+        private void EnsureMThasaDocuSignRecipientCMTypeStored()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
+            {
+                var type = uow.MultiTenantObjectRepository.FindTypeReference(typeof(DocuSignRecipientCM));
+                if (type == null)
+                {
+                    var user = uow.UserRepository.GetQuery().FirstOrDefault();
+                    if (user != null)
+                    {
+                        uow.MultiTenantObjectRepository.Add(new DocuSignRecipientCM() { RecipientId = Guid.NewGuid().ToString() }, user.Id);
+                        uow.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        private async Task GenerateManifestPages()
+        {
+            var systemUserAccount = ObjectFactory.GetInstance<Fr8Account>().GetSystemUser();
+            if(systemUserAccount == null) return;
+
+            var systemUser = systemUserAccount.EmailAddress?.Address;
+            var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWorkFactory>().Create())
+            {
+                var generateTasks = new List<Task>();
+                foreach (var manifestName in uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(systemUser, x => true).Select(x => x.Name).Distinct())
+                {
+                    generateTasks.Add(generator.Generate(manifestName, GenerateMode.GenerateAlways));
+                }
+                await Task.WhenAll(generateTasks);
+            }
         }
 
         public void ConfigureControllerActivator(HttpConfiguration configuration)
@@ -98,7 +160,7 @@ namespace HubWeb
         {
             var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
 
-            await terminalDiscovery.Discover();
+            await terminalDiscovery.DiscoverAll();
 
             if (!selfHostMode)
             {
@@ -193,7 +255,7 @@ namespace HubWeb
         //        }
         //    }
         //}
-        
+
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
             return ObjectFactory.GetInstance(controllerType) as IHttpController;

@@ -15,7 +15,6 @@ module dockyard.services {
         createSubplanAndConfigureActivity: (
             $scope: ng.IScope,
             subPlanName: string,
-            subPlanRunnable: boolean,
             parentPlan: model.PlanDTO,
             parentActivity: model.ActivityDTO,
             existingSubPlanId: string,
@@ -34,7 +33,8 @@ module dockyard.services {
             private $q: ng.IQService,
             private $modal: any,
             private SubPlanService: services.ISubPlanService,
-            private ActionService: services.IActionService
+            private ActionService: services.IActionService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService
         ) {
         }
 
@@ -66,7 +66,6 @@ module dockyard.services {
         public createSubplanAndConfigureActivity(
             $scope: ng.IScope,
             subPlanName: string,
-            subPlanRunnable: boolean,
             parentPlan: model.PlanDTO,
             parentActivity: model.ActivityDTO,
             existingSubPlanId: string,
@@ -74,7 +73,7 @@ module dockyard.services {
 
             // Call Hub API to create subplan.
             var createSubPlan = (plan: model.PlanDTO, activity: model.ActivityDTO,
-                name: string, runnable: boolean): ng.IPromise<model.SubPlanDTO> => {
+                name: string): ng.IPromise<model.SubPlanDTO> => {
 
                 var defered = this.$q.defer<model.SubPlanDTO>();
 
@@ -85,9 +84,7 @@ module dockyard.services {
                     activity.id,
                     'subplan-' + name
                 );
-
-                subplan.runnable = runnable;
-
+                
                 this.SubPlanService.create(subplan).$promise
                     .then((subplan: model.SubPlanDTO) => {
                         defered.resolve(subplan);
@@ -104,8 +101,7 @@ module dockyard.services {
                 var defered = this.$q.defer<model.ActivityDTO>();
 
                 var activity = new model.ActivityDTO(plan.id, subPlanId, null);
-                activity.activityTemplate = activityTemplate;
-
+                activity.activityTemplate = this.ActivityTemplateHelperService.toSummary(<interfaces.IActivityTemplateVM>activityTemplate);
                 this.ActionService.save(activity).$promise
                     .then((activity: model.ActivityDTO) => {
                         displayConfigureActivityModal(plan, activity)
@@ -169,11 +165,11 @@ module dockyard.services {
             );
 
             if (!existingSubPlanId) {
-                createSubPlan(parentPlan, parentActivity, subPlanName, subPlanRunnable)
+                createSubPlan(parentPlan, parentActivity, subPlanName)
                     .then((subplan: model.SubPlanDTO) => {
-                        createActivity(activityTemplate, parentPlan, subplan.subPlanId)
+                        createActivity(activityTemplate, parentPlan, subplan.id)
                             .then((activity: model.ActivityDTO) => {
-                                result.resolve(new model.SubordinateSubplan(subplan.subPlanId, activity.id));
+                                result.resolve(new model.SubordinateSubplan(subplan.id, activity.id));
                             })
                             .catch((reason: any) => {
                                 result.reject(reason);
@@ -203,35 +199,29 @@ module dockyard.services {
     // SelectActivityController controller.
     // Controller for handling SelectActivity modal.
     // --------------------------------------------------------------------------------
-    export var SelectActivityController = [
-        '$scope',
-        '$http',
-        function ($scope: ISelectActivityControllerScope, $http: ng.IHttpService) {
-            // Perform HTTP-request to extract activity-templates from Hub.
-            var _reloadData = () => {
+    export var SelectActivityController = ['$scope','$http','ActivityTemplateHelperService',
+        ($scope: ISelectActivityControllerScope, $http: ng.IHttpService, activityTemplateHelperService: services.IActivityTemplateHelperService) => {
+            var reloadData = () => {
                 $scope.webServiceActivities = [];
-
-                $http.get('/api/webservices?id=0')
-                    .then((res) => {
-                        var webServiceActivities = <Array<model.WebServiceActionSetDTO>>res.data;
-                        angular.forEach(webServiceActivities, (webServiceActivity) => {
-                            if ($scope.tag) {
-                                webServiceActivity.activities = webServiceActivity.activities.filter((a) => {
-                                    return a.tags && a.tags.toUpperCase().indexOf($scope.tag.toUpperCase()) >= 0;
-                                });
-                            }
-
-                            if (!webServiceActivity.activities || !webServiceActivity.activities.length) {
-                                return;
-                            }
-
-                            $scope.webServiceActivities.push(webServiceActivity);
+                var activityTemplateCategories = activityTemplateHelperService.getAvailableActivityTemplatesInCategories();
+                console.log(activityTemplateCategories);
+                angular.forEach(activityTemplateCategories, (webServiceActivity) => {
+                    if ($scope.tag) {
+                        webServiceActivity.activities = webServiceActivity.activities.filter((a) => {
+                            return a.tags && a.tags.toUpperCase().indexOf($scope.tag.toUpperCase()) >= 0;
                         });
-                    });
+                    }
+
+                    if (!webServiceActivity.activities || !webServiceActivity.activities.length) {
+                        return;
+                    }
+
+                    $scope.webServiceActivities.push(webServiceActivity);
+                });
             };
 
             // Perform web-service selection.
-            $scope.selectWebService = (webService: model.WebServiceActionSetDTO) => {
+            $scope.selectWebService = (webService: interfaces.IActivityCategoryDTO) => {
                 $scope.selectedWebService = webService;
             };
 
@@ -246,7 +236,7 @@ module dockyard.services {
             };
 
             // Force reload data.
-            _reloadData();
+            reloadData();
         }
     ];
 
@@ -258,14 +248,12 @@ module dockyard.services {
     interface ISelectActivityControllerScope extends ng.IScope {
         tag: string;
 
-        webServiceActivities: Array<model.WebServiceActionSetDTO>;
-        selectedWebService: model.WebServiceActionSetDTO;
+        webServiceActivities: Array<interfaces.IActivityCategoryDTO>;
+        selectedWebService: interfaces.IActivityCategoryDTO;
         selectedActivityTemplate: model.ActivityTemplate;
-
-        selectWebService: (webService: model.WebServiceActionSetDTO) => void;
+        selectWebService: (webService: interfaces.IActivityCategoryDTO) => void;
         selectActivityTemplate: (activity: model.ActivityTemplate) => void;
         unselectWebService: () => void;
-
         $close: (result?: any) => void;
     }
 
@@ -302,8 +290,7 @@ module dockyard.services {
     }
 }
 
-app.service(
-    'SubordinateSubplanService',
+app.service('SubordinateSubplanService',
     [
         '$rootScope',
         '$http',
@@ -311,6 +298,7 @@ app.service(
         '$modal',
         'SubPlanService',
         'ActionService',
+        'ActivityTemplateHelperService',
         dockyard.services.SubordinateSubplanService
     ]
 );

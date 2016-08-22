@@ -4,18 +4,18 @@
     <div class="plan-loading-message" block-if="current.plan"></div>
     <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
         <!-- SUB-PLAN BODY -->
-        <div class="route-builder-container" layout-container>
+        <div class="route-builder-container no-text-select" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
                     <div ng-repeat="envelope in group.envelopes track by $index" style="width:100%">
-                        <div class="action" style="width:100%" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}" layout-action>
-                            <div min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
+                        <div class="action" style="width:100%" ng-class="{'solution-action': envelope.activityTemplate.category === 'Solution' && mode !== 'solution'}" layout-action>
+                            <div min-width="{{envelope.activityTemplate.minPaneWidth}}">
                                 <!-- Activity Header-->
-                                <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
-                                    <div class="md-toolbar-tools">
+                                <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-panety style="height: 40px;min-height:40px;padding-top: 5px;">
+                                    <div class="md-toolbar-tools" style="height: 40px; ">
                                         <!-- Icon -->
-                                        <div class="action-header-icon" style="display: flex">
-                                            <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
+                                        <div class="action-header-icon" style="display: none">
+                                            <img ng-src="{{envelope.activityTemplate.webService.iconPath}}" ng-if="envelope.activityTemplate.webService.iconPath" />
                                         </div>
                                         <!-- Main Title -->
                                         <div class="col-sm-10 ellipsis">

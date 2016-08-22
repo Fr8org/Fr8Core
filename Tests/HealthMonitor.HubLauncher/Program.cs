@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using log4net;
 
 namespace HealthMonitor.HubLauncher
 {
@@ -20,6 +22,12 @@ namespace HealthMonitor.HubLauncher
             string connectionString = string.Empty;
 
             Debug.AutoFlush = true;
+
+            //@tony.yakovets: we need it to load Fr8.Infrastructure otherwise we got an exception trying to configure log4net appenders
+            var appender = new Fr8.Infrastructure.Utilities.Logging.fr8RemoteSyslogAppender();
+            log4net.Config.XmlConfigurator.Configure(new FileInfo("..\\..\\Config\\log4net.tests.healthMonitor.config"));
+            LogManager.GetLogger("HubLauncher").Warn("Hub Launcher starting");
+
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             // Start the message pumping thread that enables graceful closing the app

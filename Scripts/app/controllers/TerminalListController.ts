@@ -4,9 +4,11 @@ module dockyard.controllers {
     'use strict';
 
     export interface ITerminalListScope extends ng.IScope {
-        terminals: Array<model.TerminalRegistrationDTO>;
+        terminals: Array<model.TerminalDTO>;
+        openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
-    }
+        processing: boolean;
+  }
 
     class TerminalListController {
 
@@ -17,22 +19,35 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'TerminalService',
+            '$state',
             '$modal'
         ];
 
         constructor(
             private $scope: ITerminalListScope,
             private TerminalService: services.ITerminalService,
+            private $state: ng.ui.IStateService,
             private $modal: any) {
 
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
-            TerminalService.getRegistrations().$promise.then(data => {
-                $scope.terminals = data;
+            this.loadTerminals();
+
+            $scope.openDetails = terminal => {
+                $state.go('terminalDetails', { id: terminal.internalId });
+            }
+        }
+
+        private loadTerminals() {
+            this.$scope.processing = true;
+            this.TerminalService.getByCurrentUser().$promise.then(data => {
+                this.$scope.terminals = data;
             }).catch(e => {
                 console.log(e.statusText);
+            }).finally(() => {
+                this.$scope.processing = false;
             });
-        }
+        };
 
         private showAddTerminalModal() {
             this.$modal.open({
@@ -41,7 +56,7 @@ module dockyard.controllers {
                 controller: 'TerminalFormController'
             })
                 .result.then(terminal => {
-                    this.$scope.terminals.push(terminal);
+                    this.loadTerminals();
                 });
         }
     }

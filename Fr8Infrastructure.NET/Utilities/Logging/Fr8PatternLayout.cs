@@ -1,4 +1,5 @@
 using System.IO;
+using Fr8.Infrastructure.Utilities.Configuration;
 using log4net.Core;
 using log4net.Layout;
 using YamlDotNet.Core.Tokens;
@@ -7,6 +8,7 @@ namespace Fr8.Infrastructure.Utilities.Logging
 {
     public class Fr8PatternLayout : PatternLayout
     {
+        private string LoggerPrefix { get; set; }
 
         public string DebugColor { get; set; }
         public string InfoColor { get; set; }
@@ -18,10 +20,26 @@ namespace Fr8.Infrastructure.Utilities.Logging
         {
             base.ActivateOptions();
             
-            IgnoresException = false;
+            //whether we should add full exception to journal -> false = we do not add them / true = add rendered exceptions 
+            IgnoresException = true;
+
             InfoColor = InfoColor.IsNullOrEmpty() ? "\x1b[36m" : "\x1b[" + InfoColor;
             WarnColor = WarnColor.IsNullOrEmpty() ? "\x1b[33m" : "\x1b[" + WarnColor;
             ErrorColor = ErrorColor.IsNullOrEmpty() ? "\x1b[31m" : "\x1b[" + ErrorColor;
+
+            try
+            {
+                LoggerPrefix = CloudConfigurationManager.GetSetting("LoggerNamePrefix");
+            }
+            catch
+            {
+                LoggerPrefix = null;
+            }
+
+            if (string.IsNullOrWhiteSpace(LoggerPrefix))
+            {
+                LoggerPrefix = null;
+            }
         }
 
         public override void Format(TextWriter writer, LoggingEvent loggingEvent)
@@ -46,6 +64,11 @@ namespace Fr8.Infrastructure.Utilities.Logging
             else
             {
                 ending = null;
+            }
+
+            if (LoggerPrefix != null)
+            {
+                writer.Write(LoggerPrefix);
             }
 
             base.Format(writer, loggingEvent);

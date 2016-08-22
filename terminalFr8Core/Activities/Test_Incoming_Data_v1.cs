@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using Fr8.Infrastructure.Data.Helpers;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -25,15 +26,13 @@ namespace terminalFr8Core.Activities
             Id = new Guid("62087361-da08-44f4-9826-70f5e26a1d5a"),
             Name = "Test_Incoming_Data",
             Label = "Test Incoming Data",
-            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -70,9 +69,14 @@ namespace terminalFr8Core.Activities
             {
                 return values;
             }
+
+
             EventManager.CriteriaEvaluationStarted(processId);
-            return filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values)).Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
+            var criterias = filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values));
+            var some_magic = criterias.Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
+            return some_magic;
         }
+
         public static int Compare(object left, object right)
         {
             if (left == null && right == null)
@@ -174,6 +178,50 @@ namespace terminalFr8Core.Activities
             AddControls(fieldFilterPane);
         }
 
+        protected override Task Validate()
+        {
+            var conditions = ConfigurationControls.FindByName<FilterPane>("Selected_Filter");
+            if (conditions.Selected)
+            {
+                return Task.FromResult(0);
+            }
+            var sd = JsonConvert.DeserializeObject(conditions.Value);
+            if (conditions.Value != "[]")
+            {
+                var condition = JsonConvert.DeserializeObject<FilterDataDTO>(conditions.Value);
+                foreach (var c in condition.Conditions)
+                {
+                    if (!string.IsNullOrEmpty(c.Field))
+                    {
+                        var error = " cannot be empty";
+                        var operatorError = "";
+                        var valueError = "";
+                        if (string.IsNullOrEmpty(c.Operator))
+                        {
+                            operatorError = "Operator ";
+                        }
+                        if (string.IsNullOrEmpty(c.Value))
+                        {
+                            valueError = "Value";
+                        }
+                        if (!string.IsNullOrEmpty(operatorError) && !string.IsNullOrEmpty(valueError))
+                        {
+                            ValidationManager.SetError(operatorError + " " + "and " + valueError + error, "Selected_Filter");
+                        }
+                        else if (string.IsNullOrEmpty(operatorError) && !string.IsNullOrEmpty(valueError))
+                        {
+                            ValidationManager.SetError(valueError + error, "Selected_Filter");
+                        }
+                        else if (!string.IsNullOrEmpty(operatorError) && string.IsNullOrEmpty(valueError))
+                        {
+                            ValidationManager.SetError(operatorError + error, "Selected_Filter");
+                        }
+                    }
+                }
+            }
+            return Task.FromResult(0);
+        }
+
         public override async Task Run()
         {
             await RunTests();
@@ -187,21 +235,12 @@ namespace terminalFr8Core.Activities
                 RaiseError("No control found with Type == \"filterPane\"");
             }
 
-            List<KeyValueDTO> fields = new List<KeyValueDTO>();
-            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterPaneControl.Value);
-            foreach (var condition in filterDataDTO.Conditions)
-            {
-                var fieldValue = Payload.FindField(condition.Field);
-                if (!string.IsNullOrEmpty(fieldValue))
-                    fields.Add(new KeyValueDTO(condition.Field, fieldValue));
-            }
-
             // Prepare envelope data.
             // Evaluate criteria using Contents json body of found Crate.
             bool result = false;
             try
             {
-                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, fields.AsQueryable());
+                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, filterPaneControl.ResolvedUpstreamFields.AsQueryable());
             }
             catch (Exception)
             {

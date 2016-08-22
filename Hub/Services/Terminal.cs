@@ -5,8 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.States;
 using Data.Utility;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
@@ -22,7 +25,8 @@ namespace Hub.Services
     /// </summary>
     public class Terminal : ITerminal
     {
-        private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
+        private readonly ISecurityServices _securityServices;
+        private readonly Dictionary<Guid, TerminalDO> _terminals = new Dictionary<Guid, TerminalDO>();
         private bool _isInitialized;
         private string _serverUrl;
 
@@ -32,8 +36,9 @@ namespace Hub.Services
             private set;
         }
 
-        public Terminal(IConfigRepository configRepository)
+        public Terminal(IConfigRepository configRepository, ISecurityServices securityServices)
         {
+            _securityServices = securityServices;
             IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
 
             var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
@@ -80,19 +85,17 @@ namespace Hub.Services
             }
         }
 
-        public TerminalDO GetByKey(int terminalId)
+        public TerminalDO GetByKey(Guid terminalId)
         {
             Initialize();
 
             lock (_terminals)
             {
                 TerminalDO terminal;
-
                 if (!_terminals.TryGetValue(terminalId, out terminal))
                 {
-                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminalId));
+                    throw new MissingObjectException($"Terminal with Id {terminalId} doesn't exist");
                 }
-
                 return terminal;
             }
         }
@@ -106,14 +109,14 @@ namespace Hub.Services
                 TerminalDO terminal =_terminals.FirstOrDefault(t => t.Value.Name == name && t.Value.Version == version).Value;
                 if (terminal == null)
                 {
-                    throw new KeyNotFoundException($"Unable to find terminal with name {name} and version {version}");
+                    throw new MissingObjectException($"Terminal with name '{name}' and version '{version}'");
                 }
 
                 return terminal;
             }
         }
 
-        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isUserInitiated)
         {
             if (terminalDo == null)
             {
@@ -135,28 +138,43 @@ namespace Hub.Services
 
             lock (_terminals)
             {
+                var doRegisterTerminal = false;
+                TerminalDO terminal, existingTerminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
-
-                    if (existingTerminal == null)
+                    if (terminalDo.Id == Guid.Empty)
                     {
-                        terminalDo.Id = 0;
-                        uow.TerminalRepository.Add(existingTerminal = terminalDo);
+                        terminalDo.Id = Guid.NewGuid();
+                        uow.TerminalRepository.Add(terminalDo);
+                        doRegisterTerminal = true;
+                        existingTerminal = terminalDo;
                     }
                     else
                     {
+                        existingTerminal = uow.TerminalRepository.FindOne(x => x.Id == terminalDo.Id);
                         // this is for updating terminal
                         CopyPropertiesHelper.CopyProperties(terminalDo, existingTerminal, false, x => x.Name != "Id");
                     }
 
                     uow.SaveChanges();
 
-                    var terminal = Clone(existingTerminal);
+                    terminal = Clone(existingTerminal);
                     _terminals[existingTerminal.Id] = terminal;
-
-                    return terminal;
                 }
+
+                if (doRegisterTerminal)
+                {
+                    if (isUserInitiated)
+                    {
+                        //add ownership for this new terminal to current user
+                        _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    }
+
+                    //make it visible for Fr8 Admins
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                }
+
+                return terminal;
             }
         }
 
@@ -195,7 +213,19 @@ namespace Hub.Services
 
             lock (_terminals)
             {
-                return _terminals.Values.ToArray();
+                //filter terminals and show only allowed for current logged user
+                return _securityServices.GetAllowedTerminalsByUser(_terminals.Values.ToArray());
+            }
+        }
+
+        public IEnumerable<TerminalDO> GetByCurrentUser()
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                //filter terminals and show only allowed for current logged user
+                return _securityServices.GetAllowedTerminalsByUser(_terminals.Values.ToArray(), true);
             }
         }
 
@@ -219,7 +249,7 @@ namespace Hub.Services
                     new ActivityDTO
                     {
                         Documentation = "MainPage",
-                        ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
+                        ActivityTemplate = new ActivityTemplateSummaryDTO {Name = solutionName }
                     }, true);
                 if (solutionPageDTO != null)
                 {

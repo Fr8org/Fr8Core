@@ -1,0 +1,118 @@
+﻿
+<ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+<div ng-controller="TerminalDetailsController" class="margin-top-10">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light ">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">Terminal Details</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <!-- TERMINAL DETAIL FORM -->
+                    <div class="tab-pane active" id="tab_1_1">
+                        <form role="form" ng-submit="submit($event, form.$valid)" ng-cloak name="form" novalidate>
+                            <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
+                                Some fields do not contain correct data. Please check below.
+                            </div>
+                            <div class="alert alert-danger" ng-show="errorMessage != null">
+                                {{errorMessage}}
+                            </div>
+                            <!-- isFr8OwnTerminal Button -->
+                            <div class="form-group">
+                                <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-if="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
+                                    This is a Fr8 own C# terminal or is deployed along with those
+                                </md-checkbox>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="form-group">
+                                <label class="control-label"><b>Name</b></label>
+                                <input type="text" placeholder="" disabled="disabled" class="form-control" ng-model="terminal.label"/>
+                            </div>
+
+                            <!-- Development Url -->
+                            <div ng-class="(form.devUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
+                                <label class="control-label"><b>Development URL</b></label>
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.devUrl.$error.required && form.$submitted"></i>
+                                    <input type="text" name="devUrl" auto-focus required="required" placeholder="{{terminal.isFr8OwnTerminal ? 'Example: http://localhost:xxxx' : 'https://'}}" maxlength="255" class="form-control" ng-model="terminal.devUrl"/>
+                                </div>
+                            </div>
+
+                            <!-- Production Url -->
+                            <div ng-class="(form.prodUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
+                                <label class="control-label"><b>Production URL</b></label>
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.prodUrl.$error.required && form.$submitted"></i>
+                                    <input type="text" name="prodUrl" ng-required="approved && canEditAllTerminals" placeholder="https://" ng-disabled="!canEditAllTerminals" ng-change="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                </div>
+                                <span ng-show="!canEditAllTerminals">Please contact Support to get the Production URL updated.</span>
+                            </div>
+                            <div ng-if="terminal.isFr8OwnTerminal && canEditAllTerminals" class="margin-bottom-10">
+                                If you run the terminal on the <b>local machine</b>, specify the local URL e.g. <code>http://localhost:12345</code>
+                                in <b>both</b> Production URL and Development URL textboxes. If you add the terminal on the shared <b>Development</b> instance,
+                                specify the Development URL e.g. <code>http://dev-terminals.fr8.co:12345</code>in <b>both</b> textboxes. On the <b>Production</b> environment, specify the development and production URLs,
+                                respectively.
+                            </div>
+
+                            <!-- Current URL -->
+                            <div class="form-group">
+                                <label class="control-label"><b>Current URL</b></label>
+                                <input type="text" disabled="disabled" class="form-control" ng-model="terminal.endpoint"/>
+                            </div>
+                            <div ng-if="canEditAllTerminals" class="margin-bottom-20">
+                                This is the URL which is used by the Hub to access the terminal at this moment.
+                                It can be equal to the Production URL or the Development URL or some other URL depending on terminal participation state
+                                and deployment status.
+                            </div>
+
+                            <!-- Approval (Admin) -->
+                            <div class="form-group" ng-if="canEditAllTerminals">
+                                    <md-radio-group ng-model="approved" layout="row">
+                                        <label class="control-label"><b style="padding-right: 10px">Status:</b></label>
+                                        <md-radio-button data-ng-value="true">Approved</md-radio-button>
+                                        <md-radio-button data-ng-value="false">Not Approved</md-radio-button>
+                                    </md-radio-group>
+                            </div>
+                            <!-- Approval (Developer) -->
+                            <div ng-if="!canEditAllTerminals" class="margin-bottom-10">
+                                <span ng-show="approved" class="font-green-jungle"><strong>You terminal is approved and available for all Fr8 users.</strong></span>
+                                <span ng-show="!approved">Your terminal is <strong>not yet approved</strong> and is available to you only.</span>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="margin-top-10">
+                                <button type="submit" class="btn green-haze" ng-disabled="!form.$dirty">Save and Rediscover</button>
+                                <a ui-sref="terminals" class="btn default">Return</a>
+                            </div>
+                            <div class="margin-top-10">You can also
+                                <a href="#" ng-click="openPermissionsSetterModal(terminal)" class="btn btn-link">
+                                    Set Permissions
+                                </a> |
+                                <a href="#" ng-click="showPublishTerminalModal()" class="btn btn-link">
+                                    Publish Terminal
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- END TERMINAL DETAIL FORM -->
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+</div><!-- END MAIN CONTENT -->

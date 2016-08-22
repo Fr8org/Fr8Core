@@ -4,7 +4,6 @@ using System.Linq;
 using Data.Entities;
 using Data.Repositories.Cache;
 using Data.States;
-using static Data.Repositories.Plan.PlanSnapshot;
 
 namespace Data.Repositories.Plan
 {
@@ -248,6 +247,7 @@ namespace Data.Repositories.Plan
                             original.RemoveFromParent();
                             parent.ChildNodes.Add(original);
                             original.ParentPlanNode = parent;
+                            original.ParentPlanNodeId = parent.Id;
                           
                             approveUpdate = true;
                         }

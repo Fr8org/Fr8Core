@@ -54,11 +54,6 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<PayloadDTO> GetPayload(Guid containerId)
         {
             var payload = new PayloadDTO(containerId)
@@ -157,11 +152,11 @@ namespace Fr8.TerminalBase.Services
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false)
         {
             var allTemplates = await GetActivityTemplates();
             var activityTemplates = allTemplates
-                .Where(x => x.Category == category)
+                .Where(x => x.Categories.Any(y => y.Id == category))
                 .ToList();
 
             return activityTemplates;
@@ -217,7 +212,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             throw new NotImplementedException();
         }
@@ -237,7 +232,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             throw new NotImplementedException();
         }

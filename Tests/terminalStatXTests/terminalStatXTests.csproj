@@ -72,7 +72,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\Create_Stat_v1_Tests.cs" />
     <Compile Include="Activities\Monitor_Stat_Changes_v1_Tests.cs" />
+    <Compile Include="Activities\Update_Stat_v1_Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Create_Stat_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_Stat_Changes_v1_Tests.cs" />
@@ -83,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="LICENSE" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

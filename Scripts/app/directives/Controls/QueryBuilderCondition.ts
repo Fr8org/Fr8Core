@@ -17,7 +17,8 @@
         focusOutSet: (focusElem: any) => void;
 
         rootElem: any;
-        isDisabled:boolean;
+        isDisabled: boolean;
+        change: () => (field: model.ControlDefinitionDTO) => void;
     }
 
     export function QueryBuilderCondition(): ng.IDirective {
@@ -33,7 +34,8 @@
                 operators: '=',
                 isSingle: '=',
                 onRemoveCondition: '&',
-                isDisabled: '='
+                isDisabled: '=',
+                change: '='
             },
             link: (scope: IQueryBuilderConditionScope,
                 elem: ng.IAugmentedJQuery,
@@ -72,6 +74,7 @@
                         } else { // All other field types.
                             control = new model.TextBox();
                             control.value = condition.value;
+                            control.required = true;
                         }
 
                         return control;
@@ -113,16 +116,34 @@
 
                     $scope.fieldSelected = () => {
                         attachControl();
+                        if ($scope.change != null && angular.isFunction($scope.change)) {
+                            $scope.change()(<any>{ events: [{ handler: "requestConfig", name: "onChange" }]});
+                        }   
                     };
 
                     $scope.$watch('condition', function () {
                         attachControl();
                     });
 
-                    $scope.$watch('condition.value', function (value) {
-                        if (configurationControl) {
-                            configurationControl.scope.control.value = value;
+                    $scope.$watch('condition.operator', function (newValue, oldValue) {
+                        if (oldValue === newValue || newValue === undefined || newValue ==="") {
+                            return;
                         }
+                        if ($scope.change != null && angular.isFunction($scope.change)) {
+                            $scope.change()(<any>{ events: [{ handler: "requestConfig", name: "onChange" }] });
+                        }   
+                    });
+
+                    $scope.$watch('condition.value', function (newValue, oldValue) {
+                        if (configurationControl) {
+                            configurationControl.scope.control.value = newValue;
+                        }
+                        if (oldValue === newValue) {
+                            return;
+                        }
+                        if ($scope.change != null && angular.isFunction($scope.change)) {
+                            $scope.change()(<any>{ events: [{ handler: "requestConfig", name: "onChange" }] });
+                        }   
                     });
 
                     $scope.toggle = false;

@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
 using Microsoft.Ajax.Utilities;
@@ -31,15 +32,13 @@ namespace terminalAsana.Activities
             Id = new Guid("4b21e180-8029-4352-a756-52973cd98717"),
             Name = "Get_Tasks",
             Label = "Get Tasks",
-            Category = ActivityCategory.Receivers,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[] {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -103,24 +102,45 @@ namespace terminalAsana.Activities
 
         public override async Task Initialize()
         {
-            var workspaces = await AClient.Workspaces.GetAsync();
-            ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
+            try
+            {
+                var workspaces = await AClient.Workspaces.GetAsync();
+                ActivityUI.WorkspacesList.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
 
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
-            CrateSignaller.MarkAvailableAtRuntime<AsanaTaskListCM>(RunTimeCrateLabelCustomCM);
+                CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
+                CrateSignaller.MarkAvailableAtRuntime<AsanaTaskListCM>(RunTimeCrateLabelCustomCM);
+            }
+            catch (Exception exp)
+            {
+                Logger.GetLogger("terminalAsana").Error("Error ocured while initializing Get_Tasks_v1 Asana activity", exp);
+                throw exp;
+            }
+            
         }
 
         public override async Task FollowUp()
-        {           
-            if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
+        {
+            try
             {
-                var users =  await AClient.Users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
-                ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();                
+                if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
+                {
+                    var users = await AClient.Users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
+                    ActivityUI.UsersList.ListItems =
+                        users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();
 
-                var projects = 
-                    await AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });     
-                ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();                                         
+                    var projects =
+                        await
+                            AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value});
+                    ActivityUI.ProjectsList.ListItems =
+                        projects.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();
+                }
             }
+            catch (Exception exp)
+            {
+                Logger.GetLogger("terminalAsana").Error("Error ocured while followup configuring Get_Tasks_v1 Asana activity", exp);
+                throw exp;
+            }
+            
         }
 
         protected override Task Validate()

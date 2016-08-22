@@ -32,7 +32,7 @@
                     @if (User.IsInRole("Guest"))
                     {
                         <p class="navbar-text">
-                            <a href="@NavLinks.BaseUrl/DockyardAccount/Logoff">Have an Account? Login</a>
+                            <a href="@NavLinks.BaseUrl/Account/Logoff">Have an Account? Login</a>
                         </p>
                     }
                 </div>
@@ -47,37 +47,18 @@
                     <ul class="dropdown-menu">
                         <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
                         <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
-                        @if (!User.Identity.IsAuthenticated)
-                        {
-                            <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
-                        }
-                        else
-                        {
-                            <script>
-                                var goToPlanDirectory = function () {
-                                    if ($ === 'undefined') {
-                                        alert('Page loading error, jQuery not found');
-                                    } else {
-                                        $.ajax({
-                                            url: '/api/v1/authentication/authenticatePlanDirectory',
-                                            method:'POST'
-                                        }).done(function(data) {
-                                            var token = data.token;
-                                            var url = '@NavLinks.PlanDirectory' + '/AuthenticateByToken?token=' + token;
-                                            window.location.href = url;
-                                        }).error(function(response) {
-                                            alert("Error aquiring token: "+response.data);
-                                        });
-                                    }
-                                }
-                            </script>
-                            <li><a href="#" onclick="goToPlanDirectory()">Plan Directory</a></li>
-                        }
-                        
+                        <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
                     </ul>
                 </li>
                 <!--Developers-->
-                <li><a href="@NavLinks.Developers">Developers</a></li>
+                <li data-scroll="scrolling" class="dropdown">
+                    <a href="@NavLinks.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Developers">Developers <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li data-scroll="scrolling"><a href="@NavLinks.Documentation">Documentation</a></li>
+                        <li data-scroll="scrolling"><a href="@NavLinks.GitHub">GitHub</a></li>
+                        <li data-scroll="scrolling"><a href="/manifest_registry">Manifest Registry</a></li>
+                    </ul>
+                </li>
                 <!--Company-->
                 <li data-scroll="scrolling" class="dropdown">
                     <a href="@NavLinks.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
@@ -98,7 +79,7 @@
                 {
                     <li>
                         <p class="navbar-btn">
-                            <a href="@NavLinks.BaseUrl/DockyardAccount" class="btn btn-danger">Login/Register</a>
+                            <a href="@NavLinks.BaseUrl/Account" class="btn btn-danger">Login/Register</a>
                         </p>
                     </li>
                 }

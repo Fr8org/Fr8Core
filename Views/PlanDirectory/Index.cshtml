@@ -1,0 +1,168 @@
+﻿@using Data.Infrastructure.StructureMap
+@using StructureMap
+@*@model PlanDirectory.ViewModels.HomeVM*@
+
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html ng-app="PlanDirectoryApp">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fr8 Plan Directory</title>
+
+    <!-- Google Material Design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Roboto+Condensed:700|Nunito&subset=latin,cyrillic"
+          rel="stylesheet" type="text/css">
+    <link href="~/Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/css/additionalcss/font-awesome/css/style.css" rel="stylesheet" type="text/css" />
+
+    <link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico" />
+    <link rel="stylesheet" href="~/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/metronic/components.css" />
+    <link rel="stylesheet" href="~/Content/css/plan-directory.css" />
+    <link rel="stylesheet" href="~/Content/css/shared/PlanDirectoryMain.css" />
+
+    <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="~/Content/metronic/jquery.blockui.min.js"></script>
+    <script src="~/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/bower_components/angular/angular.min.js"></script>
+    <script src="~/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
+    <script src="~/Content/metronic/ui.js"></script>
+    <script src="~/Scripts/PlanDirectoryApp.js"></script>
+    <script src="~/Scripts/PlanDirectoryMain.js"></script>
+
+    <script>
+        window.urlPrefix = '@Url.Content("~").Substring(0, Url.Content("~").Length - 1)';
+        angular.module('PlanDirectoryApp').constant('urlPrefix', window.urlPrefix);
+    </script>
+</head>
+
+<body ng-controller="SearchController">
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div id="wrap">
+        <!-- NAVIGATION BAR-->
+        <header id="site-header" class="header container-fluid">
+            @Html.Partial("_HomeNavNew")
+        </header>
+
+        <!-- CONTAINER -->
+        <section id="planDirectory" class="plan-directory-background full-height-block text-block" data-section="support">
+            <div class="inner-bg full-size-bg"></div>
+            <div class="container full-height-block">
+                <div class="inner-wrap centered base-block-white" style="width: 100%">
+                    <!-- SEARCH BAR-->
+                    <div class="search-bar-container">
+                            <h2>Plan Directory</h2>
+                            <form ng-submit="submitSearch(1)">
+                                <div class="btn-group mode-switch-panel">
+                                    <span>View by: </span>
+                                    <button type="button" class="btn" ng-class="{'green': searched, 'btn-default': !searched}" ng-click="searched=true">List</button>
+                                    <button type="button" class="btn" ng-class="{'green': !searched, 'btn-default': searched}" ng-click="searched=false">Category</button>
+                                </div>
+
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="searchForm.searchText" placeholder="Search for Plans" />
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                </div>
+                            </form>
+                        <hr />
+                    </div>
+
+                    <!-- SEARCH RESULTS-->
+                    <div class="result-container" ng-if="searched">
+                        <div class="item" ng-repeat="plan in planTemplates">
+                            <button type="button" class="btn red plan-btn" ng-if="privileged" ng-click="removePlan(plan)">Delete</button>
+                            <button class="btn btn-primary plan-btn" ng-click="planDetails(plan)">Details</button>
+                            <button class="btn green plan-btn" ng-click="createPlan(plan)">Create</button>
+                            <div class="info-row first">
+                                <div class="label">Name:</div> {{plan.name}}
+                            </div>
+                            <div class="info-row" ng-if="plan.owner">
+                                <div class="label">Created by:</div> {{plan.owner}}
+                            </div>
+                            <div class="info-row" ng-if="plan.description">
+                                <div class="label">Description:</div>
+                                <div class="value">{{plan.description}}</div>
+                            </div>
+                        </div>
+                        <div class="pager" ng-if="pages && pages.length > 1">
+                            <div class="btn-group">
+                                <button type="button" class="btn" ng-class="{ 'btn-default': page !== currentPage, 'green': page === currentPage }" ng-repeat="page in pages" ng-click="submitSearch(page)">{{page}}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="web-services-container" ng-if="!searched">
+                        <div class="item" ng-repeat="ac in activityCategories" ng-class="{ 'selected': isCategorySelected(ac) }" ng-click="toggleCategorySelection(ac)">
+                            <i class="fa fa-check-circle" aria-hidden="true" ng-if="isCategorySelected(ac)"></i>
+                            <div class="icon"><img ng-src="{{ac.iconPath}}" /></div>
+                            <div class="label">{{ac.name}}</div>
+                        </div>
+                    </div>
+
+                    <div class="web-service-summary" ng-if="!searched && anyCategorySelected()" ng-click="showCategoryPage()">
+                        <div class="summary-header">Click to View Plans Incorporating:</div>
+                        <ul>
+                            <li ng-repeat="ac in selectedCategories | orderBy: 'name'">{{ac.name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="clear clear-footer-spacer"></div>
+    </div>
+
+    <!-- AUTHENTICATION MODAL-->
+    <script type="text/ng-template" id="/AuthenticateDialog.html">
+        <div class="modal-body">
+            <div>You're not authenticated in Fr8.co application, please visit <a href="http://fr8.co">http://fr8.co/</a> first.</div>
+            <div>After authenticated, follow Developer -&gt; Fr8 Plan Directory menu.</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+        </div>
+    </script>
+
+    <!-- NO PAGE-DEFINITION MODAL -->
+    <script type="text/ng-template" id="/NoPageDefinitionDialog.html">
+        <div class="modal-body">
+            <div>No plans are available right now involving this combination of Activities.</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+        </div>
+    </script>
+
+    <!-- NO DETAILS-PAGE MODAL -->
+    <script type="text/ng-template" id="/NoDetailsPageDialog.html">
+        <div class="modal-body">
+            <div>No details page is currently available for selected plan template.</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+        </div>
+    </script>
+
+    <!-- FOOTER -->
+    <footer id="site-footer" class="section">
+        <div class="container">
+            <p class="copyright">@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

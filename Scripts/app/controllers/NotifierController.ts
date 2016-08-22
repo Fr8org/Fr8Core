@@ -22,21 +22,20 @@ module dockyard.controllers.NotifierController {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             'UserService',
-            'PusherNotifierService',
             'UINotificationService',
             '$mdSidenav',
-            '$scope'
+            '$scope',
+            '$stateParams'
         ];
 
         constructor(
-            private UserService: services.IUserService,
-            private PusherNotifierService: services.IPusherNotifierService,
-            private uiNotificationService: services.IUINotificationService,
+            private userService: services.IUserService,
+            private uiNotificationService: interfaces.IUINotificationService,
             private $mdSidenav: any,
-            private $scope: INotifierControllerScope) {
+            private $scope: INotifierControllerScope,
+            private $stateParams: ng.ui.IStateParamsService) {
 
-            // liner-progress-bar controll
-            $scope.planIsRunning = false;
+            $scope.planIsRunning = false; // Used for linear-progress-bar control
             var user = null;
             var isScopeDestroyed = false;
 
@@ -53,11 +52,11 @@ module dockyard.controllers.NotifierController {
             this.$scope.$on('$destroy', (event: ng.IAngularEvent) => {
                 isScopeDestroyed = true;
                 if (user !== null) {
-                    PusherNotifierService.removeAllEvents(user.id);
+                    uiNotificationService.removeAllEvents(user.id);
                 }
             });
 
-            UserService.getCurrentUser().$promise.then(data => {
+            userService.getCurrentUser().$promise.then(data => {
                 // Destroyed scope's channel binding can be called late which we prevent it in here
                 if (isScopeDestroyed) {
                     return;
@@ -67,33 +66,55 @@ module dockyard.controllers.NotifierController {
                 var channel: string = data.id;
                 user = data;
 
-                // ActivityStream
-                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.ActivityStream], (data: any) => {
+                // Generic Success
+                uiNotificationService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericSuccess], (data: any) => {
+                    this.sendNotification(data);
+                });
+
+                // Generic Failure
+                uiNotificationService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericFailure], (data: any) => {
+                    this.sendNotification(data);
+                });
+
+                // Generic Info
+                uiNotificationService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericInfo], (data: any) => {
+                    this.sendNotification(data);
+                });
+
+                // Terminal Event
+                uiNotificationService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.TerminalEvent], (data: any) => {
+                    this.sendNotification(data);
+                });
+
+                // Execution Stopped
+                uiNotificationService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.ExecutionStopped], (data: any) => {
+                    this.sendNotification(data);
+                });
+
+                // Handle pusher calls from front-end
+                uiNotificationService.bindEventFromFrontEnd( (data: any) => {
                     var event = new Fr8InternalEvent();
                     event.type = data.NotificationType;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
-
-                // Toast Messages
-                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.Toast], (data: any) => {
-                    switch (data.NotificationType) {
-                        case dockyard.enums.NotificationType.GenericSuccess:
-                            uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Success, null);
-                            break;
-                        case dockyard.enums.NotificationType.GenericFailure:
-                            uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Error, null);
-                            break;
-                        case dockyard.enums.NotificationType.GenericInfo:
-                            uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Info, null);
-                            break;
-                        default:
-                            uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Alert, null);
-                            break;
-                    }
-                });
             });
         }
+
+        // Determines notifications (toast message or activity stream) according to kiosk mode 
+        sendNotification(data: any): void {
+            if (this.$stateParams['viewMode'] == "kiosk") {
+                // All notifications are implemented as Alert messages in toast.
+                // When we implement sub-notification types for TerminalEvent, we can reevaluate here and pass a parameter for it
+                this.uiNotificationService.notifyToast(data.Message, dockyard.enums.UINotificationStatus.Alert, null);
+            } else {
+                var event = new Fr8InternalEvent();
+                event.type = data.NotificationType;
+                event.data = data;
+                this.$scope.eventList.splice(0, 0, event);
+            }
+        }
     }
+
     app.controller('NotifierController', NotifierController);
 }

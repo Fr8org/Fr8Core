@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Data.Helpers;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -22,15 +23,13 @@ namespace terminalFr8Core.Activities
             Name = "Make_A_Decision",
             Label = "Make a Decision",
             Version = "1",
-            Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 550,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -76,22 +75,9 @@ namespace terminalFr8Core.Activities
             OperationalState.CallStack.StoreLocalData("Branch", currentBranch);
             var containerTransition = (ContainerTransition)ConfigurationControls.Controls.Single();
 
-            /// support for any crate
-            var relevant_fields = new List<KeyValueDTO>();
-            foreach (var transition in containerTransition.Transitions)
-            {
-                foreach (var condition in transition.Conditions)
-                {
-                    var fieldValue = Payload.FindField(condition.Field);
-                    if (fieldValue != null)
-                        relevant_fields.Add(new KeyValueDTO(condition.Field, fieldValue));
-                }
-            }
-            ///
-
             foreach (var containerTransitionField in containerTransition.Transitions)
             {
-                if (CheckConditions(containerTransitionField.Conditions, relevant_fields.AsQueryable()))
+                if (CheckConditions(containerTransitionField.Conditions, containerTransition.ResolvedUpstreamFields.AsQueryable()))
                 {
                     //let's return whatever this one says
                     switch (containerTransitionField.Transition)
@@ -137,6 +123,12 @@ namespace terminalFr8Core.Activities
             }
             //none of them matched let's continue normal execution
             Success();
+        }
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateTransitions((ContainerTransition)ConfigurationControls.Controls.Single());
+            return Task.FromResult(0);
         }
 
         private OperationalStateCM.BranchStatus CreateBranch()

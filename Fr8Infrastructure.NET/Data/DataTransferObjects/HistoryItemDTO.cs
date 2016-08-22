@@ -46,36 +46,36 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string CreatedByID { get; set; }
     }
 
-    public class HistoryQueryDTO
+    public class PagedQueryDTO
     {
         /// <summary>
-        /// Ordinal number of subset of log records to retrieve
+        /// Ordinal number of subset of items to retrieve
         /// </summary>
         [JsonProperty("page")]
         public int? Page { get; set; }
         /// <summary>
-        /// Whether to perform sort of results in descending order
-        /// </summary>
-        [JsonProperty("isDescending")]
-        public bool? IsDescending { get; set; }
-        /// <summary>
-        /// Whether to show log records of current user only
+        /// Whether to show items of current user only or for all users (available to admins only)
         /// </summary>
         [JsonProperty("isCurrentUser")]
         public bool IsCurrentUser { get; set; }
         /// <summary>
-        /// Max number of log records to retrieve in single response
+        /// Max number of items to retrieve in a single response
         /// </summary>
         [JsonProperty("itemPerPage")]
         public int? ItemPerPage { get; set; }
         /// <summary>
-        /// Part of textual field of log record to filter by
+        /// Part of textual field of item to filter by
         /// </summary>
         [JsonProperty("filter")]
         public string Filter { get; set; }
+        /// <summary>
+        /// Name of property to sort result items by. If starts with a '-' (minus) sign then items will be sorted by descending
+        /// </summary>
+        [JsonProperty("orderBy")]
+        public string OrderBy { get; set; }
     }
 
-    public class HistoryResultDTO<T> where T : HistoryItemDTO
+    public class PagedResultDTO<T>
     {
         [JsonProperty("items")]
         public IList<T> Items { get; set; }

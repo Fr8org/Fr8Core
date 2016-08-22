@@ -34,6 +34,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.PlanDirectory;
 using Hub.Services.Timers;
 
 namespace Hub.StructureMap
@@ -120,12 +121,22 @@ namespace Hub.StructureMap
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
-                For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+
+
+                //PD services
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                For<ISearchProvider>().Use<SearchProvider>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                //For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
+
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 
             }
         }
@@ -162,6 +173,7 @@ namespace Hub.StructureMap
                 For<IPlan>().Use<Hub.Services.Plan>();
 
                 For<ISubplan>().Use<Subplan>();
+                For<IFr8Account>().Use<Fr8Account>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -191,14 +203,34 @@ namespace Hub.StructureMap
                 For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>(), x.GetInstance<ISecurityServices>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
-                For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
-                
+                For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+
+                //PD bootstrap
+                //tony.yakovets: will it work? or some tests check generated templates?
+                //var templateGenerator = new Mock<ITemplateGenerator>().Object;
+                //For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                //For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+
+                var webservicesPageGeneratorMock = new Mock<IWebservicesPageGenerator>().Object;
+                var manifestPageGeneratorMock = new Mock<IManifestPageGenerator>().Object;
+                var planTemplateDetailsMock = new Mock<IPlanTemplateDetailsGenerator>().Object;
+
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                For<ISearchProvider>().Use<SearchProvider>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                For<ITemplateGenerator>().Use<TemplateGenerator>().Singleton();
+
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton()
+                    .Ctor<IWebservicesPageGenerator>().Is(webservicesPageGeneratorMock)
+                    .Ctor<IManifestPageGenerator>().Is(manifestPageGeneratorMock)
+                    .Ctor<IPlanTemplateDetailsGenerator>().Is(planTemplateDetailsMock);
             }
         }
 
@@ -214,9 +246,9 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests(IConfigRepository configRepository)
+            public TerminalServiceForTests(IConfigRepository configRepository, ISecurityServices securityServices)
             {
-                _terminal = new Terminal(configRepository);
+                _terminal = new Terminal(configRepository, securityServices);
             }
 
             public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
@@ -234,6 +266,11 @@ namespace Hub.StructureMap
                 return _terminal.GetAll();
             }
 
+            public IEnumerable<TerminalDO> GetByCurrentUser()
+            {
+                return _terminal.GetByCurrentUser();
+            }
+                
             public Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
             {
                 return _terminal.GetAvailableActivities(uri);
@@ -244,12 +281,12 @@ namespace Hub.StructureMap
                 return _terminal.GetByNameAndVersion(name, version);
             }
 
-            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isUserInitiated)
             {
-                return _terminal.RegisterOrUpdate(terminalDo);
+                return _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
             }
 
-            public TerminalDO GetByKey(int terminalId)
+            public TerminalDO GetByKey(Guid terminalId)
             {
                 return _terminal.GetByKey(terminalId);
             }

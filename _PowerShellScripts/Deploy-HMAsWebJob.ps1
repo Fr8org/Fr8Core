@@ -23,7 +23,7 @@ If (Test-Path $archiveFolderName){
 If (Test-Path $outputArchiveFile){
 	Write-Host "Removing old $outputArchiveFile archive file"
 	Remove-Item $outputArchiveFile -Force -Recurse
-}
+} 
 
 # Create archive folder.
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
@@ -54,8 +54,8 @@ $dstRunFile = "$archiveFolderName\SQL\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
 # Copy Config
-$srcRunFile = "$rootDir\..\Tests\HealthMonitor\Config\HealthMonitor\*"
-$dstRunFile = "$archiveFolderName\Config\HealthMonitor\"
+$srcRunFile = "$rootDir\..\Tests\HealthMonitor\Config\*"
+$dstRunFile = "$archiveFolderName\Config\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
 # Fix the file argument 
@@ -64,7 +64,7 @@ $xml = [xml](Get-Content ($configFile))
 $node = $xml.configuration.appSettings
 if ($node -ne $NULL)
 {
-	$node.file = "Config\HealthMonitor\Settings.config"
+	$node.file = "Config\Settings.config"
 	$xml.Save($configFile)
 }		
 

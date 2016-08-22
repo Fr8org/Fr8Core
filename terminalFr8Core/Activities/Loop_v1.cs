@@ -25,17 +25,15 @@ namespace terminalFr8Core.Activities
             Id = new Guid("3d5dd0c5-6702-4b59-8c18-b8e2c5955c40"),
             Name = "Loop",
             Label = "Loop",
-            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             Type = ActivityType.Loop,
             Tags = Tags.AggressiveReload,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -48,19 +46,20 @@ namespace terminalFr8Core.Activities
                 return;
             }
             var crateDescriptionToProcess = FindCrateDescriptionToProcess();
+
+            //updating iteration index
             var loopData = OperationalState.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
             if (loopData == null)
             {
-                loopData = new OperationalStateCM.LoopStatus
-                {
-                    CrateManifest = new CrateDescriptionCM(crateDescriptionToProcess)
-                };
+                loopData = new OperationalStateCM.LoopStatus();
             }
             else
             {
                 loopData.Index++;
             }
             OperationalState.CallStack.StoreLocalData("Loop", loopData);
+            //end of updating
+
             var crateToProcess = FindCrateToProcess(crateDescriptionToProcess);
             if (crateToProcess == null)
             {

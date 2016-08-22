@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Added_Fr8Account_2RouteNode : DbMigration
+    public partial class Added_Fr8Account_2RouteNode : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

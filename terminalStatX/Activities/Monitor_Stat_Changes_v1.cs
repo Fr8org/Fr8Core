@@ -25,15 +25,13 @@ namespace terminalStatX.Activities
             Name = "Monitor_Stat_Changes",
             Label = "Monitor Stat Changes",
             Version = "1",
-            Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
@@ -133,6 +131,9 @@ namespace terminalStatX.Activities
                         .AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(firstStat)));
                 }
                 SelectedGroup = ActivityUI.ExistingGroupsList.Value;
+                ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
+                    .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
+                ActivityUI.ExistingGroupsList.Value = SelectedGroup;
             }
             else
             {
@@ -145,22 +146,22 @@ namespace terminalStatX.Activities
             if (!string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
             {
                 var previousStat = SelectedStat;
+                var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
+                if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                {
+                    StatXUtilities.AddAdvisoryMessage(Storage);
+                }
+                else
+                {
+                    if (Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault() != null)
+                    {
+                        ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                    }
+                    Storage.RemoveByLabel("Advisories");
+                }
+
                 if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
                 {
-                    var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
-                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
-                    {
-                        StatXUtilities.AddAdvisoryMessage(Storage);
-                    }
-                    else
-                    {
-                        if (Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault() != null)
-                        {
-                            ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
-                        }
-                        Storage.RemoveByLabel("Advisories");
-                    }
-
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
                     if (currentStat != null)
                     {
@@ -169,6 +170,8 @@ namespace terminalStatX.Activities
                     }
                 }
                 SelectedStat= ActivityUI.ExistingGroupStats.Value;
+                ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                ActivityUI.ExistingGroupStats.Value = SelectedStat;
 
                 EventSubscriptions.Subscriptions?.Clear();
                 EventSubscriptions.Manufacturer = "StatX";

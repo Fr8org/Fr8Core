@@ -6,23 +6,27 @@
                     <div class="caption caption-md">
                         <i class="icon-bar-chart font-green-haze hide"></i>
                         <span class="caption-subject font-green-haze bold uppercase">All Terminals</span>
-                        <span class="caption-helper hide">weekly stats...</span>
                     </div>
                     <div class="actions">
                         <a class="btn green" ng-click="showAddTerminalModal()" href="#">Add Terminal</a>
                     </div>
                 </div>
                 <div class="portlet-body">
-                    <div ng-show="terminals.length == 0" class="ng-hide">There are no Terminals in this view</div>
+                    <div ng-show="terminals.length == 0" class="ng-hide">
+                        You have built no Terminals. Learn about Terminal Development 
+                        <a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md" target="_blank">here</a>
+                    </div>
                     <div ng-show="terminals.length > 0">
                         <table datatable="ng" class="row-border hover">
                             <thead>
                                 <tr>
-                                    <th>Url</th>
+                                    <th>Name</th>
+                                    <th>Current Url</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="terminal in terminals">
+                                <tr ng-repeat="terminal in terminals" ng-click="openDetails(terminal)" style="cursor: pointer">
+                                    <td><span ng-show="terminal.label != null">{{terminal.label}}</span><span ng-show="terminal.label == null && terminal.terminalStatus == 0"><i>not yet discovered</i></span><span ng-show="terminal.label == null && terminal.terminalStatus != 0"><i>title not available</i></span></td>
                                     <td>{{terminal.endpoint}}</td>
                                 </tr>
                             </tbody>

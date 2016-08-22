@@ -4,12 +4,27 @@
         activities: Array<model.ActivityDTO>;
         terminals: Array<model.AuthenticationTokenTerminalDTO>;
         isWaitingForResponse: boolean;
+        canBeAppliedToMultipleActivitieis: boolean;
 
         isLoading: () => boolean;
         isAllSelected: () => boolean;
         linkAccount: (terminal: model.AuthenticationTokenTerminalDTO) => void;
         apply: () => void;
-        $close: () => void;
+        $close: (result: any) => void;
+    }
+
+    export class AuthenticationPopupBlockedDialogController {
+        public static $inject = [
+            '$scope',
+            '$window'
+        ];
+
+        constructor(
+            private $scope: ng.IScope,
+            private $window: ng.IWindowService
+        ) {
+            (<any>$scope).hostname = $window.location.host || $window.location.hostname;
+        }
     }
 
     export class AuthenticationDialogController {
@@ -60,27 +75,31 @@
                 }
 
                 var data = [];
-
+                var authorizedActivities = [];
                 var i, j;
                 var terminalName;
                 for (i = 0; i < _activities.length; ++i) {
-                    terminalName = _activities[i].activityTemplate.terminal.name;
+                    var activity = _activities[i];
+                    terminalName = activity.activityTemplate.terminalName;
                     for (j = 0; j < $scope.terminals.length; ++j) {
-                        if ($scope.terminals[j].name === terminalName) {
+                        var terminal = $scope.terminals[j];
+                        if (terminal.name === terminalName
+                            && ((<any>terminal).useForAllActivities || (<any>activity).authorizeIsRequested)
+                            && terminal.selectedAuthTokenId.toString() != activity.authTokenId) {
                             data.push({
-                                actionId: _activities[i].id,
-                                authTokenId: $scope.terminals[j].selectedAuthTokenId,
-                                isMain: (<any>$scope.terminals[j]).isMain
+                                actionId: activity.id,
+                                authTokenId: terminal.selectedAuthTokenId,
+                                isMain: (<any>terminal).isMain
                             });
+                            authorizedActivities.push(activity.id);
                             break;
                         }
                     }
                 }
                 _loading = true;
-
                 $http.post(urlPrefix + '/authentication/tokens/grant', data)
                     .then((res) => {
-                        $scope.$close();
+                        $scope.$close(authorizedActivities);
                     })
                     .finally(() => {
                         _loading = false;
@@ -209,7 +228,7 @@
                         window.addEventListener('message', messageListener);
 
                         var isClosedHandler = function () {
-                            if (childWindow.closed) {
+                            if (childWindow && childWindow.closed) {
                                 window.removeEventListener('message', messageListener);
                                 $scope.isWaitingForResponse = false;
                                 $scope.$apply();
@@ -219,6 +238,22 @@
                             }
                         };
                         setTimeout(isClosedHandler, 500);
+
+                        var isBlockedHandler = function () {
+                            if (!childWindow || childWindow.outerHeight === 0) {
+                                $scope.isWaitingForResponse = false;
+                                $scope.$apply();
+
+                                $modal.open({
+                                    animation: true,
+                                    backdrop: 'static',
+                                    keyboard: false,
+                                    templateUrl: '/AngularTemplate/AuthenticationPopupBlockedDialog',
+                                    controller: 'AuthenticationPopupBlockedDialogController'
+                                });
+                            }
+                        };
+                        setTimeout(isBlockedHandler, 500);
                     });
             };
 
@@ -230,7 +265,7 @@
 
                 var result = authTokenTerminals.filter((it) => {
                     for (var i = 0; i < $scope.activities.length; ++i) {
-                        if ($scope.activities[i].activityTemplate.terminal.name === it.name) {
+                        if ($scope.activities[i].activityTemplate.terminalName === it.name) {
                             return true;
                         }
                     }
@@ -253,8 +288,8 @@
 
                 for (var i = 0; i < activities.length; ++i) {
                     var terminal;
-                    if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminal.name))
-                        && !hasTerminal(result, activities[i].activityTemplate.terminal.name)) {
+                    if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminalName))
+                        && !hasTerminal(result, activities[i].activityTemplate.terminalName)) {
 
                         var item = new model.AuthenticationTokenTerminalDTO(
                             terminal.name,
@@ -268,6 +303,16 @@
                         result.push(item);
                     }
                 }
+                //We check what activities are related to this terminal. If there are several activities and only part of them are manually requested authorization for
+                //then we show advanced options and allow user to choose whether to apply auth token to all activities of the plan or only to the requested ones
+                result.forEach(terminal => {
+                    var terminalActivities = activities.filter(x => x.activityTemplate.terminalName === terminal.name);
+                    var explicitlyRequestedActivities = terminalActivities
+                        .filter(x => (<any>x).authorizeIsRequested === true);
+                    (<any>terminal).showAdvancedOptions = explicitlyRequestedActivities.length < terminalActivities.length;
+                    (<any>terminal).advancedOptionsAreExpanded = false;
+                    (<any>terminal).useForAllActivities = true;
+                });
 
                 result = result.sort((x, y) => x.name < y.name ? -1 : x.name > y.name ? 1 : 0);
 
@@ -291,7 +336,6 @@
 
                 // Save previously selected auth tokens.
                 if ($scope.terminals) {
-                    console.log($scope.terminals);
                     angular.forEach($scope.terminals, function (term) {
                         if (term.authTokens.length !== 0) {
                             selectedAuthTokens.push({
@@ -355,4 +399,5 @@
     }
 
     app.controller('AuthenticationDialogController', AuthenticationDialogController);
+    app.controller('AuthenticationPopupBlockedDialogController', AuthenticationPopupBlockedDialogController);
 } 

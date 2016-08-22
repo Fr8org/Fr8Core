@@ -1,17 +1,17 @@
-﻿<div class="page-head designer-header container row"  layout="row" layout-gt-md="row">
+﻿<div class="page-head no-text-select designer-header container row"  layout="row" layout-gt-md="row">
     <div layout="row"  flex>
         <div flex="70" flex-md="60" flex-sm="50">
             <div layout="row"  flex>
                 <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}" style="min-width: 0">
                     <h1 ng-if="!kioskMode">
-                        <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
+                        <!--header title -->
+                        <div class="route-name" ng-click="editTitle()" style="line-height: 1.3">{{plan.name}}</div>
                         <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
 
                     </h1>
                     <h1 ng-if="kioskMode">
                         <div class="route-name">{{plan.name}}</div>
                     </h1>
-
                 </div>
                 <md-button class="md-icon-button" ng-click="editTitle()" style="margin-top: 2px">
                     <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
@@ -24,28 +24,35 @@
         <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-xs="column" layout-align="end center" layout-align-xs="center" flex  >
             <span>View:</span>
             <a ui-sref="plan({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan">Activities</md-radio-button>
+                <md-radio-button value="plan" class="black-radio">Activities</md-radio-button>
             </a>
             <a ui-sref="plan.details({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan.details">Settings</md-radio-button>
+                <md-radio-button value="plan.details" class="black-radio">Settings</md-radio-button>
             </a>
         </md-radio-group>
     </div>
     <div flex="40" flex-md="35" >
         <div class="designer-header-status" ng-if="!kioskMode" flex="noshrink">
-
             <span class="h4">
                 <strong>
-                    <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>
-                    <span ng-if="plan.planState === 1">Ready</span>
-                    <span ng-if="plan.planState === 3">Saving Changes...</span>
+                    <span ng-if="plan.planState === 'Saving_Changes'">Saving Changes...</span>
                 </strong>
-                <md-button ng-disabled="plan.planState === 3" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
-                    <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
-                </md-button>
-                <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
-                    <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
-                </md-button>
+                <span ng-if="plan.planState === 'Inactive'">
+                    <strong>Ready</strong>
+                    <md-button ng-disabled="plan.planState === 'Saving_Changes'" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 'Inactive'" event-run>
+                        <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
+                    </md-button>
+                </span>
+                <span ng-if="plan.planState === 'Executing'">
+                    <strong><span class="plan-state-text" style="display:block">{{plan.planState | PlanState}}</span></strong>
+                </span>
+                <span ng-click="deactivatePlan()" ng-if="plan.planState === 'Active'">
+                    <strong><span class="plan-state-text">{{plan.planState | PlanState}}</span></strong>
+                    <md-button class="md-icon-button">
+                      <md-icon md-font-icon="fa fa-stop" class="fa fa-2x" style="color:black;margin-top:-3px"></md-icon>
+                      <span style="font-size:10px; margin-top:-12.5px; display:block;">stop</span>
+                    </md-button>
+                </span>
             </span>
         </div>
     </div>

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using Data.Entities;
 
 namespace Hub.Interfaces
@@ -8,6 +10,10 @@ namespace Hub.Interfaces
         IEnumerable<PageDefinitionDO> GetAll();
 
         PageDefinitionDO Get(int id);
+
+        PageDefinitionDO Get(IEnumerable<string> tags);
+
+        IList<PageDefinitionDO> Get(Expression<Func<PageDefinitionDO, bool>> filter);
 
         void CreateOrUpdate(PageDefinitionDO pageDefinitionDO);
 

@@ -20,16 +20,14 @@ namespace terminalTelegram.Activities
             Name = "Post_To_Telegram",
             Label = "Post To Telegram",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
@@ -87,7 +85,7 @@ namespace terminalTelegram.Activities
             // Phone to send message
             var phoneNumber = ActivityUI.PhoneNumber.Value;
             // Message
-            var message = ActivityUI.MessageSource.GetValue(Payload);
+            var message = ActivityUI.MessageSource.TextValue;
 
             await _telegramIntegration.ConnectAsync();
 

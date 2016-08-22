@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -17,7 +18,17 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
-    public class Search_DocuSign_History_v1  : BaseDocuSignActivity
+
+
+    //////////// DISABLED
+    //
+    //"This activity is incomplete. It's based on the premise that we will register for and record all DocuSign events for a user, 
+    //and give them search capability. We deemphasized it in part because DocuSign invested a bunch of energy into their native reporting,
+    //and it's not obviously an improvement on their base functionality."
+    //
+    //
+
+    public class Search_DocuSign_History_v1 : BaseDocuSignActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -25,16 +36,14 @@ namespace terminalDocuSign.Activities
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             Tags = Tags.Internal,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -43,7 +52,7 @@ namespace terminalDocuSign.Activities
         {
             [JsonIgnore]
             public TextBox SearchText { get; set; }
-            
+
             [JsonIgnore]
             public DropDownList Folder { get; set; }
 
@@ -65,24 +74,24 @@ namespace terminalDocuSign.Activities
                 Controls.Add(SearchText = new TextBox
                 {
                     Name = "SearchText",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-                                          });
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                });
 
                 Controls.Add(Folder = new DropDownList
                 {
                     Label = "Envelope is in folder:",
                     Name = "Folder",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Source = null
-                                      });
+                });
 
                 Controls.Add(Status = new DropDownList
                 {
                     Label = "Envelope has status:",
                     Name = "Status",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Source = null
-                                      });
+                });
 
                 Controls.Add(new RunPlanButton());
             }
@@ -91,7 +100,7 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => "Search DocuSign History";
 
-        public Search_DocuSign_History_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Search_DocuSign_History_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
@@ -104,13 +113,13 @@ namespace terminalDocuSign.Activities
         public override async Task Initialize()
         {
             var actionUi = new ActivityUi();
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);           
-            
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
+
             AddControls(actionUi.Controls);
             //commented out by FR-2400
             //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
             //_docuSignManager.FillStatusSource(configurationCrate, "Status");
-            
+
             await ConfigureNestedActivities(actionUi);
         }
 
@@ -129,21 +138,22 @@ namespace terminalDocuSign.Activities
         {
             var config = new Query_DocuSign_v1.ActivityUi
             {
-                Folder = {Value = actionUi.Folder.Value}, 
-                Status = {Value = actionUi.Status.Value}, 
-                SearchText = {Value = actionUi.SearchText.Value}
+                Folder = { Value = actionUi.Folder.Value },
+                Status = { Value = actionUi.Status.Value },
+                SearchText = { Value = actionUi.SearchText.Value }
             };
-            
-            var template = (await FindTemplates(x => x.Name == "Query_DocuSign")).FirstOrDefault();
+
+            var template = (await FindTemplates(x => x.Name == "Query_DocuSign"))
+                            .FirstOrDefault();
 
             if (template == null)
             {
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
-            
+
             var storage = new CrateStorage(Crate.FromContent("Config", config))
             {
-                Crate.FromContent(TerminalActivityBase.ConfigurationControlsLabel, new StandardConfigurationControlsCM( 
+                Crate.FromContent(TerminalActivityBase.ConfigurationControlsLabel, new StandardConfigurationControlsCM(
                 new TextArea
                 {
                     IsReadOnly = true,
@@ -158,7 +168,7 @@ namespace terminalDocuSign.Activities
             {
                 activity = new ActivityPayload
                 {
-                    ActivityTemplate = template,
+                    ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(template),
                     Name = template.Label,
                     Ordering = 1,
                 };

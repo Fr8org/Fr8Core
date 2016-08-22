@@ -9,8 +9,9 @@
             private $rootScope: ng.IScope,
             private $interval: ng.IIntervalService,
             private $modal,
-            private ConfigureTrackerService: services.ConfigureTrackerService
-            ) {
+            private ConfigureTrackerService: services.ConfigureTrackerService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService,
+            private ActivityService: services.IActivityService) {
 
             var self = this;
 
@@ -76,14 +77,14 @@
                 return false;
             }
 
-            var activity = subPlan.activities[0];
+            var activity = <model.ActivityDTO>subPlan.activities[0];
             if (!activity || !activity.activityTemplate) {
                 return false;
             }
-
-            if (activity.activityTemplate.category === 'Solution'
+            var at = this.ActivityTemplateHelperService.getActivityTemplate(activity);
+            if (at.categories.some((value, index, arr) => { return value.name && value.name.toLowerCase() === 'Solution'; })
                 // Second clause to force new algorithm work only for specific activities.
-                && activity.activityTemplate.tags === 'UsesReconfigureList') {
+                && at.tags === 'UsesReconfigureList') {
 
                 return true;
             }
@@ -95,9 +96,33 @@
             var self = this;
 
             var modalScope = <controllers.IAuthenticationDialogScope>self.$rootScope.$new(true);
+            var planActivityByTerminal = {};
+            //Trying to find other activities of the same terminal belong to current plan
+            this.ActivityService.getAllActivities(this._currentPlan).forEach(activity => {
+                var terminalName = activity.activityTemplate.terminalName;
+                if (!planActivityByTerminal.hasOwnProperty(terminalName)) {
+                    planActivityByTerminal[terminalName] = [];
+                }
+                (<any>activity).authorizeIsRequested = false;
+                planActivityByTerminal[terminalName].push(activity);
+            });
+            var resultActivities = [];
+            activities.forEach(activity => {
+                var terminalName = activity.activityTemplate.terminalName;
+                if (planActivityByTerminal.hasOwnProperty(terminalName) &&
+                    planActivityByTerminal[terminalName] !== undefined) {
+                    planActivityByTerminal[terminalName].forEach(x => { resultActivities.push(x); });
+                    delete planActivityByTerminal[terminalName];
+                }
+            });
+            activities.forEach(activity => {
+                var foundActivity = resultActivities.filter(x => x.id === activity.id)[0];
+                foundActivity.authorizeIsRequested = true;
+            });
+            activities = resultActivities;
             modalScope.activities = activities;
-
             self._authDialogDisplayed = true;
+
 
             self.$modal.open({
                 animation: true,
@@ -106,19 +131,20 @@
                 scope: modalScope
             })
             .result
-            .then(() => {
+            .then((result) => {
                 if (!this.isSolutionBasedPlan()) {
                     angular.forEach(activities, it => {
+                        if (result.indexOf(it.id) === -1) { return; }
                         self.$rootScope.$broadcast(
-                            dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                            new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
+                            directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                            new directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
                         );
                     });
                 }
                 else {
                     self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
+                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                        new directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
                     );
 
                     console.log(
@@ -129,17 +155,20 @@
                 }
             })
             .catch((result) => {
+                //If user cancelled authorization we should mark only those activities for which authorization was requested
                 angular.forEach(activities, function (a) {
-                    if (!self._canceledActivities[a.id]) {
+                    if (!self._canceledActivities[a.id] && (<any>a).authorizeIsRequested) {
                         self._canceledActivities[a.id] = true;
                     }
                 });
 
                 angular.forEach(activities, it => {
-                    self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
-                        new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
-                    );
+                    if ((<any>it).authorizeIsRequested) {
+                        self.$rootScope.$broadcast(
+                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
+                        new directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
+                        );
+                    }
                 });
             })
             .finally(() => {
@@ -157,6 +186,8 @@ app.service(
         '$interval',
         '$modal',
         'ConfigureTrackerService',
+        'ActivityTemplateHelperService',
+        'ActivityService',
         dockyard.services.AuthService
     ]
 );

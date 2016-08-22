@@ -6,10 +6,11 @@ namespace terminalBasecamp2
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Basecamp2",
-            IconPath = "/Content/icons/web_services/basecamp2-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/basecamp2-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

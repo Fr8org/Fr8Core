@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -28,7 +29,7 @@ namespace Hub.Services
         private readonly ICrateManager _crateManager;
         private readonly IPlan _plan;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-        private readonly Fr8Account _fr8Account;
+        private readonly IFr8Account _fr8Account;
         private readonly IConfigRepository _configRepository;
 
         private const string MonitoringPlanName = "Monitoring Manifest Submissions";
@@ -44,7 +45,7 @@ namespace Hub.Services
             ICrateManager crateManager,
             IPlan plan,
             IUnitOfWorkFactory unitOfWorkFactory,
-            Fr8Account fr8Account,
+            IFr8Account fr8Account,
             IConfigRepository configRepository)
         {
             if (activity == null)
@@ -144,7 +145,7 @@ namespace Hub.Services
 
         private async Task RunPlan(PlanDO plan)
         {
-            if (plan.PlanState == PlanState.Running)
+            if (plan.PlanState == PlanState.Executing || plan.PlanState == PlanState.Active)
             {
                 return;
             }

@@ -10,14 +10,15 @@ using NUnit.Framework;
 using StructureMap;
 using Salesforce.Common;
 using Fr8.Testing.Integration;
+using System.Configuration;
 
 namespace terminalIntegrationTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static PlanEmptyDTO TestPlanEmptyDTO()
+        public static PlanNoChildrenDTO TestPlanNoChildrenDTO()
         {
-            return new PlanEmptyDTO()
+            return new PlanNoChildrenDTO()
             {
                 Name = "Integratin Test Plan",
                 Description = "Create a new Integration test Plan and configure with custom activities"
@@ -31,7 +32,7 @@ namespace terminalIntegrationTests.Fixtures
                 Id = Guid.NewGuid(),
                 Description = name,
                 Name = name,
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
             return curPlanDO;
         }
@@ -43,7 +44,6 @@ namespace terminalIntegrationTests.Fixtures
                 Id = Guid.NewGuid(),
                 ParentPlanNodeId = parentNodeId,
                 RootPlanNodeId = parentNodeId,
-                NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
             return SubPlanDO;
         }
@@ -53,19 +53,18 @@ namespace terminalIntegrationTests.Fixtures
         {
             return new AuthorizationTokenDTO
             {
-                Token =
-                    @"{""AccessToken"":""ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA"",""RefreshToken"":""1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"",""Expires"":""2017-03-19T13:24:33.2805735+01:00""}"
-            };
+                Token = ConfigurationManager.AppSettings["GoogleTestAccountToken"]
+        };
         }
 
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
             await auth.UsernamePasswordAsync(
-                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
-                "611998545425677937",
-                "alex@dockyard.company",
-                "thales@123");
+                       ConfigurationManager.AppSettings["OwnerClientId"],
+                       ConfigurationManager.AppSettings["OwnerId"],
+                       ConfigurationManager.AppSettings["OwnerEmail"],
+                       ConfigurationManager.AppSettings["OwnerPassword"]);
 
             return new AuthorizationTokenDTO()
             {

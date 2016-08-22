@@ -59,12 +59,9 @@ namespace terminalDocuSign.Services
         public async Task CreatePlan_MonitorAllDocuSignEvents(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
             Logger.Info($"Create MADSE called {authToken.UserId}");
-            string currentPlanId = await FindAndActivateExistingPlan(hubCommunicator, "MonitorAllDocuSignEvents", authToken);
+            await RemoveInactiveExistingPlans(hubCommunicator, "MonitorAllDocuSignEvents", authToken);
 
-            if (string.IsNullOrEmpty(currentPlanId))
-            {
-                await CreateAndActivateNewMADSEPlan(hubCommunicator, authToken);
-            }
+            await CreateAndActivateNewMADSEPlan(hubCommunicator, authToken);
         }
 
         //only create a connect when running on dev/production
@@ -146,129 +143,67 @@ namespace terminalDocuSign.Services
 
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
-            return (Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
-                     .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
+            return (val.SubPlans.ElementAt(0).Activities[1].ActivityTemplate.Name == "Save_All_Payload_To_Fr8_Warehouse");
         }
 
-        private async Task<string> FindAndActivateExistingPlan(IHubCommunicator hubCommunicator, string plan_name, AuthorizationToken authToken)
+        private async Task RemoveInactiveExistingPlans(IHubCommunicator hubCommunicator, string plan_name, AuthorizationToken authToken)
         {
             try
             {
                 var existingPlans = (await hubCommunicator.GetPlansByName(plan_name, PlanVisibility.Internal)).ToList();
                 if (existingPlans.Count > 0)
                 {
-                    //search for existing MADSE plan for this DS account and updating it
+                    //active MADSE plans are likely related to another DS account
+                    var plansForRemoval = existingPlans
+                        .Where(val =>
+                    (val.PlanState == PlanState.IntToString(PlanState.Inactive)) || //or all from above
+                    !(val.SubPlans.Any() && val.SubPlans.ElementAt(0).Activities.Any() &&
+                    val.SubPlans.ElementAt(0).Activities[1].ActivityTemplate.Name == "Save_All_Payload_To_Fr8_Warehouse")).ToList();
 
-                    //1 Split existing plans in obsolete/malformed and new
-                    var plans = existingPlans.GroupBy
-                        (val =>
-                        //first condition
-                        val.Plan.SubPlans.Any() &&
-                        //second condition
-                        val.Plan.SubPlans.ElementAt(0).Activities.Any() &&
-                        //third condtion
-                        Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
-                        //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
-                        !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
-
-                      ).ToDictionary(g => g.Key, g => g.ToList());
-
-                    //trying to find an existing plan for this DS account
-                    if (plans.ContainsKey(true))
+                    foreach (var plan in plansForRemoval)
                     {
-                        List<PlanDTO> newPlans = plans[true];
-
-                        existingPlans = newPlans.Where(
-                              a => a.Plan.SubPlans.Any(b =>
-                                  Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, b.Activities[0])
-                                  .FirstOrDefault(t => t.Label == "DocuSignUserCrate").Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authToken.ExternalAccountId)).ToList();
-
-                        if (existingPlans.Count > 1)
-                        {
-                            Logger.Error($"Multiple Monitor_All_DocuSign_Events plans were created for one DocuSign account: {authToken.ExternalAccountId}") ;
-                        }
-
-                        var existingPlan = existingPlans.FirstOrDefault();
-
-                        if (existingPlan != null)
-                        {
-                            var firstActivity = existingPlan.Plan.SubPlans.FirstOrDefault(a => a.Activities.Count > 0).Activities[0];
-
-                            if (firstActivity != null)
-                            {
-                                await hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authToken.Id));
-                                await hubCommunicator.RunPlan(existingPlan.Plan.Id, null);
-                                Logger.Info($"#### Existing MADSE plan activated with planId: {existingPlan.Plan.Id}");
-                                return existingPlan.Plan.Id.to_S();
-                            }
-                        }
+                        await hubCommunicator.DeletePlan(plan.Id);
                     }
 
-                    //removing obsolete/malformed plans
-                    if (plans.ContainsKey(false))
-                    {
-                        List<PlanDTO> obsoletePlans = plans[false];
-                        Logger.Info($"#### Found {obsoletePlans.Count} obsolete MADSE plans");
-                        foreach (var obsoletePlan in obsoletePlans)
-                        {
-                            await hubCommunicator.DeletePlan(obsoletePlan.Plan.Id);
-                        }
-                    }
+                    Logger.Info($"Removed {plansForRemoval.Count} obsolete MADSE plan");
                 }
             }
-            // if anything bad happens we would like not to create a new MADSE plan and fail loudly
-            catch (Exception exc) { throw new ApplicationException("Couldn't update an existing Monitor_All_DocuSign_Events plan", exc); };
-
-            return null;
+            catch (Exception exc) { Logger.Info("Failed to remove obsolete MADSE plan"); }
         }
 
         private async Task CreateAndActivateNewMADSEPlan(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            var emptyMonitorPlan = new PlanEmptyDTO
+            try
             {
-                Name = "MonitorAllDocuSignEvents",
-                Description = "MonitorAllDocuSignEvents",
-                PlanState = PlanState.Running,
-                Visibility = PlanVisibility.Internal
-            };
+                var emptyMonitorPlan = new PlanNoChildrenDTO
+                {
+                    Name = "MonitorAllDocuSignEvents",
+                    Description = "MonitorAllDocuSignEvents",
+                    PlanState = "Active",
+                    Visibility = new PlanVisibilityDTO() { Hidden = true }
+                };
 
-            var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
-            var activityTemplates = await hubCommunicator.GetActivityTemplates(null);
-            var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
-            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_To_Fr8_Warehouse");
-            Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {authToken.UserId} {monitorDocusignPlan}");
-            await hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authToken.Id));
-            var storeMTDataActivity = await hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);
-            SetSelectedCrates(storeMTDataActivity);
-            //save this
-            await hubCommunicator.ConfigureActivity(storeMTDataActivity);
-            await hubCommunicator.RunPlan(monitorDocusignPlan.Plan.Id, null);
+                var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
+                Debug.WriteLine("Attemting to create a new MADSE plan");
+                var activityTemplates = await hubCommunicator.GetActivityTemplates();
+                var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
+                var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_All_Payload_To_Fr8_Warehouse");
+                Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {authToken.UserId} {monitorDocusignPlan}");
+                await hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record DocuSign Events", 1, monitorDocusignPlan.StartingSubPlanId, false, new Guid(authToken.Id));
+                var storeMTDataActivity = await hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.StartingSubPlanId);
 
-            Logger.Info($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Plan.Id}");
+                //save this
+                await hubCommunicator.ConfigureActivity(storeMTDataActivity);
+                await hubCommunicator.RunPlan(monitorDocusignPlan.Id, null);
+                Logger.Info($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Id}");
+            }
+            catch (Exception exc)
+            {
+                Logger.Error($"#### Failed to create MADSE plan for {authToken.ExternalAccountId} Exception:{exc.Message} {exc.StackTrace.Substring(255)}");
+            }
+
         }
 
-        private void SetSelectedCrates(ActivityPayload storeMTDataActivity)
-        {
-            var crateStorage = storeMTDataActivity.CrateStorage;
-            var configControlCM = crateStorage
-                .CrateContentsOfType<StandardConfigurationControlsCM>()
-                .First();
-            var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
-            var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].ManifestType.Source;
-            var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
-            var docusignEnvelope = new DropDownList
-            {
-                selectedKey = Fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2.ToString(),
-                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2).ToString(),
-                Name = "UpstreamCrateChooser_mnfst_dropdown_0",
-                Source = existingDdlbSource
-            };
-
-            upstreamCrateChooser.SelectedCrates = new List<CrateDetails>
-            {
-                new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb }
-            };
-        }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
         {

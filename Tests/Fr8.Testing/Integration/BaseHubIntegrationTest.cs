@@ -19,9 +19,9 @@ namespace Fr8.Testing.Integration
     {
         private readonly HttpClient _httpClient;
 
-        protected virtual string TestUserEmail => "integration_test_runner@fr8.company";
+        protected virtual string TestUserEmail => ConfigurationManager.AppSettings["TestUserAccountName"];
 
-        protected virtual string TestUserPassword => "fr8#s@lt!";
+        protected virtual string TestUserPassword => ConfigurationManager.AppSettings["TestUserPassword"];
 
         protected string TestEmail;
         protected string TestEmailName;
@@ -30,8 +30,8 @@ namespace Fr8.Testing.Integration
         {
             var creds = new CredentialsDTO
             {
-                Username = "freight.testing@gmail.com",
-                Password = "I6HmXEbCxN",
+                Username = ConfigurationManager.AppSettings["TestUserEmail"], 
+                Password = ConfigurationManager.AppSettings["DocuSignApiPassword"], 
                 IsDemoAccount = true
             };
             return creds;
@@ -187,7 +187,7 @@ namespace Fr8.Testing.Integration
             return payload;
         }
 
-        protected async Task<ContainerDTO> ExecutePlan(PlanFullDTO plan)
+        protected async Task<ContainerDTO> ExecutePlan(PlanDTO plan)
         {
             var container = await HttpPostAsync<string, ContainerDTO>(
                 _baseUrl + "plans/run?planId=" + plan.Id,

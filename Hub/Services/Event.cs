@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -25,12 +26,14 @@ namespace Hub.Services
         private readonly ITerminal _terminal;
         private readonly IPlan _plan;
         private ICrateManager _crateManager;
+        private IFr8Account _fr8Account;
 
         public Event()
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _plan = ObjectFactory.GetInstance<IPlan>();
+            _fr8Account = ObjectFactory.GetInstance<IFr8Account>();
         }
         /// <see cref="IEvent.HandleTerminalIncident"/>
         public void HandleTerminalIncident(LoggingDataCM incident)
@@ -67,11 +70,11 @@ namespace Hub.Services
                                 $"manufacturer - {inboundEvent.Manufacturer} ");
                 return;
             }
-            // Fetching values from Config file is not working on CI.
-            //var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            //string systemUserEmail = configRepository.Get("SystemUserEmail");
 
-            string systemUserEmail = "system1@fr8.co";
+            var systemUser = _fr8Account.GetSystemUser();
+            if (systemUser == null)
+                throw new ApplicationException("System User Account is Missing");
+            string systemUserEmail = systemUser.UserName;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -151,7 +154,7 @@ namespace Hub.Services
         {
             //find this Account's Plans
             var initialPlansList = uow.PlanRepository.GetPlanQueryUncached()
-                .Where(pt => pt.Fr8AccountId == curDockyardAccountId && pt.PlanState == PlanState.Running).ToList();
+                .Where(pt => pt.Fr8AccountId == curDockyardAccountId && (pt.PlanState == PlanState.Executing || pt.PlanState == PlanState.Active)).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
             Logger.GetLogger().Info($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");

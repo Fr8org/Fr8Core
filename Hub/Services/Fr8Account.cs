@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Hub.Managers.APIManagers.Packagers;
@@ -14,14 +15,15 @@ using Data.States;
 using Hub.Security;
 using System.Web;
 using System.Net.Http;
-using System.Security.Claims;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using RazorEngine.Templating;
+using Fr8.Infrastructure.Data.States;
+using Hub.Enums;
 
 namespace Hub.Services
 {
-    public class Fr8Account
+    public class Fr8Account : IFr8Account
     {
         private readonly IUnitOfWorkFactory _uowFactory;
 
@@ -91,11 +93,8 @@ namespace Hub.Services
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
-                case "Customer":
-                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
-                    break;
-                case "Booker":
-                    acceptableRoles = new[] { "Booker", "Admin" };
+                case "StandardUser":
+                    acceptableRoles = new[] { "StandardUser", "Admin" };
                     break;
                 case "Admin":
                     acceptableRoles = new[] { "Admin" };
@@ -215,17 +214,9 @@ namespace Hub.Services
 
         public Fr8AccountDO GetSystemUser()
         {
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var systemUserEmail = _configRepository.Get("SystemUserEmail");
-                using (var uow = _uowFactory.Create())
-                {
-                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
-                }
-            }
-            catch (ConfigurationException)
-            {
-                return null;
+                return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.SystemAccount);
             }
         }
 
@@ -282,13 +273,13 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
             }
 
@@ -425,7 +416,7 @@ namespace Hub.Services
                 var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
                 code = HttpUtility.HtmlEncode(code);
 
-                var callbackUrl = string.Format("{0}DockyardAccount/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
+                var callbackUrl = string.Format("{0}Account/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
                     user.Id, code);
 
                 var emailDO = new EmailDO();
@@ -469,10 +460,8 @@ namespace Hub.Services
                 string userRole = "";
                 if (getRoles.Select(e => e.Name).Contains("Admin"))
                     userRole = "Admin";
-                else if (getRoles.Select(e => e.Name).Contains("Booker"))
-                    userRole = "Booker";
-                else if (getRoles.Select(e => e.Name).Contains("Customer"))
-                    userRole = "Customer";
+                else if (getRoles.Select(e => e.Name).Contains("StandardUser"))
+                    userRole = "StandardUser";
                 return userRole;
             }
         }
@@ -491,7 +480,8 @@ namespace Hub.Services
                 var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 planQuery
-                    .Where(pt => pt.PlanState == PlanState.Running)//1.
+                    .Where(pt => pt.PlanState == PlanState.Executing ||
+                                 pt.PlanState == PlanState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
                 activePlans = planQuery.ToList();
@@ -558,7 +548,7 @@ namespace Hub.Services
 
                 uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
                 // Add new role
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, existingUserDO.Id);
             }
 
             uow.SaveChanges();
@@ -576,7 +566,7 @@ namespace Hub.Services
                 //get the roles to check if the account has admin role
                 var curAccountRoles = curAccount.Roles;
                 //get the role id
-                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
+                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == Roles.Admin).Id;
                 //provide all facts if the user has admin role
                 if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
                 {
@@ -585,6 +575,70 @@ namespace Hub.Services
             }
 
             return isAdmin;
+        }
+
+        /// <summary>
+        /// Check if there is in existence any Admin user account
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckForExistingAdminUsers()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var adminRoleId = uow.AspNetUserRolesRepository.GetRoleID(Roles.Admin);
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x => x.RoleId == adminRoleId);
+            }
+        }
+
+        /// <summary>
+        /// Create new Master Admin Account from the Wizard page
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="curPassword"></param>
+        /// <returns></returns>
+        public async Task CreateAdminAccount(string userEmail, string curPassword)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFr8Account = uow.UserRepository.GetOrCreateUser(userEmail);
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, newFr8Account.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, newFr8Account.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, newFr8Account.Id);
+                //this master admin account will also be system account
+                newFr8Account.SystemAccount = true;
+                if (newFr8Account != null)
+                {
+                    AssignProfileToUser(uow, newFr8Account, DefaultProfiles.Fr8Administrator);
+                }
+
+                uow.SaveChanges();
+
+                if (newFr8Account != null)
+                {
+                    EventManager.UserRegistration(newFr8Account);
+                }
+
+                // need to generate ManifestDescription under new System User Account
+                var generator = ObjectFactory.GetInstance<IManifestPageGenerator>();
+                var existingManifestDescriptions = uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>("system1@fr8.co", x => true);
+                foreach (var item in existingManifestDescriptions)
+                {
+                    uow.MultiTenantObjectRepository.AddOrUpdate(newFr8Account.UserName, item);
+                }
+
+                uow.SaveChanges();
+                
+                var generateTasks = uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(newFr8Account.UserName, x => true).Select(x => x.Name).Distinct().Select(manifestName => generator.Generate(manifestName, GenerateMode.GenerateAlways)).Cast<Task>().ToList();
+                await Task.WhenAll(generateTasks);
+                //EnsureMThasaDocuSignRecipientCMTypeStored
+                var type = uow.MultiTenantObjectRepository.FindTypeReference(typeof(DocuSignRecipientCM));
+                if (type == null)
+                {
+                    uow.MultiTenantObjectRepository.Add(new DocuSignRecipientCM() { RecipientId = Guid.NewGuid().ToString() }, newFr8Account.Id);
+                    uow.SaveChanges();
+                }
+            }
         }
     }
 }

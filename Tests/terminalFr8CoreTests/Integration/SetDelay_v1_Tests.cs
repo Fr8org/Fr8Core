@@ -131,11 +131,10 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalStateCrate.CurrentActivityResponse.Type);
         }
 
-        private ActivityTemplateDTO CreateActivityTemplateFixture()
+        private ActivityTemplateSummaryDTO CreateActivityTemplateFixture()
         {
-            var activityTemplate = new ActivityTemplateDTO
+            var activityTemplate = new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Set_Delay_TEST",
                 Version = "1"
             };
@@ -150,7 +149,6 @@ namespace terminalFr8CoreTests.Integration
             var requestActionDTO = new ActivityDTO
             {
                 Id = Guid.NewGuid(),
-                Name = "Set_Delay",
                 Label = "Delay Action Processing",
                 ActivityTemplate = activityTemplate,
                 AuthToken = null
