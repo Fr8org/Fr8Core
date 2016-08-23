@@ -3913,10 +3913,6 @@
     <Content Include="package.json" />
     <Content Include="PreBuild.bat" />
     <Content Include="bower.json" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-cookies.min.js.map" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-sanitize.min.js.map" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-touch.min.js.map" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular.min.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\upload.php" />
     <Content Include="Content\templates\metronic\assets\global\plugins\autosize\readme.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\backstretch\LICENSE-MIT" />
@@ -3953,8 +3949,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-modal\LICENSE" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-modal\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-pwstrength\README.md" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-select\bootstrap-select.css.map" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-select\bootstrap-select.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-select\LICENSE" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-select\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-selectsplitter\bower.json" />
@@ -3969,7 +3963,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-timepicker\LICENSE" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-timepicker\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-toastr\README.md" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-toastr\toastr.min.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-touchspin\LICENSE.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-touchspin\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\bootstrap-wizard\README.md" />
@@ -4103,7 +4096,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\jquery-tags-input\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\jquery-ui-touch-punch\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\jquery-validation\README.md" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\jquery.min.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\jqvmap\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\jstree\jstree.jquery.json" />
     <Content Include="Content\templates\metronic\assets\global\plugins\jstree\LICENSE-MIT" />
@@ -4137,7 +4129,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\pace\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\plupload\readme.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\rateit\.DS_Store" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\rateit\src\jquery.rateit.min.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\select2\bower.json" />
     <Content Include="Content\templates\metronic\assets\global\plugins\select2\component.json" />
     <Content Include="Content\templates\metronic\assets\global\plugins\select2\composer.json" />
