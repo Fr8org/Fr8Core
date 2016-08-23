@@ -127,7 +127,7 @@ namespace terminalGoogle.Activities
 
         public override async Task Initialize()
         {
-            ActivityUI.ExistingFilesList.ListItems = await GetCurrentUsersFiles();
+            ActivityUI.ExistingFilesList.ListItems = await GetCurrentUsersFiles(".doc",".docx");
         }
 
         public override async Task FollowUp()
@@ -219,11 +219,29 @@ namespace terminalGoogle.Activities
             return mimeType;
         }
 
-        private async Task<List<ListItem>> GetCurrentUsersFiles()
+        private async Task<List<ListItem>> GetCurrentUsersFiles(params string[] extensions)
         {
-            //Leave only XLSX files as activity fails to rewrite XLS files
-            var curAccountFileList = (await HubCommunicator.GetFiles()).Where(x => (x.OriginalFileName?.EndsWith(".doc", StringComparison.InvariantCultureIgnoreCase) ?? true)|| (x.OriginalFileName?.EndsWith(".docx", StringComparison.InvariantCultureIgnoreCase) ?? true));
-            //TODO where tags == Docusign files
+            var curAccountFileList = await HubCommunicator.GetFiles();
+            if(extensions != null)
+            {
+                curAccountFileList = curAccountFileList.Where(f =>
+                {
+                    bool result = true;
+                    foreach (var ext in extensions)
+                    {
+                        if (f.OriginalFileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            result = true;
+                        }
+                        else
+                        {
+                            result = false;
+                        }
+                    }
+                    return result;
+                });
+            }
+
             return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
         }
 
