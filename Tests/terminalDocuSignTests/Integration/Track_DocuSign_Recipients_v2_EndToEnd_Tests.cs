@@ -69,17 +69,6 @@ namespace terminalDocuSignTests.Integration
             await HttpPostAsync<string>(docusignTerminalUrl + "/terminals/terminalDocuSign/events", httpContent);
         }
 
-        /// <summary>
-        /// This is for manual testing only
-        /// Please don't delete this method. i (bahadir) use this to quick test docusign events
-        /// </summary>
-        /// <returns></returns>
-        [Test, Ignore("This is for manual testing only. Bahadir uses this to quick test docusign events.")]
-        public async Task SendFakeEvent()
-        {
-            await PostFakeEvent();
-        }
-
         [Test]
         public async Task Track_DocuSign_Recipients_EndToEnd()
         {
