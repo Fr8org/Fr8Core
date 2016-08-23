@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
+using StructureMap;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
-using Fr8.Infrastructure.Data.DataTransferObjects;
-using StructureMap;
-using Fr8.TerminalBase.Interfaces;
 
 namespace terminalGoogle.Controllers
 {
@@ -15,13 +15,19 @@ namespace terminalGoogle.Controllers
         private readonly IHubEventReporter _eventReporter;
         private readonly IEvent _event;
         private readonly IGoogleGmailPolling _gmailPolling;
+        private readonly IGoogleGDrivePolling _gdrivePolling;
         private readonly IContainer _container;
 
-        public EventController(IHubEventReporter eventReporter, IGoogleGmailPolling gmailPolling, IContainer container)
+        public EventController(
+            IHubEventReporter eventReporter,
+            IGoogleGmailPolling gmailPolling,
+            IGoogleGDrivePolling gdrivePolling,
+            IContainer container)
         {
             _eventReporter = eventReporter;
             _event = new Event();
             _gmailPolling = gmailPolling;
+            _gdrivePolling = gdrivePolling;
             _container = container;
         }
 
@@ -38,7 +44,18 @@ namespace terminalGoogle.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest([FromBody]PollingDataDTO pollingData)
         {
-            return await _gmailPolling.Poll(pollingData);
+            if (string.IsNullOrEmpty(pollingData.AdditionToJobId))
+            {
+                return await _gmailPolling.Poll(pollingData);
+            }
+            else if (pollingData.AdditionToJobId == GDrivePollingType.Spreadsheets.ToString())
+            {
+                return await _gdrivePolling.Poll(pollingData);
+            }
+            else
+            {
+                throw new ApplicationException("Unable to process polling request: invalid polling object type");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 
 namespace terminalGoogle.Interfaces
@@ -13,9 +14,10 @@ namespace terminalGoogle.Interfaces
         Task SchedulePolling(
             IHubCommunicator hubCommunicator,
             string externalAccountId,
-            string gDriveFileId,
             GDrivePollingType pollingType,
             bool triggerImmediatly
         );
+
+        Task<PollingDataDTO> Poll(PollingDataDTO pollingData);
     }
 }

@@ -84,14 +84,17 @@ namespace terminalGoogle.Activities
         }
 
         private IGoogleSheet _googleSheet;
+        private IGoogleGDrivePolling _googleGDrivePolling;
 
         public Monitor_Google_Spreadsheet_Changes_v1(
             ICrateManager crateManager,
             IGoogleIntegration googleIntegration,
-            IGoogleSheet googleSheet)
+            IGoogleSheet googleSheet,
+            IGoogleGDrivePolling googleGDrivePolling)
                 : base(crateManager, googleIntegration)
         {
             _googleSheet = googleSheet;
+            _googleGDrivePolling = googleGDrivePolling;
         }
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -114,7 +117,13 @@ namespace terminalGoogle.Activities
         public override async Task Activate()
         {
             Logger.GetLogger().Info("Monitor_Google_Spreadsheet_Changed activty is activated. Sending a request for polling");
-            await _gdriveMonitoringPollingService.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true);
+
+            await _googleGDrivePolling.SchedulePolling(
+                HubCommunicator,
+                AuthorizationToken.ExternalAccountId,
+                GDrivePollingType.Spreadsheets,
+                true
+            );
         }
 
         public override async Task Run()

@@ -1,16 +1,24 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
+using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 
 namespace terminalGoogle.Services
 {
     public class GoogleGDrivePolling : IGoogleGDrivePolling
     {
+        private readonly IGoogleDrive _googleDrive;
+
+        public GoogleGDrivePolling(IGoogleDrive googleDrive)
+        {
+            _googleDrive = googleDrive;
+        }
+
         public async Task SchedulePolling(
             IHubCommunicator hubCommunicator,
             string externalAccountId,
-            string gDriveFileId,
             GDrivePollingType pollingType,
             bool triggerImmediatly)
         {
@@ -19,9 +27,26 @@ namespace terminalGoogle.Services
                 externalAccountId,
                 pollingInterval,
                 triggerImmediatly,
-                additionalConfigAttributes: gDriveFileId ?? null,
                 additionToJobId: pollingType.ToString()
             );
+        }
+
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
+        {
+            var googleAuthToken = JsonConvert.DeserializeObject<GoogleAuthDTO>(pollingData.AuthToken);
+            var googleDriveService = await _googleDrive.CreateDriveService(googleAuthToken);
+
+            string startPageToken;
+            if (string.IsNullOrEmpty(pollingData.Payload))
+            {
+                // var response = googleDriveService.Changes
+            }
+            else
+            {
+                startPageToken = pollingData.Payload;
+            }
+
+            return pollingData;
         }
     }
 }
