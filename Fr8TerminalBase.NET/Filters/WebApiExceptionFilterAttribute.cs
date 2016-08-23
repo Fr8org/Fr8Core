@@ -68,7 +68,7 @@ namespace Fr8.TerminalBase.Filters
             }
 
             //Log exception
-            Logger.GetLogger().Error($"Terminal: [{terminalName}]. Current controller: [{curController}]. Fr8UserId: [{userId}]. Exception: [{curTerminalError}]");
+            Logger.GetLogger(terminalName).Error($"Current controller: [{curController}]. Fr8UserId: [{userId}]. Exception: [{curTerminalError.GetFullExceptionMessage()}]");
 
             //POST event to fr8 about this terminal error
             //new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
