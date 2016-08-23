@@ -83,7 +83,7 @@ namespace terminalGoogle.Services
             
             // Define parameters of request.
             FilesResource.ListRequest listRequest = driveService.Files.List();
-            listRequest.Q = "mimeType='application/vnd.google-apps.form'  and Trashed=false";
+            listRequest.Q = "mimeType = 'application/vnd.google-apps.form' and trashed = false";
 
             // List files.
             FileList fileList = listRequest.Execute();
