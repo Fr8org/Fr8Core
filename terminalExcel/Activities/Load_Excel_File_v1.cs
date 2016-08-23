@@ -33,6 +33,7 @@ namespace terminalExcel.Activities
             {
                 FilePicker = new FilePicker
                 {
+                    FileExtensions = ".xls,.xlsx",
                     Label = "Select an Excel file",
                     Name = nameof(FilePicker),
                     Required = true,

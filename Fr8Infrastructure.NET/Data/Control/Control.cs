@@ -399,6 +399,9 @@ namespace Fr8.Infrastructure.Data.Control
 
     public class FilePicker : ControlDefinitionDTO
     {
+        [JsonProperty("fileextensions")]
+        public string FileExtensions { get; set; }
+
         public FilePicker()
         {
             Type = ControlTypes.FilePicker;

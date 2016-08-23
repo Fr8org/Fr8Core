@@ -1,5 +1,5 @@
 ﻿<div class="filepicker"> <!--File upload control main container-->
     <span class='btn btn-upload' ngf-select="OnFileSelect($file)" name='pca__chk__{{field.name}}' id='pca__chk__{{field.name}}'
-     accept='.xls,.xlsx' ngf-max-size='20MB' ngf-min-height='100'>Select File</span>
+     accept="{{field.fileextensions}}" ngf-max-size='20MB' ngf-min-height='100'>Select File</span>
     <span class="file-info">{{field.value == null ? 'No file selected' : field.value|formatInput}}</span>
 </div>
