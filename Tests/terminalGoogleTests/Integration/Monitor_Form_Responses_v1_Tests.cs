@@ -80,8 +80,7 @@ namespace terminalGoogleTests.Integration
         /// <summary>
         /// Validate dropdownlist source contains google forms(pre-installed in users google drive)
         /// </summary>
-        [Test, Category("Integration.terminalGoogle"), Ignore]
-        //We not not use FieldDescriptionCM in current implementation of the Monitor Form Responses Activity
+        [Test, Category("Integration.terminalGoogle")]
         public async Task Monitor_Form_Responses_Initial_Configuration_Check_Source_Fields()
         {
             //Arrange
@@ -98,11 +97,11 @@ namespace terminalGoogleTests.Integration
 
             //Assert
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            var FieldDescriptionsCM = crateStorage.CratesOfType<KeyValueDTO>().Where(x => x.Label == "Available Forms").ToArray();
-
-            Assert.IsNotNull(FieldDescriptionsCM);
-            Assert.Greater(FieldDescriptionsCM.Count(), 0);
-            Assert.Greater(FieldDescriptionsCM.First().Content.Value.Count(), 0);
+            var controls = crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
+            Assert.IsNotNull(controls, "Controls crate is missing");
+            var control = controls.Controls.FirstOrDefault(x => x.Name == "Selected_Google_Form") as DropDownList;
+            Assert.IsNotNull(control, "Select Form control is missing");
+            Assert.Greater(control.ListItems.Count, 0, "No Google form were loaded into DDLB control");
         }
         /// <summary>
         /// This test covers the test that the Drop Down List Box gets updated on followup configuration
@@ -127,36 +126,7 @@ namespace terminalGoogleTests.Integration
             Assert.IsNotEmpty(afterFollowupDDLB.ListItems, "Call to Followup configuration of the " + ActivityName + " did not update the drop down list box.");
         }
 
-        /// <summary>
-        /// Validate google app script is uploaded in users google drive
-        /// </summary>
-        [Test, Category("Integration.terminalGoogle"), Ignore]
-        //We do not use script activate currently, it is under development
-        public async Task Monitor_Form_Responses_Activate_Check_Script_Exist()
-        {
-            //Arrange
-            var configureUrl = GetTerminalActivateUrl();
-
-            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActivityDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
-
-            //Act
-            var responseActivityDTO =
-                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    requestActivityDTO
-                );
-
-            //Assert
-            Assert.IsNotNull(responseActivityDTO);
-
-            var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            var formID = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
-
-            Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
-        }
-
-        [Test, Category("Integration.terminalGoogle"), Ignore]
+        [Test, Category("Integration.terminalGoogle")]
         public async Task Monitor_Form_Responses_Activate_Returns_ActivityDTO()
         {
             //Arrange
