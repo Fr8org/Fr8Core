@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.Utility;
+using Excel.Log;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Google.Apis.Util;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
+using ILog = log4net.ILog;
 
 namespace Hub.Services
 {
     public class ActivityTemplate : IActivityTemplate
     {
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+
         private readonly ITerminal _terminal;
         private readonly IActivityCategory _activityCategory;
         private readonly Dictionary<Guid, ActivityTemplateDO> _activityTemplates = new Dictionary<Guid, ActivityTemplateDO>();
@@ -372,48 +380,78 @@ namespace Hub.Services
                 }
             }
         }
-
-        /// <summary>
-        /// Returns ActivityTemplate by it's name.
-        /// For example GetByName(uow, "AddPayloadManually_v1").
-        /// </summary>
-        public ActivityTemplateDO GetByName(IUnitOfWork uow, string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ApplicationException("Invalid ActivityTemplate name");
-            }
-
-            var tokens = name.Split('_');
-            if (tokens.Length < 2)
-            {
-                throw new ApplicationException("Invalid ActivityTemplate name");
-            }
-
-            var versionToken = tokens[tokens.Length - 1];
-
-            if (versionToken == null || versionToken.Length < 2)
-            {
-                throw new ApplicationException("Invalid ActivityTemplate name");
-            }
-
-            var namePart = string.Join("_", tokens.Take(tokens.Length - 1).ToArray());
-            var versionPart = versionToken.Substring(1);
-
-            return GetByNameAndVersion(namePart, versionPart);
-        }
-
+        
         /// <summary>
         /// Returns ActivityTemplate by it's name and version.
         /// For example GetByNameAndVersion(uow, "AddPayloadManually", "1").
         /// </summary>
-        public ActivityTemplateDO GetByNameAndVersion(string name, string version)
+        public ActivityTemplateDO GetByNameAndVersion(ActivityTemplateSummaryDTO activityTemplateSummary)
         {
             Initialize();
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.FirstOrDefault(x => x.Name == name && x.Version == version);
+                IEnumerable<ActivityTemplateDO> activityTemplates = _activityTemplates.Values.Where(x => x.Name == activityTemplateSummary.Name && x.Version == activityTemplateSummary.Version);
+
+#if DEBUG
+                bool terminalInfoMissing = false;
+#endif
+
+                if (string.IsNullOrWhiteSpace(activityTemplateSummary.TerminalName))
+                {
+                    activityTemplates = activityTemplates.Where(x => x.Terminal.Name == activityTemplateSummary.TerminalName);
+#if DEBUG
+                    terminalInfoMissing = true;
+#endif
+                }
+
+                if (string.IsNullOrWhiteSpace(activityTemplateSummary.Version))
+                {
+                    activityTemplates = activityTemplates.Where(x => x.Terminal.Version == activityTemplateSummary.TerminalVersion);
+#if DEBUG
+                    terminalInfoMissing = true;
+#endif
+                }
+                
+                var activityTemplatesArray = activityTemplates.ToArray();
+
+                if (activityTemplatesArray.Length == 0)
+                {
+                    return null;
+                }
+                
+#if DEBUG
+                if (terminalInfoMissing)
+                {
+                    var stackTrace = new StackTrace();           
+                    var stackFrames = stackTrace.GetFrames();  
+                    var message = new StringBuilder();
+
+
+                    message.AppendLine($"Terminal information is missing for activity template: Name = {activityTemplateSummary.Name}, Version = {activityTemplateSummary.Version}");
+
+                    foreach (StackFrame stackFrame in stackFrames)
+                    {
+                        var method = stackFrame.GetMethod();
+
+                        message.AppendLine($"{method.DeclaringType.FullName}:{method.Name}");
+                    }
+
+                    Logger.Warn(message.ToString());
+                }
+#endif
+
+                if (activityTemplatesArray.Length > 1)
+                {
+                    var exception = new Exception($"Ambiguous activity template resolution for activity template: Name = {activityTemplateSummary.Name}, Version = {activityTemplateSummary.Version}, " +
+                                        $"TerminalName = {activityTemplateSummary.TerminalName}, TerminalVersion = {activityTemplateSummary.TerminalVersion}");
+                    
+                    Logger.Error("Ambiguous activity template resolution", exception);
+
+                    throw exception;
+                }
+                
+                return activityTemplatesArray[0];
             }
         }
     }
