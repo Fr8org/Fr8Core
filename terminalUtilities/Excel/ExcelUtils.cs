@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Interfaces;
 using OfficeOpenXml;
 using StructureMap;
 using RestSharp.Extensions;
+using terminalUtilities.Files;
 
 namespace terminalUtilities.Excel
 {
@@ -22,11 +23,13 @@ namespace terminalUtilities.Excel
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly ICrateManager _crateManager;
+        private readonly FileUtils _fileUtils;
 
-        public ExcelUtils(IRestfulServiceClient restfulServiceClient, ICrateManager crateManager)
+        public ExcelUtils(IRestfulServiceClient restfulServiceClient, ICrateManager crateManager, FileUtils fileUtils)
         {
             _restfulServiceClient = restfulServiceClient;
             _crateManager = crateManager;
+            _fileUtils = fileUtils;
         }
 
         public static void ConvertToCsv(string pathToExcel, string pathToCsv)
@@ -263,9 +266,7 @@ namespace terminalUtilities.Excel
 
         public async Task<byte[]> GetExcelFileAsByteArray(string selectedFilePath)
         {
-            var fileAsByteArray = await RetrieveFile(selectedFilePath);
-            fileAsByteArray.Position = 0;
-            return fileAsByteArray.ReadAsBytes();
+           return await _fileUtils.GetFileAsByteArray(selectedFilePath, ".xls", ".xlsx");
         }
 
         public async Task<StandardTableDataCM> GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
@@ -334,12 +335,7 @@ namespace terminalUtilities.Excel
 
         private async Task<Stream> RetrieveFile(string filePath)
         {
-            var ext = Path.GetExtension(filePath);
-            if (ext != ".xls" && ext != ".xlsx")
-            {
-                throw new ArgumentException("Expected '.xls' or '.xlsx'", "selectedFile");
-            }
-            return await _restfulServiceClient.DownloadAsync(new Uri(filePath));
+            return await _fileUtils.RetrieveFile(filePath, ".xls", ".xlsx");
         }
 
         public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null, bool includeHeadersAsFirstRow = false)

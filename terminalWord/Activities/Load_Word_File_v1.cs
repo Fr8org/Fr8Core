@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using RestSharp.Extensions;
+using terminalUtilities.Files;
 
 namespace terminalWord.Activities
 {
@@ -81,11 +82,12 @@ namespace terminalWord.Activities
                 UploadedFileDescription.IsHidden = true;
             }
         }
-        private readonly Fr8.Infrastructure.Interfaces.IRestfulServiceClient _restfulServiceClient;
-        public Load_Word_File_v1(ICrateManager crateManager, Fr8.Infrastructure.Interfaces.IRestfulServiceClient restfulServiceClient)
+
+        private readonly FileUtils _fileUtils;
+        public Load_Word_File_v1(ICrateManager crateManager, FileUtils fileUtils)
             : base(crateManager)
         {
-            _restfulServiceClient = restfulServiceClient;
+            _fileUtils = fileUtils;
         }
 
         public override async Task Initialize()
@@ -107,25 +109,9 @@ namespace terminalWord.Activities
             return Task.FromResult(0);
         }
 
-        public async Task<byte[]> GetFileAsByteArray(string selectedFilePath)
-        {
-            var fileAsByteArray = await RetrieveFile(selectedFilePath);
-            fileAsByteArray.Position = 0;
-            return fileAsByteArray.ReadAsBytes();
-        }
-        private async Task<System.IO.Stream> RetrieveFile(string filePath)
-        {
-            var ext = System.IO.Path.GetExtension(filePath);
-            if (ext != ".doc" && ext != ".docx")
-            {
-                throw new ArgumentException("Expected '.doc' or '.docx'", "selectedFile");
-            }
-            return await _restfulServiceClient.DownloadAsync(new Uri(filePath));
-        }
-
         public override async Task Run()
         {
-            var byteArray = await GetFileAsByteArray(ActivityUI.FilePicker.Value);
+            var byteArray = await _fileUtils.GetFileAsByteArray(ActivityUI.FilePicker.Value, ".doc", ".docx");
 
             var fileDescription = new StandardFileDescriptionCM
             {
