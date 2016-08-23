@@ -5,7 +5,9 @@ using System.Net.Http;
 using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Microsoft.ApplicationInsights;
@@ -47,6 +49,9 @@ namespace Fr8.TerminalBase.Filters
                 }
             }
 
+            
+
+
             //Post exception information to AppInsights
             Dictionary<string, string> properties = new Dictionary<string, string>();
             foreach (KeyValuePair<string, object> arg in actionExecutedContext.ActionContext.ActionArguments)
@@ -62,9 +67,12 @@ namespace Fr8.TerminalBase.Filters
                 userId = actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType;
             }
 
+            //Log exception
+            Logger.GetLogger().Error($"Terminal: [{terminalName}]. Current controller: [{curController}]. Fr8UserId: [{userId}]. Exception: [{curTerminalError}]");
+
             //POST event to fr8 about this terminal error
             //new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
-            
+
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(statusCode);
