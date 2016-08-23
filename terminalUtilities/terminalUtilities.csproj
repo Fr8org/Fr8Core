@@ -155,6 +155,7 @@
   <ItemGroup>
     <Compile Include="Excel\ExcelUtils.cs" />
     <Compile Include="Excel\ExcelWriter.cs" />
+    <Compile Include="Files\FileUtils.cs" />
     <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Infrastructure\EmailParticipantType.cs" />
     <Compile Include="Models\MailerDO.cs" />

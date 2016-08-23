@@ -77,6 +77,20 @@ namespace terminalGoogle.Services
             return fileContent;
         }
 
+        public async Task<Google.Apis.Drive.v2.Data.File> CreateFile(string title, byte[] body, string mimeType, GoogleAuthDTO authDTO)
+        {
+            var driveService = await CreateDriveService(authDTO);
+            var doc = new Google.Apis.Drive.v2.Data.File();
+            doc.Title = title;
+            doc.MimeType = mimeType;
+            var stream = new System.IO.MemoryStream(body);
+
+            var request = driveService.Files.Insert(doc, stream, mimeType);
+            await request.UploadAsync();
+            return request.ResponseBody;
+        }
+
+
         public async Task<Dictionary<string, string>> GetGoogleForms(GoogleAuthDTO authDTO)
         {
             var driveService = await CreateDriveService(authDTO);
