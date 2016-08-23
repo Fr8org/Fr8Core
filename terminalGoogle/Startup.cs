@@ -56,6 +56,7 @@ namespace terminalGoogle
             ActivityStore.RegisterActivity<Monitor_Form_Responses_v1>(Monitor_Form_Responses_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Google_Sheet_v1>(Save_To_Google_Sheet_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Gmail_Inbox_v1>(Monitor_Gmail_Inbox_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Create_Google_Doc_v1>(Create_Google_Doc_v1.ActivityTemplateDTO);
         }
     }
 }

@@ -10,5 +10,7 @@ namespace terminalGoogle.Interfaces
 	    Task<DriveService> CreateDriveService(GoogleAuthDTO authDTO);
 	    bool FileExist(DriveService driveService, string filename, out string link);
 	    Task<Dictionary<string, string>> GetGoogleForms(GoogleAuthDTO authDTO);
-	}
+        Task<Google.Apis.Drive.v2.Data.File> CreateFile(string title, byte[] body, string mimeType, GoogleAuthDTO authDTO);
+
+    }
 }
