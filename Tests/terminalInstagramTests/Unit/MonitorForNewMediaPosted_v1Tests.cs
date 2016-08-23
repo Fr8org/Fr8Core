@@ -16,7 +16,7 @@ using Fr8.Testing.Unit.Fixtures;
 using terminalInstagram.Models;
 using FixtureData = terminalInstagramTests.Fixtures.FixtureData;
 
-namespace terminalInstagramTests.Integration
+namespace terminalInstagramTests.Unit
 {
     [TestFixture]
     public class MonitorForNewMediaPosted_v1Tests : BaseTest
