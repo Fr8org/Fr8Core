@@ -5,17 +5,12 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Data.Infrastructure;
-using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
-using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
-using Fr8.Infrastructure.Data.Helpers;
-using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -42,39 +37,45 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        private bool Evaluate(string criteria, Guid processId, IEnumerable<KeyValueDTO> values)
+        public override async Task Initialize()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-            if (criteria == string.Empty)
-                throw new ArgumentException("criteria is empty", nameof(criteria));
-            if (values == null)
-                throw new ArgumentNullException(nameof(values));
-
-            return Filter(criteria, processId, values.AsQueryable()).Any();
+            CreateControls();
         }
 
-        private IQueryable<KeyValueDTO> Filter(string criteria,
-            Guid processId, IQueryable<KeyValueDTO> values)
+        public override Task FollowUp()
         {
-            if (criteria == null)
-                throw new ArgumentNullException(nameof(criteria));
-            if (criteria == string.Empty)
-                throw new ArgumentException("criteria is empty", nameof(criteria));
-            if (values == null)
-                throw new ArgumentNullException(nameof(values));
+            return Task.FromResult(0);
+        }
 
-            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(criteria);
-            if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
+        public override async Task Run()
+        {
+            await RunTests();
+        }
+
+        public virtual async Task RunTests()
+        {
+            var filterPaneControl = GetControl<FilterPane>("Selected_Filter");
+            if (filterPaneControl == null)
             {
-                return values;
+                RaiseError("No control found with Type == \"filterPane\"");
             }
 
+            // Prepare envelope data and evaluate criteria using Contents json body of found Crate.
+            bool result = false;
+            try
+            {
+                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, filterPaneControl.ResolvedUpstreamFields.AsQueryable());
+            }
+            catch (Exception e) 
+            {
+            }
 
-            EventManager.CriteriaEvaluationStarted(processId);
-            var criterias = filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values));
-            var some_magic = criterias.Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
-            return some_magic;
+            if (!result)
+            {
+                RequestPlanExecutionTermination();
+                return;
+            }
+            Success();
         }
 
         public static int Compare(object left, object right)
@@ -83,6 +84,7 @@ namespace terminalFr8Core.Activities
             {
                 return 0;
             }
+
             if (left is string && right is string)
             {
                 decimal v1;
@@ -96,86 +98,30 @@ namespace terminalFr8Core.Activities
             return -2;
         }
 
-        protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<KeyValueDTO> queryableData)
+        public static int Contain(object left, object right, string op)
         {
-            var curType = typeof(KeyValueDTO);
-            Expression criteriaExpression = null;
-            var pe = Expression.Parameter(curType, "p");
-
-            var namePropInfo = curType.GetProperty("Key");
-            var valuePropInfo = curType.GetProperty("Value");
-            var nameLeftExpr = Expression.Property(pe, namePropInfo);
-            var nameRightExpr = Expression.Constant(condition.Field);
-            var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
-            var comparisionExpr = Expression.Call(typeof(Test_Incoming_Data_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
+            if (left == null && right == null)
             {
-                Expression.Property(pe, valuePropInfo),
-                Expression.Constant(condition.Value)
-            });
-            var zero = Expression.Constant(0);
-            var op = condition.Operator;
-            Expression criterionExpression;
-            switch (op)
-            {
-                case "eq":
-                    criterionExpression = Expression.Equal(comparisionExpr, zero);
-                    break;
-                case "neq":
-                    criterionExpression = Expression.NotEqual(comparisionExpr, zero);
-                    break;
-                case "gt":
-                    criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
-                    break;
-                case "gte":
-                    criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
-                    break;
-                case "lt":
-                    criterionExpression = Expression.LessThan(comparisionExpr, zero);
-                    break;
-                case "lte":
-                    criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
-                    break;
-                case "con":
-                    criterionExpression = null;
-                    break;
-                case "enw":
-                    criterionExpression = null;
-                    break;
-                case "stw":
-                    criterionExpression = null;
-                    break;
-                default:
-                    throw new NotSupportedException($"Not supported operator: {op}");
+                return 0;
             }
 
-            criteriaExpression = Expression.And(nameExpression, criterionExpression);
-
-            var whereCallExpression = Expression.Call(
-                typeof(Queryable),
-                "Where",
-                new[] { curType },
-                queryableData.Expression,
-                Expression.Lambda<Func<KeyValueDTO, bool>>(criteriaExpression, new[] { pe })
-            );
-            return whereCallExpression;
-        }
-
-        protected virtual void CreateControls()
-        {
-            var fieldFilterPane = new FilterPane()
+            var result = false;
+            if (left is string && right is string)
             {
-                Label = "Execute Actions If:",
-                Name = "Selected_Filter",
-                Required = true,
-                Source = new FieldSourceDTO
+                switch (op)
                 {
-                    Label = "Upstream Terminal-Provided Fields",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    RequestUpstream = true
+                    case "con":
+                        result = ((string) left).Contains((string) right);
+                        break;
+                    case "etw":
+                        result = ((string) left).EndsWith((string) right);
+                        break;
+                    case "stw":
+                        result = ((string) left).StartsWith((string) right);
+                        break;
                 }
-            };
-
-            AddControls(fieldFilterPane);
+            }
+            return result ? 0 : -1;
         }
 
         protected override Task Validate()
@@ -185,7 +131,7 @@ namespace terminalFr8Core.Activities
             {
                 return Task.FromResult(0);
             }
-            var sd = JsonConvert.DeserializeObject(conditions.Value);
+
             if (conditions.Value != "[]")
             {
                 var condition = JsonConvert.DeserializeObject<FilterDataDTO>(conditions.Value);
@@ -222,47 +168,113 @@ namespace terminalFr8Core.Activities
             return Task.FromResult(0);
         }
 
-        public override async Task Run()
+        protected virtual void CreateControls()
         {
-            await RunTests();
+            var fieldFilterPane = new FilterPane()
+            {
+                Label = "Execute Actions If:",
+                Name = "Selected_Filter",
+                Required = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Upstream Terminal-Provided Fields",
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    RequestUpstream = true
+                }
+            };
+            AddControls(fieldFilterPane);
         }
 
-        public virtual async Task RunTests()
+        protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<KeyValueDTO> queryableData)
         {
-            var filterPaneControl = GetControl<FilterPane>("Selected_Filter");
-            if (filterPaneControl == null)
+            Expression criteriaExpression = null;
+            var curType = typeof(KeyValueDTO);
+            var pe = Expression.Parameter(curType, "p");
+
+            var nameLeftExpr = Expression.Property(pe, curType.GetProperty("Key"));
+            var nameRightExpr = Expression.Constant(condition.Field);
+            var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
+
+            var comparisionExpr = Expression.Call(typeof(Test_Incoming_Data_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
             {
-                RaiseError("No control found with Type == \"filterPane\"");
+                Expression.Property(pe, curType.GetProperty("Value")),
+                Expression.Constant(condition.Value)
+            });
+
+            var zero = Expression.Constant(0);
+            var op = condition.Operator;
+            Expression criterionExpression;
+            switch (op)
+            {
+                case "eq":
+                    criterionExpression = Expression.Equal(comparisionExpr, zero);
+                    break;
+                case "neq":
+                    criterionExpression = Expression.NotEqual(comparisionExpr, zero);
+                    break;
+                case "gt":
+                    criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
+                    break;
+                case "gte":
+                    criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
+                    break;
+                case "lt":
+                    criterionExpression = Expression.LessThan(comparisionExpr, zero);
+                    break;
+                case "lte":
+                    criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
+                    break;
+                case "con":
+                case "enw":
+                case "stw":
+                    var stringContainExpr = Expression.Call(typeof(Test_Incoming_Data_v1).GetMethod("Contain", BindingFlags.Public | BindingFlags.Static), new Expression[]
+                    {
+                        Expression.Property(pe, curType.GetProperty("Value")),
+                        Expression.Constant(condition.Value),
+                        Expression.Constant(op)
+                    });
+                    criterionExpression = Expression.Equal(stringContainExpr, zero);
+                    break;
+                default:
+                    throw new NotSupportedException($"Not supported operator: {op}");
             }
 
-            // Prepare envelope data.
-            // Evaluate criteria using Contents json body of found Crate.
-            bool result = false;
-            try
-            {
-                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, filterPaneControl.ResolvedUpstreamFields.AsQueryable());
-            }
-            catch (Exception)
-            {
-            }
+            criteriaExpression = Expression.And(nameExpression, criterionExpression);
 
-            if (!result)
-            {
-                RequestPlanExecutionTermination();
-                return;
-            }
-
-            Success();
+            var whereCallExpression = Expression.Call(
+                typeof(Queryable),
+                "Where",
+                new[] { curType },
+                queryableData.Expression,
+                Expression.Lambda<Func<KeyValueDTO, bool>>(criteriaExpression, new[] { pe })
+            );
+            return whereCallExpression;
         }
 
-        public override async Task Initialize()
+        private bool Evaluate(string criteria, Guid processId, IEnumerable<KeyValueDTO> values)
         {
-            CreateControls();
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
+            if (criteria == string.Empty)
+                throw new ArgumentException("criteria is empty", nameof(criteria));
+            if (values == null)
+                throw new ArgumentNullException(nameof(values));
+
+            return Filter(criteria, processId, values.AsQueryable()).Any();
         }
 
-        public override Task FollowUp()
+        private IQueryable<KeyValueDTO> Filter(string criteria, Guid processId, IQueryable<KeyValueDTO> values)
         {
-            return Task.FromResult(0);
+            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(criteria);
+            if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
+            {
+                return values;
+            }
+
+            EventManager.CriteriaEvaluationStarted(processId);
+            var criterias = filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values));
+            var some_magic = criterias.Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
+            return some_magic;
         }
     }
 }
