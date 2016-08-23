@@ -199,9 +199,19 @@ namespace HubWeb.Controllers
                 terminal = ((JObject) discoveryRef).ToObject<TerminalDTO>();
             }
 
-            if (!await _terminalDiscovery.Discover(terminal, false))
+            var discoveryResult = await _terminalDiscovery.Discover(terminal, false);
+
+            if (!discoveryResult.IsSucceed)
             {
-                return ErrorDTO.InternalError($"Failed to call /discover for endoint {terminal.Endpoint}");
+                return ErrorDTO.InternalError($"Failed to call /discover for endoint {terminal.Endpoint}. {discoveryResult.ErrorMessage}");
+            }
+
+            if (discoveryResult.FailedTemplates.Count > 0)
+            {
+                return new ResponseMessageDTO
+                {
+                    Message = "Terminal was registered, but the following ActivityTemplates have failed: " + string.Join("\n", discoveryResult.FailedTemplates.Select(x=>$"{x.Name} version {x.Version}"))
+                };
             }
 
             return new ResponseMessageDTO();
