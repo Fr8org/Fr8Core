@@ -432,7 +432,7 @@ app.directive('activityFullHeight', ['$timeout', '$window', function ($timeout, 
             
             function setHeight() {                
                 var winH = $(window).height();
-                var wrapH = winH - 80;
+                var wrapH = winH - 120;
 
                 $(element).find('.page-container').height(wrapH);
                 $(element).find('.route-builder-container').height(wrapH);
