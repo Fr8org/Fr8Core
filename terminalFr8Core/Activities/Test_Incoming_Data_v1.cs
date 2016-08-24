@@ -113,7 +113,7 @@ namespace terminalFr8Core.Activities
                     case "con":
                         result = ((string) left).Contains((string) right);
                         break;
-                    case "etw":
+                    case "enw":
                         result = ((string) left).EndsWith((string) right);
                         break;
                     case "stw":
