@@ -236,6 +236,44 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
+    public class RadioGroupMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        [JsonProperty("optionDescriptions")]
+        public List<RadioOptionMetaDescriptionDTO> OptionDescriptions { get; set; }
+        
+        public RadioGroupMetaDescriptionDTO() : base("RadioGroupMetaDescriptionDTO", "Radio Group")
+        {
+            OptionDescriptions = new List<RadioOptionMetaDescriptionDTO>();
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new RadioButtonGroup
+            {
+                Label = Controls[0].Value,
+                Name = Controls[0].Value,
+                Radios = OptionDescriptions.Select(x => x.CreateOption()).ToList()
+            };
+        }
+    }
+
+    public class RadioOptionMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public RadioOptionMetaDescriptionDTO() : base("RadioOptionMetaDescriptionDTO", "Radio Option")
+        {
+        }
+
+        public RadioButtonOption CreateOption()
+        {
+            return new RadioButtonOption
+            {
+                Name = Controls[0].Value,
+                Value = Controls[1].Value,
+                Selected = ((CheckBox) Controls[2]).Selected
+            };
+        }
+    }
+
     public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
         public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")

@@ -164,6 +164,58 @@
             this.controls.push(tb);
         }
     }
+
+    export class RadioGroupMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        optionDescriptions: Array<RadioOptionMetaDescriptionDTO>;
+        remove: (index: number) => void;
+        makeDefault: (index: number) => void;
+
+        constructor() {
+            super("RadioGroupMetaDescriptionDTO", "Radio Group");
+            var label = new model.TextBox();
+            label.label = "Label: ";
+            this.controls.push(label);
+            this.optionDescriptions = [];
+            this.optionDescriptions.push(new RadioOptionMetaDescriptionDTO());
+
+            this.remove = (index: number) => {
+                if (this.optionDescriptions.length === 1 || index < 0 || index >= this.optionDescriptions.length) {
+                    return;
+                }
+                this.optionDescriptions = this.optionDescriptions.splice(index, 1);
+            };
+
+            this.makeDefault = (index: number) => {
+                for (var i = 0; i < this.optionDescriptions.length; i++) {
+                    if (i === index) {
+                        this.optionDescriptions[i].toggleDefault();
+                    } else {
+                        this.optionDescriptions[i].resetDefault();
+                    }
+                }
+            };
+        }
+    }
+
+    export class RadioOptionMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        label: model.TextBox;
+        value: model.TextBox;
+        isDefault: model.CheckBox;
+
+        constructor() {
+            super("RadioOptionMetaDescriptionDTO", "Radio Option");
+            this.label = new model.TextBox();
+            this.label.label = "Label: ";
+
+            this.value = new model.TextBox();
+            this.value.label = "Value: ";
+
+            this.isDefault = new model.CheckBox();
+            this.isDefault.label = "Is Default Option";
+            }   
+    }
     
     export class TextBlockMetaDescriptionDTO extends ControlMetaDescriptionDTO
     {
