@@ -25,10 +25,10 @@ module dockyard.controllers.KioskModeOrganizationHeaderController {
             private OrganizationService: services.IOrganizationService,
             private UserService: services.IUserService) {
 
-            UserService.getCurrentUser().$promise.then(function (currentUser: interfaces.IUserDTO) {
+            UserService.getCurrentUser().$promise.then((currentUser: interfaces.IUserDTO) => {
                 var organizationId = currentUser.organizationId;
                 if (organizationId !== null) {
-                    OrganizationService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationVM) {
+                    OrganizationService.get({ id: organizationId }).$promise.then((organization: interfaces.IOrganizationVM) => {
                         $scope.name = organization.name;
                         $scope.themeName = organization.themeName;
                         $scope.backgroundColor = organization.backgroundColor;
