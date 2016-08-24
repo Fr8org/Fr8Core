@@ -5133,73 +5133,84 @@ img.mfp-img {
 
 /* ------------------ SERVICES ------------------ */
 .service-item {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
+
 .service-item .service-icon {
-  position: absolute;
-  top: 0;
-  font-size: 5em;
-  color: #26A599;
+    position: absolute;
+    top: 0;
+    font-size: 5em;
+    color: #26A599;
 }
+
 .service-item .service-text {
-  margin-left: 100px;
-  overflow: hidden;
+    margin-left: 100px;
+    overflow: hidden;
 }
+
 .service-item .service-text h3 {
-  margin-top: 6px;
-  color: #646464;
+    margin-top: 6px;
+    color: #646464;
 }
+
 .service-item .service-text p {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
+
 .service-item .service-text a.read-more {
-  color: #26A599;
+    color: #26A599;
 }
+
 .service-item .service-text a.read-more span {
-  -moz-transition-property: all;
-  -o-transition-property: all;
-  -webkit-transition-property: all;
-  transition-property: all;
-  -moz-transition-duration: 0.2s;
-  -o-transition-duration: 0.2s;
-  -webkit-transition-duration: 0.2s;
-  transition-duration: 0.2s;
-  -moz-transition-timing-function: linear;
-  -o-transition-timing-function: linear;
-  -webkit-transition-timing-function: linear;
-  transition-timing-function: linear;
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  opacity: 0;
-  font-size: 0.8em;
-  margin-left: -80px;
+    -moz-transition-property: all;
+    -o-transition-property: all;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -moz-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+    opacity: 0;
+    font-size: 0.8em;
+    margin-left: -80px;
 }
+
 @media screen and (max-width: 1200px) {
-  .service-item .service-text a.read-more span {
+    .service-item .service-text a.read-more span {
+        filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
+        opacity: 1;
+        margin-left: 0;
+    }
+}
+
+.service-item .service-text a.read-more i {
+    position: relative;
+    top: 3px;
+    font-size: 1em;
+    margin-left: 7px;
+}
+
+.service-item .service-text a.read-more:hover {
+    text-decoration: none;
+}
+
+.service-item .service-text a.read-more:hover span {
     filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
     opacity: 1;
     margin-left: 0;
-  }
-}
-.service-item .service-text a.read-more i {
-  position: relative;
-  top: 3px;
-  font-size: 1em;
-  margin-left: 7px;
-}
-.service-item .service-text a.read-more:hover {
-  text-decoration: none;
-}
-.service-item .service-text a.read-more:hover span {
-  filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
-  opacity: 1;
-  margin-left: 0;
 }
 
 @media screen and (max-width: 480px) {
-  .services {
-    padding-bottom: 0;
-  }
+    .services {
+        padding-bottom: 0;
+    }
 }
+
 /* ------------------ WORKS ------------------ */
 /* ----------------------------- */
 /* RECOMMENDED ISOTOPE STYLES 
@@ -5207,123 +5218,133 @@ img.mfp-img {
 /* ---------------------------- */
 /* Isotope Filtering */
 .isotope-item {
-  z-index: 2;
+    z-index: 2;
 }
 
 .isotope-hidden.isotope-item {
-  pointer-events: none;
-  z-index: 1;
+    pointer-events: none;
+    z-index: 1;
 }
 
 /* Isotope CSS3 transitions */
 .isotope, .isotope .isotope-item {
-  -moz-transition-property: height, width;
-  -o-transition-property: height, width;
-  -webkit-transition-property: height, width;
-  transition-property: height, width;
+    -moz-transition-property: height, width;
+    -o-transition-property: height, width;
+    -webkit-transition-property: height, width;
+    transition-property: height, width;
 }
 
 .isotope, .isotope .isotope-item {
-  -moz-transition-duration: 0.4s;
-  -o-transition-duration: 0.4s;
-  -webkit-transition-duration: 0.4s;
-  transition-duration: 0.4s;
+    -moz-transition-duration: 0.4s;
+    -o-transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
 }
 .isotope .isotope-item {
-  -moz-transition-property: -moz-transform, opacity;
-  -o-transition-property: -o-transform, opacity;
-  -webkit-transition-property: -webkit-transform, opacity;
-  transition-property: transform, opacity;
+    -moz-transition-property: -moz-transform, opacity;
+    -o-transition-property: -o-transform, opacity;
+    -webkit-transition-property: -webkit-transform, opacity;
+    transition-property: transform, opacity;
 }
 
 /* disabling Isotope CSS3 transitions */
 .isotope.no-transition, .isotope .no-transition.isotope-item, .isotope.no-transition .isotope-item, .isotope .no-transition.isotope-item .isotope-item,
 .isotope .isotope-item.no-transition {
-  -moz-transition-duration: 0s;
-  -o-transition-duration: 0s;
-  -webkit-transition-duration: 0s;
-  transition-duration: 0s;
+    -moz-transition-duration: 0s;
+    -o-transition-duration: 0s;
+    -webkit-transition-duration: 0s;
+    transition-duration: 0s;
 }
 
 /* --------------------- */
 /* WORKS GRID
 /* --------------------- */
 #works {
-  padding-bottom: 0;
+    padding-bottom: 0;
 }
 
 .work-item-filters {
-  text-align: center;
-  margin-bottom: 0;
-  background-color: #e2e2e2;
+    text-align: center;
+    margin-bottom: 0;
+    background-color: #e2e2e2;
 }
 .work-item-filters li {
-  padding: 0;
-  margin-left: -2px;
-  margin-right: -2px;
+    padding: 0;
+    margin-left: -2px;
+    margin-right: -2px;
 }
+
 .work-item-filters li:first-child {
-  margin-left: 0;
+    margin-left: 0;
 }
+
 .work-item-filters li a {
-  display: block;
-  padding: 15px;
-  color: #9a9a9a;
+    display: block;
+    padding: 15px;
+    color: #9a9a9a;
 }
+
 .work-item-filters li a:hover, .work-item-filters li a.active {
-  text-decoration: none;
-  outline: none;
-  background-color: #26A599;
-  color: #fff;
+    text-decoration: none;
+    outline: none;
+    background-color: #26A599;
+    color: #fff;
 }
 
 .work-item-wrapper {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .work-item-list {
-  margin-bottom: 0;
-  width: 101%;
+    margin-bottom: 0;
+    width: 101%;
 }
+
 .work-item-list li {
-  padding: 0;
-  float: left;
-  overflow: hidden;
-  position: relative;
+    padding: 0;
+    float: left;
+    overflow: hidden;
+    position: relative;
 }
+
 .work-item-list li img {
-  -moz-transition-property: all;
-  -o-transition-property: all;
-  -webkit-transition-property: all;
-  transition-property: all;
-  -moz-transition-duration: 0.2s;
-  -o-transition-duration: 0.2s;
-  -webkit-transition-duration: 0.2s;
-  transition-duration: 0.2s;
-  -moz-transition-timing-function: linear;
-  -o-transition-timing-function: linear;
-  -webkit-transition-timing-function: linear;
-  transition-timing-function: linear;
-  max-width: 100%;
-  width: 100%;
+    -moz-transition-property: all;
+    -o-transition-property: all;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -moz-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    max-width: 100%;
+    width: 100%;
 }
+
 .work-item-list li:hover img {
-  -moz-transform: scale(1.3, 1.3);
-  -ms-transform: scale(1.3, 1.3);
-  -webkit-transform: scale(1.3, 1.3);
-  transform: scale(1.3, 1.3);
+    -moz-transform: scale(1.3, 1.3);
+    -ms-transform: scale(1.3, 1.3);
+    -webkit-transform: scale(1.3, 1.3);
+    transform: scale(1.3, 1.3);
 }
+
 .work-item-list.list-col-5 li {
-  width: 19.95%;
+    width: 19.95%;
 }
+
 .work-item-list.list-col-4 li {
-  width: 24.90%;
+    width: 24.90%;
 }
+
 .work-item-list.list-col-3 li {
-  width: 33.32%;
+    width: 33.32%;
 }
+
 .work-item-list.list-col-2 li {
-  width: 49.90%;
+    width: 49.90%;
 }
 
 @media screen and (max-width: 548px) {
@@ -5761,11 +5782,6 @@ img.mfp-img {
 }
 
 .video-container {
-    /*margin: 0 auto;
-    margin-left: auto;
-    margin-right: auto;
-    height: 360px;
-    width: 640px;*/
     position: relative;
     padding-bottom: 56.25%; /* 16:9 */
     padding-top: 25px;
