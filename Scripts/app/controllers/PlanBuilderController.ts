@@ -563,8 +563,6 @@ module dockyard.controllers {
                 var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
-
-            this.$scope.$emit('onKioskModalLoad');
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
