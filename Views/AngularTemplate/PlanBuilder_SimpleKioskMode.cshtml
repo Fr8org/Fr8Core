@@ -3,14 +3,14 @@
     <div ng-if="editingMode=='advanced'" class="col-md-12 kiosk-editing-mode"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
 
-    <div style="padding: 7px; background-color: white;">
+    <div style="padding-left: 7px; padding-right: 7px; background-color: white;">
         <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity" activity-full-height>
             <!-- SUB-PLAN BODY -->
             <div class="route-builder-container no-text-select" layout-container>
                 <div ng-repeat="group in pSubPlan.actionGroups" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                     <div ng-if="mode !== 'solution' || $index === 0">
                         <div ng-repeat="envelope in group.envelopes track by $index" style="width: 100%">
-                            <div class="action" style="width: 100%; height:100vm">
+                            <div class="action" style="width: 100%">
                                 <div min-width="{{envelope.activityTemplate.minPaneWidth}}">
                                     <!-- Activity Header-->
                                     <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-panety ng-style="{'background-color': organization.backgroundColor, 'height': '50px', 'min-height': '50px', 'padding-top': '5px'}">
