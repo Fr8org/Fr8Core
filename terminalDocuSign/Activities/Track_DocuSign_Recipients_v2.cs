@@ -166,10 +166,14 @@ namespace terminalDocuSign.Activities
             {
                 var configuration = DocuSignManager.SetUp(AuthorizationToken);
 
+                ActivityUI.TemplateSelector.selectedKey = null;
+                ActivityUI.TemplateSelector.SelectedItem = null;
                 ActivityUI.TemplateSelector.ListItems.Clear();
                 ActivityUI.TemplateSelector.ListItems.AddRange(DocuSignManager.GetTemplatesList(configuration)
                     .Select(x => new ListItem {Key = x.Key, Value = x.Value}));
 
+                ActivityUI.NotifierSelector.selectedKey = null;
+                ActivityUI.NotifierSelector.SelectedItem = null;
                 ActivityUI.NotifierSelector.ListItems.Clear();
                 ActivityUI.NotifierSelector.ListItems.AddRange((await HubCommunicator.GetActivityTemplates(Tags.Notifier, true))
                     .Select(x => new ListItem {Key = x.Label, Value = x.Id.ToString()}));
