@@ -219,6 +219,12 @@ img {
     background: url(/Content/img/progress.gif) no-repeat center center;
 }
 
+#supersized-loader {
+    background-image: url('/Content/img/bx_loader.gif?1379465152');
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
 #supersized {
     display: block;
     position: fixed;
@@ -5005,303 +5011,8 @@ img.mfp-img {
     padding-top: 0;
 }
 
-/* ------------------ HERO UNIT ------------------ */
-.hero-unit {
-    position: relative;
-    height: 100%;
-}
 
-.hero-unit.has-overlay {
-    background: rgba(80, 80, 80, 0.85);
-}
 
-.hero-unit.hero-light .hero-content .hero-text .hero-heading,
-.hero-unit.hero-light .hero-content .hero-text p {
-    color: #F2F4F5;
-}
-
-.hero-unit .hero-bg-pattern {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    background: -webkit-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(rgba(0,0,10,0.5), transparent 75%);/**/
-  
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
-
-.hero-unit .hero-content {
-    position: absolute;
-    left: 0;
-    top: 37%;
-    width: 100%;
-    margin-top: -10em;
-    z-index: 2;
-}
-
-@media screen and (max-width: 768px) {
-    .hero-unit .hero-content {
-        text-align: center;
-        margin-top: -100px;
-    }
-}
-
-@media screen and (min-width: 321px) and (max-width: 480px) {
-    .hero-unit .hero-content {
-        margin-top: -40px;
-    }
-}
-
-@media screen and (max-width: 320px) {
-    .hero-unit .hero-content {
-        margin-top: -60px;
-    }
-}
-
-.hero-unit .hero-content .hero-text .hero-heading,
-.hero-unit .hero-content .hero-text p {
-    color: #fff;
-}
-
-.hero-unit .hero-content .hero-text .hero-heading {
-    font-size: 5em;
-}
-
-.hero-unit .hero-content .hero-text .hero-heading .name {
-    border-bottom: 2px solid #fff;
-}
-
-@media screen and (max-width: 768px) {
-    .hero-unit .hero-content .hero-text .hero-heading {
-        font-size: 4em;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .hero-unit .hero-content .hero-text .hero-heading {
-        font-size: 2em;
-    }
-}
-
-.hero-unit .hero-content .hero-text .looper {
-    margin-top: 20px;
-}
-
-.hero-unit .hero-content .hero-text p {
-    display: inline-block;
-    vertical-align: middle;
-    *vertical-align: auto;
-    *zoom: 1;
-    *display: inline;
-    font-size: 2em;
-    color: #fff;
-    padding: 0 10px;
-}
-
-@media screen and (max-width: 768px) {
-    .hero-unit .hero-content .hero-text p {
-        font-size: 1.5em;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .hero-unit .hero-content .hero-text p {
-        font-size: 1.3em;
-    }
-}
-
-.hero-unit .hero-content .hero-buttons {
-    z-index: 2;
-}
-
-.hero-unit .hero-content .hero-buttons .btn {
-    margin: 0 5px;
-    font-weight: 400;
-}
-
-@media screen and (max-width: 480px) {
-    .hero-unit .hero-content .hero-buttons .btn {
-        margin-bottom: 10px;
-    }
-}
-
-.hero-unit .hero-content .hero-buttons #btn-about {
-    padding: 15px 41px;
-    border-color: #d9534f;
-}
-
-.hero-unit .hero-content .hero-buttons #btn-contact {
-    padding: 15px 30px;
-}
-
-@media screen and (max-width: 480px) {
-    .hero-unit .hero-content .hero-buttons #btn-about, .hero-unit .hero-content .hero-buttons #btn-contact {
-        padding: 5px 11px;
-    }
-}
-
-.hero-unit .slide-caption {
-    padding-bottom: 50px;
-    margin: 0 auto;
-}
-
-@media screen and (max-width: 480px) {
-    .hero-unit .slide-caption {
-        padding-bottom: 0;
-    }
-}
-
-.hero-unit .slideshow .slide-navigation #prevslide,
-.hero-unit .slideshow .slide-navigation #nextslide {
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-transition-property: background;
-    -o-transition-property: background;
-    -webkit-transition-property: background;
-    transition-property: background;
-    -moz-transition-duration: 0.1s;
-    -o-transition-duration: 0.1s;
-    -webkit-transition-duration: 0.1s;
-    transition-duration: 0.1s;
-    -moz-transition-timing-function: linear;
-    -o-transition-timing-function: linear;
-    -webkit-transition-timing-function: linear;
-    transition-timing-function: linear;
-    position: absolute;
-    top: 50%;
-    margin-top: -30px;
-    width: 60px;
-    height: 60px;
-    background-color: rgba(255, 255, 255, 0.1);
-    font-size: 3em;
-    line-height: 1.2;
-    color: #fff;
-    text-align: center;
-    cursor: pointer;
-    z-index: 9;
-}
-
-.hero-unit .slideshow .slide-navigation #nextslide {
-    right: 0;
-}
-
-.hero-unit .slideshow ul#slide-list {
-    position: absolute;
-    left: 50%;
-    bottom: 40px;
-}
-
-@media screen and (max-width: 768px) {
-    .hero-unit .slideshow ul#slide-list {
-        display: none;
-    }
-}
-
-.hero-unit .slideshow ul#slide-list li a {
-    -moz-border-radius: 15px;
-    -webkit-border-radius: 15px;
-    border-radius: 15px;
-    -moz-transition-property: background-color, border-color;
-    -o-transition-property: background-color, border-color;
-    -webkit-transition-property: background-color, border-color;
-    transition-property: background-color, border-color;
-    -moz-transition-duration: 0.2s;
-    -o-transition-duration: 0.2s;
-    -webkit-transition-duration: 0.2s;
-    transition-duration: 0.2s;
-    -moz-transition-timing-function: linear;
-    -o-transition-timing-function: linear;
-    -webkit-transition-timing-function: linear;
-    transition-timing-function: linear;
-    display: block;
-    width: 15px;
-    height: 15px;
-    text-indent: -9999px;
-    border: 2px solid #fff;
-    cursor: pointer;
-}
-
-.hero-unit .slideshow ul#slide-list li a:hover {
-    background-color: #e6e6e6;
-}
-
-.hero-unit .slideshow ul#slide-list li.current-slide a {
-    background-color: #e6e6e6;
-}
-.hero-unit #controls #pauseplay {
-    position: absolute;
-    left: 50%;
-    bottom: 30px;
-    cursor: pointer;
-    color: #fff;
-}
-
-.hero-unit #controls #pauseplay:hover {
-    text-decoration: none;
-    color: #e6e6e6;
-}
-
-.hero-unit #controls #pauseplay i {
-    display: block;
-    width: 10px;
-    margin-left: -8px;
-}
-
-@media screen and (max-width: 768px) {
-  .hero-unit #controls {
-    display: none;
-  }
-}
-
-#supersized-loader {
-    background-image: url('/Content/img/bx_loader.gif?1379465152');
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-.hero-slides.base-block-white {
-    background-color: rgba(47, 48, 51, 0.5);
-    border-radius: 25px;
-}
-
-.hero-slides {
-    margin-top: 35px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 70%;
-    min-height: 170px;
-}
-
-.hero-slides .carousel-inner .carousel-content h3 {
-    margin-top: 30px;
-    color: #fff;
-}
-
-.hero-slides .carousel-inner .carousel-content p {
-    width: 70%;
-    margin: auto;
-    color: #fff;
-}
-
-.hero-slides .carousel-indicators {
-    bottom: -10px;
-}
-
-.hero-slides .left.carousel-control {
-    border-top-left-radius: 25px;
-    border-bottom-left-radius: 25px;
-}
-
-.hero-slides .right.carousel-control {
-    border-top-right-radius: 25px;
-    border-bottom-right-radius: 25px;
-}
 
 /* the animation is taken form animate.css */
 .looper.slide.down .item {
@@ -5936,113 +5647,6 @@ img.mfp-img {
     }
 }
 
-/* ------------------ TWITTER STREAM ------------------ */
-.twitter-stream {
-      text-align: center;
-      padding: 40px 0;
-      background-color: #444C58;
-}
-
-.twitter-stream h4 {
-    color: #F2F4F5 !important;
-}
-
-.twitter-stream .twitter-icon {
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-    display: inline-block;
-    vertical-align: middle;
-    *vertical-align: auto;
-    *zoom: 1;
-    *display: inline;
-    width: 50px;
-    height: 50px;
-    margin-bottom: 20px;
-    background-color: #00a6e7;
-}
-
-.twitter-stream .twitter-icon i {
-    font-size: 30px;
-    line-height: 50px;
-    color: #36c3ff;
-}
-
-.twitter-stream #tweet ul {
-    list-style-type: none;
-}
-
-.twitter-stream #tweet ul li {
-    color: #fff;
-}
-
-.twitter-stream #tweet ul li a {
-    text-decoration: underline;
-    color: #fff;
-    text-overflow: ellipsis;
-}
-
-.twitter-stream #tweet ul li a span {
-    word-wrap: break-word;
-}
-
-.twitter-stream #tweet ul li a:hover {
-    text-decoration: none;
-}
-
-.twitter-stream #tweet ul li .timePosted {
-    font-size: 0.8em;
-}
-
-/* ------------------ FOOTER ------------------ */
-#footer {
-    padding-top: 20px;
-    padding-bottom: 10px;
-}
-
-.back-to-top {
-    display: none;
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    z-index: 9999;
-}
-
-.back-to-top a {
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-transition-property: background-color;
-    -o-transition-property: background-color;
-    -webkit-transition-property: background-color;
-    transition-property: background-color;
-    -moz-transition-duration: 0.2s;
-    -o-transition-duration: 0.2s;
-    -webkit-transition-duration: 0.2s;
-    transition-duration: 0.2s;
-    -moz-transition-timing-function: linear;
-    -o-transition-timing-function: linear;
-    -webkit-transition-timing-function: linear;
-    transition-timing-function: linear;
-    display: block;
-    padding: 10px 15px;
-    font-size: 28px;
-    line-height: 28px;
-    color: #fff;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.3);
-}
-
-.back-to-top a:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.copyright {
-    font-size: 0.8em;
-    line-height: 36px;
-    text-align: center;
-}
-
 /* Material Design Styles */
 .demo-card-square.mdl-card {
     height: 320px;
@@ -6144,18 +5748,6 @@ img.mfp-img {
     opacity:0.9;
 }
 
-.hero-unit .hero-bg-welcome-pattern {
-    opacity: 0.6;
-    width: 100%;
-    height: 100%;
-    background-image: url('/Content/img/background-7.png');
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    background: black;
-}
-
 .full-area {
     width: 100%;
     height: 100%;
@@ -6168,15 +5760,418 @@ img.mfp-img {
     background: radial-gradient(1200px 1200px at 0px 0px,  rgba(255,255,255,0.20) , rgba(255,255,255,0.15) 45%, transparent 60%);
 }
 
-/* RESPONSIVE */
-@media screen and (max-width: 992px) {
-  .back-to-top {
-    display: none !important;
-  }
+/* ******************************************** */
+/* ---------------- HERO UNIT ----------------- */
+/* ******************************************** */
+.hero-unit .hero-bg-welcome-pattern {
+    opacity: 0.6;
+    width: 100%;
+    height: 100%;
+    background-image: url('/Content/img/background-7.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background: black;
+}
+
+.hero-unit {
+    position: relative;
+    height: 100%;
+}
+
+.hero-unit.has-overlay {
+    background: rgba(80, 80, 80, 0.85);
+}
+
+.hero-unit.hero-light .hero-content .hero-text .hero-heading,
+.hero-unit.hero-light .hero-content .hero-text p {
+    color: #F2F4F5;
+}
+
+.hero-unit .hero-bg-pattern {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: -webkit-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(rgba(0,0,10,0.5), transparent 75%);/**/
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.hero-unit .hero-content {
+    position: absolute;
+    left: 0;
+    top: 37%;
+    width: 100%;
+    margin-top: -10em;
+    z-index: 2;
+}
+
+.hero-unit .hero-content .hero-text .hero-heading,
+.hero-unit .hero-content .hero-text p {
+    color: #fff;
+}
+
+.hero-unit .hero-content .hero-text .hero-heading {
+    font-size: 5em;
+}
+
+.hero-unit .hero-content .hero-text .hero-heading .name {
+    border-bottom: 2px solid #fff;
+}
+
+.hero-unit .hero-content .hero-text .looper {
+    margin-top: 20px;
+}
+
+.hero-unit .hero-content .hero-text p {
+    display: inline-block;
+    vertical-align: middle;
+    *vertical-align: auto;
+    *zoom: 1;
+    *display: inline;
+    font-size: 2em;
+    color: #fff;
+    padding: 0 10px;
+}
+
+.hero-unit .hero-content .hero-buttons {
+    z-index: 2;
+}
+
+.hero-unit .hero-content .hero-buttons .btn {
+    margin: 0 5px;
+    font-weight: 400;
+}
+
+.hero-unit .hero-content .hero-buttons #btn-about {
+    padding: 15px 41px;
+    border-color: #d9534f;
+}
+
+.hero-unit .hero-content .hero-buttons #btn-contact {
+    padding: 15px 30px;
+}
+
+.hero-unit .slide-caption {
+    padding-bottom: 50px;
+    margin: 0 auto;
+}
+
+.hero-unit .slideshow .slide-navigation #prevslide,
+.hero-unit .slideshow .slide-navigation #nextslide {
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-transition-property: background;
+    -o-transition-property: background;
+    -webkit-transition-property: background;
+    transition-property: background;
+    -moz-transition-duration: 0.1s;
+    -o-transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;
+    transition-duration: 0.1s;
+    -moz-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    position: absolute;
+    top: 50%;
+    margin-top: -30px;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.1);
+    font-size: 3em;
+    line-height: 1.2;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    z-index: 9;
+}
+
+.hero-unit .slideshow .slide-navigation #nextslide {
+    right: 0;
+}
+
+.hero-unit .slideshow ul#slide-list {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+}
+
+.hero-unit .slideshow ul#slide-list li a {
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    border-radius: 15px;
+    -moz-transition-property: background-color, border-color;
+    -o-transition-property: background-color, border-color;
+    -webkit-transition-property: background-color, border-color;
+    transition-property: background-color, border-color;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -moz-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    display: block;
+    width: 15px;
+    height: 15px;
+    text-indent: -9999px;
+    border: 2px solid #fff;
+    cursor: pointer;
+}
+
+.hero-unit .slideshow ul#slide-list li a:hover {
+    background-color: #e6e6e6;
+}
+
+
+.hero-unit .slideshow ul#slide-list li.current-slide a {
+    background-color: #e6e6e6;
+}
+
+.hero-unit #controls #pauseplay {
+    position: absolute;
+    left: 50%;
+    bottom: 30px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.hero-unit #controls #pauseplay:hover {
+    text-decoration: none;
+    color: #e6e6e6;
+}
+
+.hero-unit #controls #pauseplay i {
+    display: block;
+    width: 10px;
+    margin-left: -8px;
+}
+
+.hero-slides.base-block-white {
+    background-color: rgba(47, 48, 51, 0.5);
+    border-radius: 25px;
+}
+
+.hero-slides {
+    margin-top: 35px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+    min-height: 170px;
+}
+
+.hero-slides .carousel-inner .carousel-content h3 {
+    margin-top: 30px;
+    color: #fff;
+}
+
+.hero-slides .carousel-inner .carousel-content p {
+    width: 70%;
+    margin: auto;
+    color: #fff;
+}
+
+.hero-slides .carousel-indicators {
+    bottom: -10px;
+}
+
+.hero-slides .left.carousel-control {
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+}
+
+.hero-slides .right.carousel-control {
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .hero-unit .hero-content .hero-text .hero-heading {
+        font-size: 4em;
+    }
+
+    .hero-unit .hero-content .hero-text p {
+        font-size: 1.5em;
+    }
+
+    .hero-unit .slideshow ul#slide-list {
+        display: none;
+    }
+
+    .hero-unit #controls {
+        display: none;
+    }
+
+    .hero-unit .hero-content {
+        text-align: center;
+        margin-top: -100px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .hero-unit .hero-content .hero-text .hero-heading {
+        font-size: 2em;
+    }
+
+    .hero-unit .hero-content .hero-text p {
+        font-size: 1.3em;
+    }
+
+    .hero-unit .hero-content .hero-buttons .btn {
+        margin-bottom: 10px;
+    }
+
+    .hero-unit .hero-content .hero-buttons #btn-about, .hero-unit .hero-content .hero-buttons #btn-contact {
+        padding: 5px 11px;
+    }
+
+    .hero-unit .slide-caption {
+        padding-bottom: 0;
+    }
+}
+
+@media screen and (min-width: 321px) and (max-width: 480px) {
+    .hero-unit .hero-content {
+        margin-top: -40px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .hero-unit .hero-content {
+        margin-top: -60px;
+    }
+}
+
+/* ******************************************** */
+/* -------------- TWITTER STREAM -------------- */
+/* ******************************************** */
+.twitter-stream {
+      text-align: center;
+      padding: 40px 0;
+      background-color: #444C58;
+}
+
+.twitter-stream h4 {
+    color: #F2F4F5 !important;
+}
+
+.twitter-stream .twitter-icon {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    *vertical-align: auto;
+    *zoom: 1;
+    *display: inline;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+    background-color: #00a6e7;
+}
+
+.twitter-stream .twitter-icon i {
+    font-size: 30px;
+    line-height: 50px;
+    color: #36c3ff;
+}
+
+.twitter-stream #tweet ul {
+    list-style-type: none;
+}
+
+.twitter-stream #tweet ul li {
+    color: #fff;
+}
+
+.twitter-stream #tweet ul li a {
+    text-decoration: underline;
+    color: #fff;
+    text-overflow: ellipsis;
+}
+
+.twitter-stream #tweet ul li a span {
+    word-wrap: break-word;
+}
+
+.twitter-stream #tweet ul li a:hover {
+    text-decoration: none;
+}
+
+.twitter-stream #tweet ul li .timePosted {
+    font-size: 0.8em;
 }
 
 @media screen and (max-width: 480px) {
     .twitter-stream {
         padding: 25px 0;
+    }
+}
+
+/* ******************************************** */
+/* ------------------ FOOTER ------------------ */
+/* ******************************************** */
+
+#footer {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+.back-to-top {
+    display: none;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    z-index: 9999;
+}
+
+.back-to-top a {
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-transition-property: background-color;
+    -o-transition-property: background-color;
+    -webkit-transition-property: background-color;
+    transition-property: background-color;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -moz-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    display: block;
+    padding: 10px 15px;
+    font-size: 28px;
+    line-height: 28px;
+    color: #fff;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.back-to-top a:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.copyright {
+    font-size: 0.8em;
+    line-height: 36px;
+    text-align: center;
+}
+
+@media screen and (max-width: 992px) {
+    .back-to-top {
+        display: none !important;
     }
 }
