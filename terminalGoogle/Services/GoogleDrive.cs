@@ -1,7 +1,7 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Responses;
-using Google.Apis.Drive.v2;
-using Google.Apis.Drive.v2.Data;
+using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using System;
 using System.Collections.Generic;
@@ -66,7 +66,7 @@ namespace terminalGoogle.Services
             var driveService = await CreateDriveService(authDTO);
             var getRequest = driveService.Files.Get(fileId);
             var file = await getRequest.ExecuteAsync();
-            var downloadUlr = file.DownloadUrl;
+            var downloadUlr = string.Format("https://www.googleapis.com/drive/v3/files/{0}", file.Id);
             string fileContent;
 
             using (var httpClient = new HttpClient())
@@ -83,21 +83,21 @@ namespace terminalGoogle.Services
             
             // Define parameters of request.
             FilesResource.ListRequest listRequest = driveService.Files.List();
-            listRequest.Q = "mimeType='application/vnd.google-apps.form'  and Trashed=false";
+            listRequest.Q = "mimeType = 'application/vnd.google-apps.form' and trashed = false";
 
             // List files.
             FileList fileList = listRequest.Execute();
-            IList<Google.Apis.Drive.v2.Data.File> files = fileList.Items;
-            return await Task.FromResult(files.ToDictionary(a => a.Id, a => a.Title));
+            IList<Google.Apis.Drive.v3.Data.File> files = fileList.Files;
+            return await Task.FromResult(files.ToDictionary(a => a.Id, a => a.Name));
         }
 
         public async Task<string> CreateGoogleForm(GoogleAuthDTO authDTO, string title)
         {
             var driveService = await CreateDriveService(authDTO);
-            var file = new Google.Apis.Drive.v2.Data.File();
-            file.Title = title;
+            var file = new Google.Apis.Drive.v3.Data.File();
+            file.Name = title;
             file.MimeType = "application/vnd.google-apps.form";
-            var request = driveService.Files.Insert(file);
+            var request = driveService.Files.Create(file);
             var result = request.Execute();
             return result.Id;
         }
@@ -111,13 +111,12 @@ namespace terminalGoogle.Services
             listRequest.Q = string.Format("title='{0}' and Trashed=false", filename);
 
             // List files.
-            IList<Google.Apis.Drive.v2.Data.File> files = listRequest.Execute()
-                .Items;
+            IList<Google.Apis.Drive.v3.Data.File> files = listRequest.Execute().Files;
 
             if (files.Count > 0)
             {
                 exist = true;
-                link = files[0].AlternateLink;
+                link = files[0].WebViewLink;
             }
             else
             {
