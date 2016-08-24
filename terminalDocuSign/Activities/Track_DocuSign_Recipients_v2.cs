@@ -19,6 +19,7 @@ using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
+using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
@@ -146,35 +147,50 @@ namespace terminalDocuSign.Activities
 
         private const string NotificationMessageLabel = "NotificationMessage";
 
-        private readonly IUnitOfWorkFactory _uowFactory;
-
         private readonly IConfigRepository _configRepository;
 
         public Track_DocuSign_Recipients_v2(
             ICrateManager crateManager,
             IDocuSignManager docuSignManager,
-            IUnitOfWorkFactory uowFactory,
             IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
         {
-            _uowFactory = uowFactory;
             _configRepository = configRepository;
+        }
+
+        private async Task FillDropdowns()
+        {
+            var docusignToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
+
+            if (this["AccountId"] != docusignToken.AccountId)
+            {
+                var configuration = DocuSignManager.SetUp(AuthorizationToken);
+
+                ActivityUI.TemplateSelector.ListItems.Clear();
+                ActivityUI.TemplateSelector.ListItems.AddRange(DocuSignManager.GetTemplatesList(configuration)
+                    .Select(x => new ListItem {Key = x.Key, Value = x.Value}));
+
+                ActivityUI.NotifierSelector.ListItems.Clear();
+                ActivityUI.NotifierSelector.ListItems.AddRange((await HubCommunicator.GetActivityTemplates(Tags.Notifier, true))
+                    .Select(x => new ListItem {Key = x.Label, Value = x.Id.ToString()}));
+
+                this["AccountId"] = docusignToken.AccountId;
+            }
         }
 
         public override async Task Initialize()
         {
-            var configuration = DocuSignManager.SetUp(AuthorizationToken);
-            ActivityUI.TemplateSelector.ListItems.AddRange(DocuSignManager.GetTemplatesList(configuration)
-                                                                          .Select(x => new ListItem { Key = x.Key, Value = x.Value }));
-            ActivityUI.NotifierSelector.ListItems.AddRange((await HubCommunicator.GetActivityTemplates(Tags.Notifier, true))
-                .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }));
+            await FillDropdowns();
+            
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
                           .AddField(DelayTimeProperty)
                           .AddField(ActionBeingTrackedProperty);
         }
-
+        
         public override async Task FollowUp()
         {
+            await FillDropdowns();
+
             if (!ActivityUI.BuildSolutionButton.Clicked)
             {
                 return;
