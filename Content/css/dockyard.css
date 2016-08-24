@@ -1698,3 +1698,7 @@ span.btn a.btn-link i.glyphicon-remove {
   font-weight: normal;
   font-style: normal;
 }
+
+.maven-pro-font {
+    font-family: MavenPro;
+}
