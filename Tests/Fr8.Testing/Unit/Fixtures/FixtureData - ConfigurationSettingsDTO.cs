@@ -38,7 +38,7 @@ namespace Fr8.Testing.Unit.Fixtures
             return new TextBox()
             {
                 Name = "Connection_String",
-                Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health_test; User ID = IntegrationTest@s79ifqsqga; Password = thmxsGv2Jqo; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
+                Value = @"Data Source=tcp:fr8vmbuilddb.westus.cloudapp.azure.com,1433;Initial Catalog=demodb_health_test;User ID=builddbadmin;Password=Pangea9602;"
             };
         }
 
