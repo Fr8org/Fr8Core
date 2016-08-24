@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Responses;
-using Google.Apis.Drive.v2;
-using Google.Apis.Drive.v2.Data;
+using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Requests;
 using Google.Apis.Script.v1;
 using Google.Apis.Script.v1.Data;
@@ -126,8 +126,8 @@ namespace terminalGoogle.Services
 
                 var formFilename = FormFilename(driveService, formId);
 
-                Google.Apis.Drive.v2.Data.File scriptFile = new Google.Apis.Drive.v2.Data.File();
-                scriptFile.Title = "Script for: " + formFilename;
+                Google.Apis.Drive.v3.Data.File scriptFile = new Google.Apis.Drive.v3.Data.File();
+                scriptFile.Name = "Script for: " + formFilename;
                 scriptFile.Description = desription;
                 scriptFile.MimeType = "application/vnd.google-apps.script+json";
 
@@ -155,11 +155,11 @@ namespace terminalGoogle.Services
 
                     //upload file to google drive
                     string existingFileLink = "";
-                    if (!_googleDrive.FileExist(driveService, scriptFile.Title, out existingFileLink))
+                    if (!_googleDrive.FileExist(driveService, scriptFile.Name, out existingFileLink))
                     {
-                        FilesResource.InsertMediaUpload request = driveService.Files.Insert(scriptFile, memoryStream, "application/vnd.google-apps.script+json");
+                        FilesResource.CreateMediaUpload request = driveService.Files.Create(scriptFile, memoryStream, "application/vnd.google-apps.script+json");
                         request.Upload();
-                        response = request.ResponseBody.AlternateLink;
+                        response = request.ResponseBody.WebViewLink;
                     }
                     else
                         response = existingFileLink;
@@ -182,14 +182,13 @@ namespace terminalGoogle.Services
             listRequest.Q = "mimeType='application/vnd.google-apps.form'  and Trashed=false";
 
             // List files.
-            IList<Google.Apis.Drive.v2.Data.File> files = listRequest.Execute()
-                .Items;
+            IList<Google.Apis.Drive.v3.Data.File> files = listRequest.Execute().Files;
 
             foreach (var item in files)
             {
                 if (item.Id == id)
                 {
-                    fileName = item.Title;
+                    fileName = item.Name;
                     break;
                 }
             }
@@ -217,9 +216,9 @@ namespace terminalGoogle.Services
             {
                 Type = "user",
                 Role = "writer",
-                Value = CloudConfigurationManager.GetSetting("GoogleMailAccount")
+                EmailAddress = CloudConfigurationManager.GetSetting("GoogleMailAccount")
             };
-            var request = driveService.Permissions.Insert(userPermission, fileId);
+            var request = driveService.Permissions.Create(userPermission, fileId);
             request.Fields = "id";
             batch.Queue(request, callback);
 

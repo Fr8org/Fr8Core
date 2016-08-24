@@ -419,7 +419,6 @@ app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $windo
     };
 }]);
 
-//== scroll grey area of PB vertically and horizontally 
 app.directive('activityFullHeight', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
@@ -429,24 +428,18 @@ app.directive('activityFullHeight', ['$timeout', '$window', function ($timeout, 
                 setHeight();
             });
 
-            scope.$on('onKioskModalLoad', function () {
-                $timeout(setHeight, 500);                
-            });
+            $timeout(setHeight);                   
             
             function setHeight() {                
                 var winH = $(window).height();
-                var winW = $(window).width();
-                var wrapH = winH - 60;
+                var wrapH = winH - 80;
 
-                if (winW <= 400) {
-                    $(element).height(wrapH);
-                    $(element).find('.page-container').height(wrapH);
-                    $(element).find('.route-builder-container').height(wrapH);
-                    $(element).find('.action').height(wrapH);
-                    $(element).find('.action').css('margin-bottom', '0px');
-                    $(element).find('.ng-scope').css('margin-top', '0px');
-                    $(element).find('.page-content').css('padding-bottom', '0px');                    
-                }
+                $(element).find('.page-container').height(wrapH);
+                $(element).find('.route-builder-container').height(wrapH);
+                $(element).find('.action').height(wrapH);
+                $(element).find('.action').css('margin-bottom', '0px');
+                $(element).find('.ng-scope').css('margin-top', '0px');
+                $(element).find('.page-content').css('padding-bottom', '0px');                    
             }
         }
     };
