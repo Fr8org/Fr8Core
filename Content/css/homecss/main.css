@@ -5760,6 +5760,15 @@ img.mfp-img {
     background: radial-gradient(1200px 1200px at 0px 0px,  rgba(255,255,255,0.20) , rgba(255,255,255,0.15) 45%, transparent 60%);
 }
 
+.video-container {
+    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    height: 360px;
+    width: 640px;
+}
+}
+
 /* ******************************************** */
 /* ---------------- HERO UNIT ----------------- */
 /* ******************************************** */
@@ -6015,6 +6024,7 @@ img.mfp-img {
     .hero-unit .hero-content {
         text-align: center;
         margin-top: -100px;
+        top: 25%;
     }
 }
 
@@ -6038,11 +6048,16 @@ img.mfp-img {
     .hero-unit .slide-caption {
         padding-bottom: 0;
     }
+
+    .hero-slides .carousel-inner .carousel-content h3 {
+        font-size: 1.3em;
+    }
 }
 
 @media screen and (min-width: 321px) and (max-width: 480px) {
     .hero-unit .hero-content {
         margin-top: -40px;
+        top: 15%;
     }
 }
 
@@ -6121,7 +6136,6 @@ img.mfp-img {
 /* ******************************************** */
 /* ------------------ FOOTER ------------------ */
 /* ******************************************** */
-
 #footer {
     padding-top: 20px;
     padding-bottom: 10px;
