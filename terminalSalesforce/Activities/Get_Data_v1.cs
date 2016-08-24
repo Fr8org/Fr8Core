@@ -27,7 +27,7 @@ namespace terminalSalesforce.Actions
             Label = "Get Data from Salesforce",
             NeedsAuthentication = true,
             MinPaneWidth = 550,
-            Tags = Tags.TableDataGenerator,
+            Tags = string.Join(",", Tags.TableDataGenerator, Tags.Getter),
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
