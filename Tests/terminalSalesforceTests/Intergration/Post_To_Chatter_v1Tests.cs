@@ -59,10 +59,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
-        [Test, Category("intergration.terminalSalesforce"), Ignore]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
-        )]
+        [Test, Category("intergration.terminalSalesforce")]
         public async Task Post_To_Chatter_Run_With_NoAuth_Check_NoAuthProvided_Error()
         {
             //Arrange
@@ -72,6 +69,14 @@ namespace terminalSalesforceTests.Intergration
         
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
+            var operationalState = Crate.GetStorage(responseOperationalState)
+                                         .CratesOfType<OperationalStateCM>()
+                                         .SingleOrDefault()
+                                         ?.Content;
+            Assert.AreEqual("Error", operationalState.CurrentActivityResponse.Type, "Activity response doesn't contain error");
+            Assert.IsTrue(operationalState.CurrentActivityResponse.Body.Contains("AUTH_TOKEN_NOT_PROVIDED_OR_INVALID"), "Activity response error doesn't contain info about the missing auth token fact");
+            //Assert.AreEqual(operationalState.CurrentActivityResponse.Type);
+
         }
 
         [Test, Category("intergration.terminalSalesforce")]

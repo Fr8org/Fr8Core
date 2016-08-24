@@ -136,7 +136,7 @@ namespace Fr8.Infrastructure.Data.Constants
         [Display(Name = "StatX Item")]
         StatXItem = 45,
 
-        [Display(Name = "Instagram User Event")]
+        [Display(Name = "Instagram user event")]
         InstagramUserEvent = 46,
 
         [Display(Name = "Asana task")]
