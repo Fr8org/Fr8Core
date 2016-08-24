@@ -149,12 +149,12 @@ namespace terminalGoogle.Services
         {
             var driveService = await _googleDrive.CreateDriveService(authDTO);
 
-            var file = new Google.Apis.Drive.v2.Data.File();
-            file.Title = spreadsheetname;
+            var file = new Google.Apis.Drive.v3.Data.File();
+            file.Name = spreadsheetname;
             file.Description = $"Created via Fr8 at {DateTime.Now}";
             file.MimeType = "application/vnd.google-apps.spreadsheet";
 
-            var request = driveService.Files.Insert(file);
+            var request = driveService.Files.Create(file);
             var result = request.Execute();
 
             return result.Id;
