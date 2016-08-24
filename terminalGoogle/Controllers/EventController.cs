@@ -44,13 +44,15 @@ namespace terminalGoogle.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest([FromBody]PollingDataDTO pollingData)
         {
+            GDrivePollingType gDrivePollingType;
+
             if (string.IsNullOrEmpty(pollingData.AdditionToJobId))
             {
                 return await _gmailPolling.Poll(pollingData);
             }
-            else if (pollingData.AdditionToJobId == GDrivePollingType.Spreadsheets.ToString())
+            else if (Enum.TryParse<GDrivePollingType>(pollingData.AdditionToJobId, out gDrivePollingType))
             {
-                return await _gdrivePolling.Poll(pollingData);
+                return await _gdrivePolling.Poll(pollingData, gDrivePollingType);
             }
             else
             {

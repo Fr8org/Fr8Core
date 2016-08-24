@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -83,6 +84,10 @@ namespace terminalGoogle.Activities
             }
         }
 
+        private const string RunTimeCrateLabel = "MonitorGoogleSpreadsheetChanges Changed Files";
+        private const string SpreadsheetIdLabel = "Google Spreadsheet File ID";
+        private const string SpreadsheetNameLabel = "Google Spreadsheet File Name";
+
         private IGoogleSheet _googleSheet;
         private IGoogleGDrivePolling _googleGDrivePolling;
 
@@ -101,12 +106,25 @@ namespace terminalGoogle.Activities
 
         public override async Task Initialize()
         {
+            EventSubscriptions.Manufacturer = "Google";
+            EventSubscriptions.Add("GoogleSpreadsheet");
+
             var spreadsheets = await _googleSheet.GetSpreadsheets(GetGoogleAuthToken());
             var spreadsheetListItems = spreadsheets
-                .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                .Select(x => new ListItem { Key = x.Value, Value = ExtractFileId(x.Key) })
                 .ToList();
 
             ActivityUI.SpreadsheetList.ListItems = spreadsheetListItems;
+
+            CrateSignaller
+                .MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true)
+                .AddField(new FieldDTO(SpreadsheetIdLabel))
+                .AddField(new FieldDTO(SpreadsheetNameLabel));
+        }
+
+        private string ExtractFileId(string feedUrl)
+        {
+            return feedUrl.Substring(feedUrl.LastIndexOf('/') + 1);
         }
 
         public override async Task FollowUp()
@@ -128,7 +146,63 @@ namespace terminalGoogle.Activities
 
         public override async Task Run()
         {
-            await Task.Yield();
+            var eventCrate = Payload.CratesOfType<EventReportCM>().FirstOrDefault()
+                ?.Get<EventReportCM>()
+                ?.EventPayload;
+
+            KeyValueListCM changedFiles = null;
+            if (eventCrate != null)
+            {
+                changedFiles = eventCrate
+                    .CrateContentsOfType<KeyValueListCM>(x => x.Label == "ChangedFiles")
+                    .SingleOrDefault();
+            }
+
+            if (changedFiles == null)
+            {
+                RequestPlanExecutionTermination("File list was not found in the payload.");
+            }
+
+            if (ActivityUI.AllSpreadsheetsOption.Selected)
+            {
+                var rows = new List<TableRowDTO>();
+                foreach (var changedFile in changedFiles.Values)
+                {
+                    var row = new TableRowDTO();
+                    row.Row.Add(TableCellDTO.Create(SpreadsheetIdLabel, changedFile.Key));
+                    row.Row.Add(TableCellDTO.Create(SpreadsheetNameLabel, changedFile.Value));
+
+                    rows.Add(row);
+                }
+
+                var tableData = new StandardTableDataCM(false, rows);
+
+                Payload.Add(Crate.FromContent(RunTimeCrateLabel, tableData));
+                Success();
+            }
+            else
+            {
+                var hasFileId = changedFiles.Values.Any(x => x.Key == ActivityUI.SpreadsheetList.Value);
+                if (!hasFileId)
+                {
+                    RequestPlanExecutionTermination();
+                }
+                else
+                {
+                    var rows = new List<TableRowDTO>();
+                    var changedFile = changedFiles.Values.Where(x => x.Key == ActivityUI.SpreadsheetList.Value).First();
+
+                    var row = new TableRowDTO();
+                    row.Row.Add(TableCellDTO.Create(SpreadsheetIdLabel, changedFile.Key));
+                    row.Row.Add(TableCellDTO.Create(SpreadsheetNameLabel, changedFile.Value));
+                    rows.Add(row);
+
+                    var tableData = new StandardTableDataCM(false, rows);
+
+                    Payload.Add(Crate.FromContent(RunTimeCrateLabel, tableData));
+                    Success();
+                }
+            }
         }
     }
 }

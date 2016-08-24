@@ -18,6 +18,6 @@ namespace terminalGoogle.Interfaces
             bool triggerImmediatly
         );
 
-        Task<PollingDataDTO> Poll(PollingDataDTO pollingData);
+        Task<PollingDataDTO> Poll(PollingDataDTO pollingData, GDrivePollingType pollingType);
     }
 }
