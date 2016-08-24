@@ -76,6 +76,8 @@ namespace terminalSalesforce.Actions
 
         public const string CountObjectsFieldLabel = "Count of Objects";
 
+        private const string ExternalObjectHandlesLabel = "External Object Handles";
+
         private readonly ISalesforceManager _salesforceManager;
 
         public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
@@ -122,6 +124,22 @@ namespace terminalSalesforce.Actions
             //Publish information for downstream activities
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
                           .AddFields(selectedObjectProperties).AddField(CountObjectsFieldLabel);
+
+            // Update ExternalObjectHandle crate.
+            var externalObjectHandle = new ExternalObjectHandleDTO()
+            {
+                Name = selectedObject,
+                Description = $"Data from Salesforce '{selectedObject}' object",
+                DirectUrl = null,
+                ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
+            };
+
+            var externalObjectHandleCrate = Crate.FromContent(
+                ExternalObjectHandlesLabel,
+                new ExternalObjectHandlesCM(externalObjectHandle)
+            );
+
+            Storage.ReplaceByLabel(externalObjectHandleCrate);
         }
 
         public override async Task Run()
