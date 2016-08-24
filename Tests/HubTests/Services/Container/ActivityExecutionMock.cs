@@ -100,6 +100,11 @@ namespace HubTests.Services.Container
         {
             return _activity.Exists(id);
         }
+
+        public Task<ActivityDO> GetSubordinateActivity(IUnitOfWork uow, Guid id)
+        {
+            return _activity.GetSubordinateActivity(uow, id);
+        }
     }
 }
 
