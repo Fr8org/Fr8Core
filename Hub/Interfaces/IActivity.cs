@@ -35,5 +35,7 @@ namespace Hub.Interfaces
         Task Delete(Guid id);
         Task DeleteChildNodes(Guid id);
         bool Exists(Guid id);
+
+        Task<ActivityDO> GetSubordinateActivity(IUnitOfWork uow, Guid id);
     }
 }

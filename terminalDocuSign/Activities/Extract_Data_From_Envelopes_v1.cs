@@ -61,7 +61,7 @@ namespace terminalDocuSign.Activities
                 {
                     Name = "FinalActionsList",
                     Required = true,
-                    Label = "What would you like us to do with the data?",                   
+                    Label = "What would you like us to do with the data?",
                     Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 }));
             }
@@ -106,7 +106,7 @@ namespace terminalDocuSign.Activities
             }
 
             //Removing children activities when configuring solution after returning to Solution Introduction
-            if(ActivityPayload.ChildrenActivities.Count()> 0)
+            if (ActivityPayload.ChildrenActivities.Count() > 0)
             {
                 ActivityPayload.ChildrenActivities.RemoveAll(a => true);
             }
@@ -127,6 +127,8 @@ namespace terminalDocuSign.Activities
 
             var firstActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, monitorDocusignTemplate);
             var secondActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, secondActivityTemplate, "Final activity");
+            await HubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(AuthorizationToken.Id));
+            firstActivity = await HubCommunicator.ConfigureActivity(firstActivity);
 
             return;
         }
@@ -138,7 +140,7 @@ namespace terminalDocuSign.Activities
             Success();
             await Task.Yield();
         }
-    
+
         /// <summary>
         /// This method provides documentation in two forms:
         /// SolutionPageDTO for general information and 
@@ -189,6 +191,6 @@ namespace terminalDocuSign.Activities
         }
         #endregion
 
-        
+
     }
 }

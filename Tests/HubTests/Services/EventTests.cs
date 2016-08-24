@@ -136,6 +136,11 @@ namespace HubTests.Services
         {
             return _activity.Exists(id);
         }
+
+        public Task<ActivityDO> GetSubordinateActivity(IUnitOfWork uow, Guid id)
+        {
+            return _activity.GetSubordinateActivity(uow, id);
+        }
     }
 
     public class PlanNodeMock : IPlanNode
