@@ -347,6 +347,9 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalDocuSign" && x.Name == "Monitor_DocuSign_Envelope_Activity" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 1);
+            await HubCommunicator.ApplyNewToken(activity.Id, Guid.Parse(AuthorizationToken.Id));
+            activity = await HubCommunicator.ConfigureActivity(activity);
+
             ActivityConfigurator.SetControlValue(activity, "EnvelopeSent", "true");
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
