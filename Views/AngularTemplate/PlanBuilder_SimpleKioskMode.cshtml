@@ -4,7 +4,6 @@
     <div class="plan-loading-message" block-if="current.plan"></div>
 
     <div style="padding: 7px; background-color: white;">
-
         <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
             <!-- SUB-PLAN BODY -->
             <div class="route-builder-container no-text-select" layout-container>
@@ -26,6 +25,7 @@
                                     <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction"
                                                            current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
                                 </div>
+
                             </div>
                         </div>
                     </div>
