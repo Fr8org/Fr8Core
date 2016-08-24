@@ -213,6 +213,21 @@
         }
     }
 
+    export class DropDownListMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('DropDownListMetaDescriptionDTO', 'DropDownList');
+
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var ddl = new model.DropDownList();
+            ddl.label = 'Template Activity';
+            ddl.name = 'DropDownList';
+            this.controls.push(ddl);
+        }
+    }
+
     export class ListTemplate {
         template: Array<ControlDefinitionDTO>;
         name: string;
