@@ -1,9 +1,8 @@
 jQuery(function ($) {
 
     /*----------------------/
-	/* PAGE LOADER
-	/*---------------------*/
-
+    /* PAGE LOADER
+    /*---------------------*/
     if ($('body.no-preloader').length <= 0) {
         $('body').jpreLoader({
             showSplash: false,
@@ -11,12 +10,10 @@ jQuery(function ($) {
         });
     }
 
-
     /*----------------------/
-	/* MAIN NAVIGATION
-	/*---------------------*/
-
-    // navbar and logo switch related with scroll position
+    /* MAIN NAVIGATION
+    /*---------------------*/
+    // Navbar and logo switch related with SCROLL POSITION
     $(window).on('scroll', function () {
         if ($(window).width() > 1024) {
             if ($(document).scrollTop() > 80) {
@@ -27,7 +24,7 @@ jQuery(function ($) {
         }
     });
 
-    // navbar and logo switch related with screen width
+    // Navbar and logo switch related with SCREEN WIDTH
     function toggleNavbar() {
         if (($(window).width() > 1024) && ($(document).scrollTop() <= 150)) {
             setNavbarTransparent();
@@ -37,23 +34,22 @@ jQuery(function ($) {
     }
 
     toggleNavbar();
-
     $(window).resize(function () {
         toggleNavbar();
     });
 
-    /* navbar setting functions */
+    // Setting navbar to solid white background
     function setNavbarLight() {
         $('.navbar').addClass('navbar-light');
         $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo.png');
     }
-    // change this one to have it demo main nav bar above the fold - logo-f8.svg is the turq one
+
+    // Setting navbar to trasparent background and change its logo according to it
     function setNavbarTransparent() {
         $('.navbar').removeClass('navbar-light');
         if (window.location.pathname === "/Services/DocuSign" || window.location.pathname === "/Services/Salesforce") {
             $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_dark.png');
-        }
-        else {
+        } else {
             $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_white.png');
         }
     }
@@ -81,7 +77,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* HERO UNIT SUPERSIZED
 	/*---------------------*/
-
     if ($('.slideshow').length > 0) {
         $.supersized({
 
@@ -110,7 +105,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* PARALLAX
 	/*---------------------*/
-
     $('.full-width-parallax').parallax(0, 0.1);
 
     function setParallax() {
@@ -120,16 +114,13 @@ jQuery(function ($) {
     }
 
     setParallax();
-
     $(window).resize(function () {
         setParallax();
     });
-
-
+    
     /*----------------------/
 	/* SKILLS
 	/*---------------------*/
-
     $('#skills').waypoint(function () {
         $('.chart').each(function () {
             $(this).easyPieChart({
@@ -151,7 +142,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* TWITTER STREAM
 	/*---------------------*/
-
     /*
 	* ### HOW TO CREATE A VALID ID TO USE: ###
 	* Go to www.twitter.com and sign in as normal, go to your settings page.
@@ -188,7 +178,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* SCROLL TO TOP
 	/*---------------------*/
-
     if ($(window).width() > 992) {
         $(window).scroll(function () {
             if ($(this).scrollTop() > 300) {
@@ -211,7 +200,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* WORKS
 	/*---------------------*/
-
     var $container = $('.work-item-list');
 
     new imagesLoaded($container, function () {
@@ -219,7 +207,6 @@ jQuery(function ($) {
             itemSelector: '.work-item'
         });
     });
-
 
     $('.work-item-filters a').click(function (e) {
 
@@ -260,7 +247,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* SOCIAL NETWORK
 	/*---------------------*/
-
     if ($(window).width() > 1024) {
         wow = new WOW({
             animateClass: 'animated'
@@ -275,7 +261,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* TOOLTIP
 	/*---------------------*/
-
     if ($(window).width() > 1024) {
         $('body').tooltip({
             selector: "[data-toggle=tooltip]",
@@ -287,7 +272,6 @@ jQuery(function ($) {
     /*----------------------/
 	/* AJAX CONTACT FORM
 	/*---------------------*/
-
     $('#contact-form').parsley();
 
     $('.contact-form form').submit(function (e) {
@@ -321,9 +305,7 @@ jQuery(function ($) {
             $btn.find('.loading-icon').removeClass('fa-spinner fa-spin ');
             $btn.prop('disabled', false).find('span').text($btnText);
 
-        })
-		.fail(function () { console.log('AJAX Error'); });
-
+        }).fail(function () { console.log('AJAX Error'); });
     });
 
 
@@ -335,11 +317,9 @@ jQuery(function ($) {
     } else {
         $('#main-nav .nav li').removeClass('active');
     }
-
 });
 
 /*menu*/
-
 $("li.dropdown").hover(function () {
     $(this).find("a.dropdown-toggle").attr('aria-expanded', "true");
     $(this).addClass("open");
