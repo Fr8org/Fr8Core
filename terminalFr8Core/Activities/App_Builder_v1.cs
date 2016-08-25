@@ -339,7 +339,7 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Submitting data..."));
                         Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
                         Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
                         Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
