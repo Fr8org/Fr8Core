@@ -159,7 +159,7 @@
     {
         constructor() {
             super("TextBoxMetaDescriptionDTO", "TextBox");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
         }
@@ -167,61 +167,27 @@
 
     export class RadioGroupMetaDescriptionDTO extends ControlMetaDescriptionDTO
     {
-        optionDescriptions: Array<RadioOptionMetaDescriptionDTO>;
-        remove: (index: number) => void;
-        makeDefault: (index: number) => void;
-
         constructor() {
             super("RadioGroupMetaDescriptionDTO", "Radio Group");
-            var label = new model.TextBox();
+            var label = new TextBox();
             label.label = "Label: ";
             this.controls.push(label);
-            this.optionDescriptions = [];
-            this.optionDescriptions.push(new RadioOptionMetaDescriptionDTO());
 
-            this.remove = (index: number) => {
-                if (this.optionDescriptions.length === 1 || index < 0 || index >= this.optionDescriptions.length) {
-                    return;
-                }
-                this.optionDescriptions = this.optionDescriptions.splice(index, 1);
-            };
+            var values = new TextBox();
+            values.label = "Values (comma-separated): ";
+            this.controls.push(values);
 
-            this.makeDefault = (index: number) => {
-                for (var i = 0; i < this.optionDescriptions.length; i++) {
-                    if (i === index) {
-                        this.optionDescriptions[i].toggleDefault();
-                    } else {
-                        this.optionDescriptions[i].resetDefault();
-                    }
-                }
-            };
+            var defaultValue = new TextBox();
+            defaultValue.label = "Default Value: ";
+            this.controls.push(defaultValue);
         }
-    }
-
-    export class RadioOptionMetaDescriptionDTO extends ControlMetaDescriptionDTO
-    {
-        label: model.TextBox;
-        value: model.TextBox;
-        isDefault: model.CheckBox;
-
-        constructor() {
-            super("RadioOptionMetaDescriptionDTO", "Radio Option");
-            this.label = new model.TextBox();
-            this.label.label = "Label: ";
-
-            this.value = new model.TextBox();
-            this.value.label = "Value: ";
-
-            this.isDefault = new model.CheckBox();
-            this.isDefault.label = "Is Default Option";
-            }   
     }
     
     export class TextBlockMetaDescriptionDTO extends ControlMetaDescriptionDTO
     {
         constructor() {
             super("TextBlockMetaDescriptionDTO", "TextBlock");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Text Content :";
             this.controls.push(tb);
         }
@@ -233,7 +199,7 @@
 
         constructor() {
             super("FilePickerMetaDescriptionDTO", "File Uploader");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
@@ -242,7 +208,7 @@
                 var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
                 listItems.push(extensionValue);
             }
-            var allowedExtensions = new model.DropDownList();
+            var allowedExtensions = new DropDownList();
             allowedExtensions.listItems = listItems;
             allowedExtensions.label = "File Type:";
             this.controls.push(allowedExtensions);
@@ -254,11 +220,11 @@
         constructor() {
             super('SelectDataMetaDescriptionDTO', 'Select Data');
 
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
-            var sd = new model.SelectData();
+            var sd = new SelectData();
             sd.label = 'Template Activity';
             sd.name = 'SelectData';
             this.controls.push(sd);
@@ -300,8 +266,8 @@
     }
 
     export class CrateDetails {
-        manifestType: model.DropDownList;
-        label: model.DropDownList;
+        manifestType: DropDownList;
+        label: DropDownList;
     }
 
     export class UpstreamCrateChooser extends ControlDefinitionDTO {
