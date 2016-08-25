@@ -106,7 +106,10 @@ namespace terminalFr8Core.Activities
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
-            var isLabelBasedPublishable = controlDefinitionDTO is TextBox || controlDefinitionDTO is RadioButtonGroup;
+            var isLabelBasedPublishable = controlDefinitionDTO is TextBox ||
+                                            controlDefinitionDTO is RadioButtonGroup ||
+                                            controlDefinitionDTO is DropDownList ;
+            ;
             if (isLabelBasedPublishable)
             {
                 fieldConfigurator.AddField(controlDefinitionDTO.Label);
@@ -187,6 +190,12 @@ namespace terminalFr8Core.Activities
         {
             var isValueBasedProcessed = controlDefinitionDTO is TextBox || controlDefinitionDTO is RadioButtonGroup;
             if (isValueBasedProcessed)
+            {
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
+            }
+
+            if (controlDefinitionDTO is DropDownList)
             {
                 var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
                 fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
