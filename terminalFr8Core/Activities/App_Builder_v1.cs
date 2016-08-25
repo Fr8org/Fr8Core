@@ -106,18 +106,14 @@ namespace terminalFr8Core.Activities
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
-            // why do we publish only text box?
-            if (controlDefinitionDTO is TextBox)
-            {
-                PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
-            }
-
-            //allow user also select DDLB and why we shouldn`t publish all controls or publish the control which we mark as avaliable for publishing?
-            if(controlDefinitionDTO is DropDownList)
+            var isLabelBasedPublishable = controlDefinitionDTO is TextBox ||
+                                            controlDefinitionDTO is RadioButtonGroup ||
+                                            controlDefinitionDTO is DropDownList ;
+            ;
+            if (isLabelBasedPublishable)
             {
                 fieldConfigurator.AddField(controlDefinitionDTO.Label);
             }
-
         }
 
         private bool WasActivityRunFromSubmitButton()
@@ -162,17 +158,6 @@ namespace terminalFr8Core.Activities
             return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers);
         }
 
-        private void PublishTextBox(TextBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
-        {
-            fieldConfigurator.AddField(textBox.Label);
-        }
-
-        private void ProcessTextBox(TextBox textBox)
-        {
-            var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(textBox.Label, textBox.Value));
-        }
-
         private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
         {
             int labeless_pickers = 0;
@@ -203,9 +188,11 @@ namespace terminalFr8Core.Activities
 
         private void ProcessCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
         {
-            if (controlDefinitionDTO is TextBox)
+            var isValueBasedProcessed = controlDefinitionDTO is TextBox || controlDefinitionDTO is RadioButtonGroup;
+            if (isValueBasedProcessed)
             {
-                ProcessTextBox((TextBox)controlDefinitionDTO);
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
             }
 
             if (controlDefinitionDTO is DropDownList)
