@@ -207,6 +207,12 @@ namespace terminalFr8Core.Activities
             {
                 ProcessTextBox((TextBox)controlDefinitionDTO);
             }
+
+            if (controlDefinitionDTO is DropDownList)
+            {
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
+            }
         }
 
         private async Task ProcessCollectionControls(StandardConfigurationControlsCM collectionControls)
