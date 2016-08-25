@@ -94,7 +94,7 @@ namespace terminalDocuSign.Services.NewApi
                 string tab_type = item.Name;
                 var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId)).ToArray();
 
-                foreach (JObject tab in item.Value) 
+                foreach (JObject tab in item.Value)
                 {
                     KeyValueDTO corresponding_field = null;
                     switch (tab_type)
@@ -147,7 +147,7 @@ namespace terminalDocuSign.Services.NewApi
             {
                 DocumentId = tab["documentId"],
                 RecipientId = tab["recipientId"],
-                Name = string.Format("{0}({1})", tab["tabLabel"], roleName),
+                Name = tab["tabLabel"] + (roleName.ToStr().IsNullOrEmpty() ? null : $" ({roleName})"),
                 TabId = tab["tabId"],
                 Value = value,
                 Fr8DisplayType = GetFieldType(tabName),
@@ -193,7 +193,7 @@ namespace terminalDocuSign.Services.NewApi
                     {
                         DocumentId = Convert.ToInt32(grpTab["documentId"]),
                         RecipientId = grpTab["recipientId"],
-                        Name = string.Format("{0}({1})", grpTab["groupName"], roleName),
+                        Name = grpTab["tabLabel"] + (roleName.ToStr().IsNullOrEmpty() ? null : $" ({roleName})"),
                         TabId = grpTab["tabId"],
                         Fr8DisplayType = ControlTypes.RadioButtonGroup,
                         RoleName = roleName,
@@ -229,7 +229,7 @@ namespace terminalDocuSign.Services.NewApi
                     {
                         DocumentId = grpTab["documentId"],
                         RecipientId = grpTab["recipientId"],
-                        Name = string.Format("{0}({1})", grpTab["tabLabel"], roleName),
+                        Name = grpTab["tabLabel"] + (roleName.ToStr().IsNullOrEmpty() ? null : $" ({roleName})"),
                         TabId = grpTab["tabId"],
                         Fr8DisplayType = ControlTypes.DropDownList,
                         Value = grpTab["value"],
@@ -242,12 +242,20 @@ namespace terminalDocuSign.Services.NewApi
                         foreach (var listItem in groupTab[listItemsName])
                         {
                             dynamic lstItem = listItem;
-                            groupWrapperEnvelopeData.Items.Add(new DocuSignOptionItemTabDTO
+
+                            var item = new DocuSignOptionItemTabDTO
                             {
                                 Text = lstItem["text"],
                                 Value = lstItem["value"],
                                 Selected = lstItem["selected"]
-                            });
+                            };
+
+                            if (string.IsNullOrEmpty(item.Text) && string.IsNullOrEmpty(item.Value))
+                            {
+                                item.Text = " ";  //DS allows to select empty value in DDLB
+                                item.Value = " ";
+                            }
+                            groupWrapperEnvelopeData.Items.Add(item);
                         }
                     }
 
