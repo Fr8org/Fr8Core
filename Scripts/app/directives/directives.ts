@@ -432,14 +432,14 @@ app.directive('activityFullHeight', ['$timeout', '$window', function ($timeout, 
             
             function setHeight() {                
                 var winH = $(window).height();
-                var wrapH = winH - 80;
+                var wrapH = winH - 100;
 
                 $(element).find('.page-container').height(wrapH);
                 $(element).find('.route-builder-container').height(wrapH);
-                $(element).find('.action').height(wrapH);
+                $(element).find('.action').height(wrapH - 10);
                 $(element).find('.action').css('margin-bottom', '0px');
                 $(element).find('.ng-scope').css('margin-top', '0px');
-                $(element).find('.page-content').css('padding-bottom', '0px');                    
+                $('.page-content').removeClass("page-content");                    
             }
         }
     };

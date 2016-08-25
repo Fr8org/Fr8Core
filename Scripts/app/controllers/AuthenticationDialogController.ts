@@ -320,6 +320,7 @@
             };
 
             var _reloadTerminals = function (preselectedTokens?: Array<{ terminalName: string, authTokenId: number, isMain: boolean }>) {
+                // debugger; 
                 var activities = $scope.activities || [];
                 _activities = activities;
 

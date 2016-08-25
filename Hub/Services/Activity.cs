@@ -774,5 +774,33 @@ namespace Hub.Services
                 return uow.PlanRepository.GetActivityQueryUncached().Any(x => x.Id == id);
             }
         }
+
+        public Task<ActivityDO> GetSubordinateActivity(IUnitOfWork uow, Guid id)
+        {
+            var activity = uow.PlanRepository.GetById<ActivityDO>(id);
+            if (activity.ChildNodes != null && activity.ChildNodes.Count == 1)
+            {
+                var subordinateSubPlan = activity.ChildNodes.First() as SubplanDO;
+                if (subordinateSubPlan != null)
+                {
+                    if (subordinateSubPlan.ChildNodes != null && subordinateSubPlan.ChildNodes.Count == 1)
+                    {
+                        var subordinateActivity = subordinateSubPlan.ChildNodes.First() as ActivityDO;
+                        if (subordinateActivity != null)
+                        {
+                            subordinateActivity.CrateStorage = string.Empty;
+                            subordinateActivity.AuthorizationTokenId = null;
+                            subordinateActivity.AuthorizationToken = null;
+
+                            uow.SaveChanges();
+
+                            return Task.FromResult(subordinateActivity);
+                        }
+                    }
+                }
+            }
+
+            return Task.FromResult<ActivityDO>(null);
+        }
     }
 }
