@@ -40,6 +40,7 @@ gulp.task('compile_js', function () {
     return gulp.src([
         'Scripts/app/events/Fr8Events.js',
         'Scripts/app/model/ActionDTO.js',
+        'Scripts/app/model/ActivityCategoryDTO.js',
         'Scripts/app/model/ActivityTemplate.js',
         'Scripts/app/model/Condition.js',
         'Scripts/app/model/Criteria.js',
@@ -80,7 +81,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/UIHelperService.js',
         'Scripts/app/services/UINotificationService.js',
         'Scripts/app/services/LayoutService.js',
-        'Scripts/app/services/PusherNotifierService.js',
         'Scripts/app/services/UserService.js',
         'Scripts/app/services/WebServiceService.js',
         'Scripts/app/services/TerminalService.js',
@@ -90,11 +90,13 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/UpstreamExtractor.js',
         'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/services/ActivityTemplateService.js',
-        'Scripts/app/services/ActivityService.js',
+        'Scripts/app/services/ActivityService.js', 
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
-        'Scripts/app/filters/FilterByTag.js',
+        'Scripts/app/filters/FilterByTag.js',   
         'Scripts/app/enums/NotificationType.js',
+        'Scripts/app/enums/PermissionType.js',
+        'Scripts/app/enums/ParticipationState.js',
         'Scripts/app/enums/UINotificationMessageStatus.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
@@ -190,6 +192,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/PlanUploadController.js',
         'Scripts/app/controllers/PageDefinitionListController.js',
         'Scripts/app/controllers/PageDefinitionFormController.js',
+        'Scripts/app/controllers/AdminToolsController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())
@@ -433,7 +436,7 @@ gulp.task('update-web-driver', function (done) {
 gulp.task('protractor-run', function (done) {
     gutil.log('Using base url: ' + argv.baseUrl);
     gutil.log('Testing with user: ' + argv.username);
-    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, '--params.username='+argv.username, '--params.password='+argv.password, 'Scripts\\tests\\e2e\\conf.js'], {
+    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, '--params.username=' + argv.username, '--params.password=' + argv.password, 'Scripts\\tests\\e2e\\conf.js'], {
         stdio: 'inherit'
     });
 

@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using terminalFr8Core.Activities;
+using System.Configuration;
 
 namespace terminalTests.Unit
 {
@@ -36,7 +37,7 @@ namespace terminalTests.Unit
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
 
             var twilioService = new Mock<ITwilioService>();
-            twilioService.Setup(c => c.GetRegisteredSenderNumbers()).Returns(new List<string> { "+15005550006" });
+            twilioService.Setup(c => c.GetRegisteredSenderNumbers()).Returns(new List<string> { ConfigurationManager.AppSettings["TestPhoneNumber"] });
             twilioService.Setup(t => t.SendSms(It.IsAny<string>(), It.IsAny<string>())).Returns(new Twilio.Message());
             ObjectFactory.Container.Inject(twilioService.Object);
             ObjectFactory.Container.Inject(twilioService);

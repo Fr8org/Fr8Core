@@ -1,0 +1,12 @@
+﻿<div class="portlet light " ng-controller="AdminToolsController">
+    <h1 class="md-title font-green-haze">Admin tools page</h1>
+
+    <section class="row">
+        <div class="col-sm-6">
+            <md-button class="btn btn-success btn-small" ng-disabled="generatePagesInProgress" ng-click="generatePages()" >Manually processes Plans to generate missing Plan Pages</md-button>
+        </div>
+        <div class="col-sm-4">
+            <md-progress-linear md-mode="query " ng-show="generatePagesInProgress"></md-progress-linear>
+        </div>
+    </section>
+</div>

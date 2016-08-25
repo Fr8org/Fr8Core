@@ -35,13 +35,15 @@ module dockyard.directives.designerHeader {
 
                 $scope.$watch('plan.planState', function (newValue, oldValue) {
                     switch (newValue) {
-                        case 1:
+                        case model.PlanState.Inactive:
                             // emit evet to control liner-progress bar
                             $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
                             break;
-                        case 2:
+                        case model.PlanState.Executing:
                             // emit evet to control liner-progress bar
                             $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STARTED);
+                            break;
+                        case model.PlanState.Active:
                             break;
                         default:
                             // emit evet to control liner-progress bar
@@ -51,11 +53,16 @@ module dockyard.directives.designerHeader {
                 });
 
                 $scope.editTitle = () => {
-                    $scope.editing = true;
+                    if (!$scope.editing) {
+                        $scope.editing = !$scope.editing;
+                    }
                 };
 
                 $scope.onTitleChange = () => {
-                    $scope.editing = false;
+                    if ($scope.editing) {
+                        $scope.editing = !$scope.editing;
+                    }
+
                     var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name, description: null });
                     result.$promise.then(() => { });
                 };
@@ -104,7 +111,7 @@ module dockyard.directives.designerHeader {
                         return;
                     }
                     var at = ActivityTemplateHelperService.getActivityTemplate(<model.ActivityDTO>initialActivity);
-                    if (at.category.toLowerCase() === "solution") {
+                    if (at.categories.some((value) => { return value.name.toLowerCase() === "solution"; })) {
                         initialActivity = initialActivity.childrenActivities[0];
                         if (initialActivity == null) {
                             // mark plan as Inactive
@@ -113,7 +120,8 @@ module dockyard.directives.designerHeader {
                         }
                     }
 
-                    if (at.category.toLowerCase() !== "monitors") {
+                    if (!at.categories.some((value) => { return (value.name.toLowerCase() === "triggers" || value.name.toLocaleLowerCase() === "solution");
+                    })) {
                         // mark plan as Inactive
                         $scope.plan.planState = model.PlanState.Inactive;
                     }

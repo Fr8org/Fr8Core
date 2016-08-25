@@ -26,15 +26,13 @@ namespace terminalSalesforce.Actions
             Name = "Get_Data",
             Label = "Get Data from Salesforce",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Receivers,
             MinPaneWidth = 550,
-            Tags = Tags.TableDataGenerator,
-            WebService = TerminalData.WebServiceDTO,
+            Tags = string.Join(",", Tags.TableDataGenerator, Tags.Getter),
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -77,6 +75,8 @@ namespace terminalSalesforce.Actions
         public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
         public const string CountObjectsFieldLabel = "Count of Objects";
+
+        private const string ExternalObjectHandlesLabel = "External Object Handles";
 
         private readonly ISalesforceManager _salesforceManager;
 
@@ -124,6 +124,22 @@ namespace terminalSalesforce.Actions
             //Publish information for downstream activities
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
                           .AddFields(selectedObjectProperties).AddField(CountObjectsFieldLabel);
+
+            // Update ExternalObjectHandle crate.
+            var externalObjectHandle = new ExternalObjectHandleDTO()
+            {
+                Name = selectedObject,
+                Description = $"Data from Salesforce '{selectedObject}' object",
+                DirectUrl = null,
+                ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
+            };
+
+            var externalObjectHandleCrate = Crate.FromContent(
+                ExternalObjectHandlesLabel,
+                new ExternalObjectHandlesCM(externalObjectHandle)
+            );
+
+            Storage.ReplaceByLabel(externalObjectHandleCrate);
         }
 
         public override async Task Run()

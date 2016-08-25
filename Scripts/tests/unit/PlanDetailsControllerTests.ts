@@ -3,19 +3,13 @@
 
 module dockyard.tests.controller {
     import pca = dockyard.controllers.IPlanDetailsScope;
-
     describe('PlanDetailsController', () => {
         var scope,
             planDetailsController,
             $rootScope,
             $timeout,
-
             //fakeIt ↓
-            PusherNotifierService = {
-                frontendSuccess: () => {},
-                frontendFailure: () => {}
-            };
-
+            UINotificationService = {};
 
         beforeEach(module('app'));
 
@@ -32,14 +26,14 @@ module dockyard.tests.controller {
 
                 planDetailsController = _$controller_('PlanDetailsController', {
                     '$scope': scope,
-                    'PusherNotifierService': PusherNotifierService
+                    'UINotificationService': UINotificationService
                 });
             });
         });
 
         // Meaning of scope.ptvm  undefined PlanService.getFull() is not called.
         it('Should not call the PlanService.getFull() with integer ID ', () => {
-            planDetailsController.constructor($rootScope, scope, planDetailsController.PlanService, planDetailsController.$stateParams, PusherNotifierService);
+            planDetailsController.constructor($rootScope, scope, planDetailsController.PlanService, planDetailsController.$stateParams, UINotificationService);
             expect(scope.ptvm).toBe(undefined);
         });
 
@@ -61,7 +55,7 @@ module dockyard.tests.controller {
             }
 
             // Here we are not waiting for the response of the PlanService.getFull function.
-            planDetailsController.constructor($rootScope, scope, planDetailsController.PlanService, planDetailsController.$stateParams, PusherNotifierService);
+            planDetailsController.constructor($rootScope, scope, planDetailsController.PlanService, planDetailsController.$stateParams, UINotificationService);
             expect(scope.ptvm).not.toBe(undefined);
         });
 

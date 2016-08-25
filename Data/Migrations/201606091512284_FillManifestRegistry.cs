@@ -3,10 +3,11 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
 
-    public partial class FillManifestRegistry : DbMigration
+    public partial class FillManifestRegistry : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
+
             Sql(@"
 DECLARE @StringTypeId uniqueidentifier;
 

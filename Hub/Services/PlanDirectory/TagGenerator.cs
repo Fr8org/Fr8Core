@@ -6,7 +6,9 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Data.Entities;
 using Hub.Interfaces;
+using AutoMapper;
 using StructureMap;
 
 namespace Hub.Services.PlanDirectory
@@ -14,10 +16,12 @@ namespace Hub.Services.PlanDirectory
     public class TagGenerator : ITagGenerator
     {
         private readonly IPlanNode _activity;
+        private readonly IActivityCategory _activityCategory;
 
-        public TagGenerator(IPlanNode activity)
+        public TagGenerator(IPlanNode activity, IActivityCategory activityCategory)
         {
             _activity = activity;
+            _activityCategory = activityCategory;
         }
 
         /// <summary>
@@ -50,8 +54,8 @@ namespace Hub.Services.PlanDirectory
             //);
 
             var activityCategories = _activity.GetAvailableActivityGroups();
-               // await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
-               //uri, headers: headers);
+            // await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
+            //uri, headers: headers);
 
             var activityDict = activityCategories
                 .SelectMany(a => a.Activities)
@@ -87,11 +91,37 @@ namespace Hub.Services.PlanDirectory
             activityTemplatesCombinations.ForEach(a => result.ActivityTemplateTags.Add(new ActivityTemplateTag(a)));
 
             //4. adding tags for webservices
-            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct(WebServiceDTO.NameComparer).OrderBy(b => b.Name).ToList();
-            var webServicesCombination = GetCombinations<WebServiceDTO>(usedWebServices);
-            webServicesCombination.ForEach(a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a)));
+            var usedWebServices = usedActivityTemplates
+                .SelectMany(x => x.Categories)
+                .Where(a => !ActivityCategories.ActivityCategoryIds.Any(b => b == a.Id)) //remove "common" categories
+                .Distinct(ActivityCategoryDTO.NameComparer)
+                .OrderBy(b => b.Name)
+                .ToList();
+
+            var webServicesCombination = GetCombinations<ActivityCategoryDTO>(usedWebServices);
+            webServicesCombination.ForEach(
+                a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a))
+            );
 
             return result;
+        }
+
+        public Task<WebServiceTemplateTag> GetWebServiceTemplateTag(PageDefinitionDO pageDefinition)
+        {
+            var activityCategories = new List<ActivityCategoryDTO>();
+
+            foreach (var tag in pageDefinition.Tags)
+            {
+                var activityCategoryDO = _activityCategory.GetByName(tag, false);
+                if (activityCategoryDO == null)
+                {
+                    continue;
+                }
+
+                activityCategories.Add(Mapper.Map<ActivityCategoryDTO>(activityCategoryDO));
+            }
+
+            return Task.FromResult(new WebServiceTemplateTag(activityCategories));
         }
 
         private void CollectActivityTemplateIds(FullSubplanDto subplan, HashSet<string> ids)
@@ -110,8 +140,8 @@ namespace Hub.Services.PlanDirectory
         private void CollectActivityTemplateIds(ActivityDTO activity, HashSet<string> ids)
         {
             var at = activity.ActivityTemplate;
-            if (at != null && !string.IsNullOrEmpty(at.Name) 
-                && !string.IsNullOrEmpty(at.Version) 
+            if (at != null && !string.IsNullOrEmpty(at.Name)
+                && !string.IsNullOrEmpty(at.Version)
                 && !string.IsNullOrEmpty(at.TerminalName)
                 && !string.IsNullOrEmpty(at.TerminalVersion))
             {

@@ -51,17 +51,15 @@ module dockyard.directives {
                         let expectedRatio = titleWrappedWidth / expectedWidth;
                         let fixedFontSize = Math.round(expectedRatio * fontSize);
 
-                        if (fixedFontSize < 15) {
-                            expectedWidth /= 2;
-                            if (expectedWidth <= titleWrappedWidth) {
-                                fixedFontSize = 20;
-                            } else {
-                                expectedRatio = titleWrappedWidth / expectedWidth;
-                                fixedFontSize = Math.round(expectedRatio * fontSize);
+                        expectedWidth /= 2;
+                        if (expectedWidth <= titleWrappedWidth) {
+                            fixedFontSize = 20;
+                        } else if (fixedFontSize < 15) {
+                             expectedRatio = titleWrappedWidth / expectedWidth;
+                             fixedFontSize = Math.round(expectedRatio * fontSize);
 
-                                if (fixedFontSize < 15)
-                                    fixedFontSize = 15
-                            }
+                             if (fixedFontSize < 15)
+                                 fixedFontSize = 15;                            
                         }
 
                         cssAttr = {

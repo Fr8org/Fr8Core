@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--- 
+===========================================
+The Fr8 Terminal Logging Configuration File
+==========================================
+
+Remove the "readme" extension from the filename and optionally add your custom loggers.
+-->
+
+<log4net>
+  <root>
+    <level value="ALL" />
+  </root>
+</log4net>

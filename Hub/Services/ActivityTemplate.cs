@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.Utility;
+using Excel.Log;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Google.Apis.Util;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
+using ILog = log4net.ILog;
 
 namespace Hub.Services
 {
     public class ActivityTemplate : IActivityTemplate
     {
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+
         private readonly ITerminal _terminal;
         private readonly IActivityCategory _activityCategory;
         private readonly Dictionary<Guid, ActivityTemplateDO> _activityTemplates = new Dictionary<Guid, ActivityTemplateDO>();
@@ -63,7 +71,6 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var query = uow.ActivityTemplateRepository.GetQuery()
-                    .Include(x => x.WebService)
                     .Include(x => x.Categories)
                     .Include("Categories.ActivityCategory");
                 foreach (var activityTemplate in query)
@@ -178,13 +185,6 @@ namespace Hub.Services
             CopyPropertiesHelper.CopyProperties(source, newTemplate, false);
             newTemplate.Terminal = _terminal.GetByKey(source.TerminalId);
           
-            if (source.WebService != null)
-            {
-                var webService = new WebServiceDO();
-                CopyPropertiesHelper.CopyProperties(source.WebService, webService, false);
-                newTemplate.WebService = webService;
-            }
-
             if (source.Categories != null)
             {
                 newTemplate.Categories = new List<ActivityCategorySetDO>();
@@ -207,45 +207,33 @@ namespace Hub.Services
             return newTemplate;
         }
 
-        public void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplates)
+        public void RemoveInactiveActivities(TerminalDO terminal, List<ActivityTemplateDO> activityTemplates)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //let's first get webservice of those activities
-                var webService = activityTemplates.FirstOrDefault(a => a.WebService != null)?.WebService;
-                if (webService == null)
+                var terminalActivitiesToBeRemoved = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(x => x.TerminalId == terminal.Id)
+                    .AsEnumerable()
+                    .Where(x => !activityTemplates.Any(y => y.Name == x.Name && y.Version == x.Version))
+                    .ToList();
+
+                foreach (var activityToRemove in terminalActivitiesToBeRemoved)
                 {
-                    //try to load webservice from db
-                    var dummyActivity = activityTemplates.First();
-                    webService = uow.ActivityTemplateRepository.GetQuery()
-                            .FirstOrDefault(t => t.Name == dummyActivity.Name)?
-                            .WebService;
-                }
-                else
-                {
-                    webService = uow.WebServiceRepository.GetQuery().FirstOrDefault(t => t.Name == webService.Name);
+                    activityToRemove.ActivityTemplateState = ActivityTemplateState.Inactive;
+                    _activityTemplates.Remove(activityToRemove.Id);
                 }
 
-                //we can't operate without a common webservice for those activities
-                if (webService == null)
-                {
-                    //wow we can't do anything about this
-                    return;
-                }
-
-                var currentActivityNames = activityTemplates.Select(x => x.Name);
-                //get activities which we didn't receive as parameter
-                var inactiveActivities = uow.ActivityTemplateRepository.GetQuery().Where(t => !currentActivityNames.Contains(t.Name) && t.WebServiceId == webService.Id).ToList();
-
-                //we need to remove those inactiveActivities both from db and cache
-                foreach (var activityTemplateDO in inactiveActivities)
-                {
-                    activityTemplateDO.ActivityTemplateState = ActivityTemplateState.Inactive;
-                    _activityTemplates.Remove(activityTemplateDO.Id);
-                }
                 uow.SaveChanges();
+            }          
+        }
+
+        public bool Exists(Guid activityTemplateId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActivityTemplateRepository.GetQuery().Any(x => x.Id == activityTemplateId);
             }
-          
         }
 
         private List<ActivityCategorySetDO> ApplyActivityCategories(
@@ -316,16 +304,6 @@ namespace Hub.Services
                 throw new ArgumentOutOfRangeException($"ActivityTemplate.Version is not a valid integer value: {activityTemplateDo.Version}");
             }
 
-            if (activityTemplateDo.WebService == null)
-            {
-                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService is not set");
-            }
-
-            if (string.IsNullOrWhiteSpace(activityTemplateDo.WebService.Name))
-            {
-                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService.Name can't be empty");
-            }
-
             // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
             // make a copy
             var clone = new ActivityTemplateDO();
@@ -333,14 +311,6 @@ namespace Hub.Services
             CopyPropertiesHelper.CopyProperties(activityTemplateDo, clone, true);
             
             clone.Terminal = activityTemplateDo.Terminal;
-
-            // Make copy of web-service reference and add it to 
-            if (activityTemplateDo.WebService != null)
-            {
-                var wsClone = new WebServiceDO();
-                CopyPropertiesHelper.CopyProperties(activityTemplateDo.WebService, wsClone, true);
-                clone.WebService = wsClone;
-            }
 
             // Create list of activity categories for current ActivityTemplate.
             var activityCategories = new List<ActivityCategoryDO>();
@@ -363,28 +333,10 @@ namespace Hub.Services
             lock (_activityTemplates)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    if (activityTemplateDo.WebService != null)
-                    {
-                        var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
-
-                        // Update existing WebService entity.
-                        if (existingWebService != null)
-                        {
-                            existingWebService.IconPath = activityTemplateDo.WebService.IconPath;
-                            activityTemplateDo.WebServiceId = existingWebService.Id;
-                            activityTemplateDo.WebService = existingWebService;
-                        }
-                        else
-                        {
-                            activityTemplateDo.WebService.Id = 0;
-                            activityTemplateDo.WebServiceId = 0;
-                        }
-                    }
-                    
+                {                    
                     // Try to extract existing ActivityTemplate.
                     var activity = uow.ActivityTemplateRepository.GetQuery()
-                        .Include(x => x.WebService)
+                        // .Include(x => x.WebService)
                         .FirstOrDefault(t => t.Name == activityTemplateDo.Name
                             && t.TerminalId == activityTemplateDo.TerminalId
                             && t.Version == activityTemplateDo.Version);
@@ -408,15 +360,17 @@ namespace Hub.Services
                     // We're updating existing ActivityTemplate.
                     else
                     {
-                        if (activity.Id != activityTemplateDo.Id)
-                        {
-                            throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
-                            + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
-                        }
+                        // TODO: FR-4943, this breaks DEV's activity registration, commented out for now.
+                        // if (activity.Id != activityTemplateDo.Id)
+                        // {
+                        //     throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
+                        //     + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
+                        // }
+
                         // This is for updating activity template
                         CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
-                        activity.WebService = activityTemplateDo.WebService;
+
                         uow.SaveChanges();
 
                         activity.Categories = ApplyActivityCategories(uow, activity, activityCategories);
@@ -426,48 +380,78 @@ namespace Hub.Services
                 }
             }
         }
-
-        /// <summary>
-        /// Returns ActivityTemplate by it's name.
-        /// For example GetByName(uow, "AddPayloadManually_v1").
-        /// </summary>
-        public ActivityTemplateDO GetByName(IUnitOfWork uow, string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ApplicationException("Invalid ActivityTemplate name");
-            }
-
-            var tokens = name.Split('_');
-            if (tokens.Length < 2)
-            {
-                throw new ApplicationException("Invalid ActivityTemplate name");
-            }
-
-            var versionToken = tokens[tokens.Length - 1];
-
-            if (versionToken == null || versionToken.Length < 2)
-            {
-                throw new ApplicationException("Invalid ActivityTemplate name");
-            }
-
-            var namePart = string.Join("_", tokens.Take(tokens.Length - 1).ToArray());
-            var versionPart = versionToken.Substring(1);
-
-            return GetByNameAndVersion(namePart, versionPart);
-        }
-
+        
         /// <summary>
         /// Returns ActivityTemplate by it's name and version.
         /// For example GetByNameAndVersion(uow, "AddPayloadManually", "1").
         /// </summary>
-        public ActivityTemplateDO GetByNameAndVersion(string name, string version)
+        public ActivityTemplateDO GetByNameAndVersion(ActivityTemplateSummaryDTO activityTemplateSummary)
         {
             Initialize();
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.FirstOrDefault(x => x.Name == name && x.Version == version);
+                IEnumerable<ActivityTemplateDO> activityTemplates = _activityTemplates.Values.Where(x => x.Name == activityTemplateSummary.Name && x.Version == activityTemplateSummary.Version);
+
+#if DEBUG
+                bool terminalInfoMissing = false;
+#endif
+
+                if (string.IsNullOrWhiteSpace(activityTemplateSummary.TerminalName))
+                {
+                    activityTemplates = activityTemplates.Where(x => x.Terminal.Name == activityTemplateSummary.TerminalName);
+#if DEBUG
+                    terminalInfoMissing = true;
+#endif
+                }
+
+                if (string.IsNullOrWhiteSpace(activityTemplateSummary.Version))
+                {
+                    activityTemplates = activityTemplates.Where(x => x.Terminal.Version == activityTemplateSummary.TerminalVersion);
+#if DEBUG
+                    terminalInfoMissing = true;
+#endif
+                }
+                
+                var activityTemplatesArray = activityTemplates.ToArray();
+
+                if (activityTemplatesArray.Length == 0)
+                {
+                    return null;
+                }
+                
+#if DEBUG
+                if (terminalInfoMissing)
+                {
+                    var stackTrace = new StackTrace();           
+                    var stackFrames = stackTrace.GetFrames();  
+                    var message = new StringBuilder();
+
+
+                    message.AppendLine($"Terminal information is missing for activity template: Name = {activityTemplateSummary.Name}, Version = {activityTemplateSummary.Version}");
+
+                    foreach (StackFrame stackFrame in stackFrames)
+                    {
+                        var method = stackFrame.GetMethod();
+
+                        message.AppendLine($"{method.DeclaringType.FullName}:{method.Name}");
+                    }
+
+                    Logger.Warn(message.ToString());
+                }
+#endif
+
+                if (activityTemplatesArray.Length > 1)
+                {
+                    var exception = new Exception($"Ambiguous activity template resolution for activity template: Name = {activityTemplateSummary.Name}, Version = {activityTemplateSummary.Version}, " +
+                                        $"TerminalName = {activityTemplateSummary.TerminalName}, TerminalVersion = {activityTemplateSummary.TerminalVersion}");
+                    
+                    Logger.Error("Ambiguous activity template resolution", exception);
+
+                    throw exception;
+                }
+                
+                return activityTemplatesArray[0];
             }
         }
     }

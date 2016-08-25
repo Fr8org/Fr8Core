@@ -30,8 +30,8 @@ module dockyard.controllers {
             '$scope',
             'PlanService',
             '$stateParams',
-            "$filter",
-            "PusherNotifierService"
+            '$filter',
+            'UINotificationService'
         ];
 
         constructor(
@@ -40,12 +40,13 @@ module dockyard.controllers {
             private PlanService: services.IPlanService,
             private $stateParams: any,
             private $filter: ng.IFilterService,
-            private PusherNotifierService: dockyard.services.IPusherNotifierService) {
+            private uiNotificationService: dockyard.interfaces.IUINotificationService) {
 
             $scope.descriptionEditing = false;
             $scope.nameEditing = false;
-            //Load detailed information
+            // Load detailed information
             $scope.id = $stateParams.id;
+
             if (this.isValidGUID($scope.id)) {
                 PlanService.getFull({ id: $stateParams.id }).$promise.then(function (plan) {
                     $scope.current.plan = (<any>plan);
@@ -53,21 +54,14 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
-                debugger;
                 if (!$scope.current.plan.visibility.public) {
                     PlanService.share($stateParams.id)
-                        .then(() => {
-                            console.log('sharePlan: Success');
-                            PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " shared");
-                        })
-                        .catch((exp) => {
-                            console.log('sharePlan: Failure');
-                            exp.data = exp.data ? exp.data : "";
-                            PusherNotifierService.frontendFailure("Plan sharing faliure: " + exp.data);
-                        });
+                    .catch((exp) => {
+                        exp.data = exp.data ? exp.data : "";
+                    });
                 }
-
             };
+
             $scope.onTitleChange = () => {
                 $scope.descriptionEditing = false;
                 $scope.nameEditing = false;
@@ -75,23 +69,14 @@ module dockyard.controllers {
                 result.$promise.then(() => { });
             };
 
-
             $scope.unpublishPlan = () => {
-                debugger;
                 //tony.yakovets: temporary crutch
                 if (!$scope.current.plan.visibility.hidden) {
-                    PlanService.unpublish($stateParams.id)
-                        .then(() => {
-                            console.log('unpublishPlan: Success');
-                            PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " unpublished");
-                        })
-                        .catch((exp) => {
-                            console.log('unpublishPlan: Failure');
-                            exp.data = exp.data ? exp.data : "";
-                            PusherNotifierService.frontendFailure("Plan unpublished faliure: " + exp.data);
-                        });
+                    PlanService.unpublish($stateParams.id).catch((exp) =>
+                    {
+                        exp.data = exp.data ? exp.data : "";
+                    });
                 }
-
             };
 
             $scope.download = ($event: Event) => {
@@ -112,11 +97,10 @@ module dockyard.controllers {
                                 (element as HTMLAnchorElement).click();
                                 $scope.digestFlag = false;
                                 (element as HTMLAnchorElement).removeAttribute("href");
-                            },
-                            100);
-
+                        }, 100);
                     });
                 }
+
                 $event.stopPropagation = null;
                 $event.preventDefault = () => { };
                 $event.cancelBubble = false;

@@ -67,22 +67,28 @@
                     <div class="search-bar-container">
                             <h2>Plan Directory</h2>
                             <form ng-submit="submitSearch(1)">
+                                <div class="btn-group mode-switch-panel">
+                                    <span>View by: </span>
+                                    <button type="button" class="btn" ng-class="{'green': searched, 'btn-default': !searched}" ng-click="searched=true">List</button>
+                                    <button type="button" class="btn" ng-class="{'green': !searched, 'btn-default': searched}" ng-click="searched=false">Category</button>
+                                </div>
+
                                 <div class="input-group">
                                     <input type="text" class="form-control" ng-model="searchForm.searchText" placeholder="Search for Plans" />
-                                    <span class="input-group-btn">
+                                    <div class="input-group-btn">
                                         <button type="submit" class="btn btn-primary">Search</button>
-                                        <button type="button" class="btn btn-primary" style="margin-left: 1em" ng-if="privileged" ng-click="generatePages()">Generate Pages</button>
-                                    </span>
+                                    </div>
                                 </div>
                             </form>
                         <hr />
                     </div>
-                    <!-- SEARCH RESULTS-->
 
-                    <div class="result-container">
+                    <!-- SEARCH RESULTS-->
+                    <div class="result-container" ng-if="searched">
                         <div class="item" ng-repeat="plan in planTemplates">
-                            <button class="btn green create-plan-btn" ng-class="{'privileged': privileged}" ng-click="createPlan(plan)">Create</button>
-                            <button type="button" class="btn red remove-plan-btn" ng-click="removePlan(plan)" ng-if="privileged">Delete</button>
+                            <button type="button" class="btn red plan-btn" ng-if="privileged" ng-click="removePlan(plan)">Delete</button>
+                            <button class="btn btn-primary plan-btn" ng-click="planDetails(plan)">Details</button>
+                            <button class="btn green plan-btn" ng-click="createPlan(plan)">Create</button>
                             <div class="info-row first">
                                 <div class="label">Name:</div> {{plan.name}}
                             </div>
@@ -93,7 +99,6 @@
                                 <div class="label">Description:</div>
                                 <div class="value">{{plan.description}}</div>
                             </div>
-
                         </div>
                         <div class="pager" ng-if="pages && pages.length > 1">
                             <div class="btn-group">
@@ -101,10 +106,24 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="web-services-container" ng-if="!searched">
+                        <div class="item" ng-repeat="ac in activityCategories" ng-class="{ 'selected': isCategorySelected(ac) }" ng-click="toggleCategorySelection(ac)">
+                            <i class="fa fa-check-circle" aria-hidden="true" ng-if="isCategorySelected(ac)"></i>
+                            <div class="icon"><img ng-src="{{ac.iconPath}}" /></div>
+                            <div class="label">{{ac.name}}</div>
+                        </div>
+                    </div>
+
+                    <div class="web-service-summary" ng-if="!searched && anyCategorySelected()" ng-click="showCategoryPage()">
+                        <div class="summary-header">Click to View Plans Incorporating:</div>
+                        <ul>
+                            <li ng-repeat="ac in selectedCategories | orderBy: 'name'">{{ac.name}}</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
-
         <div class="clear clear-footer-spacer"></div>
     </div>
 
@@ -119,12 +138,31 @@
         </div>
     </script>
 
+    <!-- NO PAGE-DEFINITION MODAL -->
+    <script type="text/ng-template" id="/NoPageDefinitionDialog.html">
+        <div class="modal-body">
+            <div>No plans are available right now involving this combination of Activities.</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+        </div>
+    </script>
+
+    <!-- NO DETAILS-PAGE MODAL -->
+    <script type="text/ng-template" id="/NoDetailsPageDialog.html">
+        <div class="modal-body">
+            <div>No details page is currently available for selected plan template.</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+        </div>
+    </script>
+
     <!-- FOOTER -->
     <footer id="site-footer" class="section">
         <div class="container">
             <p class="copyright">@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
         </div>
     </footer>
-    <!-- END FOOTER -->
 </body>
 </html>

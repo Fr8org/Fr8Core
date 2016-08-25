@@ -18,6 +18,17 @@ app.directive('autoFocus', ['$timeout', function ($timeout) {
     };
 }]);
 
+app.directive('delayedAutoFocus', ['$timeout', function ($timeout) {
+    return {
+        restrict: 'AC',
+        link: function (_scope, _element) {
+            $timeout(function () {
+                _element[0].focus();
+            }, 500);
+        }
+    };
+}]);
+
 app.filter('parseUrl', () => {
     var urls = /(\b(https?|ftp):\/\/[A-Z0-9+&@#\/%?=~_|!:,.;-]*[-A-Z0-9+&@#\/%=~_|])/gim;
 
@@ -404,6 +415,32 @@ app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $windo
                 if (_validScrollFlag) $scroller.kinetic('attach');
                 else $scroller.kinetic('detach');
             });            
+        }
+    };
+}]);
+
+app.directive('activityFullHeight', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope: ng.IScope, element) {
+            
+            angular.element(window).bind('resize', function () {
+                setHeight();
+            });
+
+            $timeout(setHeight);                   
+            
+            function setHeight() {                
+                var winH = $(window).height();
+                var wrapH = winH - 100;
+
+                $(element).find('.page-container').height(wrapH);
+                $(element).find('.route-builder-container').height(wrapH);
+                $(element).find('.action').height(wrapH - 10);
+                $(element).find('.action').css('margin-bottom', '0px');
+                $(element).find('.ng-scope').css('margin-top', '0px');
+                $('.page-content').removeClass("page-content");                    
+            }
         }
     };
 }]);

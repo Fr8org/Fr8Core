@@ -13,7 +13,6 @@ namespace Fr8.TerminalBase.Interfaces
 {
     public interface IHubCommunicator
     {
-        Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
         Task<UserDTO> GetCurrentUser();
@@ -22,7 +21,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction);
         Task CreateAlarm(AlarmDTO alarmDTO);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(bool getLatestsVersionsOnly = false);
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
         //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
         Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null);

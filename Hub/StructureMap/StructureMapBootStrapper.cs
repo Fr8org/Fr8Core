@@ -173,6 +173,7 @@ namespace Hub.StructureMap
                 For<IPlan>().Use<Hub.Services.Plan>();
 
                 For<ISubplan>().Use<Subplan>();
+                For<IFr8Account>().Use<Fr8Account>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -212,17 +213,24 @@ namespace Hub.StructureMap
 
                 //PD bootstrap
                 //tony.yakovets: will it work? or some tests check generated templates?
-                var templateGenerator = new Mock<ITemplateGenerator>().Object;
-                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
-                For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                //var templateGenerator = new Mock<ITemplateGenerator>().Object;
+                //For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                //For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+
+                var webservicesPageGeneratorMock = new Mock<IWebservicesPageGenerator>().Object;
+                var manifestPageGeneratorMock = new Mock<IManifestPageGenerator>().Object;
+                var planTemplateDetailsMock = new Mock<IPlanTemplateDetailsGenerator>().Object;
 
                 For<ITagGenerator>().Use<TagGenerator>().Singleton();
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
                 For<IPageDefinition>().Use<PageDefinition>().Singleton();
                 For<ITemplateGenerator>().Use<TemplateGenerator>().Singleton();
-                
-                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
+
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton()
+                    .Ctor<IWebservicesPageGenerator>().Is(webservicesPageGeneratorMock)
+                    .Ctor<IManifestPageGenerator>().Is(manifestPageGeneratorMock)
+                    .Ctor<IPlanTemplateDetailsGenerator>().Is(planTemplateDetailsMock);
             }
         }
 
@@ -258,6 +266,11 @@ namespace Hub.StructureMap
                 return _terminal.GetAll();
             }
 
+            public IEnumerable<TerminalDO> GetByCurrentUser()
+            {
+                return _terminal.GetByCurrentUser();
+            }
+                
             public Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
             {
                 return _terminal.GetAvailableActivities(uri);
@@ -268,12 +281,12 @@ namespace Hub.StructureMap
                 return _terminal.GetByNameAndVersion(name, version);
             }
 
-            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isUserInitiated)
             {
-                return _terminal.RegisterOrUpdate(terminalDo);
+                return _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
             }
 
-            public TerminalDO GetByKey(int terminalId)
+            public TerminalDO GetByKey(Guid terminalId)
             {
                 return _terminal.GetByKey(terminalId);
             }

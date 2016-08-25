@@ -7,13 +7,13 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 using System;
 using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Utilities;
 
 namespace terminalBox.Actions
 {
@@ -27,15 +27,13 @@ namespace terminalBox.Actions
             Name = "Save_To_File",
             Label = "Save To File",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -47,9 +45,16 @@ namespace terminalBox.Actions
 
             public ActivityUi(UiBuilder uiBuilder)
             {
-                Controls.Add(FileChooser = uiBuilder.CreateCrateChooser("FileChooser", "Select file to store:", true, true));
-                Controls.Add(Filename = new TextBox()
-                { Name = "Filename", Label = "Enter the file name: " });
+                Controls.Add(FileChooser = uiBuilder.CreateCrateChooser(
+                    "FileChooser", 
+                    "Select file to store:", 
+                    requestConfig: true, 
+                    allowedManifestTypes: new[] { MT.StandardTableData.GetEnumDisplayName()}));
+                Controls.Add(Filename = new TextBox
+                {
+                    Name = "Filename",
+                    Label = "Enter the file name: "
+                });
             }
         }
 
@@ -59,14 +64,27 @@ namespace terminalBox.Actions
             _pushNotificationService = pushNotificationService;
         }
 
-        public override async Task Initialize()
+        public override Task Initialize()
         {
-            await Task.Yield();
+            return Task.FromResult(0);
         }
 
-        public override async Task FollowUp()
+        public override Task FollowUp()
         {
-            await Task.Yield();
+            return Task.FromResult(0);
+        }
+
+        protected override Task Validate()
+        {
+            if (!ActivityUI.FileChooser.CrateDescriptions.Any(x => x.Selected))
+            {
+                ValidationManager.SetError("Data to save is not specified", ActivityUI.FileChooser.Name);
+            }
+            if (string.IsNullOrWhiteSpace(ActivityUI.Filename.Value))
+            {
+                ValidationManager.SetError("File name can't be empty", ActivityUI.Filename.Name);
+            }
+            return base.Validate();
         }
 
         public override async Task Run()
@@ -82,7 +100,7 @@ namespace terminalBox.Actions
                 RaiseError($"Selected crate {desiredCrateDescription.Label} doesn't contains table data");
                 return;
             }
-            var fileName = ActivityUI.Filename.Value;
+            var fileName = ActivityUI.Filename.Value.Trim();
             var service = new BoxService(token);
             string fileId;
             using (var stream = new MemoryStream())
@@ -90,10 +108,9 @@ namespace terminalBox.Actions
                 CreateWorkbook(stream, tableCrate);
                 // Need to reset stream before saving it to box.
                 stream.Seek(0, SeekOrigin.Begin);
-                fileId = service.SaveFile(fileName + ".xlsx", stream).Result;
+                fileId = await service.SaveFile($"{fileName}.xlsx", stream);
             }
-            var downloadLink = service.GetFileLink(fileId).Result;
-
+            var downloadLink = await service.GetFileLink(fileId);
             await _pushNotificationService.PushUserNotification(MyTemplate, "File Download URL Generated", "File was upload to Box. You can download it using this url: " + downloadLink);
         }
 
@@ -113,7 +130,7 @@ namespace terminalBox.Actions
                 for (int i = 0; i < content.Table.Count; i++)
                 {
                     int j = 0;
-                    foreach (TableCellDTO cell in content.Table[i].Row)
+                    foreach (var cell in content.Table[i].Row)
                     {
                         j++;
                         worksheet.Cell(i + 1, j).Value = cell.Cell.Value;

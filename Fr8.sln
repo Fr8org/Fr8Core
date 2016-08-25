@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99D5A940-8674-4060-902B-381DF8B99D43}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -12,16 +10,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99D5A9
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Terminals", "Terminals", "{9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildUtils", "BuildUtils", "{932981E0-0644-4BED-84A9-FEF0664F6296}"
+	ProjectSection(SolutionItems) = preProject
+		BuildUtils\Handle.exe = BuildUtils\Handle.exe
+		BuildUtils\xcopy.exe = BuildUtils\xcopy.exe
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{95890593-84B1-4CF8-A31B-542B143B4C73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{43A55C9F-CC6B-42C7-BE5A-0FBE635A0C02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{990241EA-6CF0-4026-B57C-A9031463C7C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub", "Hub\Hub.csproj", "{9891496C-8512-4708-925A-EE9D0F9199D4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{990241EA-6CF0-4026-B57C-A9031463C7C0} = {990241EA-6CF0-4026-B57C-A9031463C7C0}
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Terminals", "Terminals", "{9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAzure", "terminalAzure\terminalAzure.csproj", "{D019B112-55A8-4661-AFF5-329F998D9E28}"
 EndProject
@@ -66,12 +76,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrail", "termi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", "Tests\terminalIntegrationTests\terminalIntegrationTests.csproj", "{579BA25F-1DF5-474A-8A3E-0447FF75711C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildUtils", "BuildUtils", "{932981E0-0644-4BED-84A9-FEF0664F6296}"
-	ProjectSection(SolutionItems) = preProject
-		BuildUtils\Handle.exe = BuildUtils\Handle.exe
-		BuildUtils\xcopy.exe = BuildUtils\xcopy.exe
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor", "Tests\HealthMonitor\HealthMonitor.csproj", "{83231577-13A5-419F-8269-02AE59D8951A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDocuSignTests", "Tests\terminalDocuSignTests\terminalDocuSignTests.csproj", "{A6E317FA-2EB0-4447-8ECD-6725F6B78435}"
@@ -111,10 +115,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTest", "Tests\terminalTest\terminalTest.csproj", "{267E6BE1-7C3A-4012-8EB4-DCDFB0FD6305}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBox", "terminalBox\terminalBox.csproj", "{84800565-B464-471D-8F02-1A93311C3388}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{43A55C9F-CC6B-42C7-BE5A-0FBE635A0C02}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanDirectory", "Services\PlanDirectory\PlanDirectory.csproj", "{2B78433B-BA79-470B-BEF6-DBA5C1904865}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBoxTests", "Tests\terminalBoxTests\terminalBoxTests.csproj", "{1ABD6365-E04D-4971-8D0D-5364C896113F}"
 EndProject
@@ -820,26 +820,6 @@ Global
 		{84800565-B464-471D-8F02-1A93311C3388}.Release|Any CPU.Build.0 = Release|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Release|x86.ActiveCfg = Release|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Release|x86.Build.0 = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.alexlocal|Any CPU.Build.0 = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.alexlocal|x86.ActiveCfg = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.alexlocal|x86.Build.0 = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Debug|x86.Build.0 = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Demo|Any CPU.ActiveCfg = Demo|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Demo|Any CPU.Build.0 = Demo|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Demo|x86.ActiveCfg = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Demo|x86.Build.0 = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Dev|Any CPU.Build.0 = Dev|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Dev|x86.ActiveCfg = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Dev|x86.Build.0 = Debug|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Release|x86.ActiveCfg = Release|Any CPU
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865}.Release|x86.Build.0 = Release|Any CPU
 		{1ABD6365-E04D-4971-8D0D-5364C896113F}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
 		{1ABD6365-E04D-4971-8D0D-5364C896113F}.alexlocal|Any CPU.Build.0 = Release|Any CPU
 		{1ABD6365-E04D-4971-8D0D-5364C896113F}.alexlocal|x86.ActiveCfg = Release|Any CPU
@@ -1222,7 +1202,6 @@ Global
 		{E46B602A-287B-450F-B455-5EED20C93EB7} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{267E6BE1-7C3A-4012-8EB4-DCDFB0FD6305} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{84800565-B464-471D-8F02-1A93311C3388} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
-		{2B78433B-BA79-470B-BEF6-DBA5C1904865} = {43A55C9F-CC6B-42C7-BE5A-0FBE635A0C02}
 		{1ABD6365-E04D-4971-8D0D-5364C896113F} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{4F56C030-D16B-4A51-82D0-3C23A47AB703} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}

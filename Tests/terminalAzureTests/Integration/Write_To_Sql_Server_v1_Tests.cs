@@ -22,8 +22,8 @@ namespace terminalAzureTests.Integration
 
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
-            //Now there are two ControlsDefinitionDTO: TextBox for connnection string and Button "Continue"
-            Assert.AreEqual(2, control.Controls.Count);
+            //Now there are three ControlsDefinitionDTO: TextBox for connnection string, Button "Continue" and dropDown to select table
+            Assert.AreEqual(3, control.Controls.Count);
 
             // Assert that first control is a TextBox 
             // with Label == "SQL Connection String"
@@ -81,7 +81,7 @@ namespace terminalAzureTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public async Task Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -119,13 +119,10 @@ namespace terminalAzureTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
 
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
-
-            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Sql Table Columns"));
         }
 
         /// <summary>

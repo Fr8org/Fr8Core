@@ -1,4 +1,6 @@
 ﻿@using HubWeb.Infrastructure_HubWeb
+@using Microsoft.AspNet.Identity;
+@using System.Threading;
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8 no-js" data-ng-app="app"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js" data-ng-app="app"> <![endif]-->
@@ -14,7 +16,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
 
     @* Load fonts async *@
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" media="none" onload="this.media = 'all';"/>
     <link href="@Styles.Url("~/Content/css/font-awesome")" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
 
     @(Html.IsDebug() ? Html.Partial("_AngularAppStyles") : Html.Partial("CDN/_AngularAppStyles"))
@@ -88,6 +90,10 @@
 
 
     </script>
+    <script>
+        window.userId = '@(Thread.CurrentPrincipal.Identity.GetUserId())';
+    </script>
+
 <script type="text/javascript">
     var segmentKey = '@Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey")';
     if (segmentKey !== "") {

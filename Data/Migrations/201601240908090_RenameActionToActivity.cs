@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class RenameActionToActivity : DbMigration
+    public partial class RenameActionToActivity : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

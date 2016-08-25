@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
     
-    public partial class FasterMigrateMTData : DbMigration
+    public partial class FasterMigrateMTData : System.Data.Entity.Migrations.DbMigration
     {
         const string SqlScript = @"
         IF OBJECT_ID('tempdb.dbo.#MtTypes', 'U') IS NOT NULL

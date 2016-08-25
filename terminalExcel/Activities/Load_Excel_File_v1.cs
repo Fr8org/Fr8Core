@@ -229,15 +229,13 @@ namespace terminalExcel.Activities
             Name = "Load_Excel_File",
             Label = "Load Excel File",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             Terminal = TerminalData.TerminalDTO,
-            Tags = "Table Data Generator,Getter",
+            Tags = string.Join(",", Tags.TableDataGenerator, Tags.Getter),
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

@@ -6,10 +6,11 @@ namespace terminalTelegram
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Telegram",
-            IconPath = "/Content/icons/web_services/telegram-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/telegram-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

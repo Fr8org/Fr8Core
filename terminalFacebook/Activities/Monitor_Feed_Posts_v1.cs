@@ -26,16 +26,14 @@ namespace terminalFacebook.Activities
             Id = new Guid("860b8347-0e5a-41c3-9be7-73057eeca676"),
             Name = "Monitor_Feed_Posts",
             Label = "Monitor Feed Posts",
-            Category = ActivityCategory.Monitors,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -112,13 +110,12 @@ namespace terminalFacebook.Activities
 
             var facebookEventPayload = eventCrate.EventPayload.CrateContentsOfType<FacebookUserEventCM>()
                     .FirstOrDefault(e => e.ChangedFields.Contains(FacebookFeed));
-
             if (facebookEventPayload == null)
             {
                 RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
-            var fbPost = await _fbIntegration.GetPostByTime(AuthorizationToken.Token, facebookEventPayload.Time);
+            var fbPost = await _fbIntegration.GetPostById(AuthorizationToken.Token, facebookEventPayload.Id);
 
             if (fbPost == null)
             {

@@ -2,6 +2,9 @@
     //directConnect: true,
     capabilities: {
         'browserName': 'chrome',
+        'chromeOptions': {
+            'args': ['--no-sandbox']
+        },
         /* 
         * Can be used to specify the phantomjs binary path.
         * This can generally be ommitted if you installed phantomjs globally.
@@ -15,7 +18,9 @@
         'phantomjs.ghostdriver.cli.args': ['--loglevel=DEBUG']
     },
     framework: 'jasmine',
-    specs: ['**/google.spec.js'],
+    specs: ['**/registration.spec.js',
+            '**/*.spec.js'
+    ],
     jasmineNodeOpts: {
         defaultTimeoutInterval: 50000
     },

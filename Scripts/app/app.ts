@@ -196,15 +196,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
-        return {
+        return <any>{
             request: (config: ng.IRequestConfig) => {
                 // Show page spinner If there is no request parameter suppressSpinner.
                 if (config && config.params && config.params['suppressSpinner']) {
                     // We don't want this parameter to be sent to backend so remove it if found.
                     delete (config.params.suppressSpinner);
-                }
-                else {
-                    //   Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
                 }
                 return config;
             },
@@ -216,8 +213,8 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 //Andrei Chaplygin: not applicable as this is a valid response from methods signalling that user is authorized but doesn't have sufficient priviligies
                 //All unauthorized requests are handled (and redirected to login page) by built-in functionality (authorize attributes)
                 if (config.status === 403) {
-                    $window.location.href = $window.location.origin + '/DockyardAccount'
-                        + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
+                    $window.location.href = $window.location.origin + '/Account/InterceptLogin'
+                        + '?returnUrl=' + encodeURIComponent($window.location.pathname + $window.location.search);
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
@@ -369,12 +366,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/TerminalDetail",
             data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
         })
-        .state('manifestregistry',
-        {
-            url: "/manifest_registry",
-            templateUrl: "/AngularTemplate/ManifestRegistryList",
-            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
-        })
         .state('manageAuthTokens',
         {
             url: '/manageAuthTokens',
@@ -398,7 +389,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             url: "/page_definitions",
             templateUrl: "/AngularTemplate/PageDefinitionList",
             data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
+        })
+        .state("adminTools",
+        {
+            url: "/admin_tools",
+            templateUrl: "/AngularTemplate/AdminTools",
+            data: { pageTitle: "Admin tools", pageSubTitle: "" }
         });
+
 }]);
 
 /* Init global settings and run the app */
@@ -439,7 +437,7 @@ bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpS
     return {
         bootstrap: (appName) => {
             var deferred = $q.defer();
-            $http.get('/api/v1/activity_templates')
+            $http.get('/api/v1/activity_templates/')
                 .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
                     // set all returned values as constants on the app
                     var myApp = angular.module(appName);

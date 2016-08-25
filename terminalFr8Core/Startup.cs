@@ -51,7 +51,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Add_Payload_Manually_v1>(Add_Payload_Manually_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<App_Builder_v1>(App_Builder_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Build_Message_v1>(Build_Message_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Build_Query_v1>(Build_Query_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Build_Query_v1>(Build_Query_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Connect_To_Sql_v1>(Connect_To_Sql_v1.ActivityTemplateDTO);
             //ActivityStore.RegisterActivity<Convert_Related_Fields_Into_Table_v1>(Convert_Related_Fields_Into_Table_v1.ActivityTemplateDTO); FR-4669
             ActivityStore.RegisterActivity<Execute_Sql_v1>(Execute_Sql_v1.ActivityTemplateDTO);
@@ -61,7 +61,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Get_File_From_Fr8_Store_v1>(Get_File_From_Fr8_Store_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Loop_v1>(Loop_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Fr8_Events_v1>(Monitor_Fr8_Events_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Query_Fr8_Warehouse_v1>(Query_Fr8_Warehouse_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Query_Fr8_Warehouse_v1>(Query_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Fr8_Warehouse_v1>(Save_To_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Search_Fr8_Warehouse_v1>(Search_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Select_Fr8_Object_v1>(Select_Fr8_Object_v1.ActivityTemplateDTO);
@@ -72,6 +72,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Test_Incoming_Data_v1>(Test_Incoming_Data_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_Email_v1>(Send_Email_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_SMS_v1>(Send_SMS_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_All_Payload_To_Fr8_Warehouse>(Save_All_Payload_To_Fr8_Warehouse.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

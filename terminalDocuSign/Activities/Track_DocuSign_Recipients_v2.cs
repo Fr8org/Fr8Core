@@ -19,6 +19,7 @@ using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
+using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
@@ -31,16 +32,14 @@ namespace terminalDocuSign.Activities
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "2",
-            Category = ActivityCategory.Solution,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            private const string TakenDeliveryEnvelopeOption = "Taken Delivery";
+            private const string TakenDeliveryEnvelopeOption = "Delivered";
 
             private const string EnvelopeSignedEnvelopeOption = "Signed";
 
@@ -61,7 +60,7 @@ namespace terminalDocuSign.Activities
             public DropDownList NotifierSelector { get; set; }
 
             public Button BuildSolutionButton { get; set; }
-            
+
             public ActivityUi()
             {
                 SpecificRecipientEmailText = new TextBox { Name = nameof(SpecificRecipientEmailText) };
@@ -148,35 +147,54 @@ namespace terminalDocuSign.Activities
 
         private const string NotificationMessageLabel = "NotificationMessage";
 
-        private readonly IUnitOfWorkFactory _uowFactory;
-
         private readonly IConfigRepository _configRepository;
 
         public Track_DocuSign_Recipients_v2(
-            ICrateManager crateManager, 
-            IDocuSignManager docuSignManager, 
-            IUnitOfWorkFactory uowFactory,
+            ICrateManager crateManager,
+            IDocuSignManager docuSignManager,
             IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
         {
-            _uowFactory = uowFactory;
             _configRepository = configRepository;
+        }
+
+        private async Task FillDropdowns()
+        {
+            var docusignToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
+
+            if (this["AccountId"] != docusignToken.AccountId)
+            {
+                var configuration = DocuSignManager.SetUp(AuthorizationToken);
+
+                ActivityUI.TemplateSelector.selectedKey = null;
+                ActivityUI.TemplateSelector.SelectedItem = null;
+                ActivityUI.TemplateSelector.ListItems.Clear();
+                ActivityUI.TemplateSelector.ListItems.AddRange(DocuSignManager.GetTemplatesList(configuration)
+                    .Select(x => new ListItem {Key = x.Key, Value = x.Value}));
+
+                ActivityUI.NotifierSelector.selectedKey = null;
+                ActivityUI.NotifierSelector.SelectedItem = null;
+                ActivityUI.NotifierSelector.ListItems.Clear();
+                ActivityUI.NotifierSelector.ListItems.AddRange((await HubCommunicator.GetActivityTemplates(Tags.Notifier, true))
+                    .Select(x => new ListItem {Key = x.Label, Value = x.Id.ToString()}));
+
+                this["AccountId"] = docusignToken.AccountId;
+            }
         }
 
         public override async Task Initialize()
         {
-            var configuration = DocuSignManager.SetUp(AuthorizationToken);
-            ActivityUI.TemplateSelector.ListItems.AddRange(DocuSignManager.GetTemplatesList(configuration)
-                                                                          .Select(x => new ListItem { Key = x.Key, Value = x.Value }));
-            ActivityUI.NotifierSelector.ListItems.AddRange((await HubCommunicator.GetActivityTemplates(Tags.Notifier, true))
-                .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }));
+            await FillDropdowns();
+            
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
                           .AddField(DelayTimeProperty)
                           .AddField(ActionBeingTrackedProperty);
         }
-
+        
         public override async Task FollowUp()
         {
+            await FillDropdowns();
+
             if (!ActivityUI.BuildSolutionButton.Clicked)
             {
                 return;
@@ -226,7 +244,7 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.First(x => x.Id == NotifierActivityTemplateId);
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload.RootPlanNodeId.Value, template, order: previousNotifierOrdering);
-            if (activity.ActivityTemplate.Name == "SendEmailViaSendGrid" && activity.ActivityTemplate.Version == "1")
+            if (activity.ActivityTemplate.Name == "Send_Email_Via_SendGrid" && activity.ActivityTemplate.Version == "1")
             {
                 //var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
                 var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "EmailBody", ControlTypes.TextSource);
@@ -236,26 +254,28 @@ namespace terminalDocuSign.Activities
                 var emailSubjectField = ActivityConfigurator.GetControl<TextSource>(activity, "EmailSubject", ControlTypes.TextSource);
                 emailSubjectField.ValueSource = "specific";
                 emailSubjectField.TextValue = "Fr8 Notification Message";
+
+                await HubCommunicator.ConfigureActivity(activity);
             }
-            else if (activity.ActivityTemplate.Name == "Send_Via_Twilio" && activity.ActivityTemplate.Version == "1")
-            {
-                var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "SMS_Body", ControlTypes.TextSource);
-                emailBodyField.ValueSource = "upstream";
-                emailBodyField.Value = NotificationMessageLabel;
-                emailBodyField.selectedKey = NotificationMessageLabel;
-            }
-            else if (activity.ActivityTemplate.Name == "Publish_To_Slack" && activity.ActivityTemplate.Version == "2")
-            {
-                if (activity.CrateStorage.FirstCrateOrDefault<StandardAuthenticationCM>() == null)
-                {
-                    var messageField = ActivityConfigurator.GetControl<TextSource>(activity, "MessageSource", ControlTypes.TextSource);
-                    messageField.ValueSource = "upstream";
-                    messageField.Value = NotificationMessageLabel;
-                    messageField.selectedKey = NotificationMessageLabel;
-                    messageField.SelectedItem = new FieldDTO { Name = NotificationMessageLabel };
-                    activity = await HubCommunicator.ConfigureActivity(activity);
-                }
-            }
+            //else if (activity.ActivityTemplate.Name == "Send_Via_Twilio" && activity.ActivityTemplate.Version == "1")
+            //{
+            //    var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "SMS_Body", ControlTypes.TextSource);
+            //    emailBodyField.ValueSource = "upstream";
+            //    emailBodyField.Value = NotificationMessageLabel;
+            //    emailBodyField.selectedKey = NotificationMessageLabel;
+            //}
+            //else if (activity.ActivityTemplate.Name == "Publish_To_Slack" && activity.ActivityTemplate.Version == "2")
+            //{
+            //    if (activity.CrateStorage.FirstCrateOrDefault<StandardAuthenticationCM>() == null)
+            //    {
+            //        var messageField = ActivityConfigurator.GetControl<TextSource>(activity, "MessageSource", ControlTypes.TextSource);
+            //        messageField.ValueSource = "upstream";
+            //        messageField.Value = NotificationMessageLabel;
+            //        messageField.selectedKey = NotificationMessageLabel;
+            //        messageField.SelectedItem = new FieldDTO { Name = NotificationMessageLabel };
+            //        activity = await HubCommunicator.ConfigureActivity(activity);
+            //    }
+            //}
             return activity.Id;
         }
 
@@ -268,7 +288,7 @@ namespace terminalDocuSign.Activities
             await HubCommunicator.ConfigureActivity(activity);
         }
 
-        private async Task ConfigureFilterDataActivity(List<ActivityTemplateDTO> activityTemplates)
+        private async Task<ActivityPayload> ConfigureFilterDataActivity(List<ActivityTemplateDTO> activityTemplates)
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Test_Incoming_Data" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 4);
@@ -277,73 +297,47 @@ namespace terminalDocuSign.Activities
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
                 .First();
             var filterPane = (FilterPane)configControlCM.Controls.First(x => x.Name == "Selected_Filter");
+
+            string field_name = ActivityUI.SentToSpecificRecipientOption.Selected ? "RecipientStatus" : "Status";
+
             var conditions = new List<FilterConditionDTO>
             {
-                new FilterConditionDTO{ Field = "Status", Operator = "neq", Value = ActivityUI.RecipientEventSelector.Value }
+                new FilterConditionDTO{ Field = field_name, Operator = "neq", Value = ActivityUI.RecipientEventSelector.Value }
             };
             filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
             {
                 ExecutionType = FilterExecutionType.WithFilter,
                 Conditions = conditions
             });
-            var queryableCriteria = new FieldDescriptionsCM(
-                new FieldDTO
-                {
-                    Name = "Status",
-                    Label = "Status",
-                    FieldType = FieldType.String
-                });
-            var queryFieldsCrate = Crate.FromContent("Queryable Criteria", queryableCriteria);
-            crateStorage.RemoveByLabel("Queryable Criteria");
-            crateStorage.Add(queryFieldsCrate);
+
+            return await HubCommunicator.ConfigureActivity(activity);
         }
 
         private async Task<ActivityPayload> ConfigureQueryFr8Activity(List<ActivityTemplateDTO> activityTemplates)
         {
-            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Query_Fr8_Warehouse" && x.Version == "1");
+            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Get_Data_From_Fr8_Warehouse" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 3);
             var crateStorage = activity.CrateStorage;
             var configControlCM = ActivityConfigurator.GetConfigurationControls(activity);
-            var radioButtonGroup = (RadioButtonGroup)configControlCM.Controls.First();
-            radioButtonGroup.Radios[0].Selected = false;
-            radioButtonGroup.Radios[1].Selected = true;
-            var objectList = (DropDownList)radioButtonGroup.Radios[1].Controls.First(x => x.Name == "AvailableObjects");
-            var selectedObject = GetMtType(ActivityUI.BasedOnTemplateOption.Selected ? typeof(DocuSignEnvelopeCM_v2) : typeof(DocuSignRecipientStatus));
+            var objectList = (DropDownList)configControlCM.Controls.First(x => x.Name == "AvailableObjects");
+            var selectedObject = objectList.ListItems.Where(a => a.Key == (ActivityUI.BasedOnTemplateOption.Selected ? MT.DocuSignEnvelope_v2.GetEnumDisplayName() : MT.DocuSignRecipient.GetEnumDisplayName())).FirstOrDefault();
             if (selectedObject == null)
             {
                 return activity;
             }
-            objectList.Value = selectedObject.Id.ToString("N");
-            objectList.selectedKey = selectedObject.Alias;
-            var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
+            objectList.SelectByKey(selectedObject.Key);
+            var queryBuilder = (QueryBuilder)configControlCM.Controls.First(c => c.Name == "QueryBuilder");
             var conditions = new List<FilterConditionDTO>();
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
-                conditions.Add(new FilterConditionDTO { Field = "Email", Operator = "eq", Value = ActivityUI.SpecificRecipientEmailText.Value });
+                conditions.Add(new FilterConditionDTO { Field = "RecipientEmail", Operator = "eq", Value = ActivityUI.SpecificRecipientEmailText.Value });
             }
-            else
-            {
-                conditions.Add(new FilterConditionDTO { Field = "EnvelopeId", Operator = "eq", Value = "FromPayload" });
-            }
-            filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
-            {
-                ExecutionType = FilterExecutionType.WithFilter,
-                Conditions = conditions
-            });
-            using (var uow = _uowFactory.Create())
-            {
-                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
-                crateStorage.Add(queryCriteria);
-            }
-            return await HubCommunicator.ConfigureActivity(activity);
-        }
 
-        private MtTypeReference GetMtType(Type clrType)
-        {
-            using (var uow = _uowFactory.Create())
-            {
-                return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
-            }
+            conditions.Add(new FilterConditionDTO { Field = "EnvelopeId", Operator = "eq", Value = "FromPayload" });
+
+            queryBuilder.Value = JsonConvert.SerializeObject(conditions);
+
+            return await HubCommunicator.ConfigureActivity(activity);
         }
 
         private async Task ConfigureSetDelayActivity(List<ActivityTemplateDTO> activityTemplates)
@@ -357,14 +351,21 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalDocuSign" && x.Name == "Monitor_DocuSign_Envelope_Activity" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 1);
+            await HubCommunicator.ApplyNewToken(activity.Id, Guid.Parse(AuthorizationToken.Id));
+            activity = await HubCommunicator.ConfigureActivity(activity);
+
             ActivityConfigurator.SetControlValue(activity, "EnvelopeSent", "true");
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
                 ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient.RecipientValue", ActivityUI.SpecificRecipientEmailText.Value);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient", true);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template", false);
             }
             else if (ActivityUI.BasedOnTemplateOption.Selected)
             {
                 ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template.UpstreamCrate", ActivityUI.TemplateSelector.ListItems.Single(x => x.Key == ActivityUI.TemplateSelector.selectedKey));
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient", false);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template", true);
             }
             return await HubCommunicator.ConfigureActivity(activity);
         }

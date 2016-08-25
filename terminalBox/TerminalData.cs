@@ -6,10 +6,11 @@ namespace terminalBox
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Box",
-            IconPath = "/Content/icons/web_services/Box-logo_64x64.png"
+            IconPath = "/Content/icons/web_services/Box-logo_64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO()

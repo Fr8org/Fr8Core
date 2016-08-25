@@ -9,13 +9,14 @@ namespace Fr8.Infrastructure.Data.Manifests
 {
     public class DocuSignRecipientCM : Manifest
     {
-        public string Object { get; set; }
-        public string Status { get; set; }
+        public string RecipientStatus { get; set; }
         public string DocuSignAccountId { get; set; }
+        [MtPrimaryKey]
         public string RecipientId { get; set; }
         public string RecipientEmail { get; set; }
-        [MtPrimaryKey]
+        public string RecipientUserName { get; set; }
         public string EnvelopeId { get; set; }
+
         public DocuSignRecipientCM()
             : base(MT.DocuSignRecipient)
         {

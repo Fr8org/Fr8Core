@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
+using System.Configuration;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -67,7 +68,7 @@ namespace terminalSalesforceTests.Intergration
                     var emailBodyControl = (TextSource)configControls.Content.Controls.Single(c => c.Name.Equals("EmailBody"));
 
                     emailAddressControl.ValueSource = "specific";
-                    emailAddressControl.TextValue = "fr8.testing@yahoo.com";
+                    emailAddressControl.TextValue = ConfigurationManager.AppSettings["TestEmailYahoo"];
 
                     emailSubjectControl.ValueSource = emailBodyControl.ValueSource = "upstream";
                     emailSubjectControl.selectedKey = "Name";
@@ -82,8 +83,8 @@ namespace terminalSalesforceTests.Intergration
 
                 await CleanUp(authTokenDO, initialPlanId);
 
-                //Verify the email fr8.testing@yahoo.com
-                EmailAssert.EmailReceived("fr8ops@fr8.company", "Marty McSorely", true);
+                //Verify the email
+                EmailAssert.EmailReceived(ConfigurationManager.AppSettings["OpsEmail"], "Marty McSorely", true);
             }
             finally
             {

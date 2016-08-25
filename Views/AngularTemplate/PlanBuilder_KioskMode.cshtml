@@ -4,7 +4,7 @@
     <div class="plan-loading-message" block-if="current.plan"></div>
     <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
         <!-- SUB-PLAN BODY -->
-        <div class="route-builder-container" layout-container>
+        <div class="route-builder-container no-text-select" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
                     <div ng-repeat="envelope in group.envelopes track by $index" style="display: inline-block;">
@@ -14,7 +14,7 @@
                                 <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
                                     <div class="md-toolbar-tools">
                                         <!-- Icon -->
-                                        <div class="action-header-icon" style="display: flex">
+                                        <div class="action-header-icon">
                                             <img ng-src="{{envelope.activityTemplate.webService.iconPath}}" ng-if="envelope.activityTemplate.webService.iconPath"/>
                                         </div>
                                         <!-- Main Title -->

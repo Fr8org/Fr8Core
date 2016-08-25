@@ -28,6 +28,7 @@ namespace terminalGoogle
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IGoogleGmailPolling>().Use<GoogleGmailPolling>();
+            configurationExpression.For<IGoogleGDrivePolling>().Use<GoogleGDrivePolling>();
             configurationExpression.For<IGoogleIntegration>().Use<GoogleIntegration>();
             configurationExpression.For<IGoogleDrive>().Use<GoogleDrive>();
             configurationExpression.For<IGoogleSheet>().Use<GoogleSheet>();

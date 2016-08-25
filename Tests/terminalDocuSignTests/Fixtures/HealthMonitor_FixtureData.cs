@@ -233,7 +233,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
-                Category = ActivityCategory.Forwarders,
                 Categories = new[] { ActivityCategories.Forward }
             };
         }
@@ -246,7 +245,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
                 Categories = new [] { ActivityCategories.Forward }
             };
         }
@@ -258,12 +256,11 @@ namespace terminalDocuSignTests.Fixtures
 
         public static ICrateStorage GetEnvelopePayload()
         {
-            string payload = string.Format(EnvelopePayload, Guid.NewGuid());
-
             var curDocuSignEnvelopeInfo = DocuSignEventParser.GetEnvelopeInformation(EnvelopePayload);
             var content = DocuSignEventParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
             return new CrateStorage(Crate.FromContent("DocuSign Connect Event", content));
         }
+
         private static string EnvelopePayload = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
             <DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
                <EnvelopeStatus>
@@ -283,7 +280,7 @@ namespace terminalDocuSignTests.Fixtures
                      </RecipientStatus>
                   </RecipientStatuses>
                   <TimeGenerated>2015-09-29T07:38:42.7464809</TimeGenerated>
-                  <EnvelopeID>{0}</EnvelopeID>
+                  <EnvelopeID>e1233907-33dc-4d40-b637-3a1f4a8f0ff8</EnvelopeID>
                   <Subject>Open the Pod bay doors, HAL</Subject>
                   <UserName>Dave Bowman</UserName>
                   <Email>fr8.madse.testing@gmail.com</Email>
@@ -306,7 +303,7 @@ namespace terminalDocuSignTests.Fixtures
                      <DocumentStatus>
                         <ID>85548272</ID>
                         <Name>image.jpg</Name>
-                        <TemplateName />
+                        <TemplateName>Fr8 Fromentum Registration Form</TemplateName>
                         <Sequence>1</Sequence>
                      </DocumentStatus>
                   </DocumentStatuses>

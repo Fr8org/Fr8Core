@@ -32,7 +32,7 @@ module dockyard.controllers {
                 .bind(this, this.showModalWithPopulatedValues);
 
             PageDefinitionService.query().$promise.then(data => {
-                $scope.pageDefinitions = data;
+                $scope.pageDefinitions = data;                
             });
         }
 

@@ -16,6 +16,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Hub.Services;
+using Moq;
 using Event = Hub.Services.Event;
 
 namespace HubTests.Services
@@ -27,6 +29,12 @@ namespace HubTests.Services
         public async Task Events_Multiplefr8AccountsAssociatedWithSameExternalAccountId_ShouldCheckPlansForAllUsers()
         {
             //Arrange 
+
+            var fr8AccountMock = new Mock<IFr8Account>();
+            fr8AccountMock.Setup(x => x.GetSystemUser())
+                    .Returns(() => new Fr8AccountDO() {UserName = "test@test.com", EmailAddress = new EmailAddressDO()});
+            ObjectFactory.Container.Inject(typeof(IFr8Account),fr8AccountMock.Object);
+
             var externalAccountId = "docusign_developer@dockyard.company";
             var plan1 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDockyardAccount1());
             var plan2 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDeveloperAccount(), 23);
@@ -127,6 +135,11 @@ namespace HubTests.Services
         public bool Exists(Guid id)
         {
             return _activity.Exists(id);
+        }
+
+        public Task<ActivityDO> GetSubordinateActivity(IUnitOfWork uow, Guid id)
+        {
+            return _activity.GetSubordinateActivity(uow, id);
         }
     }
 

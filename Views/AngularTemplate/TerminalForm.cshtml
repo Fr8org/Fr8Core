@@ -1,28 +1,35 @@
 ﻿<script type="text/ng-template" id="terminalFormModal">
     <form role="form" block-if="processing === true" ng-submit="submit(form.$valid)" name="form" novalidate>
         <div class="modal-header">
-            <h3 class="modal-title">Add Terminal</h3>
+            <h3 class="modal-title">Add a New Terminal</h3>
         </div>
         <div class="modal-body">
+            <!-- Alert Messages -->
             <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
                 Some fields do not contain correct data. Please check below.
             </div>
             <div class="alert alert-danger" ng-show="errorMessage != null">
                 {{errorMessage}}
             </div>
-          
+            <!-- Message Body -->
+            <p>Specify the URL where this Hub should attempt to connect to your Terminal</p>
             <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
-                <label class="control-label">Url<span class="required"></span></label>
+                <label class="control-label">Your Terminal's Public Endpoint<span class="required"></span></label>
                 <div class="input-icon right">
                     <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
-                    <input type="url" name="name" placeholder="" class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
+                    <input type="url" name="name" placeholder="" delayed-auto-focus class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
                 </div>
-            </div>           
-           
+            </div>
+            <!-- Message Footer -->
+            <div class="margin-bottom-10">
+                <p>Learn more about connecting your Terminal to this Hub 
+                    <a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md" target="_blank">here</a>
+                </p>
+            </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="submit">Ok</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn green-haze" type="submit">Save</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
         </div>
     </form>
 </script>

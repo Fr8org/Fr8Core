@@ -14,67 +14,94 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 using Data.Repositories.MultiTenant.Queryable;
+using System.Configuration;
 
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     public class MonitorAllDocuSignEventsLocal_Tests : BaseHubIntegrationTest
     {
-        private const string EnvelopeToSend = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
-<DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
-   <EnvelopeStatus>
-      <RecipientStatuses>
-         <RecipientStatus>
-            <Type>CertifiedDelivery</Type>
-            <Email>hal9000@discovery.com</Email>
-            <UserName>HAL-9000</UserName>
-            <RoutingOrder>1</RoutingOrder>
-            <Sent>2015-09-29T07:38:22.653</Sent>
-            <DeclineReason xsi:nil= ""true"" />
-            <Status>Sent</Status>
-            <RecipientIPAddress/>
-            <CustomFields/>
-            <AccountStatus>Active</AccountStatus>
-            <RecipientId>279a1173-04cc-4902-8039-68b1992639e9</RecipientId>
-         </RecipientStatus>
-      </RecipientStatuses>
-      <TimeGenerated>2015-09-29T07:38:42.7464809</TimeGenerated>
-      <EnvelopeID>{0}</EnvelopeID>
-      <Subject>Open the Pod bay doors, HAL</Subject>
-      <UserName>Dave Bowman</UserName>
-      <Email>fr8.madse.testing@gmail.com</Email>
-      <Status>Sent</Status>
-      <Created>2015-09-29T07:37:42.813</Created>
-      <Sent>2015-09-29T07:38:22.7</Sent>
-      <ACStatus>Original</ACStatus>
-      <ACStatusDate>2015-09-29T07:37:42.813</ACStatusDate>
-      <ACHolder>Dave Bowman</ACHolder>
-      <ACHolderEmail>fr8.madse.testing@gmail.com</ACHolderEmail>
-      <ACHolderLocation>DocuSign</ACHolderLocation>
-      <SigningLocation>Online</SigningLocation>
-      <SenderIPAddress>10.103.101.11</SenderIPAddress>
-      <EnvelopePDFHash />
-      <CustomFields />
-      <AutoNavigation>true</AutoNavigation>
-      <EnvelopeIdStamping>true</EnvelopeIdStamping>
-      <AuthoritativeCopy>false</AuthoritativeCopy>
-      <DocumentStatuses>
-         <DocumentStatus>
-            <ID>85548272</ID>
-            <Name>image.jpg</Name>
-            <TemplateName />
-            <Sequence>1</Sequence>
-         </DocumentStatus>
-      </DocumentStatuses>
-   </EnvelopeStatus>
-</DocuSignEnvelopeInformation>";
+        private string RecipientId
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["RecipientId"];
+            }
+        }
+        private string DocuSignEmail // "freight.testing@gmail.com";
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["MADSETestEmail"];
+            }
+        }
+        private string DocuSignApiPassword // "freight.testing@gmail.com";
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["DocuSignApiPassword"];
+            }
+        }
+
+        private string EnvelopeToSend
+        {
+            get
+            {
+                return @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
+                         <DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+                            <EnvelopeStatus>
+                               <RecipientStatuses>
+                                  <RecipientStatus>
+                                     <Type>CertifiedDelivery</Type>
+                                     <Email>hal9000@discovery.com</Email>
+                                     <UserName>HAL-9000</UserName>
+                                     <RoutingOrder>1</RoutingOrder>
+                                     <Sent>2015-09-29T07:38:22.653</Sent>
+                                     <DeclineReason xsi:nil= ""true"" />
+                                     <Status>Sent</Status>
+                                     <RecipientIPAddress/>
+                                     <CustomFields/>
+                                     <AccountStatus>Active</AccountStatus>
+                                     <RecipientId>" + RecipientId + @"</RecipientId>
+                                  </RecipientStatus>
+                               </RecipientStatuses>
+                               <TimeGenerated>2015-09-29T07:38:42.7464809</TimeGenerated>
+                               <EnvelopeID>{0}</EnvelopeID>
+                               <Subject>Open the Pod bay doors, HAL</Subject>
+                               <UserName>Dave Bowman</UserName>
+                               <Email>"+DocuSignEmail+ @"</Email>
+                               <Status>Sent</Status>
+                               <Created>2015-09-29T07:37:42.813</Created>
+                               <Sent>2015-09-29T07:38:22.7</Sent>
+                               <ACStatus>Original</ACStatus>
+                               <ACStatusDate>2015-09-29T07:37:42.813</ACStatusDate>
+                               <ACHolder>Dave Bowman</ACHolder>
+                               <ACHolderEmail>" + DocuSignEmail + @"</ACHolderEmail>
+                               <ACHolderLocation>DocuSign</ACHolderLocation>
+                               <SigningLocation>Online</SigningLocation>
+                               <SenderIPAddress>10.103.101.11</SenderIPAddress>
+                               <EnvelopePDFHash />
+                               <CustomFields />
+                               <AutoNavigation>true</AutoNavigation>
+                               <EnvelopeIdStamping>true</EnvelopeIdStamping>
+                               <AuthoritativeCopy>false</AuthoritativeCopy>
+                               <DocumentStatuses>
+                                  <DocumentStatus>
+                                     <ID>85548272</ID>
+                                     <Name>image.jpg</Name>
+                                     <TemplateName />
+                                     <Sequence>1</Sequence>
+                                  </DocumentStatus>
+                               </DocumentStatuses>
+                            </EnvelopeStatus>
+                         </DocuSignEnvelopeInformation>";
+            }
+        }
 
 
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
         private const int MadseCreationPeriod = 30000;
-        private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
-        private const string DocuSignApiPassword = "I6HmXEbCxN";
 
         public override string TerminalName
         {
@@ -111,13 +138,15 @@ namespace terminalDocuSignTests.Integration
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id)
-                    .Count();
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).MtCount();
+
+                int mtDataCountAfter = mtDataCountBefore;
 
 
                 Debug.WriteLine("Waiting for MADSE plan to be created");
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
                 await Task.Delay(MadseCreationPeriod);
+
 
                 Debug.WriteLine("Sending test event");
                 string response = 
@@ -128,7 +157,7 @@ namespace terminalDocuSignTests.Integration
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                int mtDataCountAfter = mtDataCountBefore;
+                
                 while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
                 {
                     await Task.Delay(SingleAwaitPeriod);
@@ -136,7 +165,7 @@ namespace terminalDocuSignTests.Integration
                     Debug.WriteLine($"Querying MT objects...");
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).MtCount();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {

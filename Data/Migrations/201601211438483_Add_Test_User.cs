@@ -1,4 +1,5 @@
 using System.Data.Entity.ModelConfiguration.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.AspNet.Identity;
 
 namespace Data.Migrations
@@ -10,18 +11,18 @@ namespace Data.Migrations
     using System.Data.Entity.Migrations;
     //This migration added test user
     //To complete it, we make add rows to tables _UserStateTemplate, EmailAddress, AspNetUsers and finally User.
-    public partial class Add_Test_User : DbMigration
+    public partial class Add_Test_User : System.Data.Entity.Migrations.DbMigration
     {
-        private string email = "integration_test_runner@fr8.company";
+        private string email = CloudConfigurationManager.GetSetting("TestUserAccountName");
         private string name = "IntegrationTestRunner";
         //private string id = Guid.NewGuid().ToString();
-        private const string password = "fr8#s@lt!";
+        private string password = CloudConfigurationManager.GetSetting("TestUserPassword");
         //private readonly string SECURITY_STAMP = Guid.NewGuid().ToString();
         public override void Up()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                MigrationConfiguration.CreateDockyardAccount(email, password, uow);
+                MigrationConfiguration.CreateFr8Account(email, password, uow);
             }
             
             //var passwordHasher = new PasswordHasher();

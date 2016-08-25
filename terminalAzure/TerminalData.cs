@@ -10,9 +10,10 @@ namespace terminalAzure
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO WebServiceDTO = new ActivityCategoryDTO
         {
-            Name = "Microsoft Azure"
+            Name = "Microsoft Azure",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

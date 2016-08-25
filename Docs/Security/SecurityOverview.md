@@ -1,11 +1,11 @@
 # INTRODUCTION
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
+[Return](/Docs/Home.md)
 
 Fr8 access control uses the Salesforce.com architecture and is based on User Profiles, Roles and Permissions. 
 
 Their primary purpose is to give an easy way to manage access rules for group of users, restrict a set of web pages for certain users, and allow certain action to specific objects.  
 
-Fr8 has support for registering accounts as individual users or users that are part of some [Organization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Organizations.md). New registered users are normally assigned the Standard User Profile.  
+Fr8 has support for registering accounts as individual users or users that are part of some [Organization](/Docs/ForDevelopers/Objects/Organizations.md). New registered users are normally assigned the Standard User Profile.  
 
 Users inside Organizations are assigned the Role "MemberOfOrganization[orgname]". 
 
@@ -33,3 +33,6 @@ Record-Based Permissions determines the ability to grant access to individual ob
 Record-Based Security has higher priority from Object Based Security. So the security system first checks to see if an object contains some record-based security applicable to the current User. If none are found, the Object Type Permissions associated with the User's Profile are used.  
 
 System Administrators can apply Record Based Permission to whitelist  specific objects for a group of users.  
+
+[More Details](/Docs/ForDevelopers/DevelopmentGuides/SecuritySystemWalkthrough.md)
+=====================================

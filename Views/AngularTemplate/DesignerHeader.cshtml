@@ -1,4 +1,4 @@
-﻿<div class="page-head designer-header container row"  layout="row" layout-gt-md="row">
+﻿<div class="page-head no-text-select designer-header container row"  layout="row" layout-gt-md="row">
     <div layout="row"  flex>
         <div flex="70" flex-md="60" flex-sm="50">
             <div layout="row"  flex>
@@ -24,10 +24,10 @@
         <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-xs="column" layout-align="end center" layout-align-xs="center" flex  >
             <span>View:</span>
             <a ui-sref="plan({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan">Activities</md-radio-button>
+                <md-radio-button value="plan" class="black-radio">Activities</md-radio-button>
             </a>
             <a ui-sref="plan.details({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan.details">Settings</md-radio-button>
+                <md-radio-button value="plan.details" class="black-radio">Settings</md-radio-button>
             </a>
         </md-radio-group>
     </div>
@@ -43,7 +43,10 @@
                         <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
                     </md-button>
                 </span>
-                <span ng-click="deactivatePlan()" ng-if="plan.planState === 'Executing' || plan.planState === 'Active'">
+                <span ng-if="plan.planState === 'Executing'">
+                    <strong><span class="plan-state-text" style="display:block">{{plan.planState | PlanState}}</span></strong>
+                </span>
+                <span ng-click="deactivatePlan()" ng-if="plan.planState === 'Active'">
                     <strong><span class="plan-state-text">{{plan.planState | PlanState}}</span></strong>
                     <md-button class="md-icon-button">
                       <md-icon md-font-icon="fa fa-stop" class="fa fa-2x" style="color:black;margin-top:-3px"></md-icon>

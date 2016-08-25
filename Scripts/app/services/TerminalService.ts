@@ -3,6 +3,7 @@ module dockyard.services {
     export interface ITerminalService extends ng.resource.IResourceClass<interfaces.ITerminalVM> {
         getRegistrations: () => Array<model.TerminalRegistrationDTO>;
         getAll: () => Array<model.TerminalDTO>;
+        getByCurrentUser: () => Array<model.TerminalDTO>;
         register: (terminal: model.TerminalRegistrationDTO) => ng.IPromise<any>;
     }
 
@@ -17,6 +18,11 @@ module dockyard.services {
                 method: "GET",
                 isArray: true,
                 url: "/api/terminals/all"
+            },
+            getByCurrentUser: {
+                method: "GET",
+                isArray: true,
+                url: "/api/terminals/getbycurrentuser"
             },
             register: {
                 method: "POST",

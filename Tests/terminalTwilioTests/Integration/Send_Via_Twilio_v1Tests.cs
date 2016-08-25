@@ -11,6 +11,7 @@ using Fr8.Testing.Integration;
 
 using terminalTwilioTests.Fixture;
 using NUnit.Framework;
+using System.Configuration;
 
 namespace terminalTwilioTests.Integration
 {
@@ -48,8 +49,6 @@ namespace terminalTwilioTests.Integration
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
             Assert.NotNull(controls.Controls[1] is TextSource);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
         }
         /// <summary>
@@ -75,8 +74,6 @@ namespace terminalTwilioTests.Integration
             operationalCrate.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("Activity was incorrectly configured. 1 validation error(s).\r\nGlobal: Configuration controls are missing.\r\n", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
-
         }
         /// <summary>
         /// Test Twilio Service. Preconfigure Crates with testing number.
@@ -98,7 +95,7 @@ namespace terminalTwilioTests.Integration
                     (TextSource)
                         updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
                 curNumberTextSource.ValueSource = "specific";
-                curNumberTextSource.TextValue = "+15005550006";
+                curNumberTextSource.TextValue = ConfigurationManager.AppSettings["TestPhoneNumber"];
 
                 var curBodyTextSource =
                    (TextSource)
@@ -121,8 +118,6 @@ namespace terminalTwilioTests.Integration
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
             Assert.NotNull(controls.Controls[1] is TextSource);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
-            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
             //After Run Test
             var payload = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().Single();

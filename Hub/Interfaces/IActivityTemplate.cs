@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 
 namespace Hub.Interfaces
@@ -14,12 +15,10 @@ namespace Hub.Interfaces
         ActivityTemplateDO[] GetAll();
         ActivityTemplateDO GetByKey(Guid curActivityTemplateDOId);
         bool TryGetByKey(Guid activityTemplateId, out ActivityTemplateDO activityTemplate);
-        //ActivityTemplateDO GetByActivityKey(Guid curActivityId);
         string GetTerminalUrl(Guid? curActivityTemplateDOId);
         void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo);
-        ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
-        ActivityTemplateDO GetByNameAndVersion(string name, string version);
-        // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
-        void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplateDO);
+        ActivityTemplateDO GetByNameAndVersion(ActivityTemplateSummaryDTO activityTemplateSummary);
+        void RemoveInactiveActivities(TerminalDO terminal, List<ActivityTemplateDO> activityTemplateDO);
+        bool Exists(Guid activityTemplateId);
     }
 }

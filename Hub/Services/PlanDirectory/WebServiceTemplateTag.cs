@@ -9,11 +9,11 @@ namespace Hub.Services.PlanDirectory
     public class WebServiceTemplateTag : TemplateTag
     {
         //id, iconPath, name
-        private List<Tuple<int, string, string>> _values = new List<Tuple<int, string, string>>();
+        private List<Tuple<Guid, string, string>> _values = new List<Tuple<Guid, string, string>>();
 
         public Dictionary<string, string> TagsWithIcons
         {
-            get { return _values.ToDictionary(x => x.Item3, x => x.Item2); }
+            get { return _values.Where(a => a.Item2 != null).ToDictionary(x => x.Item3, x => x.Item2); }
         }
 
         [JsonIgnore]
@@ -22,10 +22,10 @@ namespace Hub.Services.PlanDirectory
             get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); }
         }
 
-        public WebServiceTemplateTag(List<WebServiceDTO> values)
+        public WebServiceTemplateTag(List<ActivityCategoryDTO> values)
         {
             values.ForEach(a =>
-            { _values.Add(new Tuple<int, string, string>(a.Id, a.IconPath, a.Name)); });
+            { _values.Add(new Tuple<Guid, string, string>(a.Id, a.IconPath, a.Name)); });
         }
     }
 }

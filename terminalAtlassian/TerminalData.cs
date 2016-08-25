@@ -6,10 +6,11 @@ namespace terminalAtlassian
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Atlassian",
-            IconPath = "/Content/icons/web_services/jira-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/jira-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO()

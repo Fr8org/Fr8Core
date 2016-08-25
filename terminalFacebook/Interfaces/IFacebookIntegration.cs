@@ -12,7 +12,7 @@ namespace terminalFacebook.Interfaces
         Task<string> GetOAuthToken(string code);
         Task<UserInfo> GetUserInfo(string oauthToken);
         Task PostToTimeline(string oauthToken, string message);
-        Task<FacebookPost> GetPostByTime(string oauthToken, string time);
+        Task<FacebookPost> GetPostById(string oauthToken, string postId);
     }
 
     public class UserInfo

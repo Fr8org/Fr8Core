@@ -6,10 +6,11 @@ namespace terminalPapertrail
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Papertrail",
-            IconPath = "/Content/icons/web_services/papertrail-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/papertrail-icon-64x64.png",
+            Type = "WebService"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

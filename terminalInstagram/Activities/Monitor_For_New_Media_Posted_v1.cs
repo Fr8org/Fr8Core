@@ -21,16 +21,14 @@ namespace terminalInstagram.Actions
             Id = new Guid("07FE0129-1B8D-453E-9F80-4E47315A19E8"),
             Name = "Monitor_For_New_Media_Posted",
             Label = "Monitor For New Media Posted",
-            Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
@@ -121,12 +119,12 @@ namespace terminalInstagram.Actions
             }
 
             Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
-                                                                new KeyValueDTO(InstagramMediaId, instagramPost.data.id),
-                                                                new KeyValueDTO(InstagramCaptionId, instagramPost.data.caption?.id),
-                                                                new KeyValueDTO(InstagramCaptionText, instagramPost.data.caption?.text),
-                                                                new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data.caption?.createdTime),
-                                                                new KeyValueDTO(InstagramImageUrl, instagramPost.data.link),
-                                                                new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data.instagramImage.standardResolution.url)
+                                                                new KeyValueDTO(InstagramMediaId, instagramPost.data?.id),
+                                                                new KeyValueDTO(InstagramCaptionId, instagramPost.data?.caption?.id),
+                                                                new KeyValueDTO(InstagramCaptionText, instagramPost.data?.caption?.text),
+                                                                new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data?.caption?.createdTime),
+                                                                new KeyValueDTO(InstagramImageUrl, instagramPost.data?.link),
+                                                                new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data?.instagramImage.standardResolution.url)
                                                                 )));
         }
 

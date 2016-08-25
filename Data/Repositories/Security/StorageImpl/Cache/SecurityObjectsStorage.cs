@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -20,11 +21,13 @@ namespace Data.Repositories.Security.StorageImpl.Cache
     public class SecurityObjectsStorage : ISecurityObjectsStorageProvider
     {
         private readonly ISecurityObjectsCache _cache;
+        private readonly IUnitOfWork _uow;
         //todo: provide a context like logic for sqlObjectsStorageProvider and connect it to UnitOfWork.SaveChanges()
         private readonly ISecurityObjectsStorageProvider _securityObjectStorageProvider;
 
-        public SecurityObjectsStorage(ISecurityObjectsCache cache, ISecurityObjectsStorageProvider securityObjectStorageProvider)
+        public SecurityObjectsStorage(IUnitOfWork uow, ISecurityObjectsCache cache, ISecurityObjectsStorageProvider securityObjectStorageProvider)
         {
+            _uow = uow;
             _cache = cache;
             _securityObjectStorageProvider = securityObjectStorageProvider;
         }
@@ -39,7 +42,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return _securityObjectStorageProvider.UpdateRolePermission(rolePermission);
         }
 
-        public int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
+        public int InsertObjectRolePermission(string currentUserId, Guid dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
         {
             var affectedRows = _securityObjectStorageProvider.InsertObjectRolePermission(currentUserId, dataObjectId, rolePermissionId, dataObjectType, propertyName);
 
@@ -48,7 +51,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return affectedRows;
         }
 
-        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null)
+        public int RemoveObjectRolePermission(Guid dataObjectId, Guid rolePermissionId, string propertyName = null)
         {
             var affectedRows = _securityObjectStorageProvider.RemoveObjectRolePermission(dataObjectId, rolePermissionId, propertyName);
 
@@ -57,7 +60,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return affectedRows;
         }
 
-        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(Guid dataObjectId, string dataObjectType)
         {
             lock (_cache)
             {
@@ -97,7 +100,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
+        public List<int> GetObjectBasedPermissionSetForObject(Guid dataObjectId, string dataObjectType, Guid profileId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -118,7 +121,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType,
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, Guid dataObjectId, string dataObjectType,
             Guid rolePermissionId, int? organizationId, List<PermissionType> customPermissionTypes = null)
         {
             if (rolePermissionId == Guid.Empty)
@@ -144,55 +147,53 @@ namespace Data.Repositories.Security.StorageImpl.Cache
 
             InvokeCacheUpdate(dataObjectId, dataObjectType);
         }
-
+        
         public RolePermission GetRolePermission(string roleName, Guid permissionSetId)
         {
             return _securityObjectStorageProvider.GetRolePermission(roleName, permissionSetId);
         }
 
-        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
         {
             return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
         }
 
         private PermissionSetDO GetOrCreateDefaultSecurityPermissionSet(string dataObjectType, List<PermissionType> customPermissionTypes = null)
         {
+            // this method use injected UnitOfWork instance in order to work properly once being called from MigrationConfiguration
             var defaultPermissions = customPermissionTypes?.Select(x => (int) x).ToArray() 
                                        ?? new[] { (int)PermissionType.ReadObject, (int)PermissionType.EditObject, (int)PermissionType.CreateObject, (int)PermissionType.DeleteObject, (int)PermissionType.RunObject };
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var defaultPermissionsCount = defaultPermissions.Length;
+            //check for existing permission set with this default permissions
+            var permissionSet = _uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == defaultPermissionsCount &&
+                                         x.Permissions.All(t => defaultPermissions.Contains(t.Id)));
+
+            if (permissionSet != null)
             {
-                var defaultPermissionsCount = defaultPermissions.Length;
-                //check for existing permission set with this default permissions
-                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == defaultPermissionsCount &&
-                                             x.Permissions.All(t => defaultPermissions.Contains(t.Id)));
-
-                if (permissionSet != null)
-                {
-                    return permissionSet;
-                }
-
-                permissionSet = new PermissionSetDO()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = Roles.OwnerOfCurrentObject,
-                    ObjectType = dataObjectType,
-                };
-                var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
-                foreach (var permission in defaultPermissions)
-                {
-                    permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == permission));
-                }
-
-                uow.PermissionSetRepository.Add(permissionSet);
-
-                uow.SaveChanges();
-
                 return permissionSet;
             }
+
+            permissionSet = new PermissionSetDO()
+            {
+                Id = Guid.NewGuid(),
+                Name = Roles.OwnerOfCurrentObject,
+                ObjectType = dataObjectType,
+            };
+            var repo = new GenericRepository<_PermissionTypeTemplate>(_uow);
+            foreach (var permission in defaultPermissions)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == permission));
+            }
+
+            _uow.PermissionSetRepository.Add(permissionSet);
+
+            _uow.SaveChanges();
+
+            return permissionSet;
         }
 
-        private void InvokeCacheUpdate(string dataObjectId, string dataObjectType)
+        private void InvokeCacheUpdate(Guid dataObjectId, string dataObjectType)
         {
             lock (_cache)
             {

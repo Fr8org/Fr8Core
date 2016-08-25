@@ -1,0 +1,104 @@
+﻿@using Fr8.Infrastructure.Utilities
+@model HubWeb.ViewModels.RegistrationVM
+@{
+    ViewBag.Title = "Create Master Administrative Account";
+}
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en" class="no-js"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>fr8 | @ViewBag.Title</title>
+    <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
+    <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico" />
+</head>
+<body>
+@Styles.Render("~/bundles/css/colorbox")
+@Styles.Render("~/bundles/css/frontpage")
+
+@Scripts.Render("~/bundles/js/jquery")
+@Scripts.Render("~/bundles/js/customjs")
+@Scripts.Render("~/bundles/js/cookies")
+
+
+<header class="container-fluid">
+    <div class="navbar navbar-default ">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <h1 class="site-logo"><a class="navbar-brand" href="/" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+            </div>
+        </div>
+        <div class="main-nav">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <nav>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="modal-dialog">
+                <div class="register-container">
+                    <h1 style="text-align: center">Welcome to the Fr8 Hub </h1>
+                    <h2> Create your master administrative account:</h2>
+                    <br>
+
+                    @using (Html.BeginForm("CreateMasterAdmin", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary()
+                        <div class="form-body">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-6">
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Password, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-6">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConfirmPassword, new {@class = "col-md-3 control-label"})
+                                <div class="col-md-6">
+                                    @Html.PasswordFor(m => m.ConfirmPassword, new {@class = "form-control"})
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button type="submit" class="btn green">Create</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <p>* With creating this account, you are also configuring the default system user account, used for running internal Fr8 plans.</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/js/jqueryvalidate")
+    }
+</body>
+</html>

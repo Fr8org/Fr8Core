@@ -201,6 +201,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -303,6 +304,7 @@
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Integration\ActivityControllerTests.cs" />
     <Compile Include="Fixtures\WebServicesControllerFixtureData.cs" />
+    <Compile Include="Integration\SwaggerTests.cs" />
     <Compile Include="Integration\WebServicesControllerTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
@@ -340,7 +342,7 @@
     <Compile Include="Services\Container\Mocks\SubplanJumperActivityMock.cs" />
     <Compile Include="Services\Container\Mocks\SuspenderActivityMock.cs" />
     <Compile Include="Services\DisableCacheSettings.cs" />
-    <Compile Include="Services\DockyardAccountTest.cs" />
+    <Compile Include="Services\AccountTest.cs" />
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\HMACAuthenticatorTests.cs" />
@@ -401,10 +403,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Config\log4net.tests.config">
-      <Link>log4net.tests.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>

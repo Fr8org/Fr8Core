@@ -4,10 +4,8 @@ using System;
 using System.Web.Http.Dispatcher;
 using System.Collections.Generic;
 using Fr8.TerminalBase.BaseClasses;
-using Fr8.TerminalBase.Services;
 using terminalGoogle.Actions;
 using terminalGoogle.Activities;
-using System.Web.Http;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
 
@@ -56,6 +54,7 @@ namespace terminalGoogle
             ActivityStore.RegisterActivity<Monitor_Form_Responses_v1>(Monitor_Form_Responses_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Google_Sheet_v1>(Save_To_Google_Sheet_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Gmail_Inbox_v1>(Monitor_Gmail_Inbox_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Google_Spreadsheet_Changes_v1>(Monitor_Google_Spreadsheet_Changes_v1.ActivityTemplateDTO);
         }
     }
 }

@@ -116,7 +116,7 @@ namespace Data.Entities
             base.AfterCreate();
 
             var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id.ToString(), nameof(PlanNodeDO));
+            securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id, nameof(PlanNodeDO));
         }
 
         public List<PlanNodeDO> GetDescendantsOrdered()

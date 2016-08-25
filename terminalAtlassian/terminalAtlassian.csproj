@@ -214,8 +214,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Get_Jira_Issue_v1.cs" />
+    <Compile Include="Activities\Monitor_Jira_Changes_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Activities\Save_Jira_Issue_v1.cs" />
@@ -224,11 +226,17 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="Interfaces\IAtlassianSubscriptionManager.cs" />
+    <Compile Include="Interfaces\IAtlassianEventManager.cs" />
     <Compile Include="Interfaces\IAtlassianService.cs" />
     <Compile Include="Interfaces\IssueInfo.cs" />
     <Compile Include="Interfaces\UserInfo.cs" />
+    <Compile Include="Models\JiraSubscriptionPost.cs" />
+    <Compile Include="Models\JiraIssueEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Services\AtlassianSubscriptionManager.cs" />
+    <Compile Include="Services\AtlassianEventManager.cs" />
     <Compile Include="Services\AtlassianService.cs" />
     <Compile Include="Startup.cs">
       <SubType>
@@ -242,10 +250,6 @@
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="LICENSE" />
-    <Content Include="log4net.terminals.config" />
-    <Content Include="log4net.terminals.Demo.config" />
-    <Content Include="log4net.terminals.Dev.config" />
-    <Content Include="log4net.terminals.Release.config" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -265,22 +269,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Service References\Application Insights\ConnectedService.json" />
-    <Content Include="..\Config\log4net.terminals.config">
-      <Link>log4net.terminals.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Config\log4net.terminals.Demo.config">
-      <Link>log4net.terminals.Demo.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Config\log4net.terminals.Dev.config">
-      <Link>log4net.terminals.Dev.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Config\log4net.terminals.Release.config">
-      <Link>log4net.terminals.Release.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -297,6 +285,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="Config\log4net.terminals.config.readme" />
+    <Content Include="Config\log4net.terminals.Demo.config.readme" />
+    <Content Include="Config\log4net.terminals.Dev.config.readme" />
+    <Content Include="Config\log4net.terminals.Release.config.readme" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -356,6 +348,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -364,15 +357,6 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-  <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
-  </ItemGroup>
-  <Target Name="BeforeCompile">
-    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
-  </Target>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
       <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
@@ -383,12 +367,14 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Config\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
+  </Target>
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>
