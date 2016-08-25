@@ -127,8 +127,10 @@ namespace terminalDocuSign.Activities
 
             var firstActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, monitorDocusignTemplate);
             var secondActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, secondActivityTemplate, "Final activity");
+
             await HubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(AuthorizationToken.Id));
             firstActivity = await HubCommunicator.ConfigureActivity(firstActivity);
+            ActivityPayload.ChildrenActivities[0] = firstActivity;
 
             return;
         }
