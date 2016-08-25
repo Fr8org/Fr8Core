@@ -135,22 +135,22 @@ namespace terminalDocuSignTests.Integration
             emailNameField.Value = "name";
             emailNameField.selectedKey = "name";
 
-            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Phone(Lead)");
+            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Phone (Lead)");
             phoneField.ValueSource = "upstream";
             phoneField.Value = "phone";
             phoneField.selectedKey = "phone";
 
-            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Title(Lead)");
+            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Title (Lead)");
             titleField.ValueSource = "upstream";
             titleField.Value = "title";
             titleField.selectedKey = "title";
 
-            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Company(Lead)");
+            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Company (Lead)");
             companyField.ValueSource = "upstream";
             companyField.Value = "companyname";
             companyField.selectedKey = "companyname";
 
-            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "Registration Type(Lead)");
+            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "Registration Type (Lead)");
             foreach (var radios in radioGroup.Radios)
             {
                 //reset all preselected radioButtons
@@ -159,10 +159,10 @@ namespace terminalDocuSignTests.Integration
             var radioButton = radioGroup.Radios.FirstOrDefault(x => x.Name == "Buy 2, Get 3rd Free");
             radioButton.Selected = true;
 
-            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxFields_GovernmentEntity?(Lead)");
+            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxFields_GovernmentEntity? (Lead)");
             checkboxField.Selected = true;
 
-            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownListFields_Size of Company(Lead)");
+            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownListFields_Size of Company (Lead)");
             dropdownField.Value = "Medium (51-250)";
             dropdownField.selectedKey = "Medium (51-250)";
 
