@@ -33,7 +33,7 @@
                     @if (User.IsInRole("Guest"))
                     {
                         <p class="navbar-text">
-                            <a href="@NavLinks.BaseUrl/Account/Logoff">Have an Account? Login</a>
+                            <a href="/Account/Logoff">Have an Account? Login</a>
                         </p>
                     }
                 </div>
@@ -41,19 +41,19 @@
             <!-- MENU -->
             <ul class="nav navbar-nav navbar-right">
                 <!--How It Works-->
-                <li><a href="@NavLinks.BaseUrl/#about">How it Works</a></li>
+                <li><a href="/#about">How it Works</a></li>
                 <!--Services-->
                 <li data-scroll="scrolling" class="dropdown">
-                    <a data-target="#" href="@NavLinks.BaseUrl/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+                    <a data-target="#" href="/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
-                        <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
+                        <li><a href="/Services/DocuSign">DocuSign</a></li>
+                        <li><a href="/Services/Salesforce">Salesforce.com</a></li>
                         <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
                     </ul>
                 </li>
                 <!--Developers-->
                 <li data-scroll="scrolling" class="dropdown">
-                    <a href="@NavLinks.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Developers">Developers <span class="caret"></span></a>
+                    <a href="/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Developers">Developers <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li data-scroll="scrolling"><a href="@NavLinks.Documentation">Documentation</a></li>
                         <li data-scroll="scrolling"><a href="@NavLinks.GitHub">GitHub</a></li>
@@ -62,7 +62,7 @@
                 </li>
                 <!--Company-->
                 <li data-scroll="scrolling" class="dropdown">
-                    <a href="@NavLinks.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+                    <a href="/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#vision">Vision</a></li>
                         <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#team">Team</a></li>
@@ -72,7 +72,7 @@
                     </ul>
                 </li>
                 <!--Contact-->
-                <li><a href="@NavLinks.BaseUrl/Support" title="Contact">Contact</a></li>
+                <li><a href="/Support" title="Contact">Contact</a></li>
                 <!--Blog-->
                 <li><a href="@NavLinks.Blog" target="_blank">Blog</a></li>
                 <hr class="responsive-line"/>
@@ -81,7 +81,7 @@
                 {
                     <li>
                         <p class="navbar-btn">
-                            <a href="@NavLinks.BaseUrl/Account" class="btn btn-danger">Login/Register</a>
+                            <a href="/Account" class="btn btn-danger">Login/Register</a>
                         </p>
                     </li>
                 }
@@ -89,7 +89,7 @@
                 {
                     <li>
                         <p class="navbar-btn">
-                            <a href="@NavLinks.BaseUrl/dashboard/myaccount" class="btn btn-primary">My Account</a>
+                            <a href="/dashboard/myaccount" class="btn btn-primary">My Account</a>
                         </p>
                     </li>
                 }

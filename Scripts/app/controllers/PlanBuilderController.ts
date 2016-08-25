@@ -456,7 +456,7 @@ module dockyard.controllers {
                     currentPlan.subPlans.forEach(
                         plan => {
                             if (plan.activities.length > 0) {
-                                this.$scope.reConfigureAction(plan.activities[0])
+                                this.$scope.reConfigureAction(plan.activities[0]);
                             }
                         });
                 }
