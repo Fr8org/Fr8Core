@@ -106,7 +106,10 @@ module dockyard.controllers.NotifierController {
             if (this.$stateParams['viewMode'] == "kiosk") {
                 // All notifications are implemented as Alert messages in toast.
                 // When we implement sub-notification types for TerminalEvent, we can reevaluate here and pass a parameter for it
-                this.uiNotificationService.notifyToast(data.Message, dockyard.enums.UINotificationStatus.Alert, null);
+                if (data.NotificationType == dockyard.enums.NotificationType.TerminalEvent) {
+                    // At the moment this code specialized to App Builder's UI capacity
+                    this.uiNotificationService.notifyToast(data.Message, dockyard.enums.UINotificationStatus.Alert, null);
+                }
             } else {
                 var event = new Fr8InternalEvent();
                 event.type = data.NotificationType;
