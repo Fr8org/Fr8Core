@@ -236,6 +236,47 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
+    public class RadioGroupMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public RadioGroupMetaDescriptionDTO() : base("RadioGroupMetaDescriptionDTO", "Radio Group")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            var labelTextBox = Controls[0];
+            var valuesTextBox = Controls[1];
+            var defaultValueTextBox = Controls[2];
+
+            var result = new RadioButtonGroup {Label = labelTextBox.Value, GroupName = labelTextBox.Value};
+            var realValues = (valuesTextBox.Value ?? string.Empty).Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.InvariantCulture)
+                .ToArray();
+            var defaultValue = defaultValueTextBox.Value?.Trim() ?? string.Empty;
+            var options = realValues.Select(x => new RadioButtonOption
+            {
+                Name = x,
+                Value = x,
+            }).ToList();
+            //First we check if one of the values exactly matches default value (if one is specified). If there is no such value we try to match it in case-insensitive way
+            var defaultOption = options.FirstOrDefault(x => string.Equals(x.Value, defaultValue, StringComparison.InvariantCulture))
+                                ?? options.FirstOrDefault(x => string.Equals(x.Value, defaultValue, StringComparison.InvariantCultureIgnoreCase));
+            if (defaultOption != null)
+            {
+                defaultOption.Selected = true;
+            }
+            //Radio group without options doesn't make any sense as it is unusable
+            if (options.Count == 0)
+            {
+                return null;
+            }
+            result.Radios = options;
+            return result;
+        }
+    }
+
     public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
         public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")
@@ -329,7 +370,7 @@ namespace Fr8.Infrastructure.Data.Control
 
         public List<ControlDefinitionDTO> CreateControls()
         {
-            return MetaDescriptions.Select(m => m.CreateControl()).ToList();
+            return MetaDescriptions.Select(m => m.CreateControl()).Where(x => x != null).ToList();
         }
     }
 
