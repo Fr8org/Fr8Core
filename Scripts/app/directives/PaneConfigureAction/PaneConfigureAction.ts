@@ -548,6 +548,7 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                this.$scope.currentAction.authTokenId = res.authTokenId;
                 this.$scope.currentAction.crateStorage = res.crateStorage;
                 this.$scope.currentAction.childrenActivities = res.childrenActivities;
 
