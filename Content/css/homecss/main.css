@@ -2878,21 +2878,6 @@ body {
 }
 
 /* Material Design Styles */
-.demo-card-square.mdl-card {
-    height: 320px;
-}
-
-.demo-card-square > .mdl-card__title {
-    color: #444C58;
-    font-weight: 500;
-    background-color: #F2F4F5;
-}
-
-.mdl-card__supporting-text {
-    font-size: 1.4rem;
-    text-align: left;
-}
-
 #inner {
     width: 50%;
     margin: 0 auto;
@@ -2942,6 +2927,16 @@ body {
     float: left;
 }
 
+.try-now-btn {
+    color: inherit;
+}
+
+
+.mdl-card__supporting-text {
+    font-size: 1.4rem;
+    text-align: left;
+}
+
 .mdl-card__title-text {
     margin-top: 20px;
     font-size: 30px;
@@ -2953,13 +2948,27 @@ body {
     width: 100%;
 }
 
-.try-now-btn {
-    color: inherit;
+.demo-card-square.mdl-card {
+    height: 320px;
+}
+
+.demo-card-square > .mdl-card__title {
+    color: #444C58;
+    font-weight: 500;
+    background-color: #F2F4F5;
 }
 
 .demo-card-big-square.mdl-card {
     width: 540px;
     height: 480px;
+}
+
+.demo-card-square-docusign-box {
+    float: right;
+}
+
+.demo-card-square-fr8-box  {
+    float: left;
 }
 
 .demo-card-square-docusign-box > .mdl-card__title {
@@ -2976,6 +2985,24 @@ body {
     background: url('/Content/img/docusign-logo.png') center no-repeat;
     background-color: #F2F4F5;
     opacity:0.9;
+}
+
+@media screen and (max-width: 1000px) {
+    .demo-card-big-square.mdl-card {
+        width: auto;
+        height: 350px;
+        float: none;
+        margin: 15px auto;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .demo-card-big-square.mdl-card {
+        width: auto;
+        height: 350px;
+        float: none;
+        margin: 15px auto;
+    }
 }
 
 .full-area {
