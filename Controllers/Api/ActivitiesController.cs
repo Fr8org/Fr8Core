@@ -173,5 +173,17 @@ namespace HubWeb.Controllers
             var savedActivity = await _activityService.SaveOrUpdateActivity(submittedActivity);
             return Ok(savedActivity);
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Subordinate(Guid id)
+        {
+            using (var uow = _uowFactory.Create())
+            {
+                var subordinateActivityDO = await _activityService.GetSubordinateActivity(uow, id);
+                var subordinateActivityDTO = Mapper.Map<ActivityDTO>(subordinateActivityDO);
+
+                return Ok(subordinateActivityDTO);
+            }
+        }
     }
 }

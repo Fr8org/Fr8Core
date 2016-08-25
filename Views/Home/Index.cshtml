@@ -1,7 +1,6 @@
 ﻿@using Org.BouncyCastle.Asn1.Ocsp
 @model HubWeb.ViewModels.HomeVM
 
-
 <!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en" class="no-js"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en" class="no-js"> <![endif]-->
@@ -43,6 +42,7 @@
     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
 </head>
+
 <body id="top">
 
     @Html.Partial("_HomeNavNew")
@@ -78,15 +78,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Left and right controls -->
-                <!-- <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-                    <span class="fa fa-chevron-left" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-                    <span class="fa fa-chevron-right" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a> -->
                 <!-- Indicators -->
                 <ol class="carousel-indicators">
                     <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -99,7 +90,7 @@
         </div>
         <span id="#inner" class="fa fa-arrow-down"></span>
     </div>
-    <!-- END HERO UNIT -->
+
     <!-- MAIN CONTENT -->
     <div id="main-content" class="main-content">
         <!-- ABOUT -->
@@ -118,6 +109,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- DEMO CARDS -->
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="one-connect demo-card-square demo-card-square-connect mdl-card mdl-shadow--2dp">
@@ -152,7 +144,7 @@
                 </div>
             </div>
         </div>
-        <!-- END ABOUT -->
+
         <!-- FULL-WIDTH PARALLAX -->
         <div id="social-network" class="section full-width-parallax parallax">
             <div class="container">
@@ -167,7 +159,7 @@
                 <p style="color: #F2F4F5; padding-top: 10px;">`</p>
             </div>
         </div>
-        <!-- END FULL-WIDTH PARALLAX -->
+
         <!-- VIDEO SECTION -->
         <div id="video" class="section darker videos" style="padding-bottom: 0">
             <div class="container">
@@ -178,15 +170,15 @@
                 <div class="section-content" style="padding-bottom: 0">
                     <div class="row">
                         <div class="col-sm-10 col-lg-8 col-xs-8 col-sm-offset-1 col-xs-offset-2 col-lg-offset-2">
-                            <div class="video-container" style="margin: 0 auto; width: 640px; margin-left: auto; margin-right: auto">
-                                <iframe src="https://player.vimeo.com/video/178394308" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            <div class="video-container" >
+                                <iframe src="https://player.vimeo.com/video/178394308" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                             </div>
                         </div>
                     </div>                    
                 </div>
             </div>
         </div>
-        <!-- END VIDEO SECTION -->
+
         <!-- SERVICES -->
         <div id="services" class="section darker services">
             <div class="container">
@@ -243,16 +235,15 @@
                 </div>
             </div>
         </div>
-        <!-- END SERVICES -->
+
         <!-- CONTACT -->
         <div id="contact" class="section contact">
             <div class="section-heading">
                 <a href="/Support" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-envelope-o"></i> Contact Us</a>
             </div>
         </div>
-        <!-- END CONTACT -->
     </div>
-    <!-- END MAIN CONTENT -->
+
     <!-- FOOTER -->
     <footer id="footer" class="section">
         <div class="container">
@@ -262,7 +253,7 @@
             <p class="copyright">@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
         </div>
     </footer>
-    <!-- END FOOTER -->
+
     <div class="back-to-top">
         <a href="#top"><i class="fa fa-angle-up"></i></a>
     </div>

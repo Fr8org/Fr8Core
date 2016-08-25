@@ -99,7 +99,7 @@ namespace HealthMonitor
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception($"Failed to initialize terminal '{app.Name}' at '{app.Endpoint}'");
+                            throw new Exception($"Failed to initialize terminal '{app.Name}' at '{app.Endpoint}'", ex);
                         }
                     }
                 }

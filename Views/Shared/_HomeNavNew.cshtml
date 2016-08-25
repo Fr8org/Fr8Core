@@ -1,4 +1,5 @@
 ﻿@using HubWeb.ViewModels
+
 <nav class="navbar navbar-fixed-top navbar-light">
     <div class="container">
         <div class="navbar-header">
@@ -14,10 +15,10 @@
             </a>
         </div>
         <div class="navbar-collapse collapse" id="main-nav" role="navigation">
-            <!------SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE----------------------------------->
             @using Microsoft.AspNet.Identity
             @if (Request.IsAuthenticated)
             {
+                <!-- SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE -->
                 <div class="userinfo">
                     <p class="navbar-text">Hello
                         @if (User.IsInRole("Guest"))
@@ -74,6 +75,7 @@
                 <li><a href="@NavLinks.BaseUrl/Support" title="Contact">Contact</a></li>
                 <!--Blog-->
                 <li><a href="@NavLinks.Blog" target="_blank">Blog</a></li>
+                <hr class="responsive-line"/>
                 <!--Login Button on Right-->
                 @if (!Request.IsAuthenticated)
                 {

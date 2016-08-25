@@ -16,7 +16,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
 
     @* Load fonts async *@
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" media="none" onload="this.media = 'all';"/>
     <link href="@Styles.Url("~/Content/css/font-awesome")" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
 
     @(Html.IsDebug() ? Html.Partial("_AngularAppStyles") : Html.Partial("CDN/_AngularAppStyles"))
@@ -39,7 +39,7 @@
     </div>
     <!-- END HEADER -->
 
-    <div class="main-wrapper" activity-full-height>
+    <div class="main-wrapper">
 
         <!-- BEGIN PAGE SPINNER -->
         <div ng-spinner-bar class="page-spinner-bar">

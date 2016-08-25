@@ -6,6 +6,8 @@
 
         public const string EmailDeliverer = "Email Deliverer";
 
+        public const string Getter = "Getter";
+
         public const string HideChildren = "HideChildren";
 
         public const string Internal = "internal";

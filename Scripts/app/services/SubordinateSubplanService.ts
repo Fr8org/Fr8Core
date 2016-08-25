@@ -20,6 +20,8 @@ module dockyard.services {
             existingSubPlanId: string,
             activityTemplate: model.ActivityTemplate
         ) => ng.IPromise<model.SubordinateSubplan>;
+
+
     }
 
 

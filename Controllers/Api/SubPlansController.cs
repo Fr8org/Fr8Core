@@ -10,6 +10,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Logging;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using Swashbuckle.Swagger.Annotations;
 
