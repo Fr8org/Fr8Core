@@ -290,6 +290,34 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
+    public class DropDownListMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public DropDownListMetaDescriptionDTO()
+            : base("DropDownListMetaDescriptionDTO", "DropDownList")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            List<ListItem> items = null;
+            var values = this.Controls[1].Value;
+            if (String.IsNullOrEmpty(values))
+            {
+                items = new List<ListItem>();
+            }
+            else
+            {
+                items = values.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => new ListItem() { Key = x, Value = x }).ToList();
+            }
+                
+            return new DropDownList
+            {
+                Label = this.Controls[0].Value,
+                Name = "DropDownList",
+                ListItems = items
+            };
+        }
+    }
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
     public class ControlMetaDescriptionDTO

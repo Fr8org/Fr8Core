@@ -106,10 +106,18 @@ namespace terminalFr8Core.Activities
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
+            // why do we publish only text box?
             if (controlDefinitionDTO is TextBox)
             {
                 PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
             }
+
+            //allow user also select DDLB and why we shouldn`t publish all controls or publish the control which we mark as avaliable for publishing?
+            if(controlDefinitionDTO is DropDownList)
+            {
+                fieldConfigurator.AddField(controlDefinitionDTO.Label);
+            }
+
         }
 
         private bool WasActivityRunFromSubmitButton()

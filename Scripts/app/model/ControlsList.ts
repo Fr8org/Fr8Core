@@ -221,10 +221,15 @@
             tb.label = "Label :";
             this.controls.push(tb);
 
-            var ddl = new model.DropDownList();
-            ddl.label = 'Template Activity';
-            ddl.name = 'DropDownList';
-            this.controls.push(ddl);
+            var items = new model.TextBox();
+            items.label = "Comma separated values of DDLB";
+            this.controls.push(items);
+
+            //@tony: we can add sample of ddlb which user will see in app builder
+            //var ddl = new model.DropDownList();
+            //ddl.label = 'Template Activity';
+            //ddl.name = 'DropDownList';
+            //this.controls.push(ddl);
         }
     }
 
