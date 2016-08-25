@@ -110,6 +110,10 @@ namespace terminalFr8Core.Activities
             {
                 PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
             }
+            if (controlDefinitionDTO is CheckBox)
+            {
+                PublishCheckBox((CheckBox)controlDefinitionDTO, fieldConfigurator);
+            }
         }
 
         private bool WasActivityRunFromSubmitButton()
@@ -158,11 +162,21 @@ namespace terminalFr8Core.Activities
         {
             fieldConfigurator.AddField(textBox.Label);
         }
+        private void PublishCheckBox(CheckBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
+        {
+            fieldConfigurator.AddField(textBox.Label);
+        }
 
         private void ProcessTextBox(TextBox textBox)
         {
             var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
             fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(textBox.Label, textBox.Value));
+        }
+        private void ProcessCheckBox(CheckBox checkBox)
+        {
+            
+            var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(checkBox.Label, checkBox.Selected.ToString()));
         }
 
         private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
@@ -198,6 +212,10 @@ namespace terminalFr8Core.Activities
             if (controlDefinitionDTO is TextBox)
             {
                 ProcessTextBox((TextBox)controlDefinitionDTO);
+            }
+            if (controlDefinitionDTO is CheckBox)
+            {
+                ProcessCheckBox((CheckBox)controlDefinitionDTO);
             }
         }
 

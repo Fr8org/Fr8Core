@@ -31,6 +31,10 @@
 
     export class CheckBox extends ControlDefinitionDTO {
         selected: boolean;
+        constructor() {
+            super();
+            this.type = 'CheckBox';
+        }
     }
 
     export class Button extends ControlDefinitionDTO {
@@ -210,6 +214,23 @@
             sd.label = 'Template Activity';
             sd.name = 'SelectData';
             this.controls.push(sd);
+        }
+    }
+
+    export class CheckBoxMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('CheckBoxMetaDescriptionDTO', 'CheckBox');
+
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var cb = new model.CheckBox();
+            cb.selected = false;
+            cb.name = "CheckBox" + Math.floor(Math.random() * 1000);
+            cb.label = "Initial selected state" ;
+            this.controls.push(cb);
+
         }
     }
 
