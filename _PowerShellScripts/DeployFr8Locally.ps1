@@ -221,7 +221,7 @@ Param(
                         $appPools.Add($appPoolName) | out-null
                     }
 
-                    $skipAppPoolModification = false
+                    $skipAppPoolModification = $false
 
                     if (-not (Test-Path $sitePath))
                     {
