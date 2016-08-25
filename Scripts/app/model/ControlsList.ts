@@ -159,9 +159,27 @@
     {
         constructor() {
             super("TextBoxMetaDescriptionDTO", "TextBox");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
+        }
+    }
+
+    export class RadioGroupMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("RadioGroupMetaDescriptionDTO", "Radio Group");
+            var label = new TextBox();
+            label.label = "Label: ";
+            this.controls.push(label);
+
+            var values = new TextBox();
+            values.label = "Values (comma-separated): ";
+            this.controls.push(values);
+
+            var defaultValue = new TextBox();
+            defaultValue.label = "Default Value: ";
+            this.controls.push(defaultValue);
         }
     }
     
@@ -169,7 +187,7 @@
     {
         constructor() {
             super("TextBlockMetaDescriptionDTO", "TextBlock");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Text Content :";
             this.controls.push(tb);
         }
@@ -181,7 +199,7 @@
 
         constructor() {
             super("FilePickerMetaDescriptionDTO", "File Uploader");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
@@ -190,7 +208,7 @@
                 var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
                 listItems.push(extensionValue);
             }
-            var allowedExtensions = new model.DropDownList();
+            var allowedExtensions = new DropDownList();
             allowedExtensions.listItems = listItems;
             allowedExtensions.label = "File Type:";
             this.controls.push(allowedExtensions);
@@ -202,14 +220,34 @@
         constructor() {
             super('SelectDataMetaDescriptionDTO', 'Select Data');
 
+            var tb = new TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var sd = new SelectData();
+            sd.label = 'Template Activity';
+            sd.name = 'SelectData';
+            this.controls.push(sd);
+        }
+    }
+
+    export class DropDownListMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('DropDownListMetaDescriptionDTO', 'DropDownList');
+
             var tb = new model.TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
-            var sd = new model.SelectData();
-            sd.label = 'Template Activity';
-            sd.name = 'SelectData';
-            this.controls.push(sd);
+            var items = new model.TextBox();
+            items.label = "Comma separated values of DDLB";
+            this.controls.push(items);
+
+            //@tony: we can add sample of ddlb which user will see in app builder
+            //var ddl = new model.DropDownList();
+            //ddl.label = 'Template Activity';
+            //ddl.name = 'DropDownList';
+            //this.controls.push(ddl);
         }
     }
 
@@ -248,8 +286,8 @@
     }
 
     export class CrateDetails {
-        manifestType: model.DropDownList;
-        label: model.DropDownList;
+        manifestType: DropDownList;
+        label: DropDownList;
     }
 
     export class UpstreamCrateChooser extends ControlDefinitionDTO {

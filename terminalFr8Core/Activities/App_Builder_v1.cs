@@ -106,9 +106,13 @@ namespace terminalFr8Core.Activities
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
-            if (controlDefinitionDTO is TextBox)
+            var isLabelBasedPublishable = controlDefinitionDTO is TextBox ||
+                                            controlDefinitionDTO is RadioButtonGroup ||
+                                            controlDefinitionDTO is DropDownList ;
+            ;
+            if (isLabelBasedPublishable)
             {
-                PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
+                fieldConfigurator.AddField(controlDefinitionDTO.Label);
             }
         }
 
@@ -154,17 +158,6 @@ namespace terminalFr8Core.Activities
             return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers);
         }
 
-        private void PublishTextBox(TextBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
-        {
-            fieldConfigurator.AddField(textBox.Label);
-        }
-
-        private void ProcessTextBox(TextBox textBox)
-        {
-            var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(textBox.Label, textBox.Value));
-        }
-
         private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
         {
             int labeless_pickers = 0;
@@ -195,9 +188,17 @@ namespace terminalFr8Core.Activities
 
         private void ProcessCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
         {
-            if (controlDefinitionDTO is TextBox)
+            var isValueBasedProcessed = controlDefinitionDTO is TextBox || controlDefinitionDTO is RadioButtonGroup;
+            if (isValueBasedProcessed)
             {
-                ProcessTextBox((TextBox)controlDefinitionDTO);
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
+            }
+
+            if (controlDefinitionDTO is DropDownList)
+            {
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
             }
         }
 
@@ -325,7 +326,7 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Submitting data..."));
                         Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
                         Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
                         Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
