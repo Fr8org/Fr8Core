@@ -277,6 +277,24 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
+    public class CheckBoxMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public CheckBoxMetaDescriptionDTO() : base("CheckBoxMetaDescriptionDTO", "CheckBox")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            var c = this.Controls[1];
+            return new CheckBox()
+            {
+                Label = this.Controls.First().Value,
+                Selected = c.Selected,
+                Name = c.Name
+            };
+        }
+    }
+
     public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
         public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")

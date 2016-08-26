@@ -1594,6 +1594,10 @@ md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-ico
     background-color: rgb(66, 139, 202);
 }
 
+.kiosk .checkbox {
+    margin-left:20px;
+}
+
 .text-block {
     display: block; 
     margin-top: 0px; 
