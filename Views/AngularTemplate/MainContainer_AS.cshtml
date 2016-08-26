@@ -2,14 +2,12 @@
     <div class="flexable-content" resizable r-directions="['right']">
         <div style="min-height: 700px">
             <!-- BEGIN ACTUAL CONTENT -->
-            <designer-header  class="designer-header-fixed" ng-show="current.plan" kiosk-mode="" editing="" state="state" plan="current.plan"></designer-header>
-            <div ui-view>
-
-            </div>
+            <designer-header class="designer-header-fixed" ng-show="current.plan" kiosk-mode="" editing="" state="state" plan="current.plan"></designer-header>
+            <div ui-view></div>
             <!-- END ACTUAL CONTENT -->
         </div>
     </div>
-    <div class="activity-stream-flex">
+    <div class="activity-stream-flex visible-lg-block visible-md-block">
         <div data-ng-include="'/AngularTemplate/ActivityStream'"></div>
     </div>
 </div>

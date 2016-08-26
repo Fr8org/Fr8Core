@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -825,6 +825,10 @@
     <Compile Include="Migrations\201608161608296_AddSystemAccountIdentifier.Designer.cs">
       <DependentUpon>201608161608296_AddSystemAccountIdentifier.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608242253538_ListOfApps.cs" />
+    <Compile Include="Migrations\201608242253538_ListOfApps.Designer.cs">
+      <DependentUpon>201608242253538_ListOfApps.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1517,6 +1521,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608161608296_AddSystemAccountIdentifier.resx">
       <DependentUpon>201608161608296_AddSystemAccountIdentifier.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608242253538_ListOfApps.resx">
+      <DependentUpon>201608242253538_ListOfApps.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
