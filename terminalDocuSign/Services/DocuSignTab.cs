@@ -193,7 +193,7 @@ namespace terminalDocuSign.Services.NewApi
                     {
                         DocumentId = Convert.ToInt32(grpTab["documentId"]),
                         RecipientId = grpTab["recipientId"],
-                        Name = grpTab["tabLabel"] + (roleName.ToStr().IsNullOrEmpty() ? null : $" ({roleName})"),
+                        Name = grpTab["groupName"] + (roleName.ToStr().IsNullOrEmpty() ? null : $" ({roleName})"),
                         TabId = grpTab["tabId"],
                         Fr8DisplayType = ControlTypes.RadioButtonGroup,
                         RoleName = roleName,
