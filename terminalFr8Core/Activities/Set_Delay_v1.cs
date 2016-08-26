@@ -7,6 +7,8 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using Fr8.Infrastructure.Data.Manifests;
+using System.Text;
 
 namespace terminalFr8Core.Activities
 {
@@ -28,10 +30,12 @@ namespace terminalFr8Core.Activities
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        private string RunTimeCrateLabel = "Delay Description";
+        private string DelayPropertyName = "DelayTime";
 
         private const int MinDurationSeconds = 10;
         private AlarmDTO CreateAlarm(TimeSpan duration)
-                {
+        {
             if (duration.TotalSeconds == 0)
             {
                 duration.Add(TimeSpan.FromSeconds(MinDurationSeconds));
@@ -70,6 +74,9 @@ namespace terminalFr8Core.Activities
 
         public override async Task Run()
         {
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel,
+                new StandardPayloadDataCM(
+                    new KeyValueDTO("DelayTime", GetDelayDescription(GetControl<Duration>("Delay_Duration"))))));
             //find our action state in operations crate
             var delayState = OperationalState.CallStack.GetLocalData<string>("Delay");
             //extract ActivityResponse type from result
@@ -89,11 +96,42 @@ namespace terminalFr8Core.Activities
             OperationalState.CallStack.StoreLocalData("Delay", "suspended");
 
             RequestPlanExecutionSuspension();
+        }
+
+        private string GetDelayDescription(Duration delayControl)
+        {
+            if (delayControl.Days == 0 && delayControl.Hours == 0 && delayControl.Minutes == 0)
+            {
+                return "none";
             }
+            var result = new StringBuilder();
+            if (delayControl.Days != 0)
+            {
+                result.Append($"{delayControl.Days} day{(delayControl.Days == 1 ? string.Empty : "s")}");
+            }
+            if (delayControl.Hours != 0)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(' ');
+                }
+                result.Append($"{delayControl.Hours} hour{(delayControl.Hours == 1 ? string.Empty : "s")}");
+            }
+            if (delayControl.Minutes != 0)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(' ');
+                }
+                result.Append($"{delayControl.Minutes} minute{(delayControl.Minutes == 1 ? string.Empty : "s")}");
+            }
+            return result.ToString();
+        }
 
         public override Task Initialize()
         {
             CreateControls();
+            CrateSignaller.MarkAvailable<StandardPayloadDataCM>(RunTimeCrateLabel, AvailabilityType.RunTime, true).AddField(DelayPropertyName);
 
             return Task.FromResult(0);
         }

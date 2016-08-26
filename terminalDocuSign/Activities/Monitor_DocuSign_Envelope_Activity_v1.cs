@@ -44,7 +44,7 @@ namespace terminalDocuSign.Actions
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
 
-        public Monitor_DocuSign_Envelope_Activity_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository) 
+        public Monitor_DocuSign_Envelope_Activity_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
         {
             _configRepository = configRepository;
@@ -205,14 +205,15 @@ namespace terminalDocuSign.Actions
                         break;
                 }
             }
-            
+
             var allFields = new List<KeyValueDTO>(eventFields);
 
             if (curSelectedOption == "template")
             {
                 allFields.AddRange(GetEnvelopeData(envelopeId));
+                allFields.Add(new KeyValueDTO("TemplateName", curSelectedTemplate));
             }
-           
+
             Payload.Add(AllFieldsCrateName, new StandardPayloadDataCM(allFields));
 
             Success();
@@ -220,7 +221,7 @@ namespace terminalDocuSign.Actions
 
         public override async Task Initialize()
         {
-            AddControls(((StandardConfigurationControlsCM) CreateActivityUi()).Controls);
+            AddControls(((StandardConfigurationControlsCM)CreateActivityUi()).Controls);
             FillDocuSignTemplateSource("UpstreamCrate");
             PackEventSubscriptionsCrate();
         }
@@ -237,13 +238,14 @@ namespace terminalDocuSign.Actions
             if (selectedOption == "template")
             {
                 allFields.AddRange(GetTemplateUserDefinedFields(selectedValue, null));
+                allFields.Add(new FieldDTO("TemplateName"));
             }
 
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(AllFieldsCrateName, true).AddFields(allFields);
 
             return Task.FromResult(0);
         }
-        
+
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
