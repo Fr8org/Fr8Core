@@ -67,13 +67,14 @@ namespace Fr8.TerminalBase.Services
             return plan;
         }
 
-        public async Task<PlanDTO> ConfigureAsApp(Guid activityId, string launchUrl)
+        public async Task<PlanDTO> ConfigureAsApp(Guid activityId, string launchUrl, string name)
         {
             PlanDTO plan = await GetPlansByActivity(activityId.ToString());
             if (plan != null)
             {
                 plan.IsApp = true;
                 plan.AppLaunchUrl = launchUrl;
+                plan.Name = name;
 
                 var emptyPlanDTO = Mapper.Map<PlanNoChildrenDTO>(plan);
                 plan = await UpdatePlan(emptyPlanDTO);
