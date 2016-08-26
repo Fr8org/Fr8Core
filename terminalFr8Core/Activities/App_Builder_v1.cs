@@ -24,6 +24,7 @@ namespace terminalFr8Core.Activities
     {
         private readonly ExcelUtils _excelUtils;
         private readonly IPushNotificationService _pushNotificationService;
+        private readonly PlanService _planService;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -57,11 +58,10 @@ namespace terminalFr8Core.Activities
             submitButton.Clicked = false;
         }
 
-        private async Task PushLaunchURLNotification()
+        private string GetLaunchUrl()
         {
-            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
+           return CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -72,7 +72,10 @@ namespace terminalFr8Core.Activities
             Storage.Add(controls);
 
             await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload, true);
-            await PushLaunchURLNotification();
+            string launchUrl = GetLaunchUrl();
+            await _planService.ConfigureAsApp(ActivityId, launchUrl);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", "This Plan can be launched with the following URL: " + launchUrl);
+
         }
 
         private StandardConfigurationControlsCM GetMetaControls()
@@ -259,11 +262,12 @@ namespace terminalFr8Core.Activities
             AddControls(label, infoText, cc);
         }
 
-        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
+        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService, PlanService planService)
             : base(crateManager)
         {
             _excelUtils = excelUtils;
             _pushNotificationService = pushNotificationService;
+            _planService = planService;
         }
 
 

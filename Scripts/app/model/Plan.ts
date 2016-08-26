@@ -40,6 +40,7 @@
         orderBy: string;
         isDescending: boolean;
         filter: string;
+        appsOnly: boolean;
     }
 
     export class PlanResultDTO {
