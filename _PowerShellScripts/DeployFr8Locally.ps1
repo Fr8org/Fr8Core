@@ -16,14 +16,183 @@ Param(
    [string]$userName,
 
    [Parameter(Mandatory=$False, Position = 3)]
-   [string]$userPwd
+   [string]$userPwd,
+
+   [Parameter(Mandatory=$False, Position = 4)]
+   [bool]$skipFileSecurity = $false
 )
+
+$requiredComponents = 
+'IIS-WebServerRole',                          
+'IIS-WebServer',                              
+'IIS-WindowsAuthentication',                  
+'IIS-StaticContent',                          
+'IIS-DefaultDocument',                        
+'IIS-DirectoryBrowsing',                      
+'IIS-WebSockets',                             
+'IIS-ASPNET',                                 
+'IIS-ASPNET45',                               
+'IIS-ISAPIExtensions',                        
+'IIS-ISAPIFilter',                            
+'IIS-BasicAuthentication',                    
+'IIS-ManagementConsole',                      
+'NetFx4-AdvSrvs',                             
+'NetFx4Extended-ASPNET45',                                   
+'IIS-CommonHttpFeatures',                     
+'IIS-HttpErrors',                             
+'IIS-HttpRedirect',                           
+'IIS-ApplicationDevelopment',                 
+'IIS-NetFxExtensibility',                     
+'IIS-NetFxExtensibility45',                   
+'IIS-HealthAndDiagnostics',                   
+'IIS-HttpLogging',                            
+'IIS-LoggingLibraries',                       
+'IIS-RequestMonitor',                         
+'IIS-HttpTracing',                            
+'IIS-Security',                               
+'IIS-RequestFiltering',                       
+'IIS-WebServerManagementTools',               
+'WAS-WindowsActivationService',               
+'WAS-ProcessModel',                           
+'WAS-NetFxEnvironment'
+
+Write-Host "Checking installed Windows components..."
+
+$missingFeatures = Get-WindowsOptionalFeature -Online | Where-Object {$_.state -eq 'disabled' -and $requiredComponents -contains $_.featurename}
+
+if ($missingFeatures.Length -eq 0)
+{
+    Write-Host "Nothing to install"
+}
+else
+{
+    Write-Host "The following Windows features will be installed:"
+    foreach ($feature in $missingFeatures)
+    {
+        Write-Host $feature.featurename
+    }
+
+    $missingFeatures = $missingFeatures  | % {"/FeatureName:$($_.featurename)"}
+
+    Write-Host ""
+
+    $params = [string]::Join(' ', $missingFeatures )
+        
+    iex "& DISM.exe /Online /Enable-Feature $params"
+    Write-Host ""
+    Write-Host "Missing components have been installed."
+    Write-Host "Please, restart your PC and run this script again."
+    return
+}
   
   Import-Module WebAdministration
   
   # ************************************************************************************
   # Functions
   # ************************************************************************************
+
+  function List-Projects
+{
+    Param(
+    [parameter(Mandatory=$true, Position=0)]
+    [string]
+    $currentFolder,
+
+    [parameter(Mandatory=$false, Position=1)]
+    [System.Collections.Generic.List[object]]
+    $result
+    )
+
+    if ($currentFolder.EndsWith("bower_components") -or 
+        $currentFolder.EndsWith("node_modules") -or 
+        $currentFolder.EndsWith("obj") -or 
+        $currentFolder.EndsWith("packages") -or 
+        $currentFolder.EndsWith("bin"))
+    {
+        return
+    }
+    
+    $items = Get-ChildItem $currentFolder
+    
+    foreach ($item in $items)
+    {
+        if ($item.PSIsContainer)
+        {
+            List-Projects $item.FullName $result
+            continue
+        }
+
+        if ($item.Extension -like ".csproj")
+        {
+            $result.Add($item)
+        }
+    }
+}
+
+ # ************************************************************************************
+
+function Grant-Access 
+{
+    Param(
+    [parameter(Mandatory=$true, Position=0)]
+    [string]
+    $userName,
+    
+    [parameter(Mandatory=$true, Position=1)]
+    [string]
+    $currentFolder,
+    
+    [parameter(Mandatory=$true, Position=2)]
+    [System.Collections.Generic.Dictionary``2[string, string]]
+    $siteFolders,
+    
+    [parameter(Mandatory=$false, Position=3)]
+    $level = 0
+    )
+
+    if ($currentFolder.EndsWith("bower_components") -or 
+        $currentFolder.EndsWith("node_modules") -or 
+        $currentFolder.EndsWith("obj") -or 
+        $currentFolder.EndsWith("packages") -or 
+        $currentFolder.EndsWith("bin") -or 
+        $currentFolder.EndsWith("_PowerShellScripts") -or 
+        $currentFolder.EndsWith("Tests"))
+    {
+        return
+    }
+
+    if (($level -gt 0) -and ($siteFolders.ContainsKey($currentFolder)))
+    {
+        return
+    }
+
+    $acl = Get-Acl $currentFolder
+    $ar = New-Object  system.security.accesscontrol.filesystemaccessrule($userName,"FullControl", "ContainerInherit, ObjectInherit", "None", "Allow")
+    $acl.SetAccessRule($ar)
+    Set-Acl -path $currentFolder -aclObject $acl    
+    
+    $items = Get-ChildItem $currentFolder
+
+    foreach ($item in $items)
+    {
+        if ($item.PSIsContainer)
+        {
+            Grant-Access $userName $item.FullName $siteFolders ($level + 1)
+        }
+        else
+        {
+            if (-not ($item.Extension -like ".cs" -or $item.Extension -like ".ts"))
+            {
+                $acl = Get-Acl $item.FullName
+                $ar = New-Object  system.security.accesscontrol.filesystemaccessrule($userName,"FullControl","Allow")
+                $acl.SetAccessRule($ar)
+                Set-Acl -path $item.FullName -aclObject $acl    
+            }
+        }
+    }
+}
+
+ # ************************************************************************************
 
   function Grant-DbAccess
   {
@@ -127,6 +296,9 @@ Param(
   $usedBindings = new-object 'System.Collections.Generic.HashSet[string]'
   $appPools = new-object 'System.Collections.Generic.HashSet[string]'
   $changedPools = new-object 'System.Collections.Generic.HashSet[string]'
+  $siteFolders = new-object 'System.Collections.Generic.Dictionary``2[string, string]'
+
+  Write-Host "Creating sites..."
 
    foreach ($site in (Get-ChildItem "IIS:\Sites"))
    {
@@ -139,11 +311,12 @@ Param(
         }
    }
 
-  $configFiles = (Get-ChildItem . -include ("*.csproj")  -rec -ErrorAction SilentlyContinue )
+   $configFiles = new-object 'System.Collections.Generic.List[object]'
+   List-Projects . $configFiles
 
   foreach ($file in $configFiles)
   {
-       $content = [xml](Get-Content $file)
+       $content = [xml](Get-Content $file.FullName)
        
        foreach ($pg in $content.Project.PropertyGroup)
        {
@@ -221,7 +394,16 @@ Param(
                         $appPools.Add($appPoolName) | out-null
                     }
 
-                    $skipAppPoolModification = false
+                    $skipAppPoolModification = $false
+
+                    if ($identityType -ne 3)
+                    {
+                        $siteFolders[$file.Directory] = "IIS APPPOOL\$appPoolName";
+                    }
+                    else
+                    {
+                        $siteFolders[$file.Directory] = $userName;
+                    }
 
                     if (-not (Test-Path $sitePath))
                     {
@@ -232,13 +414,13 @@ Param(
                         else
                         {
                             echo "Port $($url.Port) is already used by other site on your IIS. No fr8 site will be created for this port, but I'll try to configure the project to use existing site"
-                            $skipAppPoolModification = true
+                            $skipAppPoolModification = $true
                         }
                     }
                     
                     if (-not $skipAppPoolModification)
                     {
-                        # Create App Pool per terminal
+                        # Create an App Pool per site
                         if (-not (Test-Path "IIS:\AppPools\$appPoolName"))
                         {
                             New-Item "IIS:\AppPools\$appPoolName"
@@ -265,6 +447,14 @@ Param(
 
                         # Assign app pool to the site
                         Set-ItemProperty $sitePath -name applicationPool -value $appPoolName
+                    }
+
+                    # Set access right to the project folder for the selected user
+                    $siteDir = 
+                    if ($identityType -eq 3)
+                    {
+                        $pool.processModel.userName = $userName;
+                        $pool.processModel.password = $userPwd;
                     }
 
                     # Configure project's user settings to use IIS
@@ -374,8 +564,15 @@ Param(
       }
   }
   
-  #grant access to the DB
+  if ($siteFolders.Count -eq 0)
+  {
+    Write-Host "No Fr8 projects were found in $((Get-Item .).FullName). Make sure that you've run the script from the Fr8 repository root."
+    return
+  }
 
+  Write-Host "Granting access to the DB..."
+
+  #grant access to the DB
 if ([bool]$connectionString)
 {
     Write-host "Using connection string: $connectionString"
@@ -402,4 +599,13 @@ else
     Write-host "Connection string is missing"
 }
 
-
+# grant access to folders and files
+if (-not $skipFileSecurity)
+{
+    Write-Host "Granting access to files and folders..."
+    foreach ($sd in $siteFolders.GetEnumerator())
+    {
+        Write-Host "Granting access to $($sd.Key) to $($sd.Value)"
+        Grant-Access $sd.Value $sd.Key $siteFolders    
+    }
+}

@@ -3,17 +3,19 @@
 ## Deploy to be hosted by a local IIS
 
 This is most robust option of deploying Fr8 on your PC. All the job is done by the deployment script **DeployFr8Locally.ps1** located under **_PowerShellScripts** folder. This script does the following:  
-1. Creates IIS Web sites
-2. Configure the web site to point to the corresponding Fr8 component folder
-3. Grant access to the DB for Fr8
-4. Configure Visual Studio projects to use local IIS.
+1. Installs and configures IIS if required
+2. Creates IIS Web sites
+3. Configures the web site to point to the corresponding Fr8 component folder
+4. Grants access to the DB for Fr8
+5. Grants access to the files and folders for Fr8
+6. Configures Visual Studio projects to use local IIS.
 
 
 ### Prerequisites  
 1. You should have administrator access to your PC.
-2. You should have IIS installed. There are a lot of resources in the Internet telling how install IIS. For example, see [here](http://www.howtogeek.com/112455/how-to-install-iis-8-on-windows-8/) or [here](https://technet.microsoft.com/en-us/library/hh831475(v=ws.11).aspx).
-3. You should have enabled PowerShell script execution on your system. If you have never used PoweShell before then script execution is likely to be disabled. See [how to enable it](http://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts).
-4. You should be able to compile Fr8 successfully.
+(http://www.howtogeek.com/112455/how-to-install-iis-8-on-windows-8/) or [here](https://technet.microsoft.com/en-us/library/hh831475(v=ws.11).aspx).
+2. You should have enabled PowerShell script execution on your system. If you have never used PoweShell before then script execution is likely to be disabled. See [how to enable it](http://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts).
+3. You should be able to compile Fr8 successfully.
 
 ### Deployment guide
 
