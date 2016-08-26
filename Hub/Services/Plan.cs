@@ -85,6 +85,11 @@ namespace Hub.Services
                 planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
             }
 
+            if (planQueryDTO.AppsOnly)
+            {
+                planQuery = planQuery.Where(c => c.IsApp == true);
+            }
+
             int? planState = null;
 
             if (planQueryDTO.Status != null)
@@ -219,6 +224,8 @@ namespace Hub.Services
                 curPlan.Description = submittedPlan.Description;
                 curPlan.Category = submittedPlan.Category;
                 curPlan.LastUpdated = DateTimeOffset.UtcNow;
+                curPlan.IsApp = submittedPlan.IsApp;
+                curPlan.AppLaunchURL = submittedPlan.AppLaunchURL;
             }
         }
 
@@ -899,6 +906,8 @@ namespace Hub.Services
                 clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;
+                clonedPlan.IsApp = false; // we don't want apps to duplicate when launching 
+                clonedPlan.AppLaunchURL = null;
 
                 //linearlize tree structure
                 var planTree = clonedPlan.GetDescendantsOrdered();
