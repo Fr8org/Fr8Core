@@ -73,7 +73,7 @@ namespace terminalFr8Core.Activities
 
             await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload, true);
             string launchUrl = GetLaunchUrl();
-            await _planService.ConfigureAsApp(ActivityId, launchUrl);
+            await _planService.ConfigureAsApp(ActivityId, launchUrl, ActivityContext.ActivityPayload.Label);
             await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", "This Plan can be launched with the following URL: " + launchUrl);
 
         }
