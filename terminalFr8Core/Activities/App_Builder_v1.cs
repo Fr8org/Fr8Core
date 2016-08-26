@@ -111,7 +111,8 @@ namespace terminalFr8Core.Activities
         {
             var isLabelBasedPublishable = controlDefinitionDTO is TextBox ||
                                             controlDefinitionDTO is RadioButtonGroup ||
-                                            controlDefinitionDTO is DropDownList ;
+                                            controlDefinitionDTO is DropDownList ||
+                                            controlDefinitionDTO is CheckBox;
             ;
             if (isLabelBasedPublishable)
             {
@@ -202,6 +203,11 @@ namespace terminalFr8Core.Activities
             {
                 var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
                 fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
+            }
+            if (controlDefinitionDTO is CheckBox)
+            {
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Selected.ToString()));
             }
         }
 

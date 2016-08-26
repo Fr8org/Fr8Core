@@ -127,7 +127,8 @@ module dockyard.directives.controlContainer {
             new model.FilePickerMetaDescriptionDTO(),
             new model.SelectDataMetaDescriptionDTO(),
             new model.DropDownListMetaDescriptionDTO(),
-            new model.RadioGroupMetaDescriptionDTO()
+            new model.RadioGroupMetaDescriptionDTO(),
+            new model.CheckBoxMetaDescriptionDTO()
         ];
 
         $scope.selectControl = (control: model.ControlMetaDescriptionDTO) => {
