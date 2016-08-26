@@ -50,6 +50,7 @@ module dockyard.controllers {
         scrollStart: (event: MouseEvent) => void;
         scrollStop: (event: MouseEvent) => void;
         scrollDrag: (event: MouseEvent) => void;
+        organization: interfaces.IOrganizationVM;
     }
 
     //Setup aliases
@@ -85,7 +86,9 @@ module dockyard.controllers {
             'SubPlanService',
             '$stateParams',
             'ActivityTemplateHelperService',
-            'ActivityService'
+            'ActivityService',
+            'OrganizationService',
+            'UserService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -115,7 +118,9 @@ module dockyard.controllers {
             private SubPlanService: services.ISubPlanService,
             private $stateParams: ng.ui.IStateParamsService,
             private ActivityTemplateHelperService: services.IActivityTemplateHelperService,
-            private ActivityService: services.IActivityService
+            private ActivityService: services.IActivityService,
+            private OrganizationService: services.IOrganizationService,
+            private UserService: services.IUserService
         ) {
             // For testing only.
             // $window['analytics'] = {
@@ -180,10 +185,8 @@ module dockyard.controllers {
             };
 
             $scope.$watch(
-                function () {
-                    return $(".resizable").width();
-                },
-                function (newVal, oldVal) {
+                () => $(".resizable").width(),
+                (newVal, oldVal) => {
                     if (newVal !== oldVal) {
                         $('.designer-header-fixed').width(newVal);
                         $('.activity-picker-container').width(newVal);
@@ -239,7 +242,18 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);            
+            this.processState($state);      
+
+
+            UserService.getCurrentUser().$promise.then((currentUser: interfaces.IUserDTO) => {
+                var organizationId = currentUser.organizationId;
+                if (organizationId !== null) {
+                    OrganizationService.get({ id: organizationId }).$promise.then((organization: interfaces.IOrganizationVM) => {
+                        $scope.organization = organization;
+                    });
+                }
+            });
+
         };
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -442,7 +456,7 @@ module dockyard.controllers {
                     currentPlan.subPlans.forEach(
                         plan => {
                             if (plan.activities.length > 0) {
-                                this.$scope.reConfigureAction(plan.activities[0])
+                                this.$scope.reConfigureAction(plan.activities[0]);
                             }
                         });
                 }
@@ -549,8 +563,6 @@ module dockyard.controllers {
                 var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
-
-            this.$scope.$emit('onKioskModalLoad');
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {

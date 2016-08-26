@@ -1342,7 +1342,9 @@ i.activity-stream-font {
     margin-right:-15px;
 }
 
-.activity-stream-template {
+
+.activity-stream-template  {
+    display: block;
     width:100%;
     height:100%;
     min-height:700px;
@@ -1353,9 +1355,8 @@ i.activity-stream-font {
     background-color: rgba(0, 0, 0, 0.25);
 }
 
-.flexable-content{
-    width:80%;
-    min-width:70%;
+.flexable-content {
+    width:100%;
 }
 
 .configuration-control-form-group {
@@ -1693,4 +1694,25 @@ md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-ico
 /********* fix for FR-3998 ********/
 span.btn a.btn-link i.glyphicon-remove {
     display: none;
+}
+
+
+@font-face {
+  font-family: 'MavenPro';
+  src: url('../fonts/MavenPro-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.maven-pro-font {
+    font-family: MavenPro;
+}
+
+.kiosk-activity {
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
 }

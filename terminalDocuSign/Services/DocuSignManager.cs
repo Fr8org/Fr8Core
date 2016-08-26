@@ -256,6 +256,9 @@ namespace terminalDocuSign.Services.New_Api
                     envelopesApi.CreateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, tabs);
                 }
                 else
+                    if (typeof(Tabs).GetProperties()
+                          .Select(prop => prop.GetValue(recepient.Tabs, null))
+                          .Any(val => val != null))
                     envelopesApi.UpdateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, recepient.Tabs);
             }
 

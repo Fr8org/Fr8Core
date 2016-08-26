@@ -291,6 +291,13 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
+        .state('appList',
+        {
+            url: "/apps",
+            templateUrl: "/AngularTemplate/AppList",
+            data: { pageTitle: 'Apps', pageSubTitle: 'All the Apps created for your organization' }
+        })  
+
         .state('showIncidents',
         {
             url: "/showIncidents",

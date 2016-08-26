@@ -117,13 +117,19 @@
             });
             activities.forEach(activity => {
                 var foundActivity = resultActivities.filter(x => x.id === activity.id)[0];
-                foundActivity.authorizeIsRequested = true;
+                if (foundActivity) {
+                    foundActivity.authorizeIsRequested = true;
+                }
+                else if (activities.length === 1 && activity.ordering === 1) {
+                    (<any>activity).authorizeIsRequested = true;
+                    resultActivities.push(activity);
+                }
             });
             activities = resultActivities;
             modalScope.activities = activities;
             self._authDialogDisplayed = true;
 
-
+            // debugger;
             self.$modal.open({
                 animation: true,
                 templateUrl: '/AngularTemplate/AuthenticationDialog',

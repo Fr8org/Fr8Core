@@ -864,9 +864,12 @@
     <Content Include="Views\ManifestRegistry\Index.cshtml" />
     <Content Include="Views\Account\SetupWizard.cshtml" />
     <Content Include="_PowerShellScripts\Swap-AppService.ps1" />
+    <Content Include="Content\fonts\MavenPro-Regular.ttf" />
+    <Content Include="Views\AngularTemplate\AppList.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\AdminToolsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\AppListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageUserController.ts" />
