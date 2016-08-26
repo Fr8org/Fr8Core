@@ -31,6 +31,10 @@
 
     export class CheckBox extends ControlDefinitionDTO {
         selected: boolean;
+        constructor() {
+            super();
+            this.type = 'CheckBox';
+        }
     }
 
     export class Button extends ControlDefinitionDTO {
@@ -228,6 +232,43 @@
             sd.label = 'Template Activity';
             sd.name = 'SelectData';
             this.controls.push(sd);
+        }
+    }
+
+    export class DropDownListMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('DropDownListMetaDescriptionDTO', 'DropDownList');
+
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var items = new model.TextBox();
+            items.label = "Comma separated values of DDLB";
+            this.controls.push(items);
+
+            //@tony: we can add sample of ddlb which user will see in app builder
+            //var ddl = new model.DropDownList();
+            //ddl.label = 'Template Activity';
+            //ddl.name = 'DropDownList';
+            //this.controls.push(ddl);
+        }
+    }
+
+    export class CheckBoxMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('CheckBoxMetaDescriptionDTO', 'CheckBox');
+
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var cb = new model.CheckBox();
+            cb.selected = false;
+            cb.name = "CheckBox" + Math.floor(Math.random() * 1000);
+            cb.label = "Initial selected state" ;
+            this.controls.push(cb);
+
         }
     }
 

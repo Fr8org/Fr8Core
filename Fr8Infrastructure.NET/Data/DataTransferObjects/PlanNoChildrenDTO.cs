@@ -34,5 +34,17 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("category")]
         public string Category { get; set; }
+
+        /// <summary>
+        /// Whether the current Plan is an App
+        /// </summary>
+        [JsonProperty("isApp")]
+        public bool IsApp { get; set; }
+        /// <summary>
+        /// Launch URL for the App if the Plan is an App
+        /// </summary>
+        [JsonProperty("appLaunchUrl")]
+        public string AppLaunchUrl { get; set; }
+
     }
 }

@@ -147,7 +147,7 @@ VALUES(@ManifestTypeId, SYSDATETIME(), SYSDATETIME(), 'system1@fr8.co', 0, '7', 
 			""manifestType"": ""Standard UI Controls"",
             ""manifestId"": 6,
             ""manufacturer"": null,
-            ""manifestRegistrar"": ""www.fr8.co/registry"",
+            ""manifestRegistrar"": ""fr8.co/registry"",
             ""id"": ""0eb2f713-55d3-4d12-bb90-d6a32228205d""
 		}
 	]

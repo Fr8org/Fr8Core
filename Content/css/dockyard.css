@@ -1342,7 +1342,9 @@ i.activity-stream-font {
     margin-right:-15px;
 }
 
-.activity-stream-template {
+
+.activity-stream-template  {
+    display: block;
     width:100%;
     height:100%;
     min-height:700px;
@@ -1353,9 +1355,8 @@ i.activity-stream-font {
     background-color: rgba(0, 0, 0, 0.25);
 }
 
-.flexable-content{
-    width:80%;
-    min-width:70%;
+.flexable-content {
+    width:100%;
 }
 
 .configuration-control-form-group {
@@ -1591,6 +1592,10 @@ md-checkbox.md-checked.green .md-icon {
 
 md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-icon {
     background-color: rgb(66, 139, 202);
+}
+
+.kiosk .checkbox {
+    margin-left:20px;
 }
 
 .text-block {
