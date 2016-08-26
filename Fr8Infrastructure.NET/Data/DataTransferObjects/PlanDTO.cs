@@ -61,6 +61,12 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         /// </summary>
         [JsonProperty("filter")]
         public string Filter { get; set; }
+
+        /// <summary>
+        /// If true, only apps for the current user's organization will be returned. 
+        /// </summary>
+        [JsonProperty("appsOnly")]
+        public bool AppsOnly { get; set; }
     }
 
     public class PlanResultDTO

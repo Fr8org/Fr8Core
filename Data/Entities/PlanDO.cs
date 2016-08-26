@@ -12,7 +12,24 @@ namespace Data.Entities
 {
     public class PlanDO : PlanNodeDO
     {
-		    
+        /*
+         * IMPORTANT: IF YOU'RE ADDING A NEW PROPERTY/FIELD, 
+         * be sure to declare it in the following places, otherwise values 
+         * of the new properties will not be persisted:
+         * 
+         * 1. Add it to the list of tracked properties, e.g. 
+         *      typeof(PlanDO).GetProperty(nameof(MyNewProperty))
+         *    Note: don't add virtual navigation properties to this list, 
+         *    only add the foreign key property for a navigation property. 
+         * 
+         * 2. Add it to the CopyProperties() method, e.g.
+         *      MyNewProperty = plan.MyNewProperty;
+         *      
+         * 3. Add it to the Plan#CreateOrUpdate method, e.g. 
+         *      curPlan.MyNewProperty = submittedPlan.MyNewProperty;
+         * 
+         */
+
         private static readonly PropertyInfo[] TrackingProperties =
         {
             typeof(PlanDO).GetProperty(nameof(Name)),
@@ -20,7 +37,9 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty(nameof(Description)),
             typeof(PlanDO).GetProperty(nameof(PlanState)),
             typeof(PlanDO).GetProperty(nameof(Category)),
-            typeof(PlanDO).GetProperty(nameof(Visibility))
+            typeof(PlanDO).GetProperty(nameof(Visibility)),
+            typeof(PlanDO).GetProperty(nameof(IsApp)),
+            typeof(PlanDO).GetProperty(nameof(AppLaunchURL))            
         };
      
         public PlanDO()
@@ -94,6 +113,10 @@ namespace Data.Entities
         
         public PlanVisibility Visibility { get; set; }
 
+        public bool IsApp { get; set; }
+
+        public string AppLaunchURL { get; set; }
+
         public string Category { get; set; }
 
         [NotMapped]
@@ -135,6 +158,8 @@ namespace Data.Entities
             Visibility = plan.Visibility;
             Category = plan.Category;
             LastUpdated = plan.LastUpdated;
+            AppLaunchURL = plan.AppLaunchURL;
+            IsApp = plan.IsApp;
         }
     }
 }

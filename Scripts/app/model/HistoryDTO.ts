@@ -19,6 +19,7 @@
         filter: string;
         isCurrentUser: boolean;
         orderBy: string;
+        appsOnly: boolean;
     }
 
     export class PagedResultDTO<T> {
