@@ -15,14 +15,14 @@ namespace Data.Repositories.Security.StorageImpl
         private static readonly List<ObjectRolePermissionsWrapper> ObjectRolePermissions = new List<ObjectRolePermissionsWrapper>();
         private string roleName;
         private Guid readRolePrivilegeId;
-        private Guid editRolePrivilegeID;
+        private Guid editRolePrivilegeId;
 
         public InMemorySecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
         {
             var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             roleName  = securityServices.GetRoleNames().FirstOrDefault();
             readRolePrivilegeId = Guid.Parse("01ee8bb1-05d0-41fd-bd55-6fcd69ec5ec7");
-            editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
+            editRolePrivilegeId = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
         public int InsertObjectRolePermission(string currentUserId, Guid dataObjectId, Guid rolePrivilegeId, string dataObjectType,
