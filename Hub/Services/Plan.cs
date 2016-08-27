@@ -72,9 +72,31 @@ namespace Hub.Services
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);
 
-            planQuery = planQueryDTO.Id == null
-                ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
-                : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
+            if (planQueryDTO.AppsOnly)
+            {
+                planQuery = planQueryDTO.Id == null
+                    ? planQuery.Where(pt => pt.IsApp == true)
+                    : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.IsApp == true);
+
+                if (account.OrganizationId.HasValue)
+                {
+                    // If the current user belongs to some organization, 
+                    // display all apps for that organization
+                    planQuery = planQuery.Where(pt => pt.Fr8Account.OrganizationId == account.OrganizationId);
+                }
+                else
+                {
+                    // If user does not belong to an org, just display his/her own apps.
+                    planQuery = planQuery.Where(pt => pt.Fr8Account.Id == account.Id);
+                }
+            }
+            else
+            {
+                planQuery = planQueryDTO.Id == null
+                    ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
+                    : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
+            }
+
 
             planQuery = !string.IsNullOrEmpty(planQueryDTO.Category)
                 ? planQuery.Where(c => c.Category == planQueryDTO.Category)

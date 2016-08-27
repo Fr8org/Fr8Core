@@ -155,8 +155,7 @@ module dockyard.services {
 
                 return <ng.IPromise<any>>configureActivityModal.result;
             };
-
-
+            
             // Method logic.
             var result = this.$q.defer<model.SubordinateSubplan>();
 
@@ -185,10 +184,32 @@ module dockyard.services {
                 this.$http.post('/api/subplans/activities?id=' + existingSubPlanId + "&filter=first", null)
                     .then((res: ng.IHttpPromiseCallbackArg<model.ActivityDTO>) => {
                         var activity = res.data;
-                        displayConfigureActivityModal(parentPlan, activity)
-                            .then(() => {
-                                result.resolve(new model.SubordinateSubplan(existingSubPlanId, activity.id));
-                            });
+
+                        // activity template was changed, need to create new activity
+                        if (activity.activityTemplate.name !== activityTemplate.name ||
+                            activity.activityTemplate.version !== activityTemplate.version ||
+                            activity.activityTemplate.terminalName !== activityTemplate.terminal.name ||
+                            activity.activityTemplate.terminalVersion !== activityTemplate.terminal.version) {
+
+                            this.ActionService.deleteById({ id: activity.id })
+                                .$promise.then(() => {
+                                    createActivity(activityTemplate, parentPlan, existingSubPlanId)
+                                        .then((activity: model.ActivityDTO) => {
+                                            result.resolve(new model
+                                                .SubordinateSubplan(existingSubPlanId, activity.id));
+                                        })
+                                        .catch((reason: any) => {
+                                            result.reject(reason);
+                                        });
+                                }).catch((reason: any) => {
+                                    result.reject(reason);
+                                });
+                        } else {
+                            displayConfigureActivityModal(parentPlan, activity)
+                                .then(() => {
+                                    result.resolve(new model.SubordinateSubplan(existingSubPlanId, activity.id));
+                                });    
+                        }
                     });
             }
 
