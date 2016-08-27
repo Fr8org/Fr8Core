@@ -383,7 +383,8 @@ namespace Hub.Security
                     {
                         if (orgId == organizationId)
                         {
-                            var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
+                            var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject)
+                                                    where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
 
                             var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
                             var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
