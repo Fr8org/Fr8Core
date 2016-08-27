@@ -120,7 +120,7 @@ module dockyard.directives.designerHeader {
                         }
                     }
 
-                    if (!at.categories.some((value) => { return value.name.toLowerCase() === "triggers";
+                    if (!at.categories.some((value) => { return (value.name.toLowerCase() === "triggers" || value.name.toLocaleLowerCase() === "solution");
                     })) {
                         // mark plan as Inactive
                         $scope.plan.planState = model.PlanState.Inactive;

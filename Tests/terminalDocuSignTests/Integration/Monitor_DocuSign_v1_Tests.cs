@@ -132,6 +132,8 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
+        private const string TemplateName = "Fr8 Fromentum Registration Form";
+
         private async Task<Tuple<ActivityDTO, string>> GetActivityDTO_WithTemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -163,9 +165,10 @@ namespace terminalDocuSignTests.Integration
                 var templateDdl = (DropDownList)radioGroup.Radios[1].Controls[0];
 
                 Assert.IsTrue(templateDdl.ListItems.Count > 0);
-
-                templateDdl.Value = templateDdl.ListItems[0].Value;
-                selectedTemplate = templateDdl.selectedKey = templateDdl.ListItems[0].Key;
+                var selectedItem = templateDdl.ListItems.FirstOrDefault(x => x.Key == TemplateName);
+                Assert.IsNotNull(selectedItem, $"Template with name '{TemplateName}' doesn't exist");
+                templateDdl.Value = selectedItem.Value;
+                selectedTemplate = templateDdl.selectedKey = selectedItem.Key;
             }
 
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedTemplate);
@@ -257,8 +260,7 @@ namespace terminalDocuSignTests.Integration
         /// the value of that field should be equal to what was set to "UpstreamCrate" drop-down-list.
         /// </summary>
         [Test]
-        public async Task
-            Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -353,9 +355,7 @@ namespace terminalDocuSignTests.Integration
         /// <summary>
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
-        /// 
-        //Commented out by Sergey as a part of FR-2545
-        [Test, Ignore]
+        [Test]
         public async Task Monitor_DocuSign_Run_TemplateValue()
         {
             var envelopeId = Guid.NewGuid().ToString();
@@ -364,7 +364,8 @@ namespace terminalDocuSignTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             var activityDTO = await GetActivityDTO_WithTemplateValue();
-            activityDTO.Item1.AuthToken = await HealthMonitor_FixtureData.DocuSign_AuthToken(this);
+            var authToken = await HealthMonitor_FixtureData.DocuSign_AuthToken(this);
+            activityDTO.Item1.AuthToken = authToken;
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO.Item1 };
             var preparedActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
@@ -373,30 +374,20 @@ namespace terminalDocuSignTests.Integration
 
             AddPayloadCrate(
                 dataDTO,
-                new EventReportCM()
+                new EventReportCM
                 {
-                    EventPayload = new CrateStorage()
-                    {
-                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
-                            "EventReport",
-                            new StandardPayloadDataCM(
-                                new KeyValueDTO("TemplateName", activityDTO.Item2),
-                                new KeyValueDTO("EnvelopeId", envelopeId)
-                            )
-                        )
-                    }
+                    EventPayload = HealthMonitor_FixtureData.GetEnvelopePayload()
                 }
             );
 
-            preparedActionDTO.AuthToken = dataDTO.ActivityDTO.AuthToken;
+            preparedActionDTO.AuthToken = authToken;
 
-            var responsePayloadDTO =
-                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Fields").Count());
-
-            var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Fields").Single();
+            var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Fields").SingleOrDefault();
+            Assert.IsNotNull(docuSignPayload, "Crate with DocuSign envelope fields was not found in payload");
+            Assert.AreEqual(15, docuSignPayload.AllValues().Count(), "DocuSign envelope fields count doesn't match expected value");
         }
 
         /// <summary>

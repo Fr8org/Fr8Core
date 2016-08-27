@@ -321,20 +321,6 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
-
-            // Notify UI for stopped plan
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
-                _pusherNotifier.NotifyUser(new NotificationMessageDTO
-                {
-                    NotificationType = NotificationType.ExecutionStopped,
-                    Subject = "Plan Stopped",
-                    Message = $"\"{plan.Name}\" has been stopped.",
-                    Collapsed = false
-                }, plan.Fr8AccountId);
-            }
-
             return Ok();
         }
         /// <summary>
@@ -380,7 +366,7 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <param name="planId">Id of plan to execute</param>
         /// <param name="payload">Payload to provide to plan during execution</param>
-        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal", "Guest")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Container creating during successful plan execution", typeof(ContainerDTO))]

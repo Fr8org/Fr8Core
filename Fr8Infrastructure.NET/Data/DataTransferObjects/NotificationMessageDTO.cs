@@ -30,13 +30,4 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("collapsed")]
         public bool Collapsed { get; set; }
     }
-
-    public class NotificationPlanDTO : NotificationMessageDTO
-    {
-        [JsonProperty("planLastUpdated")]
-        public DateTimeOffset PlanLastUpdated { get; set; }
-
-        [JsonProperty("planId")]
-        public Guid PlanId { get; set; }
-    }
 }

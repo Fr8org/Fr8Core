@@ -24,6 +24,9 @@ using Hub.Exceptions;
 using StructureMap;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Text;
+using System.Web;
+
 namespace Hub.Services
 {
     public class TerminalDiscoveryService : ITerminalDiscoveryService
@@ -84,12 +87,19 @@ namespace Hub.Services
                     // We cannot trust user so get the value from the DB
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var terminalTempDo = uow.TerminalRepository.GetByKey(terminal.InternalId); //TODO: check user permissions here!!
-                        if (terminalTempDo == null)
+                        if(_securityService.AuthorizeActivity(PermissionType.UseTerminal, terminal.InternalId, nameof(TerminalDO)))
                         {
-                            throw new Fr8NotFoundException(nameof(terminal.InternalId), $"Terminal with the id {terminal.InternalId} is not found.");
+                            var terminalTempDo = uow.TerminalRepository.GetByKey(terminal.InternalId);
+                            if (terminalTempDo == null)
+                            {
+                                throw new Fr8NotFoundException(nameof(terminal.InternalId), $"Terminal with the id {terminal.InternalId} is not found.");
+                            }
+                            safeParticipationState = terminalTempDo.ParticipationState;
                         }
-                        safeParticipationState = terminalTempDo.ParticipationState;
+                        else
+                        {
+                            throw new HttpException(403, $"You are not authorized to use Terminal {terminal.Name}!");
+                        }
                     }
                 }
             }
@@ -252,7 +262,7 @@ namespace Hub.Services
             if (terminalDo.ParticipationState == ParticipationState.Approved ||
                 terminalDo.ParticipationState == ParticipationState.Unapproved)
             {
-                bool discoveryResult = !await DiscoverInternal(terminalDo, true);
+                bool discoveryResult = (await DiscoverInternal(terminalDo, true)).IsSucceed;
                 if (!discoveryResult)
                 {
                     Logger.Info($"The terminal at {curEndpoint} has been registered but an error has occurred while carrying out discovery.");
@@ -291,7 +301,7 @@ namespace Hub.Services
             return await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl + "/discover", UriKind.Absolute), null, headers);
         }
 
-        public async Task<bool> Discover(TerminalDTO terminal, bool isUserInitiated)
+        public async Task<DiscoveryResult> Discover(TerminalDTO terminal, bool isUserInitiated)
         {
             TerminalDO existentTerminal = null;
 
@@ -311,8 +321,9 @@ namespace Hub.Services
             {
                 if (string.IsNullOrWhiteSpace(terminal.Endpoint))
                 {
-                    Logger.Warn("No endpoint was specified for discovery request");
-                    return false;
+                    var message = "No endpoint was specified for discovery request";
+                    Logger.Warn(message);
+                    return DiscoveryResult.Error(message);
                 }
 
                 Logger.Info($"Discovering of  terminal at '{terminal.Endpoint}' was requested...");
@@ -322,8 +333,9 @@ namespace Hub.Services
 
             if (existentTerminal == null)
             {
-                Logger.Info($"Discovery for terminal '{terminal.Endpoint}' failed: the provided Endpoint is not found in the Endpoint field of any of the existing Terminal entries.");
-                return false;
+                var message = $"Discovery for terminal '{terminal.Endpoint}' failed: the provided Endpoint is not found in the Endpoint field of any of the existing Terminal entries.";
+                Logger.Info(message);
+                return DiscoveryResult.Error(message);
             }
 
             return await DiscoverInternal(existentTerminal, isUserInitiated);
@@ -357,115 +369,135 @@ namespace Hub.Services
         //    }
         //}
 
-        private async Task<bool> DiscoverInternal(TerminalDO terminalDo, bool isUserInitiated)
+        private async Task<DiscoveryResult> DiscoverInternal(TerminalDO terminalDo, bool isUserInitiated)
         {
             var terminalUrl = terminalDo.Endpoint;
 
             Logger.Info($"Starting discovering terminal at '{terminalUrl}'. Reporting about self as the Hub at '{_serverUrl}'.");
-            bool result = false;
+
+
+            string secret = null;
+
+            if (terminalDo.ParticipationState == ParticipationState.Blocked)
+            {
+                var message = $"Discovery for terminal '{terminalUrl}' will not happen because the terminal is blocked.";
+
+                Logger.Info(message);
+                return DiscoveryResult.Error(message);
+            }
+
+            if (terminalDo.ParticipationState == ParticipationState.Deleted)
+            {
+                var message = $"Discovery for terminal '{terminalUrl}' will not happen because the terminal is deleted.";
+                Logger.Info(message);
+                return DiscoveryResult.Error(message);
+            }
+
+            if (!string.IsNullOrWhiteSpace(terminalDo?.Secret))
+            {
+                secret = terminalDo.Secret;
+            }
+
+            if (secret == null)
+            {
+                Logger.Info($"Generating new secret for terminal at '{terminalUrl}'");
+                secret = Guid.NewGuid().ToString("N");
+            }
+
+            var headers = new Dictionary<string, string>
+            {
+                {"Fr8HubCallbackSecret", secret},
+                {"Fr8HubCallBackUrl", _serverUrl}
+            };
+
+            StandardFr8TerminalCM terminalRegistrationInfo = null;
 
             try
             {
-                string secret = null;
-
-                if (terminalDo.ParticipationState == ParticipationState.Blocked)
-                {
-                    Logger.Info($"Discovery for terminal '{terminalUrl}' will not happen because the terminal is blocked.");
-                    return false;
-                }
-
-                if (terminalDo.ParticipationState == ParticipationState.Deleted)
-                {
-                    Logger.Info($"Discovery for terminal '{terminalUrl}' will not happen because the terminal is deleted.");
-                    return false;
-                }
-
-                if (!string.IsNullOrWhiteSpace(terminalDo?.Secret))
-                {
-                    secret = terminalDo.Secret;
-                }
-
-                if (secret == null)
-                {
-                    Logger.Info($"Generating new secret for terminal at '{terminalUrl}'");
-                    secret = Guid.NewGuid().ToString("N");
-                }
-
-                var headers = new Dictionary<string, string>
-                {
-                    {"Fr8HubCallbackSecret", secret},
-                    { "Fr8HubCallBackUrl", _serverUrl}
-                };
-
-                StandardFr8TerminalCM terminalRegistrationInfo = null;
-
-                try
-                {
-                    terminalRegistrationInfo = await SendDiscoveryRequest(terminalUrl, headers);
-                }
-                catch (Exception ex)
-                {
-                    _eventReporter.ActivityTemplateTerminalRegistrationError($"Failed terminal service: {terminalUrl}. Error Message: {ex.Message} ", ex.GetType().Name);
-                    terminalRegistrationInfo = null;
-                }
-
-                if (terminalRegistrationInfo == null)
-                {
-                    // Discovery failed
-                    Logger.Error($"Terminal at '{terminalUrl}'  didn't return a valid response to the discovery request.");
-                    // Set terminal status inactive 
-                    terminalDo.OperationalState = OperationalState.Inactive;
-                    result = false;
-                }
-                else
-                {
-                    terminalDo.Secret = secret;
-                    terminalDo.OperationalState = OperationalState.Active;
-                    terminalDo.AuthenticationType = terminalRegistrationInfo.Definition.AuthenticationType;
-                    terminalDo.Description = terminalRegistrationInfo.Definition.Description;
-                    terminalDo.Label = terminalRegistrationInfo.Definition.Label;
-                    terminalDo.Name = terminalRegistrationInfo.Definition.Name;
-                    terminalDo.Version = terminalRegistrationInfo.Definition.Version;
-                    terminalDo.TerminalStatus = terminalRegistrationInfo.Definition.TerminalStatus;
-
-                    terminalDo.Secret = secret;
-                    if (string.IsNullOrWhiteSpace(terminalDo.Label))
-                    {
-                        terminalDo.Label = terminalDo.Name;
-                    }
-                    result = true;
-                }
-                terminalDo = _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
-
-                if (result)
-                {
-                    var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
-                    foreach (var curItem in activityTemplates)
-                    {
-                        Logger.Info($"Registering activity '{curItem.Name}' from terminal at '{terminalUrl}'");
-                        try
-                        {
-                            curItem.Terminal = terminalDo;
-                            curItem.TerminalId = terminalDo.Id;
-
-                            _activityTemplateService.RegisterOrUpdate(curItem);
-                        }
-                        catch (Exception ex)
-                        {
-                            _eventReporter.ActivityTemplateTerminalRegistrationError($"Failed to register {curItem.Terminal.Name} terminal. Error Message: {ex.Message}", ex.GetType().Name);
-                        }
-                    }
-
-                    _activityTemplateService.RemoveInactiveActivities(terminalDo, activityTemplates);
-                }
-                Logger.Info($"Successfully discovered terminal at '{terminalUrl}'.");
-                return result;
+                terminalRegistrationInfo = await SendDiscoveryRequest(terminalUrl, headers);
             }
             catch (Exception ex)
             {
+                Logger.Warn("Failed to call terminal discovery endpoint", ex);
+
                 _eventReporter.ActivityTemplateTerminalRegistrationError($"Failed terminal service: {terminalUrl}. Error Message: {ex.Message} ", ex.GetType().Name);
-                return false;
+                terminalRegistrationInfo = null;
             }
+
+            if (terminalRegistrationInfo == null || terminalRegistrationInfo.Definition == null || terminalRegistrationInfo.Activities == null)
+            {
+                // Discovery failed
+                var message = $"Terminal at '{terminalUrl}'  didn't return a valid response to the discovery request.";
+
+                Logger.Warn(message);
+                // Set terminal status inactive 
+                terminalDo.OperationalState = OperationalState.Inactive;
+
+                try
+                {
+                    _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Failed to update information about the terminal.", ex);
+                }
+
+                return DiscoveryResult.Error(message);
+            }
+
+            terminalDo.Secret = secret;
+            terminalDo.OperationalState = OperationalState.Active;
+            terminalDo.AuthenticationType = terminalRegistrationInfo.Definition.AuthenticationType;
+            terminalDo.Description = terminalRegistrationInfo.Definition.Description;
+            terminalDo.Label = terminalRegistrationInfo.Definition.Label;
+            terminalDo.Name = terminalRegistrationInfo.Definition.Name;
+            terminalDo.Version = terminalRegistrationInfo.Definition.Version;
+            terminalDo.TerminalStatus = terminalRegistrationInfo.Definition.TerminalStatus;
+
+            if (string.IsNullOrWhiteSpace(terminalDo.Label))
+            {
+                terminalDo.Label = terminalDo.Name;
+            }
+
+            try
+            {
+                terminalDo = _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to update information about the terminal.", ex);
+                return DiscoveryResult.Error($"Internal error updating the information about the terminal at '{terminalUrl}'");
+            }
+
+            var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
+            var result = new DiscoveryResult(true, null);
+
+            foreach (var curItem in activityTemplates)
+            {
+                Logger.Info($"Registering activity '{curItem.Name}' from terminal at '{terminalUrl}'");
+
+                try
+                {
+                    curItem.Terminal = terminalDo;
+                    curItem.TerminalId = terminalDo.Id;
+
+                    _activityTemplateService.RegisterOrUpdate(curItem);
+                    result.SucceededTemplates.Add(curItem);
+                }
+                catch (Exception ex)
+                {
+                    _eventReporter.ActivityTemplateTerminalRegistrationError($"Failed to register activity {curItem.Name} of version {curItem.Version} for terminal {terminalDo.Name}. Error Message: {ex.Message}", ex.GetType().Name);
+
+                    Logger.Warn($"Failed to register activity {curItem.Name} of version {curItem.Version} for terminal {terminalDo.Name}", ex);
+                    result.FailedTemplates.Add(curItem);
+                }
+            }
+
+            _activityTemplateService.RemoveInactiveActivities(terminalDo, activityTemplates);
+
+            Logger.Info($"Successfully discovered terminal at '{terminalUrl}'.");
+
+            return result;
         }
     }
 }

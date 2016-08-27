@@ -48,7 +48,6 @@ namespace Hub.Services
             _upstreamDataExtractionService = upstreamDataExtractionService;
         }
 
-
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
             if (submittedActivityData.Id == Guid.Empty)
@@ -275,7 +274,6 @@ namespace Hub.Services
                         }
                     }
                 }
-
                 uow.SaveChanges();
             }
         }
@@ -335,7 +333,6 @@ namespace Hub.Services
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
-
             }
             catch (Exception e)
             {
@@ -391,10 +388,14 @@ namespace Hub.Services
 
         private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy)
         {
+            var isNewActivity = false;
             PlanTreeHelper.Visit(submittedActiviy, x =>
             {
                 if (x.Id == Guid.Empty)
                 {
+                    if (Object.ReferenceEquals(x, submittedActiviy)) {
+                        isNewActivity = true;
+                    }
                     x.Id = Guid.NewGuid();
                 }
                 var activityDO = x as ActivityDO;
@@ -412,8 +413,6 @@ namespace Hub.Services
                 }
             });
 
-
-
             PlanNodeDO plan;
             PlanNodeDO originalAction;
             if (submittedActiviy.ParentPlanNodeId != null)
@@ -424,13 +423,23 @@ namespace Hub.Services
                     throw new MissingObjectException($"Parent plan with Id {submittedActiviy.ParentPlanNodeId} doesn't exist");
                 }
                 originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
+                
+                //This might mean that this plan's parent was changed
+                if (originalAction == null && !isNewActivity)
+                {
+                    originalAction = uow.PlanRepository.GetById<PlanNodeDO>(submittedActiviy.Id);
+                    if (originalAction != null) {
+                        var originalActionsParent = uow.PlanRepository.Reload<PlanNodeDO>(originalAction.ParentPlanNodeId);
+                        originalActionsParent.ChildNodes.Remove(originalAction);
+                        originalAction.ParentPlanNodeId = plan.Id;
+                    }
+                }
             }
             else
             {
                 originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
                 plan = originalAction.ParentPlanNode;
             }
-
 
             if (originalAction != null)
             {
@@ -571,7 +580,6 @@ namespace Hub.Services
 
             exisiting.ActivationState = ActivationState.Deactivated;
         }
-
 
         private async Task<ActivityDO> CallActivityConfigure(IUnitOfWork uow, string userId, ActivityDO submittedActivity)
         {
@@ -765,6 +773,34 @@ namespace Hub.Services
             {
                 return uow.PlanRepository.GetActivityQueryUncached().Any(x => x.Id == id);
             }
+        }
+
+        public Task<ActivityDO> GetSubordinateActivity(IUnitOfWork uow, Guid id)
+        {
+            var activity = uow.PlanRepository.GetById<ActivityDO>(id);
+            if (activity.ChildNodes != null && activity.ChildNodes.Count == 1)
+            {
+                var subordinateSubPlan = activity.ChildNodes.First() as SubplanDO;
+                if (subordinateSubPlan != null)
+                {
+                    if (subordinateSubPlan.ChildNodes != null && subordinateSubPlan.ChildNodes.Count == 1)
+                    {
+                        var subordinateActivity = subordinateSubPlan.ChildNodes.First() as ActivityDO;
+                        if (subordinateActivity != null)
+                        {
+                            subordinateActivity.CrateStorage = string.Empty;
+                            subordinateActivity.AuthorizationTokenId = null;
+                            subordinateActivity.AuthorizationToken = null;
+
+                            uow.SaveChanges();
+
+                            return Task.FromResult(subordinateActivity);
+                        }
+                    }
+                }
+            }
+
+            return Task.FromResult<ActivityDO>(null);
         }
     }
 }

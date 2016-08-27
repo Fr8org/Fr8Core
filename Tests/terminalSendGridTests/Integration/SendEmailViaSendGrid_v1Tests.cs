@@ -61,38 +61,6 @@ namespace terminalSendGridTests.Integration
             Assert.AreEqual(1, standardConfigurationControlCM.Where(w => w.FindByName("EmailBody") != null).Count());
         }
 
-        /// <summary>
-        /// Validate correct crate-storage structure in followup configuration response.
-        /// </summary>
-        [Ignore ("Current implementation do nothing during followup")]
-        [Test, Category("Integration.terminalSendGrid")]
-        public async Task SendEmailViaSendGrid_FollowUp_Configuration_Check_Crate_Structure()
-        {
-            //Arrange
-            var configureUrl = GetTerminalConfigureUrl();
-
-            var dataDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
-
-            //Act
-            //Call first time for the initial configuration
-            var responseActionDTO =
-                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    dataDTO
-                );
-            dataDTO.ActivityDTO = responseActionDTO;
-            //Call second time for the follow up configuration
-            responseActionDTO =
-                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    dataDTO
-                );
-
-            //Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-        }
-
         [Test, Category("Integration.terminalSendGrid")]
         public async Task SendEmailViaSendGrid_Run_Returns_Payload()
         {

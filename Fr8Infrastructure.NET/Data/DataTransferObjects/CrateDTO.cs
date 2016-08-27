@@ -20,7 +20,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("manifestRegistrar")]
         public string ManifestRegistrar
         {
-            get { return "www.fr8.co/registry"; }
+            get { return "fr8.co/registry"; }
         }
 
         [JsonProperty("id")]

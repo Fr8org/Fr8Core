@@ -13,6 +13,21 @@ namespace Data.Entities
 {
     public class PlanNodeDO : BaseObject
     {
+        /*
+         * IMPORTANT: IF YOU'RE ADDING A NEW PROPERTY/FIELD, 
+         * be sure to declare it in the following places, otherwise values 
+         * of the new properties will not be persisted:
+         * 
+         * 1. Add it to the list of tracked properties, e.g. 
+         *      typeof(PlanNodeDO).GetProperty(nameof(MyNewProperty))
+         *    Note: don't add virtual navigation properties to this list, 
+         *    only add the foreign key property for a navigation property. 
+         * 
+         * 2. Add it to the CopyProperties() method, e.g.
+         *      MyNewProperty = plan.MyNewProperty;
+         *      
+         */
+
         private static readonly PropertyInfo[] TrackingProperties =
         {
             typeof (PlanNodeDO).GetProperty(nameof(ParentPlanNodeId)),

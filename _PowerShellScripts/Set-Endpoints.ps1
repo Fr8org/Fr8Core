@@ -23,10 +23,15 @@ param(
 	[string]$serviceName
 )
 
+if (-Not $newHostname.StartsWith("http://"))
+{
+	$newHostname = "http://{newHostName}"
+}
+
 $ErrorActionPreference = 'Stop'
 $commandTextTmpl = "
 	UPDATE Terminals SET [Endpoint] = 
-	('http://{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
+	('{newHostname}' + RIGHT ([DevUrl], CHARINDEX (':', REVERSE ([DevUrl]))))
 	WHERE CHARINDEX (':', REVERSE ([DevUrl])) <= 6 AND IsFr8OwnTerminal = 1"
 
 
@@ -48,7 +53,7 @@ switch ($environment) {
 		if ($newHostname -ne $null) {
 			Write-Warning "-newHostname parameter is ignored when -environment is set to 'staging'"
 		}
-		$newHostname = $deployment.Url.Host
+		$newHostname = "http://" + $deployment.Url.Host
 		Write-Host "Staging hostname is $newHostname"
 		$commandText = $commandTextTmpl -replace '{newHostname}', $newHostname
 		break;

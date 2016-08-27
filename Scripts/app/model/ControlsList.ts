@@ -31,6 +31,10 @@
 
     export class CheckBox extends ControlDefinitionDTO {
         selected: boolean;
+        constructor() {
+            super();
+            this.type = 'CheckBox';
+        }
     }
 
     export class Button extends ControlDefinitionDTO {
@@ -159,9 +163,27 @@
     {
         constructor() {
             super("TextBoxMetaDescriptionDTO", "TextBox");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
+        }
+    }
+
+    export class RadioGroupMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("RadioGroupMetaDescriptionDTO", "Radio Group");
+            var label = new TextBox();
+            label.label = "Label: ";
+            this.controls.push(label);
+
+            var values = new TextBox();
+            values.label = "Values (comma-separated): ";
+            this.controls.push(values);
+
+            var defaultValue = new TextBox();
+            defaultValue.label = "Default Value: ";
+            this.controls.push(defaultValue);
         }
     }
     
@@ -169,7 +191,7 @@
     {
         constructor() {
             super("TextBlockMetaDescriptionDTO", "TextBlock");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Text Content :";
             this.controls.push(tb);
         }
@@ -181,7 +203,7 @@
 
         constructor() {
             super("FilePickerMetaDescriptionDTO", "File Uploader");
-            var tb = new model.TextBox();
+            var tb = new TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
@@ -190,7 +212,7 @@
                 var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
                 listItems.push(extensionValue);
             }
-            var allowedExtensions = new model.DropDownList();
+            var allowedExtensions = new DropDownList();
             allowedExtensions.listItems = listItems;
             allowedExtensions.label = "File Type:";
             this.controls.push(allowedExtensions);
@@ -202,14 +224,51 @@
         constructor() {
             super('SelectDataMetaDescriptionDTO', 'Select Data');
 
+            var tb = new TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var sd = new SelectData();
+            sd.label = 'Template Activity';
+            sd.name = 'SelectData';
+            this.controls.push(sd);
+        }
+    }
+
+    export class DropDownListMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('DropDownListMetaDescriptionDTO', 'DropDownList');
+
             var tb = new model.TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
-            var sd = new model.SelectData();
-            sd.label = 'Template Activity';
-            sd.name = 'SelectData';
-            this.controls.push(sd);
+            var items = new model.TextBox();
+            items.label = "List values (comma-separated)";
+            this.controls.push(items);
+
+            //@tony: we can add sample of ddlb which user will see in app builder
+            //var ddl = new model.DropDownList();
+            //ddl.label = 'Template Activity';
+            //ddl.name = 'DropDownList';
+            //this.controls.push(ddl);
+        }
+    }
+
+    export class CheckBoxMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('CheckBoxMetaDescriptionDTO', 'CheckBox');
+
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var cb = new model.CheckBox();
+            cb.selected = false;
+            cb.name = "CheckBox" + Math.floor(Math.random() * 1000);
+            cb.label = "Initial selected state" ;
+            this.controls.push(cb);
+
         }
     }
 
@@ -248,8 +307,8 @@
     }
 
     export class CrateDetails {
-        manifestType: model.DropDownList;
-        label: model.DropDownList;
+        manifestType: DropDownList;
+        label: DropDownList;
     }
 
     export class UpstreamCrateChooser extends ControlDefinitionDTO {
@@ -261,6 +320,7 @@
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
         requestUpstream: boolean;
+        allowedManifestTypes: string[];
         source: FieldSource;
     }
 

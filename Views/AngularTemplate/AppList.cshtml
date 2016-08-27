@@ -1,0 +1,41 @@
+﻿<ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+
+<div ng-controller="AppListController" class="margin-top-10">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <h2 class="md-title font-green-haze uppercase">My Apps</h2>
+            <md-table-container ng-show="result.plans.length > 0">
+                <table md-table md-progress="promise">
+                    <tbody md-body>
+                        <tr md-row md-auto-select ng-repeat="app in result.plans">
+                            <td md-cell class="column-spacer" style="width: 70%;">{{ app.name }}</td>
+                            <td md-cell class="column-spacer" style="width: 30%;"><a href="{{app.appLaunchUrl}}" target="_blank" class="btn green route-list-header-button">Launch</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+            <md-table-pagination ng-show="result.plans.length > 0" md-limit="query.planPerPage" md-limit-options="[5, 10, 15, 20]" md-page="query.page" md-total="{{(result.totalPlanCount || result.totalPlanCount === 0) ? result.totalPlanCount : 'NaN'}}" md-on-paginate="loadApps" md-page-select></md-table-pagination>
+            <div ng-show="result.plans.length == 0" class="md-body-2">
+                <p class="md-title text-center">There are no apps in this view</p>
+                <p>In order to create an App do the following:</p>
+                <ol>
+                    <li>Create a new plan</li>
+                    <li>Add the App Builder action to the plan</li>
+                    <li>Add fields to the App</li>
+                    <li>Run the Plan</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT -->

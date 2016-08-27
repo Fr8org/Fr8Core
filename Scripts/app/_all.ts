@@ -33,7 +33,6 @@
 /// <reference path="services/localidentitygenerator.ts" />
 /// <reference path="services/planbuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
-/// <reference path="services/pushernotifierservice.ts" />
 /// <reference path="services/ActivityTemplateService.ts" />
 /// <reference path="services/UINotificationService.ts" />
 
@@ -67,37 +66,4 @@
     LIBRARIES    
 */
 // <reference path="../typings/jquery/jquery.d.ts" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

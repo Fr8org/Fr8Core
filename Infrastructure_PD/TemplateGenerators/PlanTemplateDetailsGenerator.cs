@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
@@ -32,6 +33,12 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                 ["planCreateUrl"] = CloudConfigurationManager.GetSetting("HubApiUrl") +
                 "plan_templates/createplan/?id=" + publishPlanTemplateDto.ParentPlanId
             });
+        }
+
+        public Task<bool> HasGeneratedPage(PublishPlanTemplateDTO planTemplate)
+        {
+            var pageName = $"{planTemplate.Name}-{planTemplate.ParentPlanId.ToString()}.html";
+            return Task.FromResult(File.Exists(Path.Combine(_templateGenerator.OutputFolder, pageName)));
         }
     }
 }

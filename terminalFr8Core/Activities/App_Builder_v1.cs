@@ -24,6 +24,7 @@ namespace terminalFr8Core.Activities
     {
         private readonly ExcelUtils _excelUtils;
         private readonly IPushNotificationService _pushNotificationService;
+        private readonly PlanService _planService;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -57,11 +58,10 @@ namespace terminalFr8Core.Activities
             submitButton.Clicked = false;
         }
 
-        private async Task PushLaunchURLNotification()
+        private string GetLaunchUrl()
         {
-            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
+           return CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -72,7 +72,10 @@ namespace terminalFr8Core.Activities
             Storage.Add(controls);
 
             await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload, true);
-            await PushLaunchURLNotification();
+            string launchUrl = GetLaunchUrl();
+            await _planService.ConfigureAsApp(ActivityId, launchUrl, ActivityContext.ActivityPayload.Label);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", "This Plan can be launched with the following URL: " + launchUrl);
+
         }
 
         private StandardConfigurationControlsCM GetMetaControls()
@@ -106,9 +109,14 @@ namespace terminalFr8Core.Activities
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
-            if (controlDefinitionDTO is TextBox)
+            var isLabelBasedPublishable = controlDefinitionDTO is TextBox ||
+                                            controlDefinitionDTO is RadioButtonGroup ||
+                                            controlDefinitionDTO is DropDownList ||
+                                            controlDefinitionDTO is CheckBox;
+            ;
+            if (isLabelBasedPublishable)
             {
-                PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
+                fieldConfigurator.AddField(controlDefinitionDTO.Label);
             }
         }
 
@@ -154,17 +162,6 @@ namespace terminalFr8Core.Activities
             return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers);
         }
 
-        private void PublishTextBox(TextBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
-        {
-            fieldConfigurator.AddField(textBox.Label);
-        }
-
-        private void ProcessTextBox(TextBox textBox)
-        {
-            var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(textBox.Label, textBox.Value));
-        }
-
         private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
         {
             int labeless_pickers = 0;
@@ -195,9 +192,22 @@ namespace terminalFr8Core.Activities
 
         private void ProcessCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
         {
-            if (controlDefinitionDTO is TextBox)
+            var isValueBasedProcessed = controlDefinitionDTO is TextBox || controlDefinitionDTO is RadioButtonGroup;
+            if (isValueBasedProcessed)
             {
-                ProcessTextBox((TextBox)controlDefinitionDTO);
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
+            }
+
+            if (controlDefinitionDTO is DropDownList)
+            {
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Value));
+            }
+            if (controlDefinitionDTO is CheckBox)
+            {
+                var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+                fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(controlDefinitionDTO.Label, controlDefinitionDTO.Selected.ToString()));
             }
         }
 
@@ -258,11 +268,12 @@ namespace terminalFr8Core.Activities
             AddControls(label, infoText, cc);
         }
 
-        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
+        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService, PlanService planService)
             : base(crateManager)
         {
             _excelUtils = excelUtils;
             _pushNotificationService = pushNotificationService;
+            _planService = planService;
         }
 
 
@@ -325,7 +336,7 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Submitting data..."));
                         Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
                         Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
                         Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));

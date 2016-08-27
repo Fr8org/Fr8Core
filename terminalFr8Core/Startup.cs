@@ -61,7 +61,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Get_File_From_Fr8_Store_v1>(Get_File_From_Fr8_Store_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Loop_v1>(Loop_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Fr8_Events_v1>(Monitor_Fr8_Events_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Query_Fr8_Warehouse_v1>(Query_Fr8_Warehouse_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Query_Fr8_Warehouse_v1>(Query_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Fr8_Warehouse_v1>(Save_To_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Search_Fr8_Warehouse_v1>(Search_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Select_Fr8_Object_v1>(Select_Fr8_Object_v1.ActivityTemplateDTO);
@@ -72,6 +72,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Test_Incoming_Data_v1>(Test_Incoming_Data_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_Email_v1>(Send_Email_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_SMS_v1>(Send_SMS_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_All_Payload_To_Fr8_Warehouse>(Save_All_Payload_To_Fr8_Warehouse.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

@@ -10,7 +10,21 @@
         isAllSelected: () => boolean;
         linkAccount: (terminal: model.AuthenticationTokenTerminalDTO) => void;
         apply: () => void;
-        $close: () => void;
+        $close: (result: any) => void;
+    }
+
+    export class AuthenticationPopupBlockedDialogController {
+        public static $inject = [
+            '$scope',
+            '$window'
+        ];
+
+        constructor(
+            private $scope: ng.IScope,
+            private $window: ng.IWindowService
+        ) {
+            (<any>$scope).hostname = $window.location.host || $window.location.hostname;
+        }
     }
 
     export class AuthenticationDialogController {
@@ -61,7 +75,7 @@
                 }
 
                 var data = [];
-
+                var authorizedActivities = [];
                 var i, j;
                 var terminalName;
                 for (i = 0; i < _activities.length; ++i) {
@@ -69,21 +83,23 @@
                     terminalName = activity.activityTemplate.terminalName;
                     for (j = 0; j < $scope.terminals.length; ++j) {
                         var terminal = $scope.terminals[j];
-                        if (terminal.name === terminalName && ((<any>terminal).useForAllActivities || (<any>activity).authorizeIsRequested)) {
+                        if (terminal.name === terminalName
+                            && ((<any>terminal).useForAllActivities || (<any>activity).authorizeIsRequested)
+                            && terminal.selectedAuthTokenId.toString() != activity.authTokenId) {
                             data.push({
                                 actionId: activity.id,
                                 authTokenId: terminal.selectedAuthTokenId,
                                 isMain: (<any>terminal).isMain
                             });
+                            authorizedActivities.push(activity.id);
                             break;
                         }
                     }
                 }
                 _loading = true;
-
                 $http.post(urlPrefix + '/authentication/tokens/grant', data)
                     .then((res) => {
-                        $scope.$close();
+                        $scope.$close(authorizedActivities);
                     })
                     .finally(() => {
                         _loading = false;
@@ -212,7 +228,7 @@
                         window.addEventListener('message', messageListener);
 
                         var isClosedHandler = function () {
-                            if (childWindow.closed) {
+                            if (childWindow && childWindow.closed) {
                                 window.removeEventListener('message', messageListener);
                                 $scope.isWaitingForResponse = false;
                                 $scope.$apply();
@@ -222,6 +238,22 @@
                             }
                         };
                         setTimeout(isClosedHandler, 500);
+
+                        var isBlockedHandler = function () {
+                            if (!childWindow || childWindow.outerHeight === 0) {
+                                $scope.isWaitingForResponse = false;
+                                $scope.$apply();
+
+                                $modal.open({
+                                    animation: true,
+                                    backdrop: 'static',
+                                    keyboard: false,
+                                    templateUrl: '/AngularTemplate/AuthenticationPopupBlockedDialog',
+                                    controller: 'AuthenticationPopupBlockedDialogController'
+                                });
+                            }
+                        };
+                        setTimeout(isBlockedHandler, 500);
                     });
             };
 
@@ -288,6 +320,7 @@
             };
 
             var _reloadTerminals = function (preselectedTokens?: Array<{ terminalName: string, authTokenId: number, isMain: boolean }>) {
+                // debugger; 
                 var activities = $scope.activities || [];
                 _activities = activities;
 
@@ -367,4 +400,5 @@
     }
 
     app.controller('AuthenticationDialogController', AuthenticationDialogController);
+    app.controller('AuthenticationPopupBlockedDialogController', AuthenticationPopupBlockedDialogController);
 } 

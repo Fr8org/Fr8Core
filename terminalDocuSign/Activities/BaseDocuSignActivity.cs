@@ -22,7 +22,7 @@ namespace terminalDocuSign.Activities
             DocuSignManager = docuSignManager;
         }
 
-       
+
         protected List<KeyValueDTO> CreateDocuSignEventValues(DocuSignEnvelopeCM_v2 envelope)
         {
             string curRecipientEmail = "";
@@ -39,7 +39,7 @@ namespace terminalDocuSign.Activities
             {
                 new KeyValueDTO("CurrentRecipientEmail", curRecipientEmail) {Tags = "EmailAddress"},
                 new KeyValueDTO("CurrentRecipientUserName", curRecipientUserName) {Tags = "UserName"},
-                new KeyValueDTO("Status", envelope?.Status),
+                new KeyValueDTO("EnvelopeStatus", envelope?.Status),
                 new KeyValueDTO("CreateDate", envelope?.CreateDate?.ToString()) {Tags = "Date"},
                 new KeyValueDTO("SentDate", envelope?.SentDate?.ToString()) {Tags = "Date"},
                 new KeyValueDTO("Subject", envelope?.Subject),
@@ -53,7 +53,7 @@ namespace terminalDocuSign.Activities
             {
                 new FieldDTO("CurrentRecipientEmail", AvailabilityType.RunTime) {Tags = "EmailAddress", SourceCrateLabel = label},
                 new FieldDTO("CurrentRecipientUserName", AvailabilityType.RunTime) {Tags = "UserName", SourceCrateLabel = label},
-                new FieldDTO("Status", AvailabilityType.RunTime) {SourceCrateLabel = label},
+                new FieldDTO("EnvelopeStatus", AvailabilityType.RunTime) {SourceCrateLabel = label},
                 new FieldDTO("CreateDate") {Tags = "Date", SourceCrateLabel = label},
                 new FieldDTO("SentDate", AvailabilityType.RunTime) {Tags = "Date", SourceCrateLabel = label},
                 new FieldDTO("Subject", AvailabilityType.RunTime) {SourceCrateLabel = label},
@@ -91,7 +91,7 @@ namespace terminalDocuSign.Activities
                 throw new ArgumentNullException(nameof(templateId));
             }
             var conf = DocuSignManager.SetUp(AuthorizationToken);
-            return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId).Select(x => new FieldDTO(x.Key) {Tags = x.Tags});
+            return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId).Select(x => new FieldDTO(x.Key) { Tags = x.Tags });
         }
 
         public IEnumerable<KeyValueDTO> GetEnvelopeData(string envelopeId)
@@ -129,7 +129,7 @@ namespace terminalDocuSign.Activities
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);
                 var templates = DocuSignManager.GetTemplatesList(conf);
-                control.ListItems = templates.Select(x => new ListItem() {Key = x.Key, Value = x.Value}).ToList();
+                control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
             }
         }
 
@@ -144,7 +144,7 @@ namespace terminalDocuSign.Activities
 
             return ex.Message.Contains("AUTHORIZATION_INVALID_TOKEN");
         }
-        
+
         protected abstract string ActivityUserFriendlyName { get; }
     }
 }

@@ -117,13 +117,19 @@
             });
             activities.forEach(activity => {
                 var foundActivity = resultActivities.filter(x => x.id === activity.id)[0];
-                foundActivity.authorizeIsRequested = true;
+                if (foundActivity) {
+                    foundActivity.authorizeIsRequested = true;
+                }
+                else if (activities.length === 1 && activity.ordering === 1) {
+                    (<any>activity).authorizeIsRequested = true;
+                    resultActivities.push(activity);
+                }
             });
             activities = resultActivities;
             modalScope.activities = activities;
             self._authDialogDisplayed = true;
 
-
+            // debugger;
             self.$modal.open({
                 animation: true,
                 templateUrl: '/AngularTemplate/AuthenticationDialog',
@@ -131,19 +137,20 @@
                 scope: modalScope
             })
             .result
-            .then(() => {
+            .then((result) => {
                 if (!this.isSolutionBasedPlan()) {
                     angular.forEach(activities, it => {
+                        if (result.indexOf(it.id) === -1) { return; }
                         self.$rootScope.$broadcast(
-                            dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                            new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
+                            directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                            new directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
                         );
                     });
                 }
                 else {
                     self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
+                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                        new directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
                     );
 
                     console.log(
@@ -154,17 +161,20 @@
                 }
             })
             .catch((result) => {
+                //If user cancelled authorization we should mark only those activities for which authorization was requested
                 angular.forEach(activities, function (a) {
-                    if (!self._canceledActivities[a.id]) {
+                    if (!self._canceledActivities[a.id] && (<any>a).authorizeIsRequested) {
                         self._canceledActivities[a.id] = true;
                     }
                 });
 
                 angular.forEach(activities, it => {
-                    self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
-                        new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
-                    );
+                    if ((<any>it).authorizeIsRequested) {
+                        self.$rootScope.$broadcast(
+                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
+                        new directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
+                        );
+                    }
                 });
             })
             .finally(() => {

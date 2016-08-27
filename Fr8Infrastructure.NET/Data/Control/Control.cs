@@ -33,6 +33,11 @@ namespace Fr8.Infrastructure.Data.Control
         void Reset(List<string> fieldNames = null);
     }
 
+    public interface ISelectable
+    {
+        bool Selected { get; set; }
+    }
+
     public class ControlTypes
     {
         public const string TextBox = "TextBox";
@@ -231,6 +236,65 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
+    public class RadioGroupMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public RadioGroupMetaDescriptionDTO() : base("RadioGroupMetaDescriptionDTO", "Radio Group")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            var labelTextBox = Controls[0];
+            var valuesTextBox = Controls[1];
+            var defaultValueTextBox = Controls[2];
+
+            var result = new RadioButtonGroup {Label = labelTextBox.Value, GroupName = labelTextBox.Value};
+            var realValues = (valuesTextBox.Value ?? string.Empty).Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.InvariantCulture)
+                .ToArray();
+            var defaultValue = defaultValueTextBox.Value?.Trim() ?? string.Empty;
+            var options = realValues.Select(x => new RadioButtonOption
+            {
+                Name = x,
+                Value = x,
+            }).ToList();
+            //First we check if one of the values exactly matches default value (if one is specified). If there is no such value we try to match it in case-insensitive way
+            var defaultOption = options.FirstOrDefault(x => string.Equals(x.Value, defaultValue, StringComparison.InvariantCulture))
+                                ?? options.FirstOrDefault(x => string.Equals(x.Value, defaultValue, StringComparison.InvariantCultureIgnoreCase));
+            if (defaultOption != null)
+            {
+                defaultOption.Selected = true;
+            }
+            //Radio group without options doesn't make any sense as it is unusable
+            if (options.Count == 0)
+            {
+                return null;
+            }
+            result.Radios = options;
+            return result;
+        }
+    }
+
+    public class CheckBoxMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public CheckBoxMetaDescriptionDTO() : base("CheckBoxMetaDescriptionDTO", "CheckBox")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            var c = this.Controls[1];
+            return new CheckBox()
+            {
+                Label = this.Controls.First().Value,
+                Selected = c.Selected,
+                Name = c.Name
+            };
+        }
+    }
+
     public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
         public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")
@@ -285,6 +349,34 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
+    public class DropDownListMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public DropDownListMetaDescriptionDTO()
+            : base("DropDownListMetaDescriptionDTO", "DropDownList")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            List<ListItem> items = null;
+            var values = this.Controls[1].Value;
+            if (String.IsNullOrEmpty(values))
+            {
+                items = new List<ListItem>();
+            }
+            else
+            {
+                items = values.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => new ListItem() { Key = x.Trim() , Value = x.Trim() }).ToList();
+            }
+                
+            return new DropDownList
+            {
+                Label = this.Controls[0].Value,
+                Name = "DropDownList",
+                ListItems = items
+            };
+        }
+    }
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
     public class ControlMetaDescriptionDTO
@@ -324,7 +416,7 @@ namespace Fr8.Infrastructure.Data.Control
 
         public List<ControlDefinitionDTO> CreateControls()
         {
-            return MetaDescriptions.Select(m => m.CreateControl()).ToList();
+            return MetaDescriptions.Select(m => m.CreateControl()).Where(x => x != null).ToList();
         }
     }
 
@@ -480,7 +572,7 @@ namespace Fr8.Infrastructure.Data.Control
                 ManifestType = CrateManifestTypes.StandardDesignTimeFields
             };
         }
-        
+
         public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
         public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && (!string.IsNullOrEmpty(Value) || !string.IsNullOrEmpty(selectedKey));
         public bool HasSpecificValue => ValueSource == SpecificValueSource && !string.IsNullOrEmpty(TextValue);
@@ -645,7 +737,7 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
-    public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition
+    public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition, ISelectable
     {
         public RadioButtonOption()
         {
@@ -711,7 +803,8 @@ namespace Fr8.Infrastructure.Data.Control
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("targetNodeId")] public Guid? TargetNodeId;
+        [JsonProperty("targetNodeId")]
+        public Guid? TargetNodeId;
     }
 
     public class FilterPaneField
@@ -723,7 +816,7 @@ namespace Fr8.Infrastructure.Data.Control
         public string Name { get; set; }
     }
 
-    public class ListItem
+    public class ListItem : ISelectable
     {
         [JsonProperty("selected")]
         public bool Selected { get; set; }
@@ -790,6 +883,9 @@ namespace Fr8.Infrastructure.Data.Control
 
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
+
+        [JsonProperty("allowedManifestTypes")]
+        public string[] AllowedManifestTypes { get; set; }
 
         [JsonIgnore]
         public bool HasValue

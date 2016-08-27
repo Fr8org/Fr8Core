@@ -33,13 +33,12 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-#if DEBUG
                 var fr8Account = ObjectFactory.GetInstance<IFr8Account>();
                 if (!fr8Account.CheckForExistingAdminUsers())
                 {
                     return RedirectToAction("SetupWizard", "Account");
                 }
-#endif
+
                 Fr8AccountDO dockyardAccountDO;
                 if (!String.IsNullOrEmpty(emailAddress))
                 {

@@ -9,7 +9,7 @@
         '$window',
         function ($scope, $http, $q, $uibModal, urlPrefix, $location, $window) {
             $scope.searchForm = {
-                searchText: $location.search().planSearch ? $location.search().planSearch : ''
+                searchText: ''
             };
 
             $scope.searched = false;
@@ -169,9 +169,22 @@
                             Metronic.unblockUI();
                         }
                         else {
-                            var url = urlPrefix + '/details/' + planTemplate.name + '-' + planTemplate.parentPlanId + '.html';
-                            window.open(url, '_blank');
-                            Metronic.unblockUI();
+                            var url = urlPrefix + '/api/v1/plan_templates/details_page?id=' + planTemplate.parentPlanId;
+                            $http.get(url)
+                                .then(function (res) {
+                                    if (!res.data) {
+                                        $uibModal.open({
+                                            templateUrl: '/NoDetailsPageDialog.html',
+                                            controller: 'NoDetailsPageDialogController'
+                                        });
+                                    }
+                                    else {
+                                        window.open(urlPrefix + '/' + res.data, '_blank');
+                                    }
+                                })
+                                .finally(function () {
+                                    Metronic.unblockUI();
+                                });
                         }
                     })
                     .finally(function () {
@@ -210,7 +223,7 @@
             $scope.showCategoryPage = function () {
                 var categories = $scope.selectedCategories.map(function (it) { return it.name; });
 
-                $http.post(urlPrefix + '/api/v1/page_definitions/get_category_page', categories)
+                $http.post(urlPrefix + '/api/v1/page_definitions/category_page', categories)
                     .then(function (res) {
                         if (res.data) {
                             $window.location.href = res.data.url;
@@ -229,6 +242,12 @@
                     $scope.privileged = privileged;
                 });
             extractActivityCategories();
+
+            if ($location.search().planSearch) {
+                $scope.searchForm.searchText = $location.search().planSearch;
+                $scope.searched = true;
+            }
+
             doSearch(1);
         }
     ])
@@ -238,6 +257,11 @@
         }
     ])
     .controller('NoPageDefinitionDialogController', [
+        '$scope',
+        function ($scope) {
+        }
+    ])
+    .controller('NoDetailsPageDialogController', [
         '$scope',
         function ($scope) {
         }

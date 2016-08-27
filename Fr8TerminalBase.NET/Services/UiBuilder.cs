@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
@@ -14,18 +15,21 @@ namespace Fr8.TerminalBase.Services
         /// <param name="name"></param>
         /// <param name="singleManifest"></param>
         /// <param name="requestConfig"></param>
+        /// <param name="allowedManifestTypes"></param>
         /// <returns></returns>
         public CrateChooser CreateCrateChooser(string name,
                                                string label,
-                                               bool singleManifest,
-                                               bool requestConfig = false)
+                                               bool singleManifest = true,
+                                               bool requestConfig = false,
+                                               IEnumerable<string> allowedManifestTypes = null)
         {
             var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
                 SingleManifestOnly = singleManifest,
-                RequestUpstream = true
+                RequestUpstream = true,
+                AllowedManifestTypes = allowedManifestTypes?.ToArray() ?? new string[0]
             };
 
             if (requestConfig)
@@ -35,9 +39,9 @@ namespace Fr8.TerminalBase.Services
 
             return control;
         }
-        
+
         /// <summary>
-        /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
+        /// Creates TextSourceControl to enter specific value or choose value from upstream crate.
         /// </summary>
         public TextSource CreateSpecificOrUpstreamValueChooser(string label,
                                                                string controlName,
@@ -46,7 +50,8 @@ namespace Fr8.TerminalBase.Services
                                                                string groupLabelText = "",
                                                                bool addRequestConfigEvent = false,
                                                                bool requestUpstream = false,
-                                                               AvailabilityType availability = AvailabilityType.NotSet)
+                                                               AvailabilityType availability = AvailabilityType.NotSet,
+                                                               string specificValue = null)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName, groupLabelText)
             {
@@ -65,6 +70,11 @@ namespace Fr8.TerminalBase.Services
                 control.Events.Add(new ControlEvent("onChange", "requestConfig"));
             }
 
+            if (!string.IsNullOrEmpty(specificValue))
+            {
+                control.ValueSource = "specific";
+                control.TextValue = specificValue;
+            }
             return control;
         }
 

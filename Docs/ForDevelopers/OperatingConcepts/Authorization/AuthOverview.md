@@ -1,6 +1,6 @@
 Authentication Overview
 =======================
-Back to [Authentication Home](./Authorization/Home.md)
+
 
 Many Activities will require authorization. That is, it will be necessary for that activity to have a set of credentials to some external service.
 

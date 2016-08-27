@@ -17,7 +17,11 @@
                 <md-tab label="My Plans">
                     <md-content class="md-padding">
                         <div id="Myfr8lines">
-                            <h3>My Plans <a ng-click="addPlan()" class="btn green route-list-header-button" event-add>Add Plan</a></h3>
+                            <h3> My Plans
+                                <div class="actions pull-right" event-add>
+                                    <a ng-click="addPlan()" class="btn green route-list-header-button">Add Plan</a>
+                                </div>
+                            </h3>
                             @Html.Partial("_PlanList")
                         </div>
                     </md-content>

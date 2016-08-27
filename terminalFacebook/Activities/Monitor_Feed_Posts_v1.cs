@@ -110,13 +110,12 @@ namespace terminalFacebook.Activities
 
             var facebookEventPayload = eventCrate.EventPayload.CrateContentsOfType<FacebookUserEventCM>()
                     .FirstOrDefault(e => e.ChangedFields.Contains(FacebookFeed));
-
             if (facebookEventPayload == null)
             {
                 RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
-            var fbPost = await _fbIntegration.GetPostByTime(AuthorizationToken.Token, facebookEventPayload.Time);
+            var fbPost = await _fbIntegration.GetPostById(AuthorizationToken.Token, facebookEventPayload.Id);
 
             if (fbPost == null)
             {
