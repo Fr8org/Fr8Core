@@ -278,7 +278,7 @@ namespace terminalDocuSignTests.Integration
                 .Single();
 
             Assert.AreEqual(1, availableFields.CrateDescriptions.Count, "Unexpected number of available crates");
-            Assert.AreEqual(15, availableFields.CrateDescriptions[0].Fields.Count, "Unexpected number of available fields");
+            Assert.AreEqual(16, availableFields.CrateDescriptions[0].Fields.Count, "Unexpected number of available fields");
         }
 
         /// <summary>
@@ -387,7 +387,7 @@ namespace terminalDocuSignTests.Integration
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Fields").SingleOrDefault();
             Assert.IsNotNull(docuSignPayload, "Crate with DocuSign envelope fields was not found in payload");
-            Assert.AreEqual(15, docuSignPayload.AllValues().Count(), "DocuSign envelope fields count doesn't match expected value");
+            Assert.AreEqual(16, docuSignPayload.AllValues().Count(), "DocuSign envelope fields count doesn't match expected value");
         }
 
         /// <summary>

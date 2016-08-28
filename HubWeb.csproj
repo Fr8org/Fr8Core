@@ -816,22 +816,17 @@
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
-    <Content Include="_PowerShellScripts\Set-EndpointsStaging.ps1" />
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
     <Content Include="_PowerShellScripts\Set-CS.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
-    <Content Include="_PowerShellScripts\Upload-File.ps1" />
     <Content Include="_PowerShellScripts\Start-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
-    <Content Include="_PowerShellScripts\Update-HostnameInTerminals.ps1" />
     <Content Include="_PowerShellScripts\Add-BuildServer.ps1" />
-    <Content Include="_PowerShellScripts\Set-EndpointsDev.ps1" />
     <Content Include="_PowerShellScripts\Check-Confirmation.ps1" />
     <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
     <Content Include="_PowerShellScripts\Run-ProtractorTests.ps1" />
-    <Content Include="_PowerShellScripts\Set-GitHubBuildStatus.ps1" />
     <Content Include="_PowerShellScripts\DeleteHostedDatabase.ps1" />
     <Content Include="_PowerShellScripts\RestoreDatabaseFromBackup.ps1" />
     <Content Include="_PowerShellScripts\CleanUpAfterTests.ps1" />
@@ -867,7 +862,6 @@
     <Content Include="Content\fonts\MavenPro-Regular.ttf" />
     <Content Include="Views\AngularTemplate\AppList.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
-    <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\AdminToolsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AppListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
@@ -4506,7 +4500,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.241.3\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.241.3\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4592,5 +4586,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.236.1\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.241.3\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.241.3\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>
