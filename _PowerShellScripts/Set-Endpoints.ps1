@@ -53,7 +53,7 @@ switch ($environment) {
 		if ($newHostname -ne $null) {
 			Write-Warning "-newHostname parameter is ignored when -environment is set to 'staging'"
 		}
-		$newHostname = $deployment.Url.Host
+		$newHostname = "http://" + $deployment.Url.Host
 		Write-Host "Staging hostname is $newHostname"
 		$commandText = $commandTextTmpl -replace '{newHostname}', $newHostname
 		break;

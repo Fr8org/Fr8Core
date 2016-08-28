@@ -17,8 +17,8 @@ module dockyard.directives.controlContainer {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function MetaControlContainer(): ng.IDirective {
-        var controller = ['$scope', '$modal', 'SubPlanService',
-            ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService) => {
+        var controller = ['$scope', '$modal', 'SubPlanService','$interval',
+            ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService, $interval) => {
                 var triggerChange = () => {
                     
                 if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -84,6 +84,8 @@ module dockyard.directives.controlContainer {
                 // yes it`s funny and wrong, we need have helper for parent scope search
                 
                 if ((<any>$scope.$parent.$parent.$parent.$parent.$parent.$parent).processing) {
+
+                    var tryAgain = $interval($scope.addControl,1000);
                     return;
                 }
 

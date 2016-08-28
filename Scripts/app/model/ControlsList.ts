@@ -244,7 +244,7 @@
             this.controls.push(tb);
 
             var items = new model.TextBox();
-            items.label = "Comma separated values of DDLB";
+            items.label = "List values (comma-separated)";
             this.controls.push(items);
 
             //@tony: we can add sample of ddlb which user will see in app builder

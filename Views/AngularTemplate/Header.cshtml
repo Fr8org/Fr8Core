@@ -33,12 +33,12 @@
                                             Hello
                                             @if (User.IsInRole("Guest"))
                                             {
-                                                <text>Guest User</text>
+                                                <text>Guest User!</text>
                                             }
                                             else
                                             {
-                                                <text>@User.Identity.GetUserName()</text>
-                                            }!
+                                                <text>@User.Identity.GetUserName() !</text>
+                                            }
                                         </span>
                                     </a>
                                     @if (!User.IsInRole("Guest"))

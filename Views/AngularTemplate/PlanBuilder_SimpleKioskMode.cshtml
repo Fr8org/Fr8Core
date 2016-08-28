@@ -1,4 +1,7 @@
-﻿<!-- MAIN CONTENT -->
+﻿<!--Needed for mobile kiosk mode. Otherwise it can not render page width correctly-->
+<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+
+<!-- MAIN CONTENT -->
 <div ng-controller="PlanBuilderController" style="margin-top:1px; margin-left: -15px; margin-right:-15px;" block-if="isBusy()" event-planbuilder>
     <div class="plan-loading-message" block-if="current.plan"></div>
     <div style="background-color: white;">
