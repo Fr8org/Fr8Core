@@ -67,6 +67,8 @@ namespace terminalSalesforce.Services
             switch (field.FieldType)
             {
                 case FieldType.Date:
+                    return DateTime.ParseExact(value, "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                case FieldType.DateTime:
                     return DateTime.ParseExact(value, "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-ddTHH:mm:ssZ");
                 case FieldType.Currency:
                 case FieldType.Double:

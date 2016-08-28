@@ -132,8 +132,9 @@ namespace terminalSalesforce.Services
                 case "picklist":
                     return FieldType.PickList;
                 case "date":
-                case "datetime":
                     return FieldType.Date;
+                case "datetime":
+                    return FieldType.DateTime;
                 case "currency":
                     return FieldType.Currency;
                 case "double":
