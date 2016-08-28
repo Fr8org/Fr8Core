@@ -1,6 +1,6 @@
 ﻿<#
     .SYNOPSIS
-	The script run arbitrary SQL from a file.
+	The script runs arbitrary SQL from a file.
 #>
 param(
     [Parameter(Mandatory = $true)]
