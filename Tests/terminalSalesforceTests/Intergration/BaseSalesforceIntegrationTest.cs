@@ -1,11 +1,8 @@
 ﻿using Fr8.TerminalBase.Interfaces;
 using Fr8.Testing.Integration;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using terminalSalesforce.Infrastructure;
+using terminalSalesforce.Services;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -15,9 +12,9 @@ namespace terminalSalesforceTests.Intergration
 
         public BaseSalesforceIntegrationTest()
         {
-
             _container = ObjectFactory.Container.CreateChildContainer();
             _container.Configure(MockedHubCommunicatorConfiguration);
+            _container.Configure(x => x.For<ISalesforceFilterBuilder>().Use<SalesforceFilterBuilder>());
         }
 
         public static void MockedHubCommunicatorConfiguration(ConfigurationExpression configuration)

@@ -273,6 +273,7 @@
     </Compile>
     <Compile Include="Infrastructure\Authentication.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
+    <Compile Include="Infrastructure\ISalesforceFilterBuilder.cs" />
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
@@ -288,6 +289,7 @@
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\SalesforceAuthHelper.cs" />
+    <Compile Include="Services\SalesforceFilterBuilder.cs" />
     <Compile Include="Services\SalesforceManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
