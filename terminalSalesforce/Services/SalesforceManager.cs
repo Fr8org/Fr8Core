@@ -263,30 +263,6 @@ namespace terminalSalesforce.Services
 
         #region Implemetation details
 
-        private string NormalizeFilterByFiedType(IEnumerable<FieldDTO> fields, string filter)
-        {
-            //split the filter by " AND "
-            var filterList = filter.Split(new string[] { " AND " }, StringSplitOptions.None).ToList();
-            foreach (var field in fields)
-            {
-                var matchedFilter = filterList.FirstOrDefault(x => x.Contains(field.Name));
-                if (matchedFilter == null)
-                {
-                    continue;
-                }
-                if (field.FieldType == FieldType.Date)
-                {
-                    var requiredDateFormat = matchedFilter.Substring(matchedFilter.IndexOf("'")).Replace("'", "");
-                    var normalizedValue = matchedFilter.Substring(0, matchedFilter.IndexOf("'")) +
-                                       DateTime.ParseExact(requiredDateFormat, "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-ddTHH:mm:ssZ");
-                    filterList[filterList.IndexOf(matchedFilter)] = normalizedValue;
-                }
-
-            }
-
-            return string.Join(" AND ", filterList.ToArray()); ;
-        }
-
         private StandardTableDataCM ParseQueryResult(QueryResult<object> queryResult)
         {
             var parsedObjects = new List<JObject>();
@@ -305,28 +281,43 @@ namespace terminalSalesforce.Services
             };
 
             List<TableRowDTO> list = new List<TableRowDTO>();
-            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties().Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(y => new TableCellDTO
+            foreach (var row in parsedObjects.Select(x => x.Properties().Where(y => y.Value.Type != JTokenType.Object).Select(y => new TableCellDTO
             {
                 Cell = new KeyValueDTO
                 {
                     Key = y.Name,
-                    Value = y.Value.Value<string>()
+                    Value = y.Value.ToString(),
+                    Type = ConvertType(y.Type)
                 }
             }).ToList()))
             {
                 row.Add(countOfObjectTableCell);
-                list.Add(new TableRowDTO() { Row = row });
+                list.Add(new TableRowDTO { Row = row });
             }
 
             if (!queryResult.Records.Any())
             {
-                list.Add(new TableRowDTO() { Row = new List<TableCellDTO>() { countOfObjectTableCell } });
+                list.Add(new TableRowDTO { Row = new List<TableCellDTO> { countOfObjectTableCell } });
             }
 
             return new StandardTableDataCM
             {
                 Table = list
             };
+        }
+
+        private static string ConvertType(JTokenType type)
+        {
+            switch (type)
+            {
+                case JTokenType.Integer:
+                case JTokenType.Float:
+                    return FieldType.Double;
+                case JTokenType.Date:
+                    return FieldType.DateTime;
+                default:
+                    return FieldType.String;
+            }
         }
 
         private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(
