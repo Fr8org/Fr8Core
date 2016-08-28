@@ -60,8 +60,8 @@ namespace terminalFr8Core.Activities
 
         private string GetLaunchUrl()
         {
-           return CloudConfigurationManager.GetSetting("DefaultHubUrl")
-                + "redirect/cloneplan?id=" + ActivityId;
+            return CloudConfigurationManager.GetSetting("DefaultHubUrl")
+                 + "redirect/cloneplan?id=" + ActivityId;
         }
 
         private async Task UpdateMetaControls()
@@ -162,7 +162,7 @@ namespace terminalFr8Core.Activities
             return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers);
         }
 
-        private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
+        private async Task ProcessFilePickers(IEnumerable<ControlDefinitionDTO> filepickers)
         {
             int labeless_pickers = 0;
             foreach (FilePicker filepicker in filepickers)
@@ -326,20 +326,28 @@ namespace terminalFr8Core.Activities
                 if (submitButton.Clicked)
                 {
                     // Push toast message to front-end
-                    
+
                     if (ActivityContext.ActivityPayload.RootPlanNodeId == null)
                     {
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
                     }
 
                     var flagCrate = Crate.FromContent(RunFromSubmitButtonLabel, new KeyValueListCM());
-                    
+
+
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Submitting data..."));
-                        Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
-                        Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
+                        try
+                        {
+                            Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Submitting data..."));
+                            Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
+                            Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
+                            Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
+                        }
+                        catch
+                        {
+                            UnClickSubmitButton();
+                        }
                     });
 
                     //we need to start the process - run current plan - that we belong to
