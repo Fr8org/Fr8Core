@@ -278,7 +278,7 @@ namespace terminalDocuSignTests.Integration
                 .Single();
 
             Assert.AreEqual(1, availableFields.CrateDescriptions.Count, "Unexpected number of available crates");
-            Assert.AreEqual(15, availableFields.CrateDescriptions[0].Fields.Count, "Unexpected number of available fields");
+            Assert.AreEqual(16, availableFields.CrateDescriptions[0].Fields.Count, "Unexpected number of available fields");
         }
 
         /// <summary>
