@@ -861,7 +861,6 @@
     <Content Include="_PowerShellScripts\Swap-AppService.ps1" />
     <Content Include="Content\fonts\MavenPro-Regular.ttf" />
     <Content Include="Views\AngularTemplate\AppList.cshtml" />
-    <Content Include="_PowerShellScripts\Update-XML.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\AdminToolsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AppListController.ts" />
