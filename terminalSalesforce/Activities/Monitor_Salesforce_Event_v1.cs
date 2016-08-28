@@ -164,7 +164,7 @@ namespace terminalSalesforce.Actions
                 var resultObjects = await _salesforceManager.Query(
                                                 sfEvent.ObjectType.ToEnum<SalesforceObjectType>(),
                                                 salesforceObjectFields, 
-                                                $"ID = '{sfEvent.ObjectId}'", 
+                                                new[] { new FilterConditionDTO { Field = "ID", Operator = "=", Value = sfEvent.ObjectId} }, 
                                                 AuthorizationToken);
 
                 Payload.Add(Crate<StandardTableDataCM>.FromContent(runtimeCrateLabel, resultObjects));
