@@ -279,6 +279,7 @@
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
+    <Compile Include="Controllers\EnvironmentSelectionController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
@@ -356,6 +357,7 @@
     <Content Include="Config\log4net.terminals.Demo.config.readme" />
     <Content Include="Config\log4net.terminals.Dev.config.readme" />
     <Content Include="Config\log4net.terminals.Release.config.readme" />
+    <Content Include="Views\EnvironmentSelection.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

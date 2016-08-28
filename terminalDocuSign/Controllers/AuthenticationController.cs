@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Results;
 using Newtonsoft.Json;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
@@ -20,6 +21,24 @@ namespace terminalDocuSign.Controllers
         public AuthenticationController(IHubLoggerService loggerService)
         {
             _loggerService = loggerService;
+        }
+
+        [HttpGet]
+        public IHttpActionResult RedirectToEnvironment(bool isDemo, string state)
+        {
+            var docuSignUrl = 
+        }
+
+        [HttpPost]
+        [Route("request_url")]
+        public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
+        {
+            var state = Guid.NewGuid();
+            return new ExternalAuthUrlDTO
+            {
+                ExternalStateToken = state.ToString(),
+                Url = $"{CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint")}/environment"
+            };
         }
 
         [HttpPost]

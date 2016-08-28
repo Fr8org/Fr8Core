@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using HubWeb.Controllers;
 
 namespace HubWeb.App_Start
 {
@@ -40,6 +41,12 @@ namespace HubWeb.App_Start
                 url: "manifest_registry",
                 defaults: new { controller = "ManifestRegistry", action = "Index" }
             );
+
+            routes.MapRoute(
+                name: "Tiny_ProcessOAuthCallback",
+                url: "p_oauth",
+                defaults: new { controller = "AuthenticationCallback", action = "ProcessSuccessfulOAuthResponse" }
+                );
 
             routes.MapRoute(
                 name: "Default",
