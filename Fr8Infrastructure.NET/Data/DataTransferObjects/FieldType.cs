@@ -7,5 +7,9 @@
         public const string Date = "Date";
 
         public const string PickList = "PickList";
+
+        public const string Currency = "Currency";
+
+        public const string Double = "Double";
     }
 }

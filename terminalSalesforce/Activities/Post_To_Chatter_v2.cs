@@ -193,7 +193,7 @@ namespace terminalSalesforce.Actions
                 {
                     var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
                                                               new[] { new FieldDTO("Id") },
-                                                              FilterConditionHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter),
                                                               AuthorizationToken);
                     var tasks = new List<Task<string>>(chatters.Table.Count);
                     foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
