@@ -32,7 +32,7 @@
                             </div>
                             <!-- isFr8OwnTerminal Button -->
                             <div class="form-group">
-                                <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-if="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
+                                <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-show="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
                                     This is a Fr8 own C# terminal or is deployed along with those
                                 </md-checkbox>
                             </div>
@@ -80,8 +80,8 @@
                             </div>
 
                             <!-- Approval (Admin) -->
-                            <div class="form-group" ng-if="canEditAllTerminals">
-                                <md-radio-group ng-model="approved" layout="row">
+                            <div class="form-group" ng-show="canEditAllTerminals">
+                                <md-radio-group ng-model="approved" layout="row" >
                                     <label class="control-label"><b style="padding-right: 10px">Status:</b></label>
                                     <md-radio-button data-ng-value="true">Approved</md-radio-button>
                                     <md-radio-button data-ng-value="false">Not Approved</md-radio-button>
