@@ -227,7 +227,6 @@ header#site-header:after {
 
 .web-services-container .item .label {
     display: block;
-    overflow: hidden;
     text-align: center;
     outline: none;
     color: #697882;
