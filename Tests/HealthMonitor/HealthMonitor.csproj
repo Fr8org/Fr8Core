@@ -77,7 +77,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup> 
+  <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
@@ -555,7 +555,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.242.15424-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.242.15424-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.242.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.242.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
@@ -584,7 +584,7 @@
     <Delete Files="@(_SettingsFile)" ContinueOnError="true">
     </Delete>
   </Target>
-  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.242.15424-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.242.15424-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.242.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.242.1\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
