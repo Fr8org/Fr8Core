@@ -410,7 +410,7 @@ namespace terminalDocuSign.Actions
 
             ActivityConfigurator.SetControlValue(
                 sendDocuSignEnvelope,
-                "target_docusign_template",
+                "TemplateSelector",
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
