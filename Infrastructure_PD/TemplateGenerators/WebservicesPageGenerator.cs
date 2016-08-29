@@ -103,8 +103,8 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
                     Tuple<string, string, string>(
                     publishPlanTemplateDTO.Name,
                     publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
-                    CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                    + "/plan_templates/createplan/?id=" + publishPlanTemplateDTO.ParentPlanId));
+                    CloudConfigurationManager.GetSetting("HubApiUrl")
+                    + "plan_templates/createplan/?id=" + publishPlanTemplateDTO.ParentPlanId));
                     //@tony: don't you muddling something?
                     //CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
                     //+ "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
