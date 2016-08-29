@@ -952,7 +952,7 @@ input[type=radio]:checked ~ div.nested-controls {
 }
 
 /* Fixes for displaying pop-ups inside Bootstrap modals (i.e. AppBuilder -> SelectData). */
-.inside-modal {
+.insidemodal {
     z-index: 1060 !important;
 }
 
