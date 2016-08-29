@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Fr8.TerminalBase.BaseClasses;
-using StructureMap;
-using Hub.StructureMap;
-using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Controllers;
 
 namespace terminalDocuSign
 {
@@ -13,6 +8,11 @@ namespace terminalDocuSign
     {
         public static void Register(HttpConfiguration config)
         {
+            config.Routes.MapHttpRoute(
+              name: "DocuSignEnvironmentSelection",
+              routeTemplate: "environmentSelection",
+              defaults: new { controller = "EnvironmentSelection", action = "Index", terminal = "terminal_DocuSign" }
+              );
             BaseTerminalWebApiConfig.Register("DocuSign", config);
         }
     }

@@ -64,7 +64,8 @@ namespace terminalDocuSign
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
-            return new Type[] {
+            return new[] {
+                    typeof(EnvironmentSelectionController),
                     typeof(ActivityController),
                     typeof(EventController),
                     typeof(TerminalController),

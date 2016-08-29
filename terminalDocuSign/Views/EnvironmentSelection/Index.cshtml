@@ -1,0 +1,17 @@
+﻿@using Fr8.Infrastructure.Utilities.Configuration
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Select DocuSign Account Type</title>
+</head>
+<body>
+<div style="background-color: #1b49a0; height: 67px;">
+    <img src="https://account.docusign.com/LoginApp/styles/olive/img/logo-docusign-header.png" alt="DocuSign"/>
+</div>
+<p>Please select the environment you use</p>
+<div><a href="@string.Format("{0}/api/v1/authentication/environment?isDemo=false&state={1}", CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), Model)">Regular Account</a></div>
+<div><a href="@string.Format("{0}/api/v1/authentication/environment?isDemo=true&state={1}", CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), Model)">Developer Account</a></div>
+<p>* if you don't know which one to choose, most likely you should choose regular account</p>
+</body>
+</html>

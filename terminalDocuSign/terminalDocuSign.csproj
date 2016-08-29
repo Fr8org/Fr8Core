@@ -357,7 +357,7 @@
     <Content Include="Config\log4net.terminals.Demo.config.readme" />
     <Content Include="Config\log4net.terminals.Dev.config.readme" />
     <Content Include="Config\log4net.terminals.Release.config.readme" />
-    <Content Include="Views\EnvironmentSelection.cshtml" />
+    <Content Include="Views\EnvironmentSelection\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

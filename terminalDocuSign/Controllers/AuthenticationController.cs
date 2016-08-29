@@ -24,9 +24,10 @@ namespace terminalDocuSign.Controllers
         }
 
         [HttpGet]
+        [ActionName("environment")]
         public IHttpActionResult RedirectToEnvironment(bool isDemo, string state)
         {
-            var docuSignUrl = 
+            return new RedirectResult(new Uri(CloudConfigurationManager.GetSetting($"environment{(isDemo ? "_DEMO" : string.Empty)}")), Request);
         }
 
         [HttpPost]
@@ -37,7 +38,7 @@ namespace terminalDocuSign.Controllers
             return new ExternalAuthUrlDTO
             {
                 ExternalStateToken = state.ToString(),
-                Url = $"{CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint")}/environment"
+                Url = $"{CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint")}/environmentSelection?state={state}"
             };
         }
 
