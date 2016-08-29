@@ -533,6 +533,7 @@
     <Content Include="Content\icons\forward-icon-64x64.png" />
     <Content Include="Content\icons\get-icon-64x64.png" />
     <Content Include="Content\icons\monitor-icon-64x64.png" />
+    <Content Include="Content\icons\plus.png" />
     <Content Include="Content\icons\process-icon-64x64.png" />
     <Content Include="Content\icons\web_services\asana-icon-64x64.png" />
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
