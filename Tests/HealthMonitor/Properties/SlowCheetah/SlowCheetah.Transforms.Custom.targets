@@ -422,25 +422,6 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
 
   </Target>
 
-  <Target Name="SlowCheetah_ClickOnceLooseFileUpdate" AfterTargets="_DeploymentComputeClickOnceManifestInfo" DependsOnTargets="DiscoverFilesToTransform">
-    <!-- For non app.config files which are being transformed we need to remove the original item and replace it with the transformed one -->
-    <ItemGroup>
-      <_DeploymentManifestFiles Remove="%(_FilesToTransformNotAppConfig.OriginalItemSpec)" />
-      <!-- Implementation for non-Link files -->
-      <_DeploymentManifestFiles Include="@(_FilesToTransformNotAppConfig->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')"
-                                Condition=" '%(_FilesToTransformNotAppConfig.Link)'=='' ">
-        <TargetPath Condition=" '%(_FilesToTransformNotAppConfig.Link)'=='' ">%(RelativeDir)%(Filename)%(Extension)</TargetPath>
-      </_DeploymentManifestFiles>
-
-      <!-- Implementation for Linked files -->
-      <_DeploymentManifestFiles Include="@(_FilesToTransformNotAppConfig->'$(OutDir)%(Link)')"
-                                Condition=" '%(_FilesToTransformNotAppConfig.Link)'!='' ">
-        <TargetPath>%(_FilesToTransformNotAppConfig.Link)</TargetPath>
-      </_DeploymentManifestFiles>
-    </ItemGroup>
-  </Target>
-
-
   <!-- ***********************************************************
   Setup project related items below
   ****************************************************************-->
