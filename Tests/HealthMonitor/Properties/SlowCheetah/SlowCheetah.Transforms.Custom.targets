@@ -105,7 +105,7 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
     </_FilesToTransform>
   
 </ItemDefinitionGroup>
-
+ 
   <PropertyGroup>
     <WapProjectTypeGuid>349c5851-65df-11da-9384-00065b846f21</WapProjectTypeGuid>
     <_IsWap Condition=" '$(WapProjectTypeGuid)' != '' and '$(ProjectTypeGuids)' != '' ">$(ProjectTypeGuids.Contains($(WapProjectTypeGuid)))</_IsWap>
