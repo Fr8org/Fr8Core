@@ -209,7 +209,8 @@ module dockyard.directives.dropDownListBox {
                 field: '=',
                 change: '&',
                 click: '&',
-                isDisabled: '='
+                isDisabled: '=',
+                inModal: '='
             }
         };
     }
