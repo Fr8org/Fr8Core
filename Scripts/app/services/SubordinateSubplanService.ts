@@ -146,6 +146,7 @@ module dockyard.services {
                 scope.view = null;
                 scope.isReConfiguring = false;
                 scope.mode = 'plan';
+                scope.inModal = true;
 
                 var configureActivityModal = this.$modal.open({
                     templateUrl: '/AngularTemplate/ConfigureActivityDialog',
@@ -305,6 +306,7 @@ module dockyard.services {
         view: string;
         isReConfiguring: boolean;
         mode: string;
+        inModal: boolean;
 
         save: () => void;
 
