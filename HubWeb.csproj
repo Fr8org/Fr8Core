@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>
-    </ProductVersion>
+	</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -26,9 +26,9 @@
     <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <RestorePackages>true</RestorePackages>
     <ApplicationInsightsResourceId>
-    </ApplicationInsightsResourceId>
+	</ApplicationInsightsResourceId>
     <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+	</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
+    <NoWarn>1532</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -4456,9 +4457,9 @@
     <TypeScriptModuleKind>None</TypeScriptModuleKind>
     <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
     <TypeScriptOutFile>
-    </TypeScriptOutFile>
+	</TypeScriptOutFile>
     <TypeScriptOutDir>
-    </TypeScriptOutDir>
+	</TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
@@ -4482,7 +4483,7 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PreBuildEvent>
-    </PreBuildEvent>
+	</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

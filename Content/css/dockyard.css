@@ -951,6 +951,17 @@ input[type=radio]:checked ~ div.nested-controls {
     min-width: 150px !important;
 }
 
+/* Fixes for displaying pop-ups inside Bootstrap modals (i.e. AppBuilder -> SelectData). */
+.insidemodal {
+    z-index: 1060 !important;
+}
+
+.dropdown-menu {
+    z-index: 1060 !important;
+}
+/* End Bootstrap modal fixes. */
+
+
 /*Class to display the text block properly*/
 .TextBlockClass {
     display: block;
