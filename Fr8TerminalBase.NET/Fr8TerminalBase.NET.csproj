@@ -108,6 +108,7 @@
     <Compile Include="Helpers\ApiIntegrationHelper.cs" />
     <Compile Include="Helpers\FilterConditionHelper.cs" />
     <Compile Include="Infrastructure\HubAuthenticationHeaderSignature.cs" />
+    <Compile Include="Infrastructure\OAuthToken.cs" />
     <Compile Include="Interfaces\IOAuthApiIntegration.cs" />
     <Compile Include="BaseClasses\OAuthApiIntegrationBase.cs" />
     <Compile Include="Helpers\ActivityConfigurator.cs" />

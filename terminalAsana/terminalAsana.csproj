@@ -207,7 +207,6 @@
     <Compile Include="Asana\Projects.cs" />
     <Compile Include="Asana\Services\AsanaClient.cs" />
     <Compile Include="Asana\Services\AsanaCommunicatorService.cs" />
-    <Compile Include="Asana\OAuthToken.cs" />
     <Compile Include="Asana\Services\AsanaRefreshTokenEventArgs.cs" />
     <Compile Include="Asana\Stories.cs" />
     <Compile Include="Asana\Tasks.cs" />

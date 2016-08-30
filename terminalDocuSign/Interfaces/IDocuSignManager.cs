@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Data.Entities;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
 using terminalDocuSign.DataTransferObjects;
@@ -11,6 +13,7 @@ namespace terminalDocuSign.Services.New_Api
 {
     public interface IDocuSignManager
     {
+        Task<OAuthToken> RequestAccessToken(string code, string state, bool isDemoEnvironment);
         DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO authToken);
         DocuSignApiConfiguration SetUp(string token);
         DocuSignApiConfiguration SetUp(AuthorizationToken authTokenDO);

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;

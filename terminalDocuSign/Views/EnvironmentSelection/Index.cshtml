@@ -1,4 +1,5 @@
-﻿@using Fr8.Infrastructure.Utilities.Configuration
+﻿@inherits System.Web.Mvc.WebViewPage
+@using Fr8.Infrastructure.Utilities.Configuration
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,12 +7,29 @@
     <title>Select DocuSign Account Type</title>
 </head>
 <body>
-<div style="background-color: #1b49a0; height: 67px;">
-    <img src="https://account.docusign.com/LoginApp/styles/olive/img/logo-docusign-header.png" alt="DocuSign"/>
-</div>
-<p>Please select the environment you use</p>
-<div><a href="@string.Format("{0}/api/v1/authentication/environment?isDemo=false&state={1}", CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), Model)">Regular Account</a></div>
-<div><a href="@string.Format("{0}/api/v1/authentication/environment?isDemo=true&state={1}", CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), Model)">Developer Account</a></div>
-<p>* if you don't know which one to choose, most likely you should choose regular account</p>
+    <div style="background-color: #1b49a0; height: 67px;">
+        <img src="https://account.docusign.com/LoginApp/styles/olive/img/logo-docusign-header.png" alt="DocuSign" />
+    </div>
+    <p>Please select the environment you use</p>
+    <div>
+        <a href="@string.Format(
+             "{0}/oauth/auth?response_type=code&client_id={1}&scope=all&redirect_uri={2}&state={3}",
+             CloudConfigurationManager.GetSetting("ApiUri"),
+             CloudConfigurationManager.GetSetting("OAuthClientId"),
+             HttpUtility.UrlEncode(CloudConfigurationManager.GetSetting("OAuthRedirectUri")),
+             Model)">Regular Account</a>
+    </div>
+    <div>
+        @*<a href="@string.Format(
+            "https://account-d.docusign.com/oauth/auth?response_type=code&client_id=e493e293-1d69-4969-9d13-eb9b88495d13&scope=all&redirect_uri=http%3A%2F%2Flocalhost%3A30643%2Fp_oauth%3FterminalName%3DterminalDocuSign%26terminalVersion%3D1&state={0}",
+            Model)">Developer Account</a>*@
+        <a href="@string.Format(
+            "{0}/oauth/auth?response_type=code&client_id={1}&scope=all&redirect_uri={2}&state={3}",
+            CloudConfigurationManager.GetSetting("ApiUri_DEMO"),
+            CloudConfigurationManager.GetSetting("OAuthClientId_DEMO"),
+            HttpUtility.UrlEncode(CloudConfigurationManager.GetSetting("OAuthRedirectUri_DEMO")),
+            Model)">Developer Account</a>
+    </div>
+    <p>* if you don't know which one to choose, most likely you should choose regular account</p>
 </body>
 </html>

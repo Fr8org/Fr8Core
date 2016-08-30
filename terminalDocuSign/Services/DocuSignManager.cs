@@ -13,12 +13,15 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;
+using RestSharp;
 using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services.New_Api
@@ -45,36 +48,55 @@ namespace terminalDocuSign.Services.New_Api
             return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token));
         }
 
+        public async Task<OAuthToken> RequestAccessToken(string code, string state, bool isDemoEnvironment)
+        {
+            var apiClient = new ApiClient(CloudConfigurationManager.GetSetting("ApiUri"));
+            var clientIdKey = CloudConfigurationManager.GetSetting($"OAuthClientId{(isDemoEnvironment ? "_DEMO" : string.Empty)}");
+            var clientSecretKey = CloudConfigurationManager.GetSetting($"OAuthClientSecret{(isDemoEnvironment ? "_DEMO" : string.Empty)}");
+            var authValue = ApiClient.Base64Encode($"{clientIdKey}:{clientSecretKey}");
+            //var result = await apiClient.CallApiAsync(
+            //    "oauth/token",
+            //    Method.POST,
+            //    null,
+            //    JsonConvert.SerializeObject(new {grant_type = "authorization_code", code = code}),
+            //    new Dictionary<string, string>
+            //    {
+            //        ["Authorization"] = $"Basic {authValue}",
+            //        ["Content-Type"] = "application/x-www-form-urlencoded"
+            //    },
+            //    null,
+            //    null,
+            //    null);
+            return new OAuthToken();
+        }
+        
         public DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO docuSignAuthDTO)
         {
-            string baseUrl = string.Empty;
-            string integratorKey = string.Empty;
+            var baseUrl = string.Empty;
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {
-                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey_DEMO");
                 baseUrl = CloudConfigurationManager.GetSetting("environment_DEMO") + "restapi/";
             }
             else
             {
-                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
-                baseUrl = docuSignAuthDTO.Endpoint.Replace("v2/accounts/" + docuSignAuthDTO.AccountId.ToString(), "");
+                baseUrl = docuSignAuthDTO.Endpoint.Replace("v2/accounts/" + docuSignAuthDTO.AccountId, "");
             }
-            ApiClient apiClient = new ApiClient(baseUrl);
-            string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
-            Configuration conf = new Configuration(apiClient);
+            var apiClient = new ApiClient(baseUrl);
+            var authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
+            var conf = new Configuration(apiClient);
             conf.AddDefaultHeader("Authorization", authHeader);
-            DocuSignApiConfiguration result = new DocuSignApiConfiguration() { AccountId = docuSignAuthDTO.AccountId, Configuration = conf };
+            var result = new DocuSignApiConfiguration { AccountId = docuSignAuthDTO.AccountId, Configuration = conf };
 
             if (string.IsNullOrEmpty(docuSignAuthDTO.AccountId)) //we deal with and old token, that don't have accountId yet
             {
-                AuthenticationApi authApi = new AuthenticationApi(conf);
+                var authApi = new AuthenticationApi(conf);
                 try
                 {
                     LoginInformation loginInfo = authApi.Login();
                     result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw new AuthorizationTokenExpiredOrInvalidException();
                 }

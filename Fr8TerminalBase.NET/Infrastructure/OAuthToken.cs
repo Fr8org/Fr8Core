@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace terminalAsana.Asana
+namespace Fr8.TerminalBase.Infrastructure
 {
     //it is not one-to-one binding to returned value, this is class for encapsulate meaningful values
     public class OAuthToken

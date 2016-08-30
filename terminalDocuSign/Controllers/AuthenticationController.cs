@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -10,6 +11,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Services;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Controllers
 {
@@ -17,17 +19,12 @@ namespace terminalDocuSign.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IHubLoggerService _loggerService;
+        private readonly IDocuSignManager _docuSignManager;
 
-        public AuthenticationController(IHubLoggerService loggerService)
+        public AuthenticationController(IHubLoggerService loggerService, IDocuSignManager docuSignManager)
         {
             _loggerService = loggerService;
-        }
-
-        [HttpGet]
-        [ActionName("environment")]
-        public IHttpActionResult RedirectToEnvironment(bool isDemo, string state)
-        {
-            return new RedirectResult(new Uri(CloudConfigurationManager.GetSetting($"environment{(isDemo ? "_DEMO" : string.Empty)}")), Request);
+            _docuSignManager = docuSignManager;
         }
 
         [HttpPost]
@@ -44,51 +41,66 @@ namespace terminalDocuSign.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
-                var authToken = await ObtainAuthToken(curCredentials);
-                if (authToken == null)
+                var codeRequestResult = ParseResponseParameters(externalAuthDTO.RequestQueryString);
+                if (string.IsNullOrEmpty(codeRequestResult.Code) || string.IsNullOrEmpty(codeRequestResult.State))
                 {
-                    return new AuthorizationTokenDTO()
-                    {
-                        Error = "Unable to authenticate in DocuSign service, invalid login name or password."
-                    };
+                    throw new ApplicationException("Code or State is empty");
                 }
-
-                var authorizationTokenDTO = new AuthorizationTokenDTO()
+                var now = DateTime.UtcNow;
+                var token = await _docuSignManager.RequestAccessToken(codeRequestResult.Code, codeRequestResult.State, codeRequestResult.IsDemo);
+                token.ExpirationDate = now.AddSeconds(token.ExpiresIn);
+                //TODO: request user info
+                return new AuthorizationTokenDTO
                 {
-                    Token = JsonConvert.SerializeObject(authToken),
-                            ExternalAccountId = curCredentials.Username,
-                            AuthCompletedNotificationRequired = true
+                    Token = JsonConvert.SerializeObject(token),
+                    ExternalAccountId = "docusign_developer@dockyard.company",
+                    ExternalAccountName = "docusign_developer@dockyard.company",
+                    ExternalDomainId = string.Empty,
+                    ExternalDomainName = string.Empty,
+                    ExternalStateToken = codeRequestResult.State
                 };
-
-                string demoAccountStr = string.Empty;
-                if (curCredentials.IsDemoAccount)
-                {
-                    demoAccountStr = CloudConfigurationManager.GetSetting("DemoAccountAttributeString");
-                }
-
-                if (authorizationTokenDTO.AdditionalAttributes == null)
-                {
-                    authorizationTokenDTO.AdditionalAttributes = demoAccountStr;
-                }
-                else if (!authorizationTokenDTO.AdditionalAttributes.Contains(demoAccountStr))
-                {
-                    authorizationTokenDTO.AdditionalAttributes += demoAccountStr;
-                }
-                return authorizationTokenDTO;
             }
             catch (Exception ex)
             {
-                await _loggerService.ReportTerminalError(ex, curCredentials.Fr8UserId);
-
-                return new AuthorizationTokenDTO()
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                return new AuthorizationTokenDTO
                 {
                     Error = "An error occurred while trying to authorize, please try again later."
                 };
             }
+        }
+
+        private RequestCodeResult ParseResponseParameters(string queryString)
+        {
+            if (string.IsNullOrEmpty(queryString))
+            {
+                throw new ApplicationException("QueryString is empty.");
+            }
+            var code = string.Empty;
+            var state = string.Empty;
+
+            var tokens = queryString.Split(new[] {'&'}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries))
+                .ToDictionary(x => x[0], x => x[1]);
+            var result = new RequestCodeResult();
+            string value;
+            if (tokens.TryGetValue("code", out value))
+            {
+                result.Code = value;
+            }
+            if (tokens.TryGetValue("state", out value))
+            {
+                result.State = value;
+            }
+            if (tokens.TryGetValue("demo", out value) && value == "1")
+            {
+                result.IsDemo = true;
+            }
+            return result;
         }
 
         private async Task<DocuSignAuthTokenDTO> ObtainAuthToken(CredentialsDTO curCredentials)
@@ -124,6 +136,15 @@ namespace terminalDocuSign.Controllers
             };
 
             return result;
+        }
+
+        private class RequestCodeResult
+        {
+            public string Code { get; set; }
+
+            public string State { get; set; }
+
+            public bool IsDemo { get; set; }
         }
     }
 }
