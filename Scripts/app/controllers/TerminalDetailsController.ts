@@ -1,4 +1,5 @@
 ﻿/// <reference path="../_all.ts" />
+
 module dockyard.controllers {
     'use strict';
 
@@ -89,23 +90,36 @@ module dockyard.controllers {
                     $scope.errorMessage = 'Production URL' + this.StringService.terminal["localhost_prod"];
                     return;
                 }
-
+                //if (!$scope.canEditAllTerminals) {
+                //    if ($scope.terminal.devUrl.indexOf('localhost') >= 0) {
+                //        let confirmDialog = this.$mdDialog.alert()
+                //            .title('Input error')
+                //            .textContent('Endpoint URL cannot contain the string "localhost".')
+                //            .targetEvent($event)
+                //            .ok('Ok');
+                //        this.$mdDialog.show(confirmDialog);
+                //        return;
+                //    }
+                //}
                 if ($scope.approved) {
                     if ($scope.terminal.participationState != enums.ParticipationState.Approved) {
                         this.showConfigurationDialog($event, "approve", $scope.terminal.name).then(() => {
                             $scope.terminal.participationState = enums.ParticipationState.Approved;
                             this.saveTerminal($scope.terminal);
                         });
-                    } else {
+                    }
+                    else {
                         this.saveTerminal($scope.terminal);
                     }
-                } else {
+                }
+                else {
                     if ($scope.terminal.participationState == enums.ParticipationState.Approved) {
                         this.showConfigurationDialog($event, "recall your approval of", $scope.terminal.name).then(() => {
                             $scope.terminal.participationState = enums.ParticipationState.Unapproved;
                             this.saveTerminal($scope.terminal);
                         });
-                    } else {
+                    }
+                    else {
                         this.saveTerminal($scope.terminal);
                     }
                 }
@@ -120,7 +134,6 @@ module dockyard.controllers {
                     }]
                 })
             }
-
             $scope.openPermissionsSetterModal = (terminal: model.TerminalDTO) => {
                 var modalInstance = $modal.open({
                     animation: true,
@@ -130,10 +143,10 @@ module dockyard.controllers {
                         terminal: () => terminal
                     }
                 });
-
                 modalInstance.result.then(function (terminal: model.TerminalDTO) {
                     //TerminalServire.setPermissions(terminal);
                 });
+
             }
         }
 
@@ -142,26 +155,26 @@ module dockyard.controllers {
             this.TerminalService.save(terminal).$promise.then(() => {
                 this.$state.go('terminals');
             })
-            .catch((e) => {
-                console.log('Terminal update failed: ' + e.data.message);
-                switch (e.status) {
-                    case 400:
-                        that.$scope.errorMessage = that.StringService.terminal["error400"];
-                        if (e.data.message) {
-                            that.$scope.errorMessage += " Additional information: " + e.data.message;
-                        }
-                        break;
-                    case 404:
-                        that.$scope.errorMessage = that.StringService.terminal["error404"];
-                        break;
-                    case 409:
-                        that.$scope.errorMessage = that.StringService.terminal["error409"];
-                        break;
-                    default:
-                        that.$scope.errorMessage = that.StringService.terminal["error"];
-                        break;
-                }
-            });
+                .catch((e) => {
+                    console.log('Terminal update failed: ' + e.data.message);
+                    switch (e.status) {
+                        case 400:
+                            that.$scope.errorMessage = that.StringService.terminal["error400"];
+                            if (e.data.message) {
+                                that.$scope.errorMessage += " Additional information: " + e.data.message;
+                            }
+                            break;
+                        case 404:
+                            that.$scope.errorMessage = that.StringService.terminal["error404"];
+                            break;
+                        case 409:
+                            that.$scope.errorMessage = that.StringService.terminal["error409"];
+                            break;
+                        default:
+                            that.$scope.errorMessage = that.StringService.terminal["error"];
+                            break;
+                    }
+                });
         }
 
         private showConfigurationDialog(event: MouseEvent, action: string, terminalName: string) {
@@ -178,6 +191,7 @@ module dockyard.controllers {
 
     app.controller('TerminalDetailsController', TerminalDetailsController);
     app.controller('PermissionsSetterModalController', ['$scope', '$modalInstance', 'terminal', ($scope: any, $modalInstance: any, terminal: model.TerminalDTO): void => {
+
         $scope.terminal = terminal;
 
         $scope.submitForm = () => {
@@ -187,5 +201,6 @@ module dockyard.controllers {
         $scope.cancel = () => {
             $modalInstance.dismiss();
         };
+
     }]);
 }

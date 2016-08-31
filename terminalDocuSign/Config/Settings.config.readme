@@ -26,6 +26,16 @@ exclude them from .gitignore.
 -->
 
 <appSettings>
+  <add key="DocusignTemplateCacheExpirationTimeout" value="30" />
+  <add key="terminalDocuSign.PollingInterval" value="15" />
+  <add key="terminalDocuSign.DefaultProductionUrl" value="terminaldocusign.fr8.co" />
+  <add key="terminalDocuSign.DefaultDevUrl" value="dev-terminals.fr8.co" />
+  <add key="terminalDocuSign.DefaultDemoUrl" value="demo-terminaldocusign.fr8.co" />
+  <add key="terminalDocuSign.OverrideDevUrl" value="http://dev-terminaldocusign.fr8.co" />
+  <add key="environment_DEMO" value="https://demo.docusign.net/" />
+  <add key="DemoAccountAttributeString" value="demoAccount;" />
+  <add key="environment" value="https://eu.docusign.net/" />
+    
   <!-- You can get the Demo integrator key when you sign up for a Demo DocuSign account -->
   <add key="DocuSignIntegratorKey_DEMO" value="" />
   

@@ -148,7 +148,6 @@ module dockyard.directives.paneConfigureAction {
         plan: model.PlanDTO;
         showAdvisoryPopup: boolean;
         myActivityTemplate: interfaces.IActivityTemplateVM;
-        inModal: boolean;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -199,10 +198,6 @@ module dockyard.directives.paneConfigureAction {
             private $q: ng.IQService, private LayoutService: services.ILayoutService,
             private ActivityTemplateHelperService: services.IActivityTemplateHelperService)
         {
-            if (angular.isUndefined($scope.inModal)) {
-                $scope.inModal = false;
-            }
-
             $scope.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
@@ -763,8 +758,7 @@ app.directive('paneConfigureAction', () => {
             plan: '=',
             subPlan: '=',
             view: '@',
-            processing: '=',
-            inModal: '='
+            processing: '='
         }
     };
 });

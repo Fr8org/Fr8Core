@@ -8,6 +8,7 @@ using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Logging;
+using System.Net;
 
 namespace Fr8.Infrastructure.Communication
 {
@@ -52,12 +53,15 @@ namespace Fr8.Infrastructure.Communication
         /// </summary>
         public RestfulServiceClient(MediaTypeFormatter formatter, HttpClient client)
         {
+            ServicePointManager.SecurityProtocol = 
+                SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls; // to enable the services which require TLS 1.1+ (Salesforce, Asana)
+
             if (client == null)
             {
                 client = new HttpClient();
 
 #if DEBUG 
-                client.Timeout = new TimeSpan(0, 10, 0); //5 minutes
+                client.Timeout = new TimeSpan(0, 10, 0); //10 minutes
 #else
                 client.Timeout = new TimeSpan(0, 2, 0); //2 minutes
 #endif

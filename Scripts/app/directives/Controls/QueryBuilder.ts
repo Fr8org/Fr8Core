@@ -53,8 +53,7 @@ module dockyard.directives {
                 requestUpstream: '=?',
                 isDisabled: '=',
                 addRowText: '@',
-                change: '=',
-                inModal: '='
+                change: '='
             },
             controller: ['$scope', '$timeout', 'CrateHelper','UpstreamExtractor',
                 function (

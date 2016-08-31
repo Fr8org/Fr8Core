@@ -157,12 +157,20 @@ namespace terminalSalesforce.Actions
                 .Fields;
 
             var filterValue = ActivityUI.SalesforceObjectFilter.Value;
-            var filterConditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
+            var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
+            //If without filter, just get all selected objects
+            //else prepare SOQL query to filter the objects based on the filter conditions
+            var parsedCondition = string.Empty;
+            if (filterDataDTO.Count > 0)
+            {
+                parsedCondition = FilterConditionHelper.ParseConditionToText(filterDataDTO);
+            }
+
             var resultObjects = await _salesforceManager
                 .Query(
                     salesforceObject.ToEnum<SalesforceObjectType>(),
                     salesforceObjectFields,
-                    filterConditions,
+                    parsedCondition,
                     AuthorizationToken
                 );
 

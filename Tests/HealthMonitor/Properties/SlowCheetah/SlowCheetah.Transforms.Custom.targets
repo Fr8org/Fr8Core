@@ -13,7 +13,27 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
 ***********************************************************************************************
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+  <!-- Fr8 Customization: Transforming Settings.config.src not included into the project. -->
+      <ItemGroup>
+      <_AdditionalFile Include="Config\Settings.config.Demo.src">
+        <DependentUpon>Settings.config.src</DependentUpon>
+        <IsTransformFile>True</IsTransformFile>
+      </_AdditionalFile>
+        <_AdditionalFile Include="Config\Settings.config.Dev.src">
+        <DependentUpon>Settings.config.src</DependentUpon>
+        <IsTransformFile>True</IsTransformFile>
+      </_AdditionalFile>
+        <_AdditionalFile Include="Config\Settings.config.Release.src">
+        <DependentUpon>Settings.config.src</DependentUpon>
+        <IsTransformFile>True</IsTransformFile>
+      </_AdditionalFile>
+        <_AdditionalFile Include="Config\Settings.config.src">
+        <TransformOnBuild>true</TransformOnBuild>
+        <SubType>Designer</SubType>
+      </_AdditionalFile>
+    </ItemGroup>
+  <!-- /Fr8 Customization -->
+  
   <PropertyGroup>
     <sc-MSBuildLibPathLocal Condition=" '$(sc-MSBuildLibPathLocal)'=='' ">$(LocalAppData)\Microsoft\MSBuild\SlowCheetah\v2.5.11\</sc-MSBuildLibPathLocal>
 
@@ -36,7 +56,6 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
       <_FilesToCopy Remove="@(_FilesToCopy)"/>
       <_FilesToCopy Include="$(SlowCheetahToolsPath)Microsoft.Web.XmlTransform.dll"/>
       <_FilesToCopy Include="$(SlowCheetahToolsPath)SlowCheetah.NuGet.template.proj"/>
-      <_FilesToCopy Include="$(SlowCheetahToolsPath)SlowCheetah.Transforms.targets"/>
       <_FilesToCopy Include="$(SlowCheetahToolsPath)SlowCheetah.Xdt.dll"/>
     </ItemGroup>
 
@@ -77,12 +96,16 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
       <TransformOnBuild>false</TransformOnBuild>
       <Link></Link>
     </EmbeddedResource>
-
+    <_AdditionalFile>
+      <TransformOnBuild>false</TransformOnBuild>
+      <Link></Link>
+    </_AdditionalFile>
     <_FilesToTransform>
       <IsAppConfig>false</IsAppConfig>
     </_FilesToTransform>
-  </ItemDefinitionGroup>
-
+  
+</ItemDefinitionGroup>
+ 
   <PropertyGroup>
     <WapProjectTypeGuid>349c5851-65df-11da-9384-00065b846f21</WapProjectTypeGuid>
     <_IsWap Condition=" '$(WapProjectTypeGuid)' != '' and '$(ProjectTypeGuids)' != '' ">$(ProjectTypeGuids.Contains($(WapProjectTypeGuid)))</_IsWap>
@@ -104,6 +127,9 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
       $(BuildDependsOn);
       TransformAllFiles;
       ScReplaceAppConfigItem;
+      <!-- Fr8 Customization: Transforming Settings.config.src not included into the project. -->
+      CopyAdditionalFileTransformResultToRoot;
+      <!-- / Fr8 Customization -->
     </BuildDependsOn>
     <!--<TransformAllFilesDependsOn>
       _CopyAppConfigFile;
@@ -119,6 +145,12 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
     <__SC_IntermediateAppConfig>$(IntermediateOutputPath)$(MSBuildProjectFile)-sc.App.config</__SC_IntermediateAppConfig>
   </PropertyGroup>
 
+  <Target Name="CopyAdditionalFileTransformResultToRoot">
+    <Message Text="************ %40(_AdditionalFile): [@(AdditionalFile)]"/>
+    <Copy SourceFiles="@(_AdditionalFile->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" 
+          DestinationFiles="$(ProjectDir)%(RelativeDir)%(Filename)%(Extension)" 
+          Condition=" Exists('@(_AdditionalFile->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')')"/>
+  </Target>
   <Target Name="TransformAllFiles"
           DependsOnTargets="$(TransformAllFilesDependsOn)" BeforeTargets="_CopyAppConfigFile">
     <!-- Now we have the item list _FilesToTransformNotAppConfig and _AppConfigToTransform item lists -->
@@ -209,6 +241,17 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
         <OriginalItemSpec>%(Identity)</OriginalItemSpec>
       </_FilesToTransform>
     </ItemGroup>
+
+    <!-- Fr8 Customization -->
+    <ItemGroup>
+      <_FilesToTransform Include="@(_AdditionalFile)"
+                         Condition=" '%(TransformOnBuild)' == 'true' ">
+        <Link>%(Link)</Link>
+        <!-- Required to remove the item if necessary later -->
+        <OriginalItemSpec>%(Identity)</OriginalItemSpec>
+      </_FilesToTransform>
+    </ItemGroup>
+    <!-- / Fr8 Customization -->
 
     <PropertyGroup>
       <_AppConfigFullPath>@(AppConfigWithTargetPath->'%(RootDir)%(Directory)%(Filename)%(Extension)')</_AppConfigFullPath>
@@ -378,25 +421,6 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
     <Message Text="    AppConfigWithTargetPath.TargetPath: @(AppConfigWithTargetPath->'%(TargetPath)')"/>-->
 
   </Target>
-
-  <Target Name="SlowCheetah_ClickOnceLooseFileUpdate" AfterTargets="_DeploymentComputeClickOnceManifestInfo" DependsOnTargets="DiscoverFilesToTransform">
-    <!-- For non app.config files which are being transformed we need to remove the original item and replace it with the transformed one -->
-    <ItemGroup>
-      <_DeploymentManifestFiles Remove="%(_FilesToTransformNotAppConfig.OriginalItemSpec)" />
-      <!-- Implementation for non-Link files -->
-      <_DeploymentManifestFiles Include="@(_FilesToTransformNotAppConfig->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')"
-                                Condition=" '%(_FilesToTransformNotAppConfig.Link)'=='' ">
-        <TargetPath Condition=" '%(_FilesToTransformNotAppConfig.Link)'=='' ">%(RelativeDir)%(Filename)%(Extension)</TargetPath>
-      </_DeploymentManifestFiles>
-
-      <!-- Implementation for Linked files -->
-      <_DeploymentManifestFiles Include="@(_FilesToTransformNotAppConfig->'$(OutDir)%(Link)')"
-                                Condition=" '%(_FilesToTransformNotAppConfig.Link)'!='' ">
-        <TargetPath>%(_FilesToTransformNotAppConfig.Link)</TargetPath>
-      </_DeploymentManifestFiles>
-    </ItemGroup>
-  </Target>
-
 
   <!-- ***********************************************************
   Setup project related items below

@@ -2,7 +2,6 @@
 using Moq;
 using StructureMap;
 using terminalSalesforce.Infrastructure;
-using terminalSalesforce.Services;
 
 namespace terminalSalesforce
 {
@@ -31,9 +30,8 @@ namespace terminalSalesforce
          {
              public LiveMode()
              {
-                 For<IEvent>().Use<Event>();
-                 For<ISalesforceManager>().Use<SalesforceManager>();
-                 For<ISalesforceFilterBuilder>().Use<SalesforceFilterBuilder>();
+                 For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
+                 For<ISalesforceManager>().Use<terminalSalesforce.Services.SalesforceManager>();                  
              }
          }       
 
@@ -41,12 +39,10 @@ namespace terminalSalesforce
          {
              public TestMode()
              {
-                 For<IEvent>().Use<Event>();
+                 For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
 
-                 var salesforceIntegrationMock = new Mock<ISalesforceManager>(MockBehavior.Default);
+                 Mock<ISalesforceManager> salesforceIntegrationMock = new Mock<ISalesforceManager>(MockBehavior.Default);
                  For<ISalesforceManager>().Use(salesforceIntegrationMock.Object);
-                 var salesfirceFilterBuilder = new Mock<ISalesforceFilterBuilder>();
-                 For<ISalesforceFilterBuilder>().Use(salesfirceFilterBuilder.Object);
              }
          }       
 

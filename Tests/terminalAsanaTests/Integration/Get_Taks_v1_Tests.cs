@@ -19,8 +19,8 @@ using terminalAsana.Activities;
 namespace terminalAsanaTests.Integration
 {
     [Explicit]
-    [Ignore]
-    class Get_Taks_v1_Tests: BaseTerminalIntegrationTest
+    //[Ignore]
+    class Get_Tasks_v1_Tests: BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
 
@@ -50,7 +50,7 @@ namespace terminalAsanaTests.Integration
         /// Validate correct crate-storage structure in initial configuration response. OAuth Token already should be present in ActivityDTO
         /// </summary>
         [Test]
-        public async Task Get_Taks_v1_initial_configuration_check()
+        public async Task Get_Tasks_v1_initial_configuration_check()
         {
             var responseDTO = await CompleteInitialConfiguration();
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
@@ -85,7 +85,7 @@ namespace terminalAsanaTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// </summary>
         [Test]
-        public async Task Get_Taks_v1_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Get_Tasks_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
             // it is integration test so it will be oooho loooong.
             var configureUrl = GetTerminalConfigureUrl();

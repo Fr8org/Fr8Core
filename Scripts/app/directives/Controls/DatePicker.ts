@@ -19,8 +19,7 @@ module dockyard.directives {
             restrict: 'E',
             templateUrl: '/AngularTemplate/DatePicker',
             scope: {
-                field: '=',
-                inModal: '='
+                field: '='
             },
             controller: [
                 '$scope',

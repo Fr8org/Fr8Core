@@ -13,18 +13,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
-        [JsonProperty("type")]
-        public string Type { get; set; } = FieldType.String;
-
         public KeyValueDTO(string key, string value)
         {
             Key = key;
             Value = value;
-        }
-
-        public KeyValueDTO(string key, string value, string type) : this(key, value)
-        {
-            Type = string.IsNullOrWhiteSpace(type) ? FieldType.String : type;
         }
         
         public KeyValueDTO()
@@ -33,7 +25,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         public KeyValueDTO Clone()
         {
-            return new KeyValueDTO(Key, Value, Type);
+            return new KeyValueDTO(Key, Value);
         }
     }
 }

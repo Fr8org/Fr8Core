@@ -1,16 +1,20 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
+using StructureMap;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Services;
 using terminalSalesforce.Infrastructure;
+using System;
 
 namespace terminalSalesforceTests.Intergration
 {

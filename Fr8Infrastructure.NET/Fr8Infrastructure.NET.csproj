@@ -433,7 +433,6 @@
     <Compile Include="Utilities\PusherNotifier.cs" />
     <Compile Include="Utilities\ReflectionHelper.cs" />
     <Compile Include="Utilities\RegexUtilities.cs" />
-    <Compile Include="Utilities\SafeDictionary.cs" />
     <Compile Include="Utilities\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Utilities\Server.cs" />
     <Compile Include="Utilities\StopwordsRemover.cs" />

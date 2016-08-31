@@ -42,7 +42,6 @@ module dockyard.directives.paneConfigureAction {
         onChange: (radio: model.ControlDefinitionDTO) => void;
         onClick: (event: any) => void;
         isDisabled: boolean;
-        inModal: boolean;
         pca: paneConfigureAction.IPaneConfigureActionController;
         cc: IConfigurationControlController;
     }
@@ -269,8 +268,7 @@ module dockyard.directives.paneConfigureAction {
                 plan: '=',
                 subPlan: '=',
                 change: '=',
-                isDisabled: '=',
-                inModal: '='
+                isDisabled: '='
             }
         };
     });

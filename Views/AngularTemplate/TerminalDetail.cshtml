@@ -1,5 +1,6 @@
-﻿<!-- Page Breadcrumb -->
+﻿
 <ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
     </li>
@@ -7,12 +8,12 @@
         Dashboard
     </li>
 </ul>
-
-<!-- Main Content -->
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
 <div ng-controller="TerminalDetailsController" class="margin-top-10">
     <div class="row">
         <div class="col-md-12 col-sm-12">
-            <!-- Portlet -->
+            <!-- BEGIN PORTLET-->
             <div class="portlet light ">
                 <div class="portlet-title">
                     <div class="caption caption-md">
@@ -21,7 +22,7 @@
                     </div>
                 </div>
                 <div class="portlet-body">
-                    <!-- Terminal Detail Form -->
+                    <!-- TERMINAL DETAIL FORM -->
                     <div class="tab-pane active" id="tab_1_1">
                         <form role="form" ng-submit="submit($event, form.$valid)" ng-cloak name="form" novalidate>
                             <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
@@ -32,7 +33,7 @@
                             </div>
                             <!-- isFr8OwnTerminal Button -->
                             <div class="form-group">
-                                <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-show="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
+                                <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-if="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
                                     This is a Fr8 own C# terminal or is deployed along with those
                                 </md-checkbox>
                             </div>
@@ -80,12 +81,12 @@
                             </div>
 
                             <!-- Approval (Admin) -->
-                            <div class="form-group" ng-show="canEditAllTerminals">
-                                <md-radio-group ng-model="approved" layout="row" >
-                                    <label class="control-label"><b style="padding-right: 10px">Status:</b></label>
-                                    <md-radio-button data-ng-value="true">Approved</md-radio-button>
-                                    <md-radio-button data-ng-value="false">Not Approved</md-radio-button>
-                                </md-radio-group>
+                            <div class="form-group" ng-if="canEditAllTerminals">
+                                    <md-radio-group ng-model="approved" layout="row">
+                                        <label class="control-label"><b style="padding-right: 10px">Status:</b></label>
+                                        <md-radio-button data-ng-value="true">Approved</md-radio-button>
+                                        <md-radio-button data-ng-value="false">Not Approved</md-radio-button>
+                                    </md-radio-group>
                             </div>
                             <!-- Approval (Developer) -->
                             <div ng-if="!canEditAllTerminals" class="margin-bottom-10">
@@ -108,8 +109,10 @@
                             </div>
                         </form>
                     </div>
+                    <!-- END TERMINAL DETAIL FORM -->
                 </div>
             </div>
+            <!-- END PORTLET-->
         </div>
     </div>
-</div>
+</div><!-- END MAIN CONTENT -->

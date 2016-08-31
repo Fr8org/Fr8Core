@@ -42,8 +42,6 @@ namespace terminalIntegrationTests.EndToEnd
 
             _container = ObjectFactory.Container.CreateChildContainer();
             _container.Configure(MockedHubCommunicatorConfiguration);
-
-            _container.Configure(x => x.For<ISalesforceFilterBuilder>().Use<SalesforceFilterBuilder>());
         }
 
         public static void MockedHubCommunicatorConfiguration(ConfigurationExpression configuration)
