@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
+using Microsoft.AspNet.Identity;
 using InternalInterface = Hub.Interfaces;
 
 namespace HubWeb.Controllers.Api
@@ -37,8 +38,6 @@ namespace HubWeb.Controllers.Api
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //TODO: verify objectId owned by current user? i.e. requested container 
-
                 var facts = _fact.GetByObjectId(uow, query.ObjectId);
                 return Ok(facts.Select(Mapper.Map<FactDTO>));
             };
