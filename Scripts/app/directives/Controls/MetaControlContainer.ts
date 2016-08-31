@@ -11,13 +11,14 @@ module dockyard.directives.controlContainer {
         removeMetaDescription: (index: number) => void;
         currentAction: model.ActivityDTO;
         getIndex: (field: model.ControlMetaDescriptionDTO) => number;
+
     }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function MetaControlContainer(): ng.IDirective {
-        var controller = ['$scope', '$modal', 'SubPlanService',
-            ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService) => {
+        var controller = ['$scope', '$modal', 'SubPlanService','$interval',
+            ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService, $interval) => {
                 var triggerChange = () => {
                     
                 if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -81,9 +82,16 @@ module dockyard.directives.controlContainer {
             $scope.addControl = () => {
                 // it means onChange was fired by Clicking, and modal window will not add control
                 // yes it`s funny and wrong, we need have helper for parent scope search
+                
                 if ((<any>$scope.$parent.$parent.$parent.$parent.$parent.$parent).processing) {
+
+                    var tryAgain = $interval($scope.addControl,1000);
                     return;
                 }
+
+                //if (PlanBuilder.processing) {
+                //    return;
+                //}
 
                 var modalInstance = $modal.open({
                     animation: true,
@@ -101,6 +109,7 @@ module dockyard.directives.controlContainer {
             restrict: 'E',
             templateUrl: '/AngularTemplate/MetaControlContainer',
             controller: controller,
+            //require: { PlanBuilder: '^^' },
             scope: {
                 plan: '=',
                 field: '=',
@@ -118,7 +127,10 @@ module dockyard.directives.controlContainer {
             new model.TextBoxMetaDescriptionDTO(),
             new model.TextBlockMetaDescriptionDTO(),
             new model.FilePickerMetaDescriptionDTO(),
-            new model.SelectDataMetaDescriptionDTO()
+            new model.SelectDataMetaDescriptionDTO(),
+            new model.DropDownListMetaDescriptionDTO(),
+            new model.RadioGroupMetaDescriptionDTO(),
+            new model.CheckBoxMetaDescriptionDTO()
         ];
 
         $scope.selectControl = (control: model.ControlMetaDescriptionDTO) => {

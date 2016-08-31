@@ -230,7 +230,7 @@ namespace terminalExcel.Activities
             Label = "Load Excel File",
             Version = "1",
             Terminal = TerminalData.TerminalDTO,
-            Tags = "Table Data Generator,Getter",
+            Tags = string.Join(",", Tags.TableDataGenerator, Tags.Getter),
             MinPaneWidth = 300,
             Categories = new[]
             {

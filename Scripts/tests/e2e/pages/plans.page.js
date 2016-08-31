@@ -12,7 +12,7 @@ var PlansPage = function () {
 
     /* General Properties */
     var uiHelpers = new UIHelpers();
-    var addPlanButton = element(by.xpath('//*[@id="Myfr8lines"]/h3/a'));
+    var addPlanButton = element(by.xpath('//*[@id="Myfr8lines"]/h3/div/a'));
     var addActivityButton = element(by.className('action-add-button-link'));
     //var addAccountButton = element(by.className('.auth-link-account'));
 

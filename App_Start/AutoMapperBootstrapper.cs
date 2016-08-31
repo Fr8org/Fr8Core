@@ -152,7 +152,7 @@ namespace HubWeb.App_Start
                 return null;
             }
 
-            return _activityTemplate.GetByNameAndVersion(ad.ActivityTemplate.Name, ad.ActivityTemplate.Version).Id;
+            return _activityTemplate.GetByNameAndVersion(ad.ActivityTemplate).Id;
         }
     }
 }

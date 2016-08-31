@@ -12,7 +12,8 @@
         date-picker-options="dateOptions" 
         ng-required="field.required"
         data-field-name="{{::field.name}}"
-        stop-click-propagation />
+        stop-click-propagation
+        ng-class="{ 'insidemodal': inModal }" />
     <span class="input-group-btn">
         <button type="button" class="btn btn-default" ng-click="open()" title="Click to show popup"><i class="glyphicon glyphicon-calendar"></i></button>
     </span>

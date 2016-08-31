@@ -10,6 +10,7 @@
         isSingle: boolean;
         hasConfigurationControl: boolean;
         toggle: boolean;
+        inModal: boolean;
 
         fieldSelected: () => void;
         onRemoveCondition: () => void;
@@ -35,7 +36,8 @@
                 isSingle: '=',
                 onRemoveCondition: '&',
                 isDisabled: '=',
-                change: '='
+                change: '=',
+                inModal: '='
             },
             link: (scope: IQueryBuilderConditionScope,
                 elem: ng.IAugmentedJQuery,
@@ -99,7 +101,7 @@
 
                         $scope.hasConfigurationControl = true;
 
-                        $compile('<configuration-control current-action="currentAction" field="control" />')
+                        $compile('<configuration-control current-action="currentAction" field="control" in-modal="' + ($scope.inModal ? 'true' : 'false') + '" />')
                             (configurationControlScope, (markup, scope) => {
                                 $('.condition-control', $scope.rootElem).append(markup);
 

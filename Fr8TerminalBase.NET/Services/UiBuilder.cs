@@ -39,9 +39,9 @@ namespace Fr8.TerminalBase.Services
 
             return control;
         }
-        
+
         /// <summary>
-        /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
+        /// Creates TextSourceControl to enter specific value or choose value from upstream crate.
         /// </summary>
         public TextSource CreateSpecificOrUpstreamValueChooser(string label,
                                                                string controlName,
@@ -50,7 +50,8 @@ namespace Fr8.TerminalBase.Services
                                                                string groupLabelText = "",
                                                                bool addRequestConfigEvent = false,
                                                                bool requestUpstream = false,
-                                                               AvailabilityType availability = AvailabilityType.NotSet)
+                                                               AvailabilityType availability = AvailabilityType.NotSet,
+                                                               string specificValue = null)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName, groupLabelText)
             {
@@ -69,6 +70,11 @@ namespace Fr8.TerminalBase.Services
                 control.Events.Add(new ControlEvent("onChange", "requestConfig"));
             }
 
+            if (!string.IsNullOrEmpty(specificValue))
+            {
+                control.ValueSource = "specific";
+                control.TextValue = specificValue;
+            }
             return control;
         }
 

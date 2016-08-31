@@ -27,7 +27,7 @@ namespace terminalSalesforce.Actions
             Label = "Get Data from Salesforce",
             NeedsAuthentication = true,
             MinPaneWidth = 550,
-            Tags = Tags.TableDataGenerator,
+            Tags = string.Join(",", Tags.TableDataGenerator, Tags.Getter),
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
@@ -76,6 +76,8 @@ namespace terminalSalesforce.Actions
 
         public const string CountObjectsFieldLabel = "Count of Objects";
 
+        private const string ExternalObjectHandlesLabel = "External Object Handles";
+
         private readonly ISalesforceManager _salesforceManager;
 
         public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
@@ -122,6 +124,22 @@ namespace terminalSalesforce.Actions
             //Publish information for downstream activities
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
                           .AddFields(selectedObjectProperties).AddField(CountObjectsFieldLabel);
+
+            // Update ExternalObjectHandle crate.
+            var externalObjectHandle = new ExternalObjectHandleDTO()
+            {
+                Name = selectedObject,
+                Description = $"Data from Salesforce '{selectedObject}' object",
+                DirectUrl = null,
+                ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
+            };
+
+            var externalObjectHandleCrate = Crate.FromContent(
+                ExternalObjectHandlesLabel,
+                new ExternalObjectHandlesCM(externalObjectHandle)
+            );
+
+            Storage.ReplaceByLabel(externalObjectHandleCrate);
         }
 
         public override async Task Run()
@@ -139,20 +157,12 @@ namespace terminalSalesforce.Actions
                 .Fields;
 
             var filterValue = ActivityUI.SalesforceObjectFilter.Value;
-            var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
-            //If without filter, just get all selected objects
-            //else prepare SOQL query to filter the objects based on the filter conditions
-            var parsedCondition = string.Empty;
-            if (filterDataDTO.Count > 0)
-            {
-                parsedCondition = FilterConditionHelper.ParseConditionToText(filterDataDTO);
-            }
-
+            var filterConditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             var resultObjects = await _salesforceManager
                 .Query(
                     salesforceObject.ToEnum<SalesforceObjectType>(),
                     salesforceObjectFields,
-                    parsedCondition,
+                    filterConditions,
                     AuthorizationToken
                 );
 

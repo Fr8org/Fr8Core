@@ -30,11 +30,11 @@ namespace terminalGoogleTests.Integration
             }
         }
 
-        private static string SurveyFormValue
+        private static string VolunteerFormId
         {
             get
             {
-                return ConfigurationManager.AppSettings["SurveyFormValue"];
+                return ConfigurationManager.AppSettings["VolunteerFormId"];
             }
         }
 
@@ -69,7 +69,7 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-           return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Survey Form", SurveyFormValue)));
+           return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Volunteer Sign Up Form (Team Rubicon)", VolunteerFormId)));
         }
 
         public static ActivityTemplateSummaryDTO Monitor_Form_Responses_v1_ActivityTemplate()
@@ -88,8 +88,8 @@ namespace terminalGoogleTests.Integration
                 Label = "Select Google Form",
                 Name = "Selected_Google_Form",
                 Required = true,
-                selectedKey = "Survey Form",
-                Value = SurveyFormValue,
+                selectedKey = "Volunteer Sign Up Form (Team Rubicon)",
+                Value = VolunteerFormId,
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Forms",

@@ -256,7 +256,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task<PlanDTO> GetPlansByActivity(string activityId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plans?id={activityId}";
+            var url = $"{GetHubUrlWithApiVersion()}/plans?activity_id={activityId}";
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<PlanDTO>(uri);
         }

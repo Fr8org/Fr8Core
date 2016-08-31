@@ -1,11 +1,11 @@
 ﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()" ui-blocker active="plan.planState=='Executing' || plan.planState=='Active'" plan="plan">
     <div ng-if="!(myActivityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-control plan="plan" sub-plan="subPlan" current-action="currentAction" field="field" ng-if="!field.isHidden"/>
+            <configuration-control plan="plan" sub-plan="subPlan" current-action="currentAction" field="field" ng-if="!field.isHidden" in-modal="inModal" />
         </div>
         <div ng-if="currentAction.currentView">
             <div ng-repeat="field in currentAction.configurationControls.fields">
-                <configuration-control plan="plan" sub-plan="subPlan" current-action="currentAction" field="field" ng-if="!field.isHidden && field.fieldLabel==currentAction.currentView"/>
+                <configuration-control plan="plan" sub-plan="subPlan" current-action="currentAction" field="field" ng-if="!field.isHidden && field.fieldLabel==currentAction.currentView" in-modal="inModal" />
             </div>
         </div>
     </div>

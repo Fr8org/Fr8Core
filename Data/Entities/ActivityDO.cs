@@ -8,6 +8,24 @@ namespace Data.Entities
 {
     public class ActivityDO : PlanNodeDO
 	{
+        /*
+         * IMPORTANT: IF YOU'RE ADDING A NEW PROPERTY/FIELD, 
+         * be sure to declare it in the following places, otherwise values 
+         * of the new properties will not be persisted:
+         * 
+         * 1. Add it to the list of tracked properties, e.g. 
+         *      typeof(ActivityDO).GetProperty(nameof(MyNewProperty))
+         *    Note: don't add virtual navigation properties to this list, 
+         *    only add the foreign key property for a navigation property. 
+         * 
+         * 2. Add it to the CopyProperties() method, e.g.
+         *      MyNewProperty = plan.MyNewProperty;
+         *      
+         * 3. Add it to the Activity#UpdateActivityProperties method, e.g. 
+         *      existingActivity.MyNewProperty = submittedActivity.MyNewProperty;
+         * 
+         */
+
         //Yes, we don't want to add this property to TrackingProperties or clone its value in CopyProperties.
         public byte[] EncryptedCrateStorage { get; set; }
 

@@ -227,7 +227,6 @@ header#site-header:after {
 
 .web-services-container .item .label {
     display: block;
-    overflow: hidden;
     text-align: center;
     outline: none;
     color: #697882;
@@ -248,4 +247,19 @@ header#site-header:after {
 .web-service-summary .summary-header {
     font-weight: bold;
     font-size: 1.2em;
+}
+
+/* FOOTER */
+#site-footer {
+    padding: 10px 0;
+    position: relative;
+    z-index: 3;
+    bottom: 0;
+    width: 100%;
+}
+
+.copyright {
+    font-size: 0.8em;
+    line-height: 36px;
+    text-align: center;
 }

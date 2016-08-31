@@ -175,6 +175,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/TerminalListController.js',
         'Scripts/app/controllers/TerminalFormController.js',
         'Scripts/app/controllers/SolutionListController.js',
+        'Scripts/app/controllers/AppListController.js',
         'Scripts/app/controllers/NotifierController.js',
         'Scripts/app/controllers/OrganizationController.js',
         'Scripts/app/controllers/KioskModeOrganizationHeaderController.js',

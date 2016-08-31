@@ -91,7 +91,8 @@ namespace terminalDocuSign.Activities
                 throw new ArgumentNullException(nameof(templateId));
             }
             var conf = DocuSignManager.SetUp(AuthorizationToken);
-            return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId).Select(x => new FieldDTO(x.Key) { Tags = x.Tags });
+            var result = DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId).Select(x => new FieldDTO(x.Key) { Tags = x.Tags });
+            return result;
         }
 
         public IEnumerable<KeyValueDTO> GetEnvelopeData(string envelopeId)

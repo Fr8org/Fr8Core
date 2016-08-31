@@ -119,12 +119,12 @@ namespace terminalInstagram.Actions
             }
 
             Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
-                                                                new KeyValueDTO(InstagramMediaId, instagramPost.data.id),
-                                                                new KeyValueDTO(InstagramCaptionId, instagramPost.data.caption?.id),
-                                                                new KeyValueDTO(InstagramCaptionText, instagramPost.data.caption?.text),
-                                                                new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data.caption?.createdTime),
-                                                                new KeyValueDTO(InstagramImageUrl, instagramPost.data.link),
-                                                                new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data.instagramImage.standardResolution.url)
+                                                                new KeyValueDTO(InstagramMediaId, instagramPost.data?.id),
+                                                                new KeyValueDTO(InstagramCaptionId, instagramPost.data?.caption?.id),
+                                                                new KeyValueDTO(InstagramCaptionText, instagramPost.data?.caption?.text),
+                                                                new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data?.caption?.createdTime),
+                                                                new KeyValueDTO(InstagramImageUrl, instagramPost.data?.link),
+                                                                new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data?.instagramImage.standardResolution.url)
                                                                 )));
         }
 

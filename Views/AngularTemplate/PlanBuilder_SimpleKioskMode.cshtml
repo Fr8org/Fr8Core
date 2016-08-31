@@ -1,37 +1,39 @@
-﻿<!-- MAIN CONTENT -->
+﻿<!--Needed for mobile kiosk mode. Otherwise it can not render page width correctly-->
+<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+
+<!-- MAIN CONTENT -->
 <div ng-controller="PlanBuilderController" style="margin-top:1px; margin-left: -15px; margin-right:-15px;" block-if="isBusy()" event-planbuilder>
-    <div ng-if="editingMode=='advanced'" class="col-md-12 kiosk-editing-mode"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
-    <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
-        <!-- SUB-PLAN BODY -->
-        <div class="route-builder-container no-text-select" layout-container>
-            <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group ng-style="{left: group.offsetLeft, top: group.offsetTop}">
-                <div ng-if="mode !== 'solution' || $index === 0">
-                    <div ng-repeat="envelope in group.envelopes track by $index" style="width:100%">
-                        <div class="action" style="width:100%" ng-class="{'solution-action': envelope.activityTemplate.category === 'Solution' && mode !== 'solution'}" layout-action>
-                            <div min-width="{{envelope.activityTemplate.minPaneWidth}}">
-                                <!-- Activity Header-->
-                                <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-panety style="height: 40px;min-height:40px;padding-top: 5px;">
-                                    <div class="md-toolbar-tools" style="height: 40px; ">
-                                        <!-- Icon -->
-                                        <div class="action-header-icon" style="display: none">
-                                            <img ng-src="{{envelope.activityTemplate.webService.iconPath}}" ng-if="envelope.activityTemplate.webService.iconPath" />
+    <div style="background-color: white;">
+        <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity" activity-full-height>
+            <!-- SUB-PLAN BODY -->
+            <div class="route-builder-container no-text-select" layout-container>
+                <div ng-repeat="group in pSubPlan.actionGroups" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
+                    <div ng-if="mode !== 'solution' || $index === 0">
+                        <div ng-repeat="envelope in group.envelopes track by $index" style="width: 100%">
+                            <div class="action kiosk-activity" style="width: 100%">
+                                <div min-width="{{envelope.activityTemplate.minPaneWidth}}">
+                                    <!-- Activity Header-->
+                                    <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-panety ng-style="{'background-color': organization.backgroundColor, 'height': '50px', 'min-height': '50px', 'padding-top': '5px'}">
+                                        <div class="md-toolbar-tools" style="height: 50px; text-align: center;">
+                                            <!-- Main Title -->
+                                            <div class="col-sm-10 ellipsis" style="width: 100%">
+                                                <h2 class="maven-pro-font"> {{envelope.activity.label}} </h2>
+                                            </div>
                                         </div>
-                                        <!-- Main Title -->
-                                        <div class="col-sm-10 ellipsis">
-                                            <h2> {{envelope.activity.label}} <md-tooltip>{{envelope.activity.label}}</md-tooltip> </h2>
-                                        </div>
-                                    </div>
-                                </md-toolbar>
-                                <!-- Activity Body-->
-                                <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction"
-                                                       current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
+                                    </md-toolbar>
+                                    <!-- Activity Body-->
+                                    <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction"
+                                                           current-action="envelope.activity" mode="mode" processing="isReConfiguring" in-modal="false"></pane-configure-action>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <hr class="transition-seperator" ng-if="processedSubPlans.length > 1" />
         </div>
-        <hr class="transition-seperator" ng-if="processedSubPlans.length > 1" />
     </div>
+
 </div>

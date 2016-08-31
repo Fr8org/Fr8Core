@@ -25,7 +25,7 @@ namespace terminalDocuSign.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Id  = new Guid("2b1b4d98-9eb1-4cba-8baa-a6247cd86dce"),
+            Id = new Guid("2b1b4d98-9eb1-4cba-8baa-a6247cd86dce"),
             Version = "2",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",
@@ -148,9 +148,9 @@ namespace terminalDocuSign.Actions
                 Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
             }
             //Add TextSource control for every DocuSign role to activity UI
-            ActivityUI.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true)));
+            ActivityUI.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true, specificValue: x.Value)));
             //Add TextSrouce control for every DocuSign template text field to activity UI
-            ActivityUI.TextFields.AddRange(envelopeData[ControlTypes.TextBox].Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Name, x.Name, requestUpstream: true)));
+            ActivityUI.TextFields.AddRange(envelopeData[ControlTypes.TextBox].Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Name, x.Name, requestUpstream: true, specificValue: x.Value)));
             //Add RadioButtonGroup with respective options for every DocuSign template radio selection field to activity UI
             ActivityUI.RadioButtonGroupFields.AddRange(
                 envelopeData[ControlTypes.RadioButtonGroup]
@@ -169,7 +169,7 @@ namespace terminalDocuSign.Actions
                     .ToList()
                 }));
             //Add CheckBox for every DocuSign template yes/no field to activity UI
-            ActivityUI.CheckBoxFields.AddRange(envelopeData[ControlTypes.CheckBox].Select(x => new CheckBox { Name = x.Name, Label = x.Name }));
+            ActivityUI.CheckBoxFields.AddRange(envelopeData[ControlTypes.CheckBox].Select(x => new CheckBox { Name = x.Name, Label = x.Name, Selected = Convert.ToBoolean(x.Value) }));
             //Add DropDownList for every DocuSign template list selection field to activity UI
             ActivityUI.DropDownListFields.AddRange(
                 envelopeData[ControlTypes.DropDownList]

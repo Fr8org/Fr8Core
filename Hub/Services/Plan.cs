@@ -72,9 +72,31 @@ namespace Hub.Services
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);
 
-            planQuery = planQueryDTO.Id == null
-                ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
-                : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
+            if (planQueryDTO.AppsOnly)
+            {
+                planQuery = planQueryDTO.Id == null
+                    ? planQuery.Where(pt => pt.IsApp == true)
+                    : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.IsApp == true);
+
+                if (account.OrganizationId.HasValue)
+                {
+                    // If the current user belongs to some organization, 
+                    // display all apps for that organization
+                    planQuery = planQuery.Where(pt => pt.Fr8Account.OrganizationId == account.OrganizationId);
+                }
+                else
+                {
+                    // If user does not belong to an org, just display his/her own apps.
+                    planQuery = planQuery.Where(pt => pt.Fr8Account.Id == account.Id);
+                }
+            }
+            else
+            {
+                planQuery = planQueryDTO.Id == null
+                    ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
+                    : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
+            }
+
 
             planQuery = !string.IsNullOrEmpty(planQueryDTO.Category)
                 ? planQuery.Where(c => c.Category == planQueryDTO.Category)
@@ -83,6 +105,11 @@ namespace Hub.Services
             if (!string.IsNullOrEmpty(planQueryDTO.Filter))
             {
                 planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
+            }
+
+            if (planQueryDTO.AppsOnly)
+            {
+                planQuery = planQuery.Where(c => c.IsApp == true);
             }
 
             int? planState = null;
@@ -219,6 +246,8 @@ namespace Hub.Services
                 curPlan.Description = submittedPlan.Description;
                 curPlan.Category = submittedPlan.Category;
                 curPlan.LastUpdated = DateTimeOffset.UtcNow;
+                curPlan.IsApp = submittedPlan.IsApp;
+                curPlan.AppLaunchURL = submittedPlan.AppLaunchURL;
             }
         }
 
@@ -899,6 +928,8 @@ namespace Hub.Services
                 clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;
+                clonedPlan.IsApp = false; // we don't want apps to duplicate when launching 
+                clonedPlan.AppLaunchURL = null;
 
                 //linearlize tree structure
                 var planTree = clonedPlan.GetDescendantsOrdered();

@@ -27,12 +27,14 @@ namespace terminalSalesforce.Services
     {
         private readonly Authentication _authentication;
         private readonly IHubCommunicator _hubCommunicator;
+        private readonly ISalesforceFilterBuilder _salesforceFilterBuilder;
         private readonly ILog _logger;
 
-        public SalesforceManager(Authentication authentication, IHubCommunicator hubCommunicator)
+        public SalesforceManager(Authentication authentication, IHubCommunicator hubCommunicator, ISalesforceFilterBuilder salesforceFilterBuilder)
         {
             _authentication = authentication;
             _hubCommunicator = hubCommunicator;
+            _salesforceFilterBuilder = salesforceFilterBuilder;
             _logger = Logger.GetLogger(nameof(SalesforceManager));
         }
 
@@ -42,13 +44,14 @@ namespace terminalSalesforce.Services
             return result?.Id ?? string.Empty;
         }
 
-        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IList<FieldDTO> propertiesToRetrieve, string filter, AuthorizationToken authToken)
+        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IList<FieldDTO> propertiesToRetrieve, IList<FilterConditionDTO> filterConditions, AuthorizationToken authToken)
         {
             var whatToSelect = propertiesToRetrieve?.Select(p => p.Name).ToArray() ?? new string[0];
             var selectQuery = $"SELECT {(whatToSelect.Length == 0 ? "*" : string.Join(", ", whatToSelect))} FROM {type}";
+            var filter = _salesforceFilterBuilder.BuildFilter(await GetProperties(type, authToken), filterConditions);
             if (!string.IsNullOrEmpty(filter))
             {
-                selectQuery += " WHERE " + NormalizeFilterByFiedType(propertiesToRetrieve, filter);
+                selectQuery = $"{selectQuery} WHERE {filter}";
             }
             try
             {
@@ -56,9 +59,9 @@ namespace terminalSalesforce.Services
                 var table = ParseQueryResult(result);
                 table.FirstRowHeaders = true;
                 var headerRow = whatToSelect.Length > 0
-                    ? whatToSelect.Select(x => new TableCellDTO {Cell = new KeyValueDTO(x, x)}).ToList()
-                    : (await GetProperties(type, authToken)).Select(x => new TableCellDTO {Cell = new KeyValueDTO(x.Name, x.Label)}).ToList();
-                table.Table.Insert(0, new TableRowDTO {Row = headerRow});
+                    ? whatToSelect.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x) }).ToList()
+                    : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Name, x.Label) }).ToList();
+                table.Table.Insert(0, new TableRowDTO { Row = headerRow });
                 return table;
             }
             catch (ForceException ex)
@@ -129,8 +132,13 @@ namespace terminalSalesforce.Services
                 case "picklist":
                     return FieldType.PickList;
                 case "date":
-                case "datetime":
                     return FieldType.Date;
+                case "datetime":
+                    return FieldType.DateTime;
+                case "currency":
+                    return FieldType.Currency;
+                case "double":
+                    return FieldType.Double;
                 default:
                     return FieldType.String;
             }
@@ -157,7 +165,7 @@ namespace terminalSalesforce.Services
 
             return null;
         }
-        
+
         public async Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken)
         {
             UserDetail currentChatterUser;
@@ -211,25 +219,6 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public IEnumerable<FieldDTO> GetObjectList()
-        {
-            return _objectDescriptions ?? (_objectDescriptions = new[]
-                                                {
-                                                    new FieldDTO("Account"),
-                                                    new FieldDTO("Case"),
-                                                    new FieldDTO("Contact"),
-                                                    new FieldDTO("Contract"),
-                                                    new FieldDTO("Document"),
-                                                    new FieldDTO("Group"),
-                                                    new FieldDTO("Lead"),
-                                                    new FieldDTO("Opportunity"),
-                                                    new FieldDTO("Order"),
-                                                    new FieldDTO("Product2"),
-                                                    new FieldDTO("Solution"),
-                                                    new FieldDTO("User")
-                                                });
-        }
-
         public async Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationToken authToken)
         {
             try
@@ -253,8 +242,8 @@ namespace terminalSalesforce.Services
             JObject chatterObjects;
             try
             {
-                chatterObjects = (JObject) await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
-                chatterObjects.Merge((JObject) await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
+                chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
+                chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
             }
             catch (ForceException ex)
             {
@@ -274,32 +263,6 @@ namespace terminalSalesforce.Services
 
         #region Implemetation details
 
-        private string NormalizeFilterByFiedType(IEnumerable<FieldDTO> fields, string filter)
-        {
-            //split the filter by " AND "
-            var filterList = filter.Split(new string[] { " AND " }, StringSplitOptions.None).ToList();
-
-            foreach (FieldDTO field in fields)
-            {
-                //if filed exists in the filter list and field type is Date, normalize it to Salesforce expected date.
-                if (filterList.Any(filterItem => filterItem.Contains(field.Name) && field.FieldType.Equals(FieldType.Date)))
-                {
-                    var matchedFilter = filterList.Single(stringToCheck => stringToCheck.Contains(field.Name));
-                    if (!string.IsNullOrEmpty(matchedFilter))
-                    {
-                        var requiredDateFormat = matchedFilter.Substring(matchedFilter.IndexOf("'")).Replace("'", "");
-
-                        var normalizedValue = matchedFilter.Substring(0, matchedFilter.IndexOf("'")) +
-                                           DateTime.ParseExact(requiredDateFormat, "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-ddTHH:mm:ssZ");
-
-                        filterList[filterList.IndexOf(matchedFilter)] = normalizedValue;
-                    }
-                }
-            }
-
-            return string.Join(" AND ", filterList.ToArray()); ;
-        }
-
         private StandardTableDataCM ParseQueryResult(QueryResult<object> queryResult)
         {
             var parsedObjects = new List<JObject>();
@@ -307,7 +270,7 @@ namespace terminalSalesforce.Services
             {
                 parsedObjects = queryResult.Records.Select(record => ((JObject)record)).ToList();
             }
-        
+
             var countOfObjectTableCell = new TableCellDTO()
             {
                 Cell = new KeyValueDTO()
@@ -318,27 +281,43 @@ namespace terminalSalesforce.Services
             };
 
             List<TableRowDTO> list = new List<TableRowDTO>();
-            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties().Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(y => new TableCellDTO
+            foreach (var row in parsedObjects.Select(x => x.Properties().Where(y => y.Value.Type != JTokenType.Object).Select(y => new TableCellDTO
             {
                 Cell = new KeyValueDTO
                 {
-                    Key = y.Name, Value = y.Value.Value<string>()
+                    Key = y.Name,
+                    Value = y.Value.ToString(),
+                    Type = ConvertType(y.Type)
                 }
             }).ToList()))
             {
                 row.Add(countOfObjectTableCell);
-                list.Add(new TableRowDTO() { Row = row });
+                list.Add(new TableRowDTO { Row = row });
             }
 
             if (!queryResult.Records.Any())
             {
-                list.Add(new TableRowDTO() {Row = new List<TableCellDTO>() {countOfObjectTableCell}});
+                list.Add(new TableRowDTO { Row = new List<TableCellDTO> { countOfObjectTableCell } });
             }
 
             return new StandardTableDataCM
             {
                 Table = list
             };
+        }
+
+        private static string ConvertType(JTokenType type)
+        {
+            switch (type)
+            {
+                case JTokenType.Integer:
+                case JTokenType.Float:
+                    return FieldType.Double;
+                case JTokenType.Date:
+                    return FieldType.DateTime;
+                default:
+                    return FieldType.String;
+            }
         }
 
         private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(
@@ -348,7 +327,7 @@ namespace terminalSalesforce.Services
         {
             var client = await clientProvider(authToken, false);
             var retried = false;
-            Execution:
+        Execution:
             try
             {
                 return await operation(client);
@@ -369,7 +348,7 @@ namespace terminalSalesforce.Services
         {
             if (isRefreshTokenRequired)
             {
-                authToken = await RefreshToken(authToken);                
+                authToken = await RefreshToken(authToken);
             }
             var salesforceToken = ToSalesforceToken(authToken);
             return new ForceClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);

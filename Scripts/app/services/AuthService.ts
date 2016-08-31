@@ -117,13 +117,19 @@
             });
             activities.forEach(activity => {
                 var foundActivity = resultActivities.filter(x => x.id === activity.id)[0];
-                foundActivity.authorizeIsRequested = true;
+                if (foundActivity) {
+                    foundActivity.authorizeIsRequested = true;
+                }
+                else if (activities.length === 1 && activity.ordering === 1) {
+                    (<any>activity).authorizeIsRequested = true;
+                    resultActivities.push(activity);
+                }
             });
             activities = resultActivities;
             modalScope.activities = activities;
             self._authDialogDisplayed = true;
 
-
+            // debugger;
             self.$modal.open({
                 animation: true,
                 templateUrl: '/AngularTemplate/AuthenticationDialog',
@@ -155,17 +161,20 @@
                 }
             })
             .catch((result) => {
+                //If user cancelled authorization we should mark only those activities for which authorization was requested
                 angular.forEach(activities, function (a) {
-                    if (!self._canceledActivities[a.id]) {
+                    if (!self._canceledActivities[a.id] && (<any>a).authorizeIsRequested) {
                         self._canceledActivities[a.id] = true;
                     }
                 });
 
                 angular.forEach(activities, it => {
-                    self.$rootScope.$broadcast(
+                    if ((<any>it).authorizeIsRequested) {
+                        self.$rootScope.$broadcast(
                         directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
                         new directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
-                    );
+                        );
+                    }
                 });
             })
             .finally(() => {
