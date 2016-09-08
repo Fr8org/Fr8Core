@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../app/_all.ts" />
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 
+
 module dockyard.tests.controller {
     //import fx = utils.fixtures.ContainerBuilder; // just an alias
 
