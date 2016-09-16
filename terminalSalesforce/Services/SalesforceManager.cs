@@ -56,9 +56,9 @@ namespace terminalSalesforce.Services
                 var table = ParseQueryResult(result);
                 table.FirstRowHeaders = true;
                 var headerRow = whatToSelect.Length > 0
-                    ? whatToSelect.Select(x => new TableCellDTO {Cell = new KeyValueDTO(x, x)}).ToList()
-                    : (await GetProperties(type, authToken)).Select(x => new TableCellDTO {Cell = new KeyValueDTO(x.Name, x.Label)}).ToList();
-                table.Table.Insert(0, new TableRowDTO {Row = headerRow});
+                    ? whatToSelect.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x) }).ToList()
+                    : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Name, x.Label) }).ToList();
+                table.Table.Insert(0, new TableRowDTO { Row = headerRow });
                 return table;
             }
             catch (ForceException ex)
@@ -157,7 +157,7 @@ namespace terminalSalesforce.Services
 
             return null;
         }
-        
+
         public async Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken)
         {
             UserDetail currentChatterUser;
@@ -253,8 +253,8 @@ namespace terminalSalesforce.Services
             JObject chatterObjects;
             try
             {
-                chatterObjects = (JObject) await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
-                chatterObjects.Merge((JObject) await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
+                chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
+                chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
             }
             catch (ForceException ex)
             {
@@ -307,7 +307,7 @@ namespace terminalSalesforce.Services
             {
                 parsedObjects = queryResult.Records.Select(record => ((JObject)record)).ToList();
             }
-        
+
             var countOfObjectTableCell = new TableCellDTO()
             {
                 Cell = new KeyValueDTO()
@@ -318,13 +318,23 @@ namespace terminalSalesforce.Services
             };
 
             List<TableRowDTO> list = new List<TableRowDTO>();
-            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties().Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(y => new TableCellDTO
-            {
-                Cell = new KeyValueDTO
+            var rows = parsedObjects.Select(parsedObject => parsedObject.Properties().Where(
+                y => (
+                    y.Value.Type == JTokenType.Integer
+                    || y.Value.Type == JTokenType.Float
+                    || y.Value.Type == JTokenType.String
+                    || y.Value.Type == JTokenType.Guid
+                ) && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(
+                y => new TableCellDTO
                 {
-                    Key = y.Name, Value = y.Value.Value<string>()
-                }
-            }).ToList()))
+                    Cell = new KeyValueDTO
+                    {
+                        Key = y.Name,
+                        Value = y.Value.Value<string>()
+                    }
+                }).ToList());
+
+            foreach (var row in rows)
             {
                 row.Add(countOfObjectTableCell);
                 list.Add(new TableRowDTO() { Row = row });
@@ -332,7 +342,7 @@ namespace terminalSalesforce.Services
 
             if (!queryResult.Records.Any())
             {
-                list.Add(new TableRowDTO() {Row = new List<TableCellDTO>() {countOfObjectTableCell}});
+                list.Add(new TableRowDTO() { Row = new List<TableCellDTO>() { countOfObjectTableCell } });
             }
 
             return new StandardTableDataCM
@@ -369,7 +379,7 @@ namespace terminalSalesforce.Services
         {
             if (isRefreshTokenRequired)
             {
-                authToken = await RefreshToken(authToken);                
+                authToken = await RefreshToken(authToken);
             }
             var salesforceToken = ToSalesforceToken(authToken);
             return new ForceClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
