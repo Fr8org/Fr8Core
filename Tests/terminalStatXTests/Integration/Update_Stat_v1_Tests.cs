@@ -27,6 +27,7 @@ namespace terminalStatXTests.Integration
         public override string TerminalName => "terminalStatX";
 
         [Test]
+        [Ignore]
         public async Task Update_Stat_Initial_Configuration_Check_Crate_Structure()
         {
             var responseDTO = await CompleteInitialConfiguration();
@@ -41,6 +42,7 @@ namespace terminalStatXTests.Integration
         }
 
         [Test]
+        [Ignore]
         public async Task Update_Stat_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
