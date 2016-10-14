@@ -15,6 +15,8 @@ namespace terminalStatXTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
+    [Ignore]
+
     public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
         private const int ActivityCount = 3;

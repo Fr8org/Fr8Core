@@ -14,6 +14,7 @@ using terminalStatXTests.TestTools;
 
 namespace terminalStatXTests.Integration
 {
+    [Ignore]
     [Explicit]
     public class Update_Stat_v1_Tests : BaseHubIntegrationTest
     {

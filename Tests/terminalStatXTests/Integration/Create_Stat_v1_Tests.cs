@@ -12,6 +12,7 @@ using terminalStatXTests.TestTools;
 namespace terminalStatXTests.Integration
 {
     [Explicit]
+    [Ignore]
     public class Create_Stat_v1_Tests : BaseHubIntegrationTest
     {
         private readonly AuthorizationTokenHelpers _authorizationTokenHelper;
