@@ -2,5 +2,5 @@
 <!-- For more information on using transformations 
      see the web.config examples at http://go.microsoft.com/fwlink/?LinkId=214134. -->
 <appSettings xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
-  <add key="AsanaTokenResponse" value="Release" xdt:Transform="SetAttributes" xdt:Locator="Match(key)"/>
+  <add key="AsanaTokenResponse" value="{ &quot;access_token&quot;: &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpemF0aW9uIjoxNjg3Mjc1MzkxOTY1NTYsInNjb3BlIjoiIiwiaWF0IjoxNDcyNTQ5Njg0LCJleHAiOjE0NzI1NTMyODR9.7hOCiGmAVj_Sy_X9axcAUG4gSCGRasQfxSEo2BsnfEE&quot;, &quot;token_type&quot;: &quot;bearer&quot;, &quot;expires_in&quot;: 3600, &quot;data&quot;: {   &quot;id&quot;: 145598938536201,   &quot;name&quot;: &quot;Asana Fr8 Dev&quot;,   &quot;email&quot;: &quot;asana-dev@fr8.co&quot; }, &quot;refresh_token&quot;: &quot;0/91c8f10cacb6bf77aaea31157221c875&quot;}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)"/>
 </appSettings>
