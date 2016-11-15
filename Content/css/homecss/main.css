@@ -41,6 +41,10 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0;
 }
 
+h2.hero-heading {
+    padding-bottom: 0;
+}
+
 /* ------------------ GENERAL STYLES ------------------ */
 body.no-preloader {
     display: block;
@@ -2992,7 +2996,7 @@ body {
 }
 
 .hero-unit .slide-caption {
-    padding-bottom: 50px;
+    padding-bottom: 5px;
     margin: 0 auto;
 }
 
