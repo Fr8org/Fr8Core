@@ -280,7 +280,7 @@ namespace terminalDocuSignTests.Fixtures
                      </RecipientStatus>
                   </RecipientStatuses>
                   <TimeGenerated>2015-09-29T07:38:42.7464809</TimeGenerated>
-                  <EnvelopeID>fe9909c4-b479-4247-8b03-e9ffe215e890</EnvelopeID>
+                  <EnvelopeID>470377f5-1682-4b5d-881a-547b97f15e9f</EnvelopeID>
                   <Subject>Open the Pod bay doors, HAL</Subject>
                   <UserName>Dave Bowman</UserName>
                   <Email>fr8.madse.testing@gmail.com</Email>
