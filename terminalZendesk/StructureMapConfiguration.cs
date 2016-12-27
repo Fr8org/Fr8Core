@@ -1,6 +1,8 @@
 ﻿using Fr8.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Utilities;
 using StructureMap;
+using terminalZendesk.Interfaces;
+using terminalZendesk.Services;
 
 namespace terminalZendesk
 {
@@ -10,7 +12,7 @@ namespace terminalZendesk
         {
             public LiveMode()
             {
-                //For<IEmailPackager>().Use<SendGridPackager>();
+                For<IZendeskIntegration>().Use<ZendeskIntegration>();
                 //For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
             }
         }

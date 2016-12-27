@@ -19,7 +19,9 @@ namespace terminalZendesk
             Label = "Zendesk",
             TerminalStatus = TerminalStatus.Active,
             Endpoint = CloudConfigurationManager.GetSetting("terminalZendesk.TerminalEndpoint"),
-            Version = "1"
+            ProdUrl = "https://terminalZendesk.fr8.co",
+            Version = "1",
+            AuthenticationType = AuthenticationType.External
         };
     }
 }

@@ -20,6 +20,7 @@ namespace terminalZendesk.Activities
             Label = "Create Ticket",
             Version = "1",
             MinPaneWidth = 330,
+            NeedsAuthentication = true,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
