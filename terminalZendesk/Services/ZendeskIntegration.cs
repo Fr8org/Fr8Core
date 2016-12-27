@@ -7,7 +7,10 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using terminalZendesk.Interfaces;
+using ZendeskApi_v2;
+using ZendeskApi_v2.Models.Tickets;
 
 namespace terminalZendesk.Services
 {
@@ -18,6 +21,7 @@ namespace terminalZendesk.Services
         public ZendeskIntegration(IRestfulServiceClient client)
         {
             _client = client;
+            
         }
 
         /// <summary>
@@ -50,12 +54,32 @@ namespace terminalZendesk.Services
 
         public async Task<UserInfo> GetUserInfo(string oauthToken)
         {
+            var zendeskApi = new ZendeskApi(CloudConfigurationManager.GetSetting("ZendeskSubDomain"), oauthToken);
+            var curUser = await zendeskApi.Users.GetCurrentUserAsync();
             return new UserInfo
             {
-                UserId = "test",
-                UserName = "test",
-                TeamName = "test"
+                UserId = curUser.User.Id?.ToString() ?? curUser.User.Email,
+                UserName = curUser.User.Name
             };
+        }
+
+        public async Task CreateTicket(string oauthToken, string subject, string comment, string reqEmail, string reqName)
+        {
+            var zendeskApi = new ZendeskApi(CloudConfigurationManager.GetSetting("ZendeskSubDomain"), oauthToken);
+            var ticket = new Ticket
+            {
+                Subject = subject,
+                Requester = new Requester
+                {
+                    Email = reqEmail,
+                    Name = reqName
+                },
+                Comment = new Comment
+                {
+                    Body = comment
+                }
+            };
+            await zendeskApi.Tickets.CreateTicketAsync(ticket);
         }
 
     }

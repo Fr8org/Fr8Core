@@ -10,6 +10,8 @@ namespace terminalZendesk.Interfaces
         string CreateAuthUrl(string externalStateToken);
         Task<string> GetOAuthToken(string code);
         Task<UserInfo> GetUserInfo(string oauthToken);
+
+        Task CreateTicket(string oauthToken, string subject, string comment, string reqEmail, string reqName);
     }
 
     public class UserInfo
@@ -18,9 +20,5 @@ namespace terminalZendesk.Interfaces
         public string UserId { get; set; }
         [JsonProperty("user")]
         public string UserName { get; set; }
-        [JsonProperty("team_id")]
-        public string TeamId { get; set; }
-        [JsonProperty("team")]
-        public string TeamName { get; set; }
     }
 }

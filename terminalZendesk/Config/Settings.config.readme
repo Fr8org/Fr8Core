@@ -22,5 +22,5 @@ FROM THE NUGET PACKAGE UPON BUILDING.
 
   <add key="ZendeskOAuthUrl" value="https://fr8dev.zendesk.com/oauth/authorizations/new?client_id=fr8_integration_for_zendesk&amp;response_type=code&amp;state=%STATE%&amp;scope=read%20write&amp;redirect_uri=http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalZendesk%26terminalVersion=1" />
   <add key="ZendeskOAuthAccessUrl" value="https://slack.com/api/oauth.access?client_id=your_client_id&amp;client_secret=your_client_secret&amp;code=%CODE%&amp;redirect_uri=http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack%26terminalVersion=1" />
-
+  <add key="ZendeskSubDomain" value="fr8dev" />
 </appSettings>

@@ -59,8 +59,6 @@ namespace terminalZendesk.Controllers
                     Token = oauthToken,
                     ExternalAccountId = userInfo.UserId,
                     ExternalAccountName = userInfo.UserName,
-                    ExternalDomainId = userInfo.TeamId,
-                    ExternalDomainName = userInfo.TeamName,
                     ExternalStateToken = state,
                 };
             }

@@ -8,6 +8,8 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using System;
+using Fr8.TerminalBase.Services;
+using terminalZendesk.Interfaces;
 
 namespace terminalZendesk.Activities
 {
@@ -30,44 +32,33 @@ namespace terminalZendesk.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public const string RuntimeCrateLabel = "Message Built by \"Build Message\" Activity";
-
         public class ActivityUi : StandardConfigurationControlsCM
         {
             
-            public TextBox Name { get; set; }
+            public TextSource Subject { get; set; }
 
-            public BuildMessageAppender Body { get; set; }
+            public TextSource Body { get; set; }
 
-            public ActivityUi()
+            public TextSource RequesterEmail { get; set; }
+
+            public TextSource RequesterName { get; set; }
+
+            public ActivityUi(UiBuilder uiBuilder)
             {
-                Name = new TextBox
-                {
-                    Label = "Name",
-                    Name = nameof(Name),
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                };
-                Body = new BuildMessageAppender
-                {
-                    Label = "Body",
-                    Name = nameof(Body),
-                    IsReadOnly = false,
-                    Required = true,
-                    Source = new FieldSourceDTO
-                    {
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true,
-                        AvailabilityType = AvailabilityType.RunTime
-                    },
-                    Value = string.Empty
-                };
-                Controls = new List<ControlDefinitionDTO> { Name, Body };
+                Subject = uiBuilder.CreateSpecificOrUpstreamValueChooser("Subject", nameof(Subject), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
+                Body = uiBuilder.CreateSpecificOrUpstreamValueChooser("Body", nameof(Body), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
+                RequesterEmail = uiBuilder.CreateSpecificOrUpstreamValueChooser("RequesterEmail", nameof(RequesterEmail), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
+                RequesterName = uiBuilder.CreateSpecificOrUpstreamValueChooser("RequesterName", nameof(RequesterName), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
+                Controls = new List<ControlDefinitionDTO> { Subject, Body, RequesterEmail, RequesterName };
             }
         }
 
-        public Create_Ticket_v1(ICrateManager crateManager)
+        private readonly IZendeskIntegration _zendeskIntegration;
+
+        public Create_Ticket_v1(ICrateManager crateManager, IZendeskIntegration zendeskIntegration)
             : base(crateManager)
         {
+            _zendeskIntegration = zendeskIntegration;
         }
 
         public override Task Initialize()
@@ -77,15 +68,16 @@ namespace terminalZendesk.Activities
 
         public override Task FollowUp()
         {
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true).AddField(ActivityUI.Name.Value);
             return Task.FromResult(0);
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
-            Payload.Add(RuntimeCrateLabel, new StandardPayloadDataCM(new KeyValueDTO(ActivityUI.Name.Value, ActivityUI.Body.Value)));
-            return Task.FromResult(0);
-
+            var subject = ActivityUI.Subject.TextValue;
+            var body = ActivityUI.Body.TextValue;
+            var reqMail = ActivityUI.RequesterEmail.TextValue;
+            var reqName = ActivityUI.RequesterName.TextValue;
+            await _zendeskIntegration.CreateTicket(AuthorizationToken.Token, subject, body, reqMail, reqName);
         }
     }
 }
