@@ -13,20 +13,20 @@ using terminalZendesk.Interfaces;
 
 namespace terminalZendesk.Activities
 {
-    public class Monitor_Ticket_v1 : TerminalActivity<Monitor_Ticket_v1.ActivityUi>
+    public class Create_Ticket_v1 : TerminalActivity<Create_Ticket_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Id = new Guid("4561436f-934f-462c-baf3-d91a76924b04"),
-            Name = "Monitor_Ticket",
-            Label = "Monitor Ticket",
+            Id = new Guid("dfa529ea-1361-4eeb-b0fb-466c17aea73f"),
+            Name = "Create_Ticket",
+            Label = "Create Ticket",
             Version = "1",
             MinPaneWidth = 330,
             NeedsAuthentication = true,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
-                ActivityCategories.Monitor,
+                ActivityCategories.Forward,
                 TerminalData.ActivityCategoryDTO
             }
         };
@@ -55,7 +55,7 @@ namespace terminalZendesk.Activities
 
         private readonly IZendeskIntegration _zendeskIntegration;
 
-        public Monitor_Ticket_v1(ICrateManager crateManager, IZendeskIntegration zendeskIntegration)
+        public Create_Ticket_v1(ICrateManager crateManager, IZendeskIntegration zendeskIntegration)
             : base(crateManager)
         {
             _zendeskIntegration = zendeskIntegration;

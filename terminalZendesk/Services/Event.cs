@@ -7,6 +7,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using terminalZendesk.Interfaces;
+using terminalZendesk.Models;
 
 namespace terminalZendesk.Services
 {
@@ -15,6 +16,16 @@ namespace terminalZendesk.Services
         public Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
+            {
+                return null;
+            }
+            TicketCreatedEventPayload ticketPayload = null;
+            try
+            {
+                ticketPayload =
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<TicketCreatedEventPayload>(externalEventPayload);
+            }
+            catch
             {
                 return null;
             }
