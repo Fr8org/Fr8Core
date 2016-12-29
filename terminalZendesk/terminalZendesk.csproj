@@ -198,20 +198,26 @@
     <Content Include="packages.config" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="ApplicationInsights.config">
+      <TransformOnBuild>true</TransformOnBuild>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ApplicationInsights.Debug.config">
+    <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ApplicationInsights.Dev.config">
+    </None>
+    <None Include="ApplicationInsights.Dev.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ApplicationInsights.Release.config">
+    </None>
+    <None Include="ApplicationInsights.Release.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Config\log4net.terminals.config.readme" />
     <Content Include="Config\log4net.terminals.Demo.config.readme" />
     <Content Include="Config\log4net.terminals.Dev.config.readme" />
