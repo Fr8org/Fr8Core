@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99D5A940-8674-4060-902B-381DF8B99D43}"
 	ProjectSection(SolutionItems) = preProject
@@ -149,6 +149,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAsanaTests", "Tests\terminalAsanaTests\terminalAsanaTests.csproj", "{3B0A3D34-D926-4356-BE31-809055FE835A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanDirectoryTests", "Tests\PlanDirectoryTests\PlanDirectoryTests.csproj", "{3F32543F-7A89-4AE3-A607-A58C4B52B841}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalZendesk", "terminalZendesk\terminalZendesk.csproj", "{9AA90753-D089-42BA-B225-0AED8E43F05D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1160,6 +1162,26 @@ Global
 		{3F32543F-7A89-4AE3-A607-A58C4B52B841}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F32543F-7A89-4AE3-A607-A58C4B52B841}.Release|x86.ActiveCfg = Release|Any CPU
 		{3F32543F-7A89-4AE3-A607-A58C4B52B841}.Release|x86.Build.0 = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.alexlocal|x86.Build.0 = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Debug|x86.Build.0 = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Demo|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Demo|Any CPU.Build.0 = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Demo|x86.ActiveCfg = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Demo|x86.Build.0 = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Dev|x86.Build.0 = Debug|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Release|x86.ActiveCfg = Release|Any CPU
+		{9AA90753-D089-42BA-B225-0AED8E43F05D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1217,5 +1239,6 @@ Global
 		{0DCD9AAE-F141-4FAD-8E87-1C610F0582DB} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{3B0A3D34-D926-4356-BE31-809055FE835A} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{3F32543F-7A89-4AE3-A607-A58C4B52B841} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{9AA90753-D089-42BA-B225-0AED8E43F05D} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 	EndGlobalSection
 EndGlobal

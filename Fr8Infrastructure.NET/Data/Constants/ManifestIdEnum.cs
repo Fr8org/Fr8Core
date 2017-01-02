@@ -147,6 +147,9 @@ namespace Fr8.Infrastructure.Data.Constants
 
         [Display(Name = "Atlassian Issue Event")]
         AtlassianIssueEvent = 49,
+
+        [Display(Name = "Zendesk Ticket Event")]
+        ZendeskTicketEvent = 50,
     }
 }
 
