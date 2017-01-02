@@ -8,6 +8,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using System;
+using System.Linq;
 using Fr8.TerminalBase.Services;
 using terminalZendesk.Interfaces;
 
@@ -17,16 +18,16 @@ namespace terminalZendesk.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Id = new Guid("dfa529ea-1361-4eeb-b0fb-466c17aea73f"),
-            Name = "Create_Ticket",
-            Label = "Create Ticket",
+            Id = new Guid("3c8c2408-9f09-415c-b1ce-b69f707b6b12"),
+            Name = "Monitor_Ticket",
+            Label = "Monitor Ticket",
             Version = "1",
             MinPaneWidth = 330,
             NeedsAuthentication = true,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
-                ActivityCategories.Forward,
+                ActivityCategories.Monitor,
                 TerminalData.ActivityCategoryDTO
             }
         };
@@ -34,35 +35,46 @@ namespace terminalZendesk.Activities
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            
-            public TextSource Subject { get; set; }
+            public TextBlock Message { get; set; }
 
-            public TextSource Body { get; set; }
-
-            public TextSource RequesterEmail { get; set; }
-
-            public TextSource RequesterName { get; set; }
-
-            public ActivityUi(UiBuilder uiBuilder)
+            public ActivityUi()
             {
-                Subject = uiBuilder.CreateSpecificOrUpstreamValueChooser("Subject", nameof(Subject), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
-                Body = uiBuilder.CreateSpecificOrUpstreamValueChooser("Body", nameof(Body), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
-                RequesterEmail = uiBuilder.CreateSpecificOrUpstreamValueChooser("RequesterEmail", nameof(RequesterEmail), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
-                RequesterName = uiBuilder.CreateSpecificOrUpstreamValueChooser("RequesterName", nameof(RequesterName), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
-                Controls = new List<ControlDefinitionDTO> { Subject, Body, RequesterEmail, RequesterName };
+                Message = new TextBlock
+                {
+                    Label = "Message",
+                    Name = nameof(Message),
+                    Value = "This activity doesn't need configuration"
+                };
+                Controls = new List<ControlDefinitionDTO> { Message };
             }
         }
 
-        private readonly IZendeskIntegration _zendeskIntegration;
+        private const string TicketCreated = "ticketCreated";
+        private const string RuntimeCrateLabel = "Monitor Ticket Runtime Fields";
 
-        public Create_Ticket_v1(ICrateManager crateManager, IZendeskIntegration zendeskIntegration)
+        private const string ZendeskTicketIdField = "Ticket Id";
+        private const string ZendeskTicketAssigneeField = "Ticket Assignee";
+        private const string ZendeskTicketDescriptionField = "Ticket Description";
+        private const string ZendeskTicketTitleField = "Ticket Title";
+        private const string ZendeskTicketCreatedTimeField = "Ticket Creation Time";
+
+
+        public Create_Ticket_v1(ICrateManager crateManager)
             : base(crateManager)
         {
-            _zendeskIntegration = zendeskIntegration;
         }
 
         public override Task Initialize()
         {
+            EventSubscriptions.Manufacturer = "Zendesk";
+            EventSubscriptions.Add(TicketCreated);
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
+                          .AddField(ZendeskTicketIdField)
+                          .AddField(ZendeskTicketDescriptionField)
+                          .AddField(ZendeskTicketTitleField)
+                          .AddField(ZendeskTicketAssigneeField)
+                          .AddField(ZendeskTicketCreatedTimeField);
             return Task.FromResult(0);
         }
 
@@ -73,11 +85,26 @@ namespace terminalZendesk.Activities
 
         public override async Task Run()
         {
-            var subject = ActivityUI.Subject.TextValue;
-            var body = ActivityUI.Body.TextValue;
-            var reqMail = ActivityUI.RequesterEmail.TextValue;
-            var reqName = ActivityUI.RequesterName.TextValue;
-            await _zendeskIntegration.CreateTicket(AuthorizationToken.Token, subject, body, reqMail, reqName);
+            var eventCrate = Payload.CrateContentsOfType<EventReportCM>(x => x.Label == "Zendesk ticket event").FirstOrDefault();
+            if (eventCrate == null)
+            {
+                RequestPlanExecutionTermination("Zendesk event payload was not found");
+                return;
+            }
+
+            var zendeskEventPayload = eventCrate.EventPayload.CrateContentsOfType<ZendeskTicketCreatedEvent>().FirstOrDefault();
+            if (zendeskEventPayload == null)
+            {
+                RequestPlanExecutionTermination("Zendesk event payload was not found");
+                return;
+            }
+
+            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
+                                                                          new KeyValueDTO(ZendeskTicketIdField, zendeskEventPayload.TicketId),
+                                                                          new KeyValueDTO(ZendeskTicketDescriptionField, zendeskEventPayload.Description),
+                                                                          new KeyValueDTO(ZendeskTicketTitleField, zendeskEventPayload.Title),
+                                                                          new KeyValueDTO(ZendeskTicketCreatedTimeField, zendeskEventPayload.Time),
+                                                                          new KeyValueDTO(ZendeskTicketAssigneeField, zendeskEventPayload.Assignee))));
         }
     }
 }

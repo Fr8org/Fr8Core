@@ -47,6 +47,7 @@ namespace terminalZendesk
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<Create_Ticket_v1>(Create_Ticket_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Ticket_v1>(Monitor_Ticket_v1.ActivityTemplateDTO);
         }
     }
 }

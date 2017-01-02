@@ -57,7 +57,7 @@ namespace terminalZendesk.Controllers
                 return new AuthorizationTokenDTO
                 {
                     Token = oauthToken,
-                    ExternalAccountId = userInfo.UserId,
+                    ExternalAccountId = userInfo.SubDomain,
                     ExternalAccountName = userInfo.UserName,
                     ExternalStateToken = state,
                 };

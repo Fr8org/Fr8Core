@@ -22,59 +22,32 @@ namespace terminalZendesk.Services
             TicketCreatedEventPayload ticketPayload = null;
             try
             {
-                ticketPayload =
-                    Newtonsoft.Json.JsonConvert.DeserializeObject<TicketCreatedEventPayload>(externalEventPayload);
+                ticketPayload = Newtonsoft.Json.JsonConvert.DeserializeObject<TicketCreatedEventPayload>(externalEventPayload);
             }
             catch
             {
                 return null;
             }
-            externalEventPayload = externalEventPayload.Trim('\"');
-            var payloadFields = ParseSlackPayloadData(externalEventPayload);
-            //This is for backwards compatibility. Messages received from Slack RTM mechanism will contain the owner of subscription whereas messegas received from WebHooks not
-            var userName = payloadFields.FirstOrDefault(x => x.Key == "owner_name")?.Value ?? payloadFields.FirstOrDefault(x => x.Key == "user_name")?.Value;
-            var teamId = payloadFields.FirstOrDefault(x => x.Key == "team_id")?.Value;
-            if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(teamId))
+
+            var zendeskEventCM = new ZendeskTicketCreatedEvent
             {
-                return null;
-            }
+                TicketId = ticketPayload.Id,
+                Assignee = ticketPayload.Assignee?.Name,
+                Description = ticketPayload.Description,
+                Title = ticketPayload.Title,
+                Time = ticketPayload.CreatedAt,
+                UserId = ticketPayload.CurrentUser.Id
+            };
+
             var eventReportContent = new EventReportCM
             {
-                EventNames = "Slack Outgoing Message",
-                EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = userName, 
-                //Now plans won't be run for entire team but rather for specific user again
-                //ExternalDomainId = teamId,
-                Manufacturer = "Slack",
+                EventNames = "ticketCreated",
+                EventPayload = new CrateStorage(Crate.FromContent("Zendesk ticket event", zendeskEventCM)),
+                ExternalAccountId = ticketPayload.Account,
+                Manufacturer = "Zendesk"
             };
-            var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
+            var curEventReport = Crate.FromContent("Zendesk ticket event", eventReportContent);
             return Task.FromResult((Crate)curEventReport);
-        }
-
-        private List<KeyValueDTO> ParseSlackPayloadData(string message)
-        {
-            var tokens = message.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-
-            var payloadFields = new List<KeyValueDTO>();
-            foreach (var token in tokens)
-            {
-                var nameValue = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValue.Length < 2)
-                {
-                    continue;
-                }
-
-                var name = HttpUtility.UrlDecode(nameValue[0]).Trim('\"');
-                var value = HttpUtility.UrlDecode(nameValue[1]).Trim('\"');
-
-                payloadFields.Add(new KeyValueDTO()
-                {
-                    Key = name,
-                    Value = value
-                });
-            }
-
-            return payloadFields;
         }
 
         private ICrateStorage WrapPayloadDataCrate(List<KeyValueDTO> payloadFields)

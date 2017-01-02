@@ -59,7 +59,8 @@ namespace terminalZendesk.Services
             return new UserInfo
             {
                 UserId = curUser.User.Id?.ToString() ?? curUser.User.Email,
-                UserName = curUser.User.Name
+                UserName = curUser.User.Name,
+                SubDomain = CloudConfigurationManager.GetSetting("ZendeskSubDomain")
             };
         }
 

@@ -20,5 +20,8 @@ namespace terminalZendesk.Interfaces
         public string UserId { get; set; }
         [JsonProperty("user")]
         public string UserName { get; set; }
+
+        [JsonProperty("subdomain")]
+        public string SubDomain { get; set; }
     }
 }

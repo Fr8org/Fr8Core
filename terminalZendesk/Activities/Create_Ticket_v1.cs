@@ -18,8 +18,8 @@ namespace terminalZendesk.Activities
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Id = new Guid("4561436f-934f-462c-baf3-d91a76924b04"),
-            Name = "Monitor_Ticket",
-            Label = "Monitor Ticket",
+            Name = "Create_Ticket",
+            Label = "Create Ticket",
             Version = "1",
             MinPaneWidth = 330,
             NeedsAuthentication = true,
