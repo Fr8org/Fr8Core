@@ -14,7 +14,7 @@ using terminalZendesk.Interfaces;
 
 namespace terminalZendesk.Activities
 {
-    public class Create_Ticket_v1 : TerminalActivity<Create_Ticket_v1.ActivityUi>
+    public class Monitor_Ticket_v1 : TerminalActivity<Monitor_Ticket_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

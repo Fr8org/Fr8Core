@@ -13,7 +13,7 @@ using terminalZendesk.Interfaces;
 
 namespace terminalZendesk.Activities
 {
-    public class Monitor_Ticket_v1 : TerminalActivity<Monitor_Ticket_v1.ActivityUi>
+    public class Create_Ticket_v1 : TerminalActivity<Create_Ticket_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -26,7 +26,7 @@ namespace terminalZendesk.Activities
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
-                ActivityCategories.Monitor,
+                ActivityCategories.Forward,
                 TerminalData.ActivityCategoryDTO
             }
         };
