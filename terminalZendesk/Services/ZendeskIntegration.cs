@@ -56,6 +56,8 @@ namespace terminalZendesk.Services
         {
             var zendeskApi = new ZendeskApi(CloudConfigurationManager.GetSetting("ZendeskSubDomain"), oauthToken);
             var curUser = await zendeskApi.Users.GetCurrentUserAsync();
+            // note we should use current user's subdomain not the subdomain carved into config file
+            // TODO update this
             return new UserInfo
             {
                 UserId = curUser.User.Id?.ToString() ?? curUser.User.Email,

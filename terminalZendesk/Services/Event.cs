@@ -38,12 +38,15 @@ namespace terminalZendesk.Services
                 Time = ticketPayload.CreatedAt,
                 UserId = ticketPayload.CurrentUser.Id
             };
-
+            // this is a simple hack for now
+            // should find a more solid solution
+            // we are using subdomains as external account id
+            var subDomain = ticketPayload.Url.Split('.')[0];
             var eventReportContent = new EventReportCM
             {
                 EventNames = "ticketCreated",
                 EventPayload = new CrateStorage(Crate.FromContent("Zendesk ticket event", zendeskEventCM)),
-                ExternalAccountId = ticketPayload.Account,
+                ExternalAccountId = subDomain,
                 Manufacturer = "Zendesk"
             };
             var curEventReport = Crate.FromContent("Zendesk ticket event", eventReportContent);
