@@ -55,7 +55,7 @@ namespace terminalZendesk.Activities
 
         private readonly IZendeskIntegration _zendeskIntegration;
 
-        public Monitor_Ticket_v1(ICrateManager crateManager, IZendeskIntegration zendeskIntegration)
+        public Create_Ticket_v1(ICrateManager crateManager, IZendeskIntegration zendeskIntegration)
             : base(crateManager)
         {
             _zendeskIntegration = zendeskIntegration;

@@ -59,7 +59,7 @@ namespace terminalZendesk.Activities
         private const string ZendeskTicketCreatedTimeField = "Ticket Creation Time";
 
 
-        public Create_Ticket_v1(ICrateManager crateManager)
+        public Monitor_Ticket_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }
