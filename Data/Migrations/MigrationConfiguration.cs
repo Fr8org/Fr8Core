@@ -112,7 +112,9 @@ namespace Data.Migrations
             RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:48675", "https://terminalStatX.fr8.co");
             RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:22666", "https://terminalFacebook.fr8.co");
             RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:59022", "https://terminalTelegram.fr8.co");
+            RegisterFr8OwnTerminal(uow, securityObjectStorage, "http://localhost:33222", "https://terminalZendesk.fr8.co");
             RegisterFr8OwnTerminal(uow, securityObjectStorage, "https://terminalTwitter.fr8.co", "https://terminalTwitter.fr8.co", false);
+            
         }
 
         private string ExtractPort(string url)
