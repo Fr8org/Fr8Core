@@ -17,6 +17,7 @@ namespace terminalFr8CoreTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
+    [Ignore("activity disabled")]
     public class Select_Fr8_Object_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName

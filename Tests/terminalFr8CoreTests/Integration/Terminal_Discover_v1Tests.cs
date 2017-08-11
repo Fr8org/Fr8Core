@@ -13,7 +13,7 @@ namespace terminalFr8CoreTests.Integration
         private const string TestIncomingDataName = "Test_Incoming_Data";
         private const string AddPayloadManuallyName = "Add_Payload_Manually";
         private const string SaveToFr8WarehouseName = "Save_To_Fr8_Warehouse";
-        private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
+        //private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
         private const string ConnectToSqlName = "Connect_To_Sql";
         //private const string BuildQueryName = "Build_Query";
         private const string ExecuteSqlName = "Execute_Sql";
@@ -52,7 +52,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestIncomingDataName), "TestIncomingDataName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AddPayloadManuallyName), "AddPayloadManuallyName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SaveToFr8WarehouseName), "SaveToFr8WarehouseName wasn`t found");
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName), "Select_Fr8_ObjectName wasn`t found");
+            // Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName), "Select_Fr8_ObjectName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName), "ConnectToSqlName wasn`t found");
             // Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName), "BuildQueryName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName), "ExecuteSqlName wasn`t found");
