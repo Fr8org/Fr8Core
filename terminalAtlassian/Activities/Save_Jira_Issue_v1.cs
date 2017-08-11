@@ -13,6 +13,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalAtlassian.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
@@ -248,6 +249,30 @@ namespace terminalAtlassian.Actions
         {
             _atlassianService = atlassianService;
             _pushNotificationService = pushNotificationService;
+        }
+
+        protected override Task Validate()
+        {
+            if (string.IsNullOrEmpty(ActivityUI.AvailableProjects.Value))
+            {
+                ValidationManager.SetError("Project is not specified", ActivityUI.AvailableProjects);
+            }
+
+            if (string.IsNullOrEmpty(ActivityUI.AvailableIssueTypes.Value) && ActivityUI.AvailableIssueTypes.IsHidden != true)
+            {
+                ValidationManager.SetError("Issue Type is not specified", ActivityUI.AvailableIssueTypes);
+            }
+
+            if (string.IsNullOrEmpty(ActivityUI.AvailablePriorities.Value) && ActivityUI.AvailablePriorities.IsHidden != true)
+            {
+                ValidationManager.SetError("Issue Priority is not specified", ActivityUI.AvailablePriorities);
+            }
+            if(ActivityUI.Summary.IsHidden != true)
+            {
+                ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.Summary, "Issue Summary is not specified");
+            }
+            
+            return Task.FromResult(0);
         }
 
         #region Configuration
