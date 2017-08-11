@@ -49,7 +49,7 @@ namespace terminalAsanaTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response. OAuth Token already should be present in ActivityDTO
         /// </summary>
-        [Test, Ignore("Being fixed in FR-6098")]
+        [Test]
         public async Task Post_Comment_v1_initial_configuration_check()
         {
             var responseDTO = await CompleteInitialConfiguration();
@@ -62,7 +62,7 @@ namespace terminalAsanaTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// same test as for Get_Task activity
         /// </summary>
-        [Test, Ignore("Being fixed in FR-6098")]
+        [Test]
         public async Task Post_Comment_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
             // it is integration test so it will be oooho loooong.
